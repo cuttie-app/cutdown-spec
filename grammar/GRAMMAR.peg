@@ -1,0 +1,431 @@
+# ============================================================
+# Cutdown Markup Language — Formal PEG Grammar
+# Spec version: 0.2.0
+# ============================================================
+#
+# This file is the RECOGNITION GRAMMAR only.
+# Post-parsing tree transformations (section nesting, page
+# splitting, scope-chain attribute distribution, etc.) are
+# specified in SEMANTICS.md.
+#
+# Notation:
+#   <-       rule definition
+#   /        ordered choice (first match wins; no backtracking)
+#   *        zero or more (greedy)
+#   +        one or more (greedy)
+#   ?        optional (greedy)
+#   !e       negative lookahead — succeeds if e fails; no input consumed
+#   &e       positive lookahead — succeeds if e succeeds; no input consumed
+#   (e)      grouping
+#   "str"    literal string
+#   'str'    literal string (alternative quoting)
+#   [cls]    character class (regex-style)
+#   .        any single character
+#   ~.       any single character except NL
+#   EOF      end of input
+#   NL       normalized newline (§2)
+#
+# Unclosed opener fallback: when an inline rule fails (no matching
+# closer before end of paragraph context), the parser tries the
+# next alternative in the Inline ordered choice. Text is always
+# last and matches any character, so openers without closers are
+# emitted as literal text.
+# ============================================================
+
+
+# ─────────────────────────────────────────────────────────────
+# 1.  Entry Point
+# ─────────────────────────────────────────────────────────────
+
+Document        <- BlankLine* ( Block BlankLine* )* EOF
+
+
+# ─────────────────────────────────────────────────────────────
+# 2.  Block Elements
+#     Ordered by specificity. Paragraph is the catch-all last.
+#     Once a Paragraph begins, no block element can interrupt it
+#     (§8.1): subsequent non-blank lines are consumed by ParaLine
+#     regardless of their content.
+# ─────────────────────────────────────────────────────────────
+
+Block <-
+    / Comment
+    / MetaBlock
+    / CodeBlock
+    / MathBlock
+    / NamedBlock
+    / ThematicBreak
+    / Heading
+    / Table
+    / QuoteBlock
+    / List
+    / ImageBlock
+    / FileRef
+    / RefDefinition
+    / Paragraph
+
+
+# 2.1  Comment  (§8.3)
+#      First character is #. Invisible — not a block separator.
+
+Comment         <- "#" ~.* NL
+
+
+# 2.2  MetaBlock  (§9.5)
+#      Fenced with exactly three tildes.
+#      Format tag defaults to "yaml" when absent (case-insensitive).
+#      Unclosed fence: content runs to EOF (CDN-0002).
+#      Fills Page.meta; see SEMANTICS.md §S2.
+
+MetaBlock       <- "~~~" MetaFormat? SP* NL
+                   MetaLine*
+                   ( "~~~" SP* NL / EOF )
+
+MetaFormat      <- "yaml" / "toml" / "json"
+MetaLine        <- !( "~~~" SP* NL ) ~.* NL
+
+
+# 2.3  CodeBlock  (§9.4)
+#      Fenced with exactly three backticks. Minimum/maximum fence
+#      length is exactly 3 — variable-length fences not supported.
+#      Language tag optional; defaults to "text".
+#      Content is literal — no inline parsing inside.
+#      Unclosed fence: content runs to EOF (CDN-0001).
+
+CodeBlock       <- "```" IDLiteral* SP* AttrChain? NL
+                   CodeLine*
+                   ( "```" SP* NL / EOF )
+
+CodeLine        <- !( "```" SP* NL ) ~.* NL
+
+
+# 2.4  MathBlock  (§9.12)
+#      Fenced with exactly three dollar signs.
+#      Content is literal — no inline parsing inside.
+#      Unclosed fence: content runs to EOF (CDN-0003).
+
+MathBlock       <- "$$$" SP* AttrChain? NL
+                   MathLine*
+                   ( "$$$" SP* NL / EOF )
+
+MathLine        <- !( "$$$" SP* NL ) ~.* NL
+
+
+# 2.5  NamedBlock  (§9.10)
+#      Opening: ":::" followed immediately by IDLiteral+ (no space).
+#      ":::" not followed by IDLiteral → CDN-0013 (falls to Paragraph).
+#      Closing: ":::" on its own line.
+#      Content is full Block context (recursive).
+#      Unclosed: content runs to EOF (CDN-0004).
+#      Indentation collapsing of content: see SEMANTICS.md §S3.
+
+NamedBlock      <- ":::" IDLiteral+ SP* AttrChain? NL
+                   Block*
+                   ( ":::" SP* NL / EOF )
+
+
+# 2.6  ThematicBreak  (§9.3)
+#      Three or more dashes at line start.
+#      Text between dashes and AttrChain is dropped (CDN-0010).
+#      Creates a Page boundary — see SEMANTICS.md §S2.
+
+ThematicBreak   <- "---" "-"* SP* DroppedText? AttrChain? NL
+
+DroppedText     <- ( !( "{" / NL ) ~. )+
+
+
+# 2.7  Heading  (§9.1)
+#      1–9 equal signs followed by exactly one space.
+#      10+ equal signs: entire line → literal Text (CDN-0012);
+#      this case is not matched here and falls to Paragraph.
+#      Last AttrChain token is claimed by the Section (last-attr rule);
+#      earlier tokens follow inline attachment — see SEMANTICS.md §S4.
+
+Heading         <- HeadingMark " " InlineContent AttrChain? NL
+
+HeadingMark     <- "========="
+                 / "========"
+                 / "======="
+                 / "======"
+                 / "====="
+                 / "===="
+                 / "==="
+                 / "=="
+                 / "="
+
+
+# 2.8  Table  (§9.8)
+#      Leading and trailing | required on every row.
+#      DelimRow distinguishes GFM (with header) from simple (no header).
+#      AttrChain on last row distributes to Table + Row (see SEMANTICS.md §S4).
+#      Mid-table rows: 1 slot (Row only).
+
+Table           <- TableRow TableDelimRow TableRow+    # GFM: header + delim + body
+                 / TableRow+                           # simple: body only
+
+TableRow        <- "|" ( SP* InlineContent SP* "|" )+ AttrChain? NL
+
+TableDelimRow   <- "|" ( SP* ColAlign SP* "|" )+ NL
+
+ColAlign        <- ":"  "-"+ ":"    # center
+                 / ":"  "-"+ ","    # comma
+                 / ":"  "-"+ "."    # decimal
+                 / ":"  "-"+        # left (explicit colon)
+                 / "-"+ ":"         # right
+                 / "-"+             # default left
+
+
+# 2.9  QuoteBlock  (§9.6)
+#      One or more consecutive lines with leading >.
+#      Nesting depth = count of leading > characters.
+#      Lazy continuation NOT supported: a line without > ends the block.
+#      After stripping all leading > chars and one optional space,
+#      the remaining content is reparsed as Block content
+#      (see SEMANTICS.md §S3).
+
+QuoteBlock      <- QuoteLine+
+QuoteLine       <- ">" ">"* " "? ~.* AttrChain? NL
+
+
+# 2.10  List  (§9.7)
+#       Unordered marker: "- " (hyphen + space).
+#       Ordered marker: one or more digits + ". ".
+#       Nesting: exactly 2 spaces of indentation per level.
+#       TaskItem (extension): marker is "- [ ] " or "- [x] ".
+#       Loose detection: see SEMANTICS.md §S7.
+
+List            <- ListItem+
+
+ListItem        <- ListMarker InlineContent AttrChain? NL
+                   ListContinuation*
+
+ListMarker      <- "- [ ] "                 # TaskItem unchecked (extension)
+                 / "- [x] "                 # TaskItem checked   (extension)
+                 / "- "                     # ListItem unordered
+                 / [0-9]+ ". "              # ListItem ordered
+
+ListContinuation <- "  " ~.* NL             # 2-space continuation
+                  / BlankLine               # intra-item blank → block children
+
+
+# 2.11  ImageBlock  (§9.9.3)
+#       Block-level image: line beginning with ![.
+#       Consecutive ImageBlock lines → wrapped in FileRefGroup (SEMANTICS.md §S6).
+
+ImageBlock      <- "![" InlineContent "](" FilePath ")" SP* AttrChain? NL
+
+
+# 2.12  FileRef  (§9.9)
+#       Any line beginning with /. Group (image/video/audio) derived
+#       from extension. Consecutive same-group lines → FileRefGroup
+#       (see SEMANTICS.md §S6).
+
+FileRef         <- "/" FilePath FragmentId? SP* AttrChain? NL
+
+FilePath        <- ( !( "#" / SP / NL ) . )+
+FragmentId      <- "#" IDLiteral+
+
+
+# 2.13  RefDefinition  (§9.11)
+#       id is [IDLiteral]+, case-sensitive.
+#       Duplicate id: last definition wins (see SEMANTICS.md §S5).
+
+RefDefinition   <- "[^" IDLiteral+ "]:" SP* InlineContent NL
+
+
+# 2.14  Paragraph  (§9.2)
+#       Catch-all. First line does not open any block above.
+#       Subsequent non-blank lines continue regardless of content
+#       (block elements cannot interrupt a paragraph — §8.1).
+#       Soft break (NL within paragraph) → space in AST.
+
+Paragraph       <- ParaLine+
+ParaLine        <- !BlankLine ~.+ NL
+
+
+# ─────────────────────────────────────────────────────────────
+# 3.  Inline Elements
+#     Parsed left-to-right; no backtracking.
+#     Precedence encoded by rule order in the Inline choice.
+#     Unclosed opener: rule fails; next alternative in Inline tried.
+#     Text is always last and matches any remaining character.
+# ─────────────────────────────────────────────────────────────
+
+InlineContent   <- Inline*
+
+Inline <-
+    / Escape
+    / TextBreak
+    / CodeInline
+    / MathInline
+    / Emphasis
+    / Strong
+    / Strikethrough
+    / QuoteInlineDouble
+    / QuoteInlineSingle
+    / Variable
+    / ImageInline
+    / Link
+    / Span
+    / Mention
+    / Attributes
+    / Text
+
+
+# 3.1  Escape  (§4)
+#      "\" before a special character emits the literal character.
+#      "\" before a non-special character emits both chars literally.
+
+Escape          <- "\" .
+
+
+# 3.2  TextBreak  (§10.6)
+#      Must come before Escape in the Inline choice to claim "\" + NL.
+
+TextBreak       <- "\" NL
+
+
+# 3.3  CodeInline  (§10.5)
+#      Double backtick. Content is literal; no inline parsing.
+#      Soft break inside CodeInline → space (normal paragraph rule applies).
+#      Single ` is always literal text (never a CodeInline marker).
+
+CodeInline      <- "``" ( !"``" . )* "``" AttrChain?
+
+
+# 3.4  MathInline  (§10.11)
+#      Double dollar. Content is literal.
+#      Single $ is always literal text.
+
+MathInline      <- "$$" ( !"$$" ~. )* "$$" AttrChain?
+
+
+# 3.5  Emphasis  (§10.2)
+#      Double asterisk. Same-type nesting not allowed (greedy closer wins).
+#      Single * is always literal text.
+#      **** (4 chars) → Emphasis([]) via greedy empty-content match.
+
+Emphasis        <- "**" Inline* "**" AttrChain?
+
+
+# 3.6  Strong  (§10.3)
+#      Double underscore. Same-type nesting not allowed.
+#      Single _ is always literal text.
+
+Strong          <- "__" Inline* "__" AttrChain?
+
+
+# 3.7  Strikethrough  (§10.4)
+#      Double tilde. Same-type nesting not allowed.
+#      Single ~ is always literal text.
+
+Strikethrough   <- "~~" Inline* "~~" AttrChain?
+
+
+# 3.8  QuoteInline  (§10.13)
+#      Double-double-quote or double-single-quote delimiter.
+#      Same-kind nesting not allowed; cross-kind nesting allowed.
+#      Single " or ' is always literal text.
+
+QuoteInlineDouble <- '""' Inline* '""' AttrChain?
+QuoteInlineSingle <- "''" Inline* "''" AttrChain?
+
+
+# 3.9  Variable  (§10.12)
+#      {{ key }}. Key is raw inner text; no lexical constraint enforced.
+#      Empty key {{}} does not match (one-or-more on inner content).
+
+Variable        <- "{{" ( !"}}" ~. )+ "}}" AttrChain?
+
+
+# 3.10  ImageInline  (§10.9)
+#       Must appear before Link to claim "![" prefix first.
+
+ImageInline     <- "![" InlineContent "](" ( !")" ~. )* ")" AttrChain?
+
+
+# 3.11  Link  (§10.7)
+#       Ordered by second-bracket sigil to classify kind.
+#       [][] (both brackets empty) → no match → Text.
+
+Link            <- "[" InlineContent "](" ( !")" ~. )* ")" AttrChain?     # external
+                 / "[" InlineContent "][^" ( !"]" ~. )+ "]" AttrChain?    # ref
+                 / "[" InlineContent "][#" ( !"]" ~. )+ "]" AttrChain?    # tag
+                 / "[" InlineContent "][@" ( !"]" ~. )+ "]" AttrChain?    # cite
+                 / "[" InlineContent "][" ( !( "]" / NL ) ~. )+ "]" AttrChain?  # page
+                 / "[" InlineContent "](" ")" AttrChain?                   # empty href
+
+
+# 3.12  Span  (§10.10)
+#       "::" followed immediately by IDLiteral+ (no space before name).
+#       "::" not followed by IDLiteral → no match → Text("::").
+
+Span            <- "::" IDLiteral+ SP* AttrChain?
+
+
+# 3.13  Mention  (§10.8, extension)
+#       "@" followed by one or more [A-Za-z0-9_.-] characters.
+#       "@" not followed by valid handle char → no match → Text("@").
+
+Mention         <- "@" [A-Za-z0-9_.\-]+
+
+
+# 3.14  Attributes  (inline attachment, §5.2)
+#       A lone {…} block in inline context attaches to the preceding
+#       inline element. Scope-chain distribution handled by SEMANTICS.md §S4.
+
+# (see §4 Attributes section below)
+
+
+# 3.15  Text  (§10.1)
+#       Catch-all. Any character not consumed by rules above.
+#       Consecutive Text nodes MUST be merged (see SEMANTICS.md §S8).
+
+Text            <- TextChar+
+
+TextChar        <- !( "\\"
+                    / "``" / "$$" / "**" / "__" / "~~"
+                    / '""' / "''"
+                    / "{{" / "![" / "["
+                    / "::" / "@" / "{"
+                    / NL ) ~.
+                 / "{" !( IDLiteral / "#" / "." / "}" ) ~.   # unmatched { → literal
+                 / "[" !(InlineContent "]" ("(" / "[")) ~.   # unmatched [ → literal
+
+
+# ─────────────────────────────────────────────────────────────
+# 4.  Attributes  (§5)
+# ─────────────────────────────────────────────────────────────
+
+# AttrChain allows multiple consecutive {…} blocks for scope-chain
+# distribution. The right-to-left slot assignment is resolved in
+# the semantic pass (SEMANTICS.md §S4).
+
+AttrChain       <- Attributes+
+
+Attributes      <- "{" SP* AttrToken* SP* "}"
+
+AttrToken       <- SP* ( IdAttr / ClassAttr / KVAttrQuoted / KVAttr / BareAttr )
+
+IdAttr          <- "#" IDLiteral+
+ClassAttr       <- "." IDLiteral+
+KVAttrQuoted    <- IDLiteral+ "=" '"' ( !'"' . )* '"'
+KVAttr          <- IDLiteral+ "=" ( !( "}" / SP / NL ) . )+
+BareAttr        <- IDLiteral+
+
+# Conflict resolution inside a single Attributes block:
+#   Duplicate #id or id= token         → CDN-0020 (first wins)
+#   .class alongside class= token      → CDN-0021 (.class wins)
+#   Duplicate custom key               → CDN-0022 (first wins)
+# (see SEMANTICS.md §S9)
+
+
+# ─────────────────────────────────────────────────────────────
+# 5.  Terminals
+# ─────────────────────────────────────────────────────────────
+
+IDLiteral       <- [a-zA-Z0-9._\-]
+SP              <- " " / "\t"
+BlankLine       <- SP* NL
+NL              <- "\n" / "\r\n" / "\r"
+EOF             <- !.
