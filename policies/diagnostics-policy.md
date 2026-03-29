@@ -73,6 +73,7 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | ThematicBreak text content dropped | CDN-0010 | Text between `---` and optional `{attrs}` is discarded |
 | Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
 | Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |
+| `:::` not followed by `[ID_LITERAL]` (nameless opener) | CDN-0013 | Block candidate parsed as Paragraph; `:::` and `{attrs}` emitted as literal text |
 
 Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.
 

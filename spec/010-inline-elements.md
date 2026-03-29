@@ -10,7 +10,7 @@ Any sequence of characters not matched by another inline rule is a `Text` node.
 AST: Text { value: string }
 ```
 
-Consecutive text tokens SHOULD be merged by the parser into a single `Text` node.
+Consecutive text tokens MUST be merged by the parser into a single `Text` node.
 
 ---
 
@@ -23,7 +23,7 @@ Consecutive text tokens SHOULD be merged by the parser into a single `Text` node
 - Run of 3: `***` = `**` (opener/closer) + `*` (literal). The third character is discarded as a marker.
 - Matching: greedy left-to-right. First valid `**` closer wins.
 - Unclosed `**`: emitted as `Text("**")`.
-- Same-type nesting: NOT allowed. `**a **b** c**` → the first `**` is the opener, the second `**` closes it. The remaining `c**` is `Text("c")` + `Text("**")`.
+- Same-type nesting: MUST NOT be used. `**a **b** c**` → the first `**` is the opener, the second `**` closes it. The remaining `c**` is `Text("c")` + `Text("**")`.
 - Cross-type nesting: allowed (see §10.3).
 
 ```
@@ -304,7 +304,7 @@ AST: Variable { key: string, attributes: Attributes }
 - `""` and `''` are the openers and closers. A single `"` or `'` is always literal text.
 - Content is parsed as inline content (composable with other inline elements).
 - `kind` distinguishes the delimiter used: `"double"` for `""`, `"single"` for `''`.
-- Same-kind nesting is **NOT allowed**: `"" "" ""` — the second `""` closes the first.
+- Same-kind nesting MUST NOT be used: `"" "" ""` — the second `""` closes the first.
 - Cross-kind nesting **IS allowed**: `""'' inner ''""` is valid (single inside double, or double inside single).
 - Unmatched opener: emitted as `Text('""')` or `Text("''")`
 - Whitespace rules follow §12.2 (boundary-to-literal stripped; adjacent boundaries collapsed).

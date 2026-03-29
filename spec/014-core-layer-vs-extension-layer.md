@@ -54,7 +54,7 @@ The following constructs are explicitly NOT part of Cutdown:
 - Indented code blocks
 - Lazy blockquote continuation
 - Setext-style headings
-- ATX-style headings (`# Heading`) — `#` is the Cutdown comment marker (§8.3); a line beginning with `#` produces no AST node. Migration tools MUST convert `# H` → `= H`, `## H` → `== H`, etc.
-- Single-backtick inline code (`` `code` ``) — single backtick is always literal text in Cutdown; double backtick (` ``code`` `) is required. Migration tools MUST convert single-backtick spans.
+- ATX-style headings (`# Heading`) — `#` is the Cutdown comment marker (§8.3); a line beginning with `#` produces no AST node. Tools migrating from Markdown convert `# H` → `= H`, `## H` → `== H`, etc.
+- Single-backtick inline code (`` `code` ``) — single backtick is always literal text in Cutdown; double backtick (` ``code`` `) is required. Tools migrating from Markdown convert single-backtick spans to double-backtick.
 
 ---

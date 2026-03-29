@@ -117,3 +117,18 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | introduced_in | 0.1.4 |
 | status | active |
 | owner | Language |
+
+---
+
+### CDN-0013 — Nameless NamedBlock opener
+
+| Field | Value |
+|---|---|
+| code | CDN-0013 |
+| title | Nameless NamedBlock opener |
+| level | warning |
+| trigger | A line starts with `:::` but is not followed by an `[ID_LITERAL]` character (e.g. `::: {.alert}`, `:::` alone on a non-closing line) |
+| recovery | The block candidate is parsed as a Paragraph. All content including `:::` and any trailing `{attrs}` is emitted as literal text. |
+| introduced_in | 0.1.5 |
+| status | active |
+| owner | Language |

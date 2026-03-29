@@ -132,7 +132,7 @@ Orphan behaviour depends on position:
 
 `{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
 
-Authors who need literal braces MUST escape them:
+Authors who want a literal `{` SHOULD escape it with `\{` to make intent explicit. The parser handles unescaped `{` via fallback (emits `Text("{")` if no matching `}` is found), but relying on fallback is fragile:
 
 ```
 price is \{high\}  →  Text("price is {high}")

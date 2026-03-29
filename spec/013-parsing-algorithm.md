@@ -1,6 +1,6 @@
 ## 13. Parsing Algorithm
 
-Cutdown uses a **single-pass** parsing strategy.
+Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT backtrack: once a token or node has been emitted, it is never re-interpreted. An opener with no valid closer before the end of the inline context is emitted as literal text and parsing continues forward.
 
 ### 13.1 Phase 1 — Normalization
 

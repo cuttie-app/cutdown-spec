@@ -174,7 +174,7 @@ include:
 ```
 
 - Every line of the blockquote MUST begin with `>`.
-- Lazy continuation is NOT supported. A line without `>` ends the quote.
+- A parser MUST NOT treat a line without a leading `>` as a continuation of the blockquote. Such a line ends the quote and begins a new block.
 - The `>` prefix and one optional following space are stripped from each line before parsing content.
 - Content is parsed as full block content (paragraphs, lists, code blocks, nested quotes, etc.).
 - Nesting: `>>` = blockquote inside blockquote. `>>>` = triple nesting, etc. Both `>>` and `> >` (with spaces between `>`) are valid nesting syntax. Nesting depth = count of leading `>` characters.
@@ -461,7 +461,7 @@ A fragment identifier targets a specific section:
 
 - Opening: `:::` followed immediately by a block name, then optional attributes.
 - Closing: `:::` on its own line (no name).
-- Block name: REQUIRED, pattern `[ID_LITERAL]+` (see §1).
+- Block name pattern: `[ID_LITERAL]+` (see §1), immediately after `:::` with no space. A `:::` opener not followed immediately by an `[ID_LITERAL]` character (e.g. `::: {.attr}` or `:::` alone) does NOT open a NamedBlock — the block candidate is classified as a Paragraph and CDN-0013 is emitted.
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document.
 
