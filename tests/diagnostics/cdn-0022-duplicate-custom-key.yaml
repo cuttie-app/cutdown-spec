@@ -9,7 +9,7 @@ ast:
   - type: Paragraph
     children:
       - type: Text
-        value: Hello {role=main role=nav}
+        value: Hello
     attributes:
       - key: role
         value: main

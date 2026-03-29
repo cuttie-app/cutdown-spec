@@ -34,6 +34,8 @@ Cutdown is a lightweight markup language designed to produce a structured AST (A
 
 Cutdown prioritizes **unambiguous parsing**, **consistency**, and **implementability**. Every syntactic construct is locally deterministic. The parser never backtracks.
 
+Cutdown is a simple markup language with the bare minimum features to structure content. It does not have a goal to satisfy all varieties of representing content in ASCII.
+
 ---
 
 ## Table of Contents
