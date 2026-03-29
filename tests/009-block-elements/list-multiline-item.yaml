@@ -1,0 +1,20 @@
+id: list-multiline-item
+section: "9.7.5"
+description: A continuation line indented by >= 2 spaces extends the list item; soft break becomes space
+
+input: |
+  - First item
+    continues here
+  - Second item
+
+ast:
+  - type: List
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: First item continues here
+      - type: ListItem
+        children:
+          - type: Text
+            value: Second item

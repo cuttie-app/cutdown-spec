@@ -120,6 +120,51 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
+### CDN-0020 — Duplicate id attribute
+
+| Field | Value |
+|---|---|
+| code | CDN-0020 |
+| title | Duplicate id attribute |
+| level | warning |
+| trigger | A second `#id` or `id=` token appears in a `{...}` block after the first `id` claim has already been made |
+| recovery | The duplicate token is dropped; the first `#id` or `id=` value is kept |
+| introduced_in | 0.2.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0021 — `class=` conflicts with `.class` syntax
+
+| Field | Value |
+|---|---|
+| code | CDN-0021 |
+| title | class= conflicts with .class syntax |
+| level | warning |
+| trigger | A `class=` token appears alongside one or more `.classname` tokens in the same `{...}` block |
+| recovery | The `class=` token is dropped; all `.classname` tokens are collected into the `class` entry |
+| introduced_in | 0.2.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0022 — Duplicate custom attribute key
+
+| Field | Value |
+|---|---|
+| code | CDN-0022 |
+| title | Duplicate custom attribute key |
+| level | warning |
+| trigger | A `key=value` token appears more than once for the same key in a `{...}` block |
+| recovery | All occurrences after the first are dropped; the first value is kept |
+| introduced_in | 0.2.0 |
+| status | active |
+| owner | Language |
+
+---
+
 ### CDN-0013 — Nameless NamedBlock opener
 
 | Field | Value |

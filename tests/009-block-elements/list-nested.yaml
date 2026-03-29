@@ -1,0 +1,26 @@
+id: list-nested
+section: "9.7.1"
+description: Exactly 2-space indentation creates a nested List inside a ListItem
+
+input: |
+  - Item one
+    - Nested
+  - Item two
+
+ast:
+  - type: List
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: Item one
+          - type: List
+            children:
+              - type: ListItem
+                children:
+                  - type: Text
+                    value: Nested
+      - type: ListItem
+        children:
+          - type: Text
+            value: Item two

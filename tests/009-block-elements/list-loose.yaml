@@ -1,0 +1,21 @@
+id: list-loose
+section: "9.7.3"
+description: Blank line between items sets loose=true on the List node (advisory flag)
+
+input: |
+  - Item one
+
+  - Item two
+
+ast:
+  - type: List
+    loose: true
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: Item one
+      - type: ListItem
+        children:
+          - type: Text
+            value: Item two

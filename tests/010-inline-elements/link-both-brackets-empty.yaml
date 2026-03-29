@@ -1,0 +1,12 @@
+id: link-both-brackets-empty
+section: "10.7"
+description: "[][] with both brackets empty is not a link; emitted as literal text"
+
+input: |
+  [][]
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "[][]"

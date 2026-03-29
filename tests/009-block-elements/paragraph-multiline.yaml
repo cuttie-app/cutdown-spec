@@ -1,0 +1,13 @@
+id: paragraph-multiline
+section: "9.2"
+description: A single newline between paragraph lines is a soft break; becomes a space; consecutive Text nodes merged
+
+input: |
+  First line
+  second line
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: First line second line

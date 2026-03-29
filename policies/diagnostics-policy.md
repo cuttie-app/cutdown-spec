@@ -74,11 +74,8 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
 | Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |
 | `:::` not followed by `[ID_LITERAL]` (nameless opener) | CDN-0013 | Block candidate parsed as Paragraph; `:::` and `{attrs}` emitted as literal text |
+| Duplicate `id` token (`#id` or `id=` after first claim) | CDN-0020 | Duplicate dropped; first value kept |
+| `class=` alongside `.class` syntax | CDN-0021 | `class=` dropped; `.class` tokens kept |
+| Duplicate custom attribute key | CDN-0022 | Duplicate dropped; first value kept |
 
 Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.
-
-## Decision Record (Q14)
-
-- Q14.1: Parser exposes structured diagnostics with levels.
-- Q14.2: Diagnostics are machine-readable and code-stable.
-- Q14.3: Parser is non-fail-fast and returns AST with deterministic recovery.

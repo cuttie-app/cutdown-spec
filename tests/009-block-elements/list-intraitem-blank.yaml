@@ -1,0 +1,29 @@
+id: list-intraitem-blank
+section: "9.7.5"
+description: Blank line within a single list item creates block children; blank line between items sets loose=true
+
+input: |
+  - First item
+
+  - Second item
+
+    This starts a new paragraph inside item two.
+
+ast:
+  - type: List
+    loose: true
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: First item
+      - type: ListItem
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: Second item
+          - type: Paragraph
+            children:
+              - type: Text
+                value: This starts a new paragraph inside item two.

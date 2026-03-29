@@ -57,11 +57,16 @@
 ### Attributes Type
 
 ```
-Attributes {
-  id:      string | null,
-  class:   string[],
-  entries: { key: string, value: string }[]   // value: "" for bare-key tokens
-}
+Attributes = Attribute[] | null
+
+Attribute =
+  | { key: "id",    value: string }
+  | { key: "class", value: string[] }
+  | { key: string,  value: string }   // value: "" for bare-key tokens
 ```
+
+`null` means no attribute block was present in source. An empty `[]` means an explicit empty block `{}` was authored.
+
+Ordering: entries appear in **source order**. Deduplication rules (see §5.1) may drop entries before the array is emitted.
 
 ---

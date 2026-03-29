@@ -7,11 +7,11 @@
 ```
 
 Token types inside `{}`:
-- `#identifier` — sets the `id` attribute. Only one `id` is valid; if multiple are present, last wins.
-- `.classname` — appends to the `class` list. Multiple allowed.
-- `key=value` — key/value pair. Unquoted value: no spaces. Quoted value: spaces allowed.
-- `key` (bare, no `=`) — flag token. Stored as `{ key: "key", value: "" }` in `entries`. Signals a semantic hint with no associated value.
-- Token order inside `{}` is free.
+- `#identifier` — sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
+- `.classname` — appends to the `class` entry. All `.classname` tokens in a block are collected into a single `{ key: "class", value: string[] }` entry. `.class` syntax has priority: if `class=` also appears, `class=` is dropped and CDN-0021 is emitted.
+- `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
+- `key` (bare, no `=`) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
+- Token order inside `{}` is preserved in the emitted `Attribute[]`.
 
 > **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
 

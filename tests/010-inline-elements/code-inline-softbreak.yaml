@@ -1,0 +1,11 @@
+id: code-inline-softbreak
+section: "10.5"
+description: A soft break (single newline) inside CodeInline is normalized to a space in the value
+
+input: "``test\ncontinues``\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: CodeInline
+        value: test continues
