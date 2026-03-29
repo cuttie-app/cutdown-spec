@@ -57,7 +57,7 @@ The heading node is consumed into its enclosing `Section` node. Consumers receiv
 
 ### 9.2 Paragraphs
 
-A paragraph is a contiguous sequence of non-blank lines that do not match any other block construct.
+A paragraph is a contiguous sequence of non-blank lines that do not match any other block construct. Once a paragraph has begun, no block element can interrupt it — the paragraph continues until a blank line is encountered (see §8.1).
 
 Inline content of all lines is parsed and concatenated. A single newline between lines is treated as a soft break — it becomes a space in the AST (no node emitted).
 
@@ -221,19 +221,15 @@ Trailing attr lines (lines consisting solely of `{attrs}` with no preceding blan
 
 #### 9.7.4 Task Items (Extension Layer)
 
-Task items are unordered list items with a checkbox prefix:
+**Extension.** Full specification: [`extensions/task-item/SPEC.md`](../extensions/task-item/SPEC.md)
+
+Task items are unordered list items with a checkbox prefix (`- [ ]` / `- [x]`). They emit `TaskItem` nodes carrying a `checked` boolean. A `List` may contain a mix of `ListItem` and `TaskItem` children.
 
 ```
-- [ ] Unchecked task
-- [x] Checked task
+AST: TaskItem { checked: bool, children: (Block | Inline)[], attributes: Attributes }
 ```
 
-```
-AST:
-  List { ordered: false, loose: false }
-  ├── TaskItem { checked: false, children: Inline[] }
-  └── TaskItem { checked: true, children: Inline[] }
-```
+`TaskItem` follows the same multiline and block-promotion rules as `ListItem` (§9.7.5). A `List` may contain a mix of `ListItem` and `TaskItem` children.
 
 Regular list items: `ListItem { children: (Block | Inline)[], attributes: Attributes }`
 
@@ -517,7 +513,7 @@ AST:
 - MUST start at the beginning of a line.
 - `id` may contain `[\w.-]`.
 - Content is parsed as inline content.
-- Multiple definitions with the same `id`: last definition wins; earlier ones are discarded.
+- Multiple definitions with the same `id`: last definition wins; earlier ones are discarded. This is intentional: a host document can override any definition from a transcluded fragment by placing its own definition after the include point. First-wins would make override order depend on fragment inclusion order, which is unpredictable.
 - Cutdown does not validate that every `[^id]` link has a matching definition.
 
 ```

@@ -8,6 +8,8 @@ Multiple consecutive blank lines are treated as a single blank line.
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is a candidate block, then classified by its first line.
 
+**Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a thematic break, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
+
 Comments (§8.3) are stripped before any other processing.
 
 ### 8.2 Leading and Trailing Whitespace

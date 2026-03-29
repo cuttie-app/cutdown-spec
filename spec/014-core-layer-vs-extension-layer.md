@@ -22,7 +22,6 @@ The core layer defines structural primitives usable by any consumer, not just Cu
 | Inline Code | §10.5 |
 | Text Break | §10.6 |
 | Links, Inline Images | §10.7, §10.9 |
-| User Mention | §10.8 |
 | Named Span | §10.10 |
 | Inline Math Formula | §10.11 |
 | Variable | §10.12 |
@@ -36,9 +35,10 @@ The extension layer defines Cutdown nodes that are optional for consumers other 
 
 Extension parsing behavior is controlled by explicit parser profiles per `policies/parser-profile-policy.md`.
 
-| Construct | Section | AST Node |
-|-----------|---------|----------|
-| Task Items | §9.7.4 | `TaskItem` |
+| Construct | Section | Spec | AST Node |
+|-----------|---------|------|----------|
+| Task Items | §9.7.4 | [`extensions/task-item/SPEC.md`](../extensions/task-item/SPEC.md) | `TaskItem` |
+| User Mention | §10.8 | [`extensions/mention/SPEC.md`](../extensions/mention/SPEC.md) | `Mention` |
 
 
 ### 14.3 Out of Scope
@@ -53,5 +53,7 @@ The following constructs are explicitly NOT part of Cutdown:
 - Indented code blocks
 - Lazy blockquote continuation
 - Setext-style headings
+- ATX-style headings (`# Heading`) — `#` is the Cutdown comment marker (§8.3); a line beginning with `#` produces no AST node. Migration tools MUST convert `# H` → `= H`, `## H` → `== H`, etc.
+- Single-backtick inline code (`` `code` ``) — single backtick is always literal text in Cutdown; double backtick (` ``code`` `) is required. Migration tools MUST convert single-backtick spans.
 
 ---

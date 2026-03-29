@@ -60,6 +60,22 @@ Conformance tests must assert:
 - expected diagnostic codes and levels,
 - expected recovery mode for malformed cases.
 
+## Silent-Drop Warning Cases
+
+The following spec-defined recovery behaviors MUST emit a `warning`-level diagnostic. See the Diagnostic Code Registry for full trigger/recovery definitions.
+
+| Situation | Code | Recovery |
+|---|---|---|
+| Unclosed CodeBlock fence (` ``` `) | CDN-0001 | Content runs to end of document |
+| Unclosed MetaBlock fence (`~~~`) | CDN-0002 | Content runs to end of document |
+| Unclosed MathBlock fence (`$$$`) | CDN-0003 | Content runs to end of document |
+| Unclosed NamedBlock (`:::name`) | CDN-0004 | Content runs to end of document |
+| ThematicBreak text content dropped | CDN-0010 | Text between `---` and optional `{attrs}` is discarded |
+| Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
+| Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |
+
+Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.
+
 ## Decision Record (Q14)
 
 - Q14.1: Parser exposes structured diagnostics with levels.

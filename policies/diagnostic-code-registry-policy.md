@@ -6,6 +6,7 @@ Scope: Governance of stable diagnostic code IDs and lifecycle
 Related:
   - `./diagnostics-policy.md`
   - `./versioning-policy.md`
+  - `./diagnostic-code-registry.md`
 ---
 
 # Cutdown Diagnostic Code Registry Policy

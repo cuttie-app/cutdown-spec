@@ -1,7 +1,7 @@
 # Cutdown Markup Language Specification
 
 - **Status:** Draft
-- **Version:** 0.1.4
+- **Version:** 0.1.5
 - **Date:** 2026-03-29
 - **Inspired by:** Djot, CommonMark
 - **Versioning policy:** [`policies/versioning-policy.md`](policies/versioning-policy.md)
@@ -10,6 +10,7 @@
 - **Parser profile policy:** [`policies/parser-profile-policy.md`](policies/parser-profile-policy.md)
 - **Diagnostics policy:** [`policies/diagnostics-policy.md`](policies/diagnostics-policy.md)
 - **Diagnostic code registry policy:** [`policies/diagnostic-code-registry-policy.md`](policies/diagnostic-code-registry-policy.md)
+- **Diagnostic code registry:** [`policies/diagnostic-code-registry.md`](policies/diagnostic-code-registry.md)
 - **Capability policy:** [`policies/capability-policy.md`](policies/capability-policy.md)
 - **Canonical serialization policy:** [`policies/canonical-serialization-policy.md`](policies/canonical-serialization-policy.md)
 - **Compatibility fallback policy:** [`policies/compatibility-fallback-policy.md`](policies/compatibility-fallback-policy.md)
@@ -84,5 +85,12 @@ Cutdown prioritizes **unambiguous parsing**, **consistency**, and **implementabi
 15. [AST Node Reference](#15-ast-node-reference)
 16. [Special Character Reference](#16-special-character-reference)
 17. [Name and Compliance](#17-name-and-compliance)
+
+### Extensions
+
+| Extension | Spec |
+|-----------|------|
+| Task Items | [`extensions/task-item/SPEC.md`](../extensions/task-item/SPEC.md) |
+| User Mention | [`extensions/mention/SPEC.md`](../extensions/mention/SPEC.md) |
 
 ---

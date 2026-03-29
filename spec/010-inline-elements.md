@@ -189,18 +189,15 @@ Special links may carry attributes: `[text][#tag] {.highlight}`.
 
 ### 10.8 User Mention
 
-**Syntax:** `@handle`
+**Extension.** Full specification: [`extensions/mention/SPEC.md`](../extensions/mention/SPEC.md)
 
-- `@` followed by one or more characters matching `[\w._-]`.
-- Mention parsing is available in any inline context.
-- Cutdown performs no user/account validation.
-- If `@` is not followed by a valid handle character, `@` is emitted as literal text.
+- `@` followed by one or more characters matching `[A-Za-z0-9_.-]` (ASCII only).
+- If `@` is not followed by a valid handle character, `@` is emitted as literal `Text("@")`.
+- Cutdown performs no user/account validation. Resolution is the consumer's responsibility.
 
 ```
 AST: Mention { value: string, attributes: Attributes }
 ```
-
-This is a core inline element.
 
 ---
 

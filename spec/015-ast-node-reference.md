@@ -12,9 +12,9 @@
 | `CodeBlock` | `language: string = "text", content: string, attributes` |
 | `Meta` | `format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
 | `QuoteBlock` | `children: Block[], attributes` |
-| `List` | `ordered: bool, start: int\|null, loose: bool, children: ListItem[], attributes` |
+| `List` | `ordered: bool, start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
 | `ListItem` | `children: (Block\|Inline)[], attributes` |
-| `TaskItem` | `checked: bool, children: Inline[], attributes` |
+| `TaskItem` _(extension)_ | `checked: bool, children: (Block\|Inline)[], attributes` |
 | `Table` | `kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], attributes` |
 | `Row` | `children: Cell[], attributes` |
 | `Cell` | `children: Inline[], row: number, column: number` |
@@ -41,8 +41,7 @@
 | `Span` | `name: string, attributes, children: []` |
 | `MathInline` | `formula: string, attributes` |
 | `Variable` | `key: string, attributes` |
-| `Mention` | `value: string, attributes` |
-| `QuoteInline` | `kind: "double"\|"single", children: Inline[], attributes` |
+| `Mention` _(extension)_ | `value: string, attributes` |
 | `QuoteInline` | `kind: "double"\|"single", children: Inline[], attributes` |
 
 ### Renamed Fields (v0.1.2 → v0.1.3)
