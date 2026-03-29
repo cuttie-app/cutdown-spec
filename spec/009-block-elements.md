@@ -111,7 +111,7 @@ content
 ````
 
 - Opening fence: ` ``` ` optionally followed by a language identifier and/or attributes.
-- Language identifier: `[\w-]+`, optional. Defaults to `"text"` when absent.
+- Language identifier: `[ID_LITERAL]+` (see §1), optional. Defaults to `"text"` when absent.
 - Attributes: optional, follow standard attribute syntax (§5).
 - Content: literal — no inline parsing is performed inside a code block.
 - Closing fence: ` ``` ` on its own line.
@@ -215,7 +215,9 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 
 #### 9.7.3 Tight vs Loose
 
-A list is **loose** if any of its items are separated by blank lines. A loose list sets `loose: true` on the `List` node. Consumers use this flag to determine rendering (e.g., wrapping items in paragraphs).
+A list is **loose** if any of its items are separated by blank lines. A loose list sets `loose: true` on the `List` node.
+
+`loose` is an **advisory flag** — it records a structural fact about the source (blank lines were present between items). Consumers MAY use it to influence rendering (e.g. wrapping items in `<p>` tags). Consumers MAY ignore it. The parser does not alter `ListItem` children based on looseness; the flag is purely informational.
 
 Trailing attr lines (lines consisting solely of `{attrs}` with no preceding blank line) are NOT treated as blank lines for loose detection purposes.
 
@@ -459,7 +461,7 @@ A fragment identifier targets a specific section:
 
 - Opening: `:::` followed immediately by a block name, then optional attributes.
 - Closing: `:::` on its own line (no name).
-- Block name: REQUIRED, pattern `[\w-]+`.
+- Block name: REQUIRED, pattern `[ID_LITERAL]+` (see §1).
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document.
 
@@ -511,7 +513,7 @@ AST:
 **Syntax:** `[^id]: inline content`
 
 - MUST start at the beginning of a line.
-- `id` may contain `[\w.-]`.
+- `id` may contain `[ID_LITERAL]+` (see §1). Case-sensitive.
 - Content is parsed as inline content.
 - Multiple definitions with the same `id`: last definition wins; earlier ones are discarded. This is intentional: a host document can override any definition from a transcluded fragment by placing its own definition after the include point. First-wins would make override order depend on fragment inclusion order, which is unpredictable.
 - Cutdown does not validate that every `[^id]` link has a matching definition.

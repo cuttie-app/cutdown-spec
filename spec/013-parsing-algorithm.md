@@ -29,12 +29,12 @@ Each block candidate is classified by its first line:
 | `^---` | ThematicBreak |
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
-| `^:::[\w-]` | NamedBlock |
+| `^:::[ID_LITERAL]` | NamedBlock |
 | `^\|` | Table |
 | `^> ` | QuoteBlock |
 | `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
 | `^[0-9]+\. ` | List (ordered) |
-| `^\[^\w` | RefDefinition |
+| `^\[^[ID_LITERAL]` | RefDefinition |
 | `^\$\$\$` | MathBlock |
 | `^/` | FileRef |
 | `^!\[` | ImageBlock |

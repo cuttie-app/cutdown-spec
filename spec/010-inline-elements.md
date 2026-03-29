@@ -82,7 +82,8 @@ AST: Strikethrough { children: Inline[], attributes: Attributes }
 **Syntax:** ` `` `code` `` `
 
 - Double backtick only. Single backtick is literal text.
-- Content is literal — no inline parsing inside.
+- Content is literal — no inline parsing, no escape processing, no whitespace collapsing inside.
+- A soft break (single `\n`) spanning two lines of a paragraph inside ` `` ` produces a **space** in `value` — the normal paragraph soft-break rule applies. `CodeInline` is an inline element; multi-line code belongs in `CodeBlock` (§9.4).
 - Unmatched ` `` `: emitted as `Text("``")`.
 - Single backtick `` ` `` is always literal text: `Text("`")`.
 - Triple backtick ` ``` ` in inline context: parsed as ` `` ` (opener) + `` ` `` (literal inside).
@@ -96,6 +97,10 @@ AST:    Text("`") + Text("not code") + Text("`")
 
 Input:  ```text```
 AST:    CodeInline { value: "`text" }
+
+Input:  ``test
+        continues``
+AST:    CodeInline { value: "test continues" }   (soft break → space)
 ```
 
 ```
@@ -222,7 +227,7 @@ Note: For block-level image references, see §9.9 (ImageBlock).
 
 **Syntax:** `::name {attrs}`
 
-- `::` followed immediately by a block name (`[\w-]+`), then optional attributes.
+- `::` followed immediately by a span name (`[ID_LITERAL]+`, see §1), then optional attributes.
 - The span is always empty (no children).
 - Serves as a placeholder/hook for consumer post-processing.
 - `::` without a valid name is emitted as literal `Text("::")`.

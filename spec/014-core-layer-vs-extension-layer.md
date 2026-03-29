@@ -46,6 +46,7 @@ Extension parsing behavior is controlled by explicit parser profiles per `polici
 The following constructs are explicitly NOT part of Cutdown:
 
 - Raw HTML tags (`<tag>`) — treated as literal text
+- Raw format passthrough spans/blocks (e.g. Djot's `` `<tag>`{=html} ``) — Cutdown has no rendering target at parse time. Consumers that need format-specific injection MAY define their own attribute convention (e.g. `` ``<tag>`` {html} ``) and post-process `CodeInline` nodes carrying that attribute.
 - Spoilers, hidden blocks, collapsible sections, alerts
 - WikiLinks `[[...]]` — use `[text][page.md]` instead
 - Hashtags `#tag` — consumer concern

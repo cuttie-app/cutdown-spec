@@ -27,7 +27,7 @@ Within any inline block (Emphasis, Strong, Strikethrough, MathInline, QuoteInlin
 | Interior whitespace runs | Collapsed to one space |
 | Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
 
-`CodeInline` is **exempt** — its content is always literal, no whitespace collapsing.
+`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. However, the paragraph-level soft-break rule (single `\n` → space) still applies: a `CodeInline` spanning two lines of a paragraph has the newline replaced with a space in `value`. For multi-line code, use `CodeBlock` (§9.4).
 
 **Examples:**
 

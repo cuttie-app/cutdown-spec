@@ -9,8 +9,11 @@
 Token types inside `{}`:
 - `#identifier` — sets the `id` attribute. Only one `id` is valid; if multiple are present, last wins.
 - `.classname` — appends to the `class` list. Multiple allowed.
-- `key=value` — arbitrary key/value. Unquoted value: no spaces. Quoted value: spaces allowed.
+- `key=value` — key/value pair. Unquoted value: no spaces. Quoted value: spaces allowed.
+- `key` (bare, no `=`) — flag token. Stored as `{ key: "key", value: "" }` in `entries`. Signals a semantic hint with no associated value.
 - Token order inside `{}` is free.
+
+> **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
 
 ### 5.2 Placement
 

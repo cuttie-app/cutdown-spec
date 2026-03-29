@@ -60,7 +60,7 @@
 Attributes {
   id:      string | null,
   class:   string[],
-  entries: { key: string, value: string }[]
+  entries: { key: string, value: string }[]   // value: "" for bare-key tokens
 }
 ```
 
