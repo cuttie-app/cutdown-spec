@@ -13,8 +13,6 @@ Related:
 - `./compliance-levels-policy.md`
 - `./compliance-evidence-freshness-policy.md`
 - `./compliance-failure-response-policy.md`
-- `./extension-promotion-policy.md`
-- `./extensions-registry-policy.md`
 - `./cross-implementation-validation-policy.md`
 - `./reference-parser-status-policy.md`
 ---
@@ -49,8 +47,7 @@ The conformance corpus must include:
 - Expected diagnostics (code + level) for malformed/recovery cases.
 - Canonical serialized output snapshots for selected cases.
 - Compatibility fallback cases for unsupported profile/version constructs.
-- Experimental flag-on and flag-off behavior cases.
-- External-config precedence over in-source profile/flag hints.
+- External-config precedence over in-source profile hints.
 - Precedence and escape interaction cases.
 - Cross-feature interaction cases for neighboring precedence tiers.
 

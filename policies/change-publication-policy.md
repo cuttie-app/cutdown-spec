@@ -4,7 +4,6 @@ Status: Active
 Owner: Language
 Scope: Process for publishing and activating language changes
 Related:
-- `./extensions-registry-policy.md`
 - `./versioning-policy.md`
 - `./governance-review-policy.md`
 ---

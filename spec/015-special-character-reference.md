@@ -1,4 +1,4 @@
-## 16. Special Character Reference
+## 15. Special Character Reference
 
 | Character | Role | Escapable |
 |-----------|------|-----------|
@@ -21,7 +21,6 @@
 | `/` | File reference (line start) | Yes |
 | `\` | Escape character / hard break | Yes |
 | \|  | Table cell separator | Yes |
-| `@` | User mention prefix | Yes |
 | `^` | Reference link/definition marker | Yes |
 | `$` | Inline math (`$$`) / block math (`$$$`) | Yes |
 | `"` | Inline quote delimiter (`""`) | Yes |

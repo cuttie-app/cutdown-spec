@@ -15,13 +15,11 @@
 - **Canonical serialization policy:** [`policies/canonical-serialization-policy.md`](policies/canonical-serialization-policy.md)
 - **Compatibility fallback policy:** [`policies/compatibility-fallback-policy.md`](policies/compatibility-fallback-policy.md)
 - **Conformance corpus governance:** [`policies/conformance-corpus-governance.md`](policies/conformance-corpus-governance.md)
-- **Experimental flags policy:** [`policies/experimental-flags-policy.md`](policies/experimental-flags-policy.md)
 - **Decision authority policy:** [`policies/decision-authority-policy.md`](policies/decision-authority-policy.md)
 - **Profile source policy:** [`policies/profile-source-policy.md`](policies/profile-source-policy.md)
 - **Compliance levels policy:** [`policies/compliance-levels-policy.md`](policies/compliance-levels-policy.md)
 - **Compliance evidence freshness policy:** [`policies/compliance-evidence-freshness-policy.md`](policies/compliance-evidence-freshness-policy.md)
 - **Compliance failure response policy:** [`policies/compliance-failure-response-policy.md`](policies/compliance-failure-response-policy.md)
-- **Extension promotion policy:** [`policies/extension-promotion-policy.md`](policies/extension-promotion-policy.md)
 - **Cross-implementation validation policy:** [`policies/cross-implementation-validation-policy.md`](policies/cross-implementation-validation-policy.md)
 - **Reference parser status policy:** [`policies/reference-parser-status-policy.md`](policies/reference-parser-status-policy.md)
 - **Governance review policy:** [`policies/governance-review-policy.md`](policies/governance-review-policy.md)
@@ -40,33 +38,33 @@ Cutdown is a simple markup language with the bare minimum features to structure 
 
 ## Table of Contents
 
-1. [Conventions](#1-conventions)
-2. [Input Normalization](#2-input-normalization)
-3. [Segments](#3-segments)
-4. [Escaping](#4-escaping)
-5. [Universal Attributes](#5-universal-attributes)
+1. [Conventions](001-conventions.md)
+2. [Input Normalization](002-input-normalization.md)
+3. [Segments](003-segments.md)
+4. [Escaping](004-escaping.md)
+5. [Universal Attributes](005-universal-attributes.md)
    - 5.1 Syntax
    - 5.2 Placement
-6. [Block Interface](#6-block-interface)
-7. [Document Model](#7-document-model)
+6. [Block Interface](006-block-interface.md)
+7. [Document Model](007-document-model.md)
    - 7.4 Pages
-8. [Block Structure](#8-block-structure)
+8. [Block Structure](008-block-structure.md)
    - 8.5 Syntax Primitives
-9. [Block Elements](#9-block-elements)
+9. [Block Elements](009-block-elements.md)
    - 9.1 Headings
    - 9.2 Paragraphs
    - 9.3 Thematic Break
    - 9.4 Code Block
    - 9.5 Meta block (Frontmatter)
    - 9.6 QuoteBlock
-   - 9.7 Lists
+   - 9.7 Lists (Task Items)
    - 9.8 Tables
    - 9.9 File References
    - 9.10 Named Block
    - 9.11 Reference Definition
    - 9.12 Block Math Formula
    - 9.13 Comments
-10. [Inline Elements](#10-inline-elements)
+10. [Inline Elements](010-inline-elements.md)
     - 10.1 Text
     - 10.2 Emphasis
     - 10.3 Strong
@@ -74,25 +72,16 @@ Cutdown is a simple markup language with the bare minimum features to structure 
     - 10.5 Inline Code
     - 10.6 Text Break
     - 10.7 Links
-    - 10.8 User Mention
-    - 10.9 Inline Image
-    - 10.10 Named Span
-    - 10.11 Inline Math Formula
-    - 10.12 Variable
-    - 10.13 Inline Quote
-11. [Precedence Rules](#11-precedence-rules)
-12. [Whitespace Rules](#12-whitespace-rules)
-13. [Parsing Algorithm](#13-parsing-algorithm)
-14. [Core Layer vs Extension Layer](#14-core-layer-vs-extension-layer)
-15. [AST Node Reference](#15-ast-node-reference)
-16. [Special Character Reference](#16-special-character-reference)
-17. [Name and Compliance](#17-name-and-compliance)
-
-### Extensions
-
-| Extension | Spec |
-|-----------|------|
-| Task Items | [`extensions/task-item/SPEC.md`](../extensions/task-item/SPEC.md) |
-| User Mention | [`extensions/mention/SPEC.md`](../extensions/mention/SPEC.md) |
+    - 10.8 Inline Image
+    - 10.9 Named Span
+    - 10.10 Inline Math Formula
+    - 10.11 Variable
+    - 10.12 Inline Quote
+11. [Precedence Rules](011-precedence-rules.md)
+12. [Whitespace Rules](012-whitespace-rules.md)
+13. [Parsing Algorithm](013-parsing-algorithm.md)
+14. [AST Node Reference](014-ast-node-reference.md)
+15. [Special Character Reference](015-special-character-reference.md)
+16. [Name and Compliance](016-name-and-compliance.md)
 
 ---

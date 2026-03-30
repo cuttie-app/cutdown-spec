@@ -5,7 +5,6 @@ Owner: Language
 Scope: Final decision authority and dispute resolution for language governance
 Related:
   - `./changes-gate.md`
-  - `./extensions-registry-policy.md`
 ---
 
 # Cutdown Decision Authority Policy

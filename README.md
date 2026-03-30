@@ -105,7 +105,7 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 
 | Path | Contents |
 |---|---|
-| [`spec/`](spec/) | Language specification §1–§17 |
+| [`spec/`](spec/) | Language specification §1–§16 |
 | [`grammar/`](grammar/) | Formal PEG grammar and semantic pass rules |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`extensions/`](extensions/) | Extension specs (task-item, mention) |

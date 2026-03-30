@@ -1,4 +1,4 @@
-## 15. AST Node Reference
+## 14. AST Node Reference
 
 ### Block Nodes
 
@@ -14,7 +14,7 @@
 | `QuoteBlock` | `children: Block[], attributes` |
 | `List` | `ordered: bool, start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
 | `ListItem` | `children: (Block\|Inline)[], attributes` |
-| `TaskItem` _(extension)_ | `checked: bool, children: (Block\|Inline)[], attributes` |
+| `TaskItem` | `checked: bool, children: (Block\|Inline)[], attributes` |
 | `Table` | `kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], attributes` |
 | `Row` | `children: Cell[], attributes` |
 | `Cell` | `children: Inline[], row: number, column: number` |
@@ -41,7 +41,6 @@
 | `Span` | `name: string, attributes, children: []` |
 | `MathInline` | `formula: string, attributes` |
 | `Variable` | `key: string, attributes` |
-| `Mention` _(extension)_ | `value: string, attributes` |
 | `QuoteInline` | `kind: "double"\|"single", children: Inline[], attributes` |
 
 ### Renamed Fields (v0.1.2 → v0.1.3)

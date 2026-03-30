@@ -11,7 +11,6 @@ related:
 - `./canonical-serialization-policy.md`
 - `./compatibility-fallback-policy.md`
 - `./conformance-corpus-governance.md`
-- `./experimental-flags-policy.md`
 - `./decision-authority-policy.md`
 - `./profile-source-policy.md`
 - `./compliance-levels-policy.md`
@@ -19,7 +18,6 @@ related:
 - `./compliance-failure-response-policy.md`
 - `./diagnostic-code-registry-policy.md`
 - `./change-publication-policy.md`
-- `./extension-promotion-policy.md`
 - `./cross-implementation-validation-policy.md`
 - `./reference-parser-status-policy.md`
 - `./governance-review-policy.md`
@@ -68,8 +66,7 @@ Every Cutdown proposal MUST include all of the following:
    - Add/updated conformance test vectors for happy path, malformed input, escape behavior, and precedence-neighbor interaction.
    - Confirm spec text and tests are aligned per `./conformance-policy.md`.
 7. Profile behavior declaration
-   - State whether behavior is core or extension-gated profile behavior.
-   - If extension-gated, define enabled-profile output and disabled-profile fallback per `./parser-profile-policy.md`.
+   - State whether behavior requires a specific parser profile configuration per `./parser-profile-policy.md`.
 8. Diagnostics impact declaration
    - Declare whether new/changed diagnostic codes are introduced.
    - Define severity level and deterministic recovery behavior per `./diagnostics-policy.md`.
@@ -85,37 +82,31 @@ Every Cutdown proposal MUST include all of the following:
 12. Corpus evolution declaration
    - Classify conformance corpus changes as additive/fix/breaking.
    - Provide rationale and version-impact mapping per `./conformance-corpus-governance.md`.
-13. Experimental flag declaration
-   - If behavior is experimental, define explicit flag name and default-off behavior per `./experimental-flags-policy.md`.
-   - Provide flag-on/flag-off conformance coverage.
-14. Profile source declaration
+13. Profile source declaration
    - Confirm whether behavior depends on external profile configuration.
    - If document-embedded hints exist, define non-authoritative handling per `./profile-source-policy.md`.
-15. Compliance-level impact declaration
+14. Compliance-level impact declaration
    - State whether the change affects Level 1/2/3 compliance definitions or evidence expectations.
    - Update claim requirements per `./compliance-levels-policy.md`.
-16. Evidence freshness impact declaration
+15. Evidence freshness impact declaration
    - State whether the change introduces a new revalidation trigger.
    - Confirm version-triggered evidence rules per `./compliance-evidence-freshness-policy.md`.
-17. Compliance failure-response impact declaration
+16. Compliance failure-response impact declaration
    - State whether the change affects downgrade/restoration obligations.
    - Align failure handling requirements per `./compliance-failure-response-policy.md`.
-18. Diagnostic code registry impact declaration
+17. Diagnostic code registry impact declaration
    - State whether new/deprecated/removed diagnostic codes are introduced.
    - Update central code lifecycle records per `./diagnostic-code-registry-policy.md`.
-19. Publication lifecycle declaration
+18. Publication lifecycle declaration
    - Assign change lifecycle state (`Draft`/`Accepted`/`Effective`) and target version.
    - Include effective date and migration publication plan per `./change-publication-policy.md`.
-20. Extension promotion declaration
-   - For lifecycle transitions, provide scorecard evidence for promotion gates.
-   - Confirm pass/fail outcomes per `./extension-promotion-policy.md`.
-21. Cross-implementation validation declaration
+19. Cross-implementation validation declaration
    - Confirm required reference-parser validation status.
    - Record optional non-reference implementation results per `./cross-implementation-validation-policy.md`.
-22. Reference-parser alignment declaration
+20. Reference-parser alignment declaration
    - State whether change introduces temporary reference-parser divergence.
    - If divergent, publish non-conformance disclosure and remediation plan per `./reference-parser-status-policy.md`.
-23. Governance-review impact declaration
+21. Governance-review impact declaration
    - State whether policy amendment needs scheduled-cycle routing or emergency path routing.
    - Define follow-up review obligations per `./governance-review-policy.md`.
 

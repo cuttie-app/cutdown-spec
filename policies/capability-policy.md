@@ -2,9 +2,8 @@
 title: Cutdown Capability Policy
 Status: Active
 Owner: Language
-Scope: Capability governance for extensions that may touch external systems
+Scope: Capability governance for constructs that may touch external systems
 Related:
-  - `./extensions-registry-policy.md`
   - `./parser-profile-policy.md`
 ---
 

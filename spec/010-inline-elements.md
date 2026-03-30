@@ -192,21 +192,7 @@ Special links may carry attributes: `[text][#tag] {.highlight}`.
 
 ---
 
-### 10.8 User Mention
-
-**Extension.** Full specification: [`extensions/mention/SPEC.md`](../extensions/mention/SPEC.md)
-
-- `@` followed by one or more characters matching `[A-Za-z0-9_.-]` (ASCII only).
-- If `@` is not followed by a valid handle character, `@` is emitted as literal `Text("@")`.
-- Cutdown performs no user/account validation. Resolution is the consumer's responsibility.
-
-```
-AST: Mention { value: string, attributes: Attributes }
-```
-
----
-
-### 10.9 Inline Image
+### 10.8 Inline Image
 
 **Syntax:** `![alt](src){attrs}`
 
@@ -223,7 +209,7 @@ Note: For block-level image references, see §9.9 (ImageBlock).
 
 ---
 
-### 10.10 Named Span
+### 10.9 Named Span
 
 **Syntax:** `::name {attrs}`
 
@@ -246,7 +232,7 @@ Hello ::marker {#here .highlight} world
 
 ---
 
-### 10.11 Inline Math Formula
+### 10.10 Inline Math Formula
 
 **Syntax:** `$$formula$$`
 
@@ -274,7 +260,7 @@ $ not math $               → Text("$ not math $")
 
 ---
 
-### 10.12 Variable
+### 10.11 Variable
 
 **Syntax:** `{{key}}`
 
@@ -295,7 +281,7 @@ AST: Variable { key: string, attributes: Attributes }
 
 ---
 
-### 10.13 Inline Quote
+### 10.12 Inline Quote
 
 **Syntax:**
 - `"" content "" {attrs}` — double-quote style

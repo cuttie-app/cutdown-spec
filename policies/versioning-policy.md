@@ -2,10 +2,9 @@
 title: Cutdown Versioning Policy
 Status: Active
 Owner: Language
-Scope: Cutdown grammar, parser behavior, AST contract, and extension lifecycle
+Scope: Cutdown grammar, parser behavior, and AST contract
 Related:
   - `./change-gate.markdown`
-  - `./extensions-registry-policy.md`
   - `./change-publication-policy.md`
 ---
 

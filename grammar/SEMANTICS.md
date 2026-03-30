@@ -18,7 +18,7 @@ related:
 characters are valid Cutdown input and produces a **Concrete Syntax Tree (CST)**.
 
 This document defines the **semantic passes** that transform the CST into the
-final **AST** described in §15 of the spec.
+final **AST** described in §14 of the spec.
 
 Passes are applied in the order listed below. Each pass is a deterministic
 tree-rewriting operation.

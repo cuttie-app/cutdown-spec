@@ -221,19 +221,70 @@ A list is **loose** if any of its items are separated by blank lines. A loose li
 
 Trailing attr lines (lines consisting solely of `{attrs}` with no preceding blank line) are NOT treated as blank lines for loose detection purposes.
 
-#### 9.7.4 Task Items (Extension Layer)
+#### 9.7.4 Task Items
 
-**Extension.** Full specification: [`extensions/task-item/SPEC.md`](../extensions/task-item/SPEC.md)
+Task items are unordered list items prefixed with a checkbox marker. They emit `TaskItem` nodes carrying a `checked` boolean.
 
-Task items are unordered list items with a checkbox prefix (`- [ ]` / `- [x]`). They emit `TaskItem` nodes carrying a `checked` boolean. A `List` may contain a mix of `ListItem` and `TaskItem` children.
+**Syntax:**
+
+```
+- [ ] Unchecked task
+- [x] Checked task
+- [X] Also checked
+```
+
+- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]` (checked), then a space and inline content.
+- Only unordered list items may carry a checkbox. An ordered list item never produces a `TaskItem`.
+- A `List` may contain a mix of `ListItem` and `TaskItem` children.
+- `TaskItem` follows the same multiline and block-promotion rules as `ListItem` (§9.7.5).
 
 ```
 AST: TaskItem { checked: bool, children: (Block | Inline)[], attributes: Attributes }
 ```
 
-`TaskItem` follows the same multiline and block-promotion rules as `ListItem` (§9.7.5). A `List` may contain a mix of `ListItem` and `TaskItem` children.
+**Example:**
 
-Regular list items: `ListItem { children: (Block | Inline)[], attributes: Attributes }`
+```
+Input:
+  - [ ] Buy milk
+  - [x] Write spec
+  - plain item
+
+AST:
+  List { ordered: false, loose: false }
+  ├── TaskItem { checked: false, children: [Text("Buy milk")] }
+  ├── TaskItem { checked: true,  children: [Text("Write spec")] }
+  └── ListItem { children: [Text("plain item")] }
+```
+
+**Mixed-type list rules:**
+
+A single `List` node may mix `ListItem`, `TaskItem`, and numeric markers. The first item's marker determines `List.ordered`:
+
+- If the first item is a `TaskItem` or unordered marker → `ordered: false`.
+- If the first item is a numeric marker → `ordered: true`.
+
+`TaskItem` identity is always preserved regardless of `List.ordered`.
+
+When a `TaskItem` is first (list is unordered), any subsequent numeric markers are treated as unordered items and emit plain `ListItem` nodes.
+
+```
+Example A — numeric first, task item second:
+  1. First ordered item
+  - [ ] Task item
+
+  AST: List { ordered: true }
+  ├── ListItem { children: [Text("First ordered item")] }
+  └── TaskItem { checked: false, children: [Text("Task item")] }
+
+Example B — task first, numeric second:
+  - [ ] Task item first
+  1. Numeric becomes unordered
+
+  AST: List { ordered: false }
+  ├── TaskItem { checked: false, children: [Text("Task item first")] }
+  └── ListItem { children: [Text("Numeric becomes unordered")] }
+```
 
 #### 9.7.5 Multiline List Items
 

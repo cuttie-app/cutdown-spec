@@ -20,6 +20,6 @@ abstract Inline
   - Most inline nodes carry `attributes: Attributes`
 ```
 
-Note: Individual node definitions in §16 (AST Node Reference) list all fields explicitly. The abstract interfaces above describe the pattern only.
+Note: Individual node definitions in §14 (AST Node Reference) list all fields explicitly. The abstract interfaces above describe the pattern only.
 
 ---
