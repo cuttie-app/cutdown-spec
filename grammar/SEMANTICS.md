@@ -1,7 +1,7 @@
 ---
 title: Cutdown Semantic Pass Specification
 status: Active
-version: 0.2.0
+version: 0.2.1
 scope: CST → AST transformation rules applied after PEG recognition
 related:
   - GRAMMAR.peg
