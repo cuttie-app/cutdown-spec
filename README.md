@@ -1,8 +1,8 @@
 # Cutdown
 
-Most markup languages are designed for HTML. Cutdown is designed for apps — it produces a structured AST that your application interprets and renders.
+You write structure. You write content.
 
-No HTML output. No rendering opinions. Just a clean, predictable tree.
+*Cutdown* derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — headings, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
 
 ---
 
@@ -27,16 +27,61 @@ No HTML output. No rendering opinions. Just a clean, predictable tree.
 
 ## Why Cutdown
 
-- **AST-only** — your app owns the rendering. No canonical HTML output exists.
-- **Unambiguous parsing** — exactly one valid parse for any input. No context-sensitive rules, no surprise behavior.
-- **Content before presentation** — Cutdown encodes structure. Style is your app's concern at render time.
-- **Semantic attributes** — `{banner}` is a hint to your app, not an HTML attribute. You decide what it means.
+**Plain text separated by a blank line is a paragraph.**
+
+That single rule is what made Markdown worth learning. No extra syntax. No delimiters. No toolbar. Two blocks of text separated by a double Enter are structurally paragraphs — you think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
+
+**`#` for author comments.**
+
+Finally, markup has a legal way to place a comment — a part of the source that is stripped from rendering. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
+
+The syntax is aligned with YAML — the format used for frontmatter on the same page — and with C++, PHP, Perl, and most other programming languages. Comment-with-`#` is common practice everywhere except Markdown. That gap is now closed.
+
+**`=` instead of `#` for headings.**
+
+With `#` doing something useful elsewhere, a different heading marker was needed. `=` was chosen — and it was a considered choice.
+
+Why does a non-US keyboard matter here? Heading markers appear in the overwhelming majority of documents. If a writer on a French, German, Italian, or UK English keyboard cannot reach the heading character as a single keypress, that is a friction point in every document they write. The octothorpe ended up as a heading marker by accident — it was picked, it stuck, and use became tradition. That accident is worth correcting.
+
+AsciiDoc, Typst uses the same convention: `= Document Title`, `== Section`. It is not without precedent. `=` is unambiguous, carries no meaning in prose or code, and is reachable from every keyboard. The count encodes the depth: `=` is level one, `==` is level two. Consistent everywhere.
+
+**Doubled delimiters only. Single characters are text.**
+
+Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~strikethrough~~`, `$$math$$`. Single characters are always literal text — no exceptions, no flanking rules.
+
+Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
+
+**What you type is what is stored.**
+
+Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation happens in the renderer — configured by locale, applied consistently. In source, your text is exactly what you typed.
+
+This matters in practice. A content pipeline handling technical documentation, pricing, or any mix of prose and code needs predictable literal characters. Silent substitution is a class of bugs that appears only at render time, varies by parser, and is hard to trace back to source.
+
+**Angle brackets are ordinary text.**
+
+`<em>` in a Cutdown document is literal text — not a tag, not an escape hatch. Angle brackets carry no special meaning. This is a deliberate break from Markdown, where raw HTML passes through to output by default. That passthrough is a known XSS vector: any pipeline accepting user-written Markdown and rendering it to HTML must add a separate sanitizer. Every tool handles this differently, producing inconsistent behavior and a security surface that belongs to the language, not the application.
+
+In Cutdown there is nothing to sanitize. The injection surface does not exist.
+
+**Frontmatter belongs where you put it.**
+
+In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, licence notice, or authored content. In Cutdown, a Meta block can appear anywhere on a page. Multiple Meta blocks are valid on the same page.
+
+This is not a feature designed for everyday use. It follows naturally from the language design, and it brings its own benefits: placing a comment or licence notice before frontmatter is a legal and ordinary thing to do. See the [spec](spec/TOC.md) for details.
+
+---
+
+If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. Cutdown's formal grammar and 87-test conformance corpus mean a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation, no post-processing sanitizers.
+
+What Cutdown cannot yet promise: no parser implementation exists, and the spec is pre-1.0. If your workflow needs a production-ready tool today, the honest answer is that Cutdown is not there yet. If you are building a new content pipeline and want to start on a better foundation, the spec, grammar, and conformance corpus are complete enough to build from.
+
+---
 
 ## What Cutdown doesn't do
 
-- **No typography substitution** — straight quotes, dashes, and ellipses are never silently altered.
-- **No raw HTML** — `<tag>` is literal `Text("<tag>")`. No HTML leaks into the AST.
-- **No kitchen sink** — bare minimum features to structure content. Not a Markdown replacement.
+**No kitchen sink.**
+
+Cutdown has headings, paragraphs, lists, tables, quotes, code, links, images, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools. Extensions exist for application-specific constructs. The core is deliberately narrow.
 
 ---
 
@@ -50,7 +95,7 @@ No HTML output. No rendering opinions. Just a clean, predictable tree.
 Some paragraph with ~~struck~~ text and a [link](https://example.com).
 
 :::callout {.warning}
-Watch out.
+  Watch out.
 :::
 ```
 
@@ -107,6 +152,18 @@ There is no official MIME type. `text/x-cutdown` may be used informally.
 | [`grammar/SEMANTICS.md`](grammar/SEMANTICS.md) | CST → AST transformation passes |
 | [`tests/`](tests/) | 87 conformance tests (golden YAML, all CDN codes) |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference |
+
+---
+
+## For Contributors
+
+[See `CONTRIBUTION.md`](CONTRIBUTION.md)
+
+---
+
+## Acknowledgements
+
+*Inspired by [CommonMark](https://commonmark.org) and [Djot](https://djot.net).*
 
 ---
 
