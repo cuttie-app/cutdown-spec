@@ -12,7 +12,8 @@ Cutdown is a markup language that produces an AST. There is no HTML output. The 
 
 ## Input
 
-- UTF-8 only. BOM stripped. Null bytes replaced with U+FFFD.
+- UTF-8 only. NFC normalization recommended.
+- BOM stripped. Null bytes replaced with U+FFFD.
 - Line endings normalized to `\n`. Tabs → single space (except inside fences).
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
