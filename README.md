@@ -127,7 +127,7 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 
 ## Spec status
 
-**Version:** 0.2.2 · **Status:** Draft
+**Version:** 0.3.0 · **Status:** Draft
 
 The spec is under active development. Breaking changes may occur before 1.0.0.
 
