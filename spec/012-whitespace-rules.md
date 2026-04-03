@@ -4,14 +4,15 @@
 |-----------|------|
 | Line endings | Normalized to `\n` before parsing |
 | Encoding | UTF-8 required |
-| Trailing spaces | Always ignored |
+| Trailing spaces | Ignored, **except**: a single trailing space immediately before a soft break is preserved — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator |
 | Leading spaces on block line | Stripped before block classification |
+| Leading spaces on paragraph continuation line | Stripped before inline parsing |
 | Multiple blank lines | Treated as a single blank line |
 | Tabs outside fenced blocks | Normalized to a single space before block classification |
 | Tabs inside code/metadata/math fences | Preserved literally |
 | Blank lines inside code fence | Preserved literally in `content` string |
 | Blank lines inside metadata fence | Passed through in `raw` string |
-| Soft break (single newline in paragraph) | Produces a space; no AST node |
+| Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST node; lines concatenate directly |
 | Hard break (`\` at line end) | Produces `TextBreak` node |
 
 ### 12.2 Inline Block Whitespace
@@ -27,7 +28,7 @@ Within any inline block (Emphasis, Strong, Strikethrough, MathInline, QuoteInlin
 | Interior whitespace runs | Collapsed to one space |
 | Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
 
-`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. However, the paragraph-level soft-break rule (single `\n` → space) still applies: a `CodeInline` spanning two lines of a paragraph has the newline replaced with a space in `value`. For multi-line code, use `CodeBlock` (§9.4).
+`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. The paragraph-level soft-break rule (single `\n` → zero) also applies: a `CodeInline` spanning two lines of a paragraph has the newline removed with no replacement in `value`. For multi-line code, use `CodeBlock` (§9.4).
 
 **Examples:**
 

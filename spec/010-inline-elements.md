@@ -79,14 +79,14 @@ AST: Strikethrough { children: Inline[], attributes: Attributes }
 
 ### 10.5 Inline Code
 
-**Syntax:** ` `` `code` `` `
+**Syntax:**  \`\` \`code\` \`\` 
 
 - Double backtick only. Single backtick is literal text.
 - Content is literal — no inline parsing, no escape processing, no whitespace collapsing inside.
-- A soft break (single `\n`) spanning two lines of a paragraph inside ` `` ` produces a **space** in `value` — the normal paragraph soft-break rule applies. `CodeInline` is an inline element; multi-line code belongs in `CodeBlock` (§9.4).
-- Unmatched ` `` `: emitted as `Text("``")`.
+- A soft break (single `\n`) spanning two lines of a paragraph inside \`\` is folded to zero — the newline is removed with no replacement in `value`. `CodeInline` is an inline element; multi-line code belongs in `CodeBlock` (§9.4).
+- Unmatched \`\`: emitted as `Text("``")`.
 - Single backtick `` ` `` is always literal text: `Text("`")`.
-- Triple backtick ` ``` ` in inline context: parsed as ` `` ` (opener) + `` ` `` (literal inside).
+- Triple backtick \`\`\` in inline context: parsed as \`\` (opener) + \` (literal inside).
 
 ```
 Input:  ``code``
@@ -100,7 +100,7 @@ AST:    CodeInline { value: "`text" }
 
 Input:  ``test
         continues``
-AST:    CodeInline { value: "test continues" }   (soft break → space)
+AST:    CodeInline { value: "testcontinues" }   (soft break → zero)
 ```
 
 ```
@@ -115,13 +115,21 @@ AST: CodeInline { value: string, attributes: Attributes }
 
 - The `\` and the following newline are consumed.
 - Inline parsing continues on the next line.
-- Trailing spaces before `\` are ignored (the `\` must be the last non-whitespace character... wait — trailing spaces are stripped, so `\` at line end after space-stripping counts).
+- `\` must be the last non-whitespace character on the line (trailing spaces are stripped before this check).
 
 ```
 AST: TextBreak
 ```
 
-A soft break (newline without `\`) produces a space and no AST node.
+**Line-ending summary:**
+
+| Line ending | Result |
+|---|---|
+| `word\n` | Soft break — folded to zero; `word` concatenated directly to next line |
+| `word \n` | Trailing space preserved — `Text("word ")` emitted; explicit word boundary |
+| `word\\n` | `TextBreak` node — explicit rendered line break |
+
+The trailing-space model applies uniformly inside inline blocks (Emphasis, Strong, QuoteInline, etc.) as well as in plain paragraph text.
 
 ---
 

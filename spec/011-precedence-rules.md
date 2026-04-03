@@ -7,7 +7,7 @@ When multiple constructs compete for the same input, the following priority appl
 | 1 | Code fence ` ``` ` | Content always literal |
 | 2 | Metadata fence `~~~` | Content always literal |
 | 3 | MathBlock `$$$` | Content always literal |
-| 4 | Inline code ` `` ` `CodeInline` | Content literal |
+| 4 | Inline code \`\` `CodeInline` | Content literal |
 | 5 | Escape `\x` | Resolved before delimiter matching |
 | 6 | Links and images `[...](...)`  | Matched before emphasis runs |
 | 7 | Inline math `$$` | Matched before emphasis; content is literal |

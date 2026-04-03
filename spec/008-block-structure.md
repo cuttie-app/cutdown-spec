@@ -80,7 +80,7 @@ When N identical characters appear at an inline position, the following rules ap
 | `_` | literal | `Strong` open/close | `__` + `_` literal | `Strong([])` empty | `Strong([])` + `_` literal |
 | `"` | literal | `QuoteInline(double)` open/close | `""` + `"` literal | `QuoteInline([])` empty | `QuoteInline([])` + `"` literal |
 | `'` | literal | `QuoteInline(single)` open/close | `''` + `'` literal | `QuoteInline([])` empty | `QuoteInline([])` + `'` literal |
-| `` ` `` | literal | `CodeInline` open/close | ` `` ` + `` ` `` literal¹ | `CodeInline("")` empty | `CodeInline("`")` |
+| \` | literal | `CodeInline` open/close | \`\` + \` literal¹ | `CodeInline("")` empty | `CodeInline("\`")` |
 | `~` | literal | `Strikethrough` open/close | `~~` + `~` literal¹ | `Strikethrough([])` empty | `Strikethrough([])` + `~` literal |
 | `$` | literal | `MathInline` open/close | `$$` + `$` literal¹ | `MathInline("")` empty | `MathInline("$")` |
 
@@ -107,7 +107,7 @@ Known collisions:
 |----------|-----------|
 | `~~~` at inline position | `~~` (Strikethrough opener) + `~` (literal) |
 | `$$$` at inline position | `$$` (MathInline opener) + `$` (literal) |
-| ` ``` ` at inline position | ` `` ` (CodeInline opener) + `` ` `` (literal inside) |
+| \`\`\` at inline position | \`\` (CodeInline opener) + \` (literal inside) |
 | `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
 | `---` non-line-start | literal text (ThematicBreak only classified at line start) |

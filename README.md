@@ -63,11 +63,23 @@ This matters in practice. A content pipeline handling technical documentation, p
 
 In Cutdown there is nothing to sanitize. The injection surface does not exist.
 
+**A newline inside a paragraph is nothing.**
+
+In HTML, a bare newline in source is collapsed to a space — `word\nword` renders as `word word`. Markdown inherits this: a single line break inside a paragraph is folded to a space. The reasoning is that authors wrap long lines at 80 characters for readability, so the parser quietly joins those lines with a space.
+
+Cutdown folds the newline to zero instead. `word\nword` produces `wordword` — the lines concatenate directly, no character inserted.
+
+Why this matters: in CJK writing (Chinese, Japanese, Korean), characters carry their own spacing. A line break between two CJK characters that adds an ASCII space corrupts the text — `こんにちは\n世界` should render as `こんにちは世界`, not `こんにちは 世界`. With HTML/Markdown's NL→space rule, CJK authors must write their entire paragraph on a single line or use special tooling to strip injected spaces. The rule was designed for Western prose and silently breaks East Asian text.
+
+With NL→zero, CJK prose wraps freely at any character. Western prose retains word boundaries because words end with a space before the line break — `word \nword` preserves the trailing space as a `Text(" ")` node, giving `word word`. The author controls the boundary explicitly. Consumer editors can help by inserting a trailing space automatically when Enter is pressed.
+
+The rule is uniform: it applies inside inline spans (Emphasis, Strong, etc.) as well as plain paragraph text. Leading spaces on continuation lines are stripped before inline parsing to prevent mid-word space artifacts.
+
 **Frontmatter belongs where you put it.**
 
-In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, licence notice, or authored content. In Cutdown, a Meta block can appear anywhere on a document. Multiple Meta blocks are valid on the same document.
+In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, license notice, or authored content. In Cutdown, a Meta block can appear anywhere on a document. Multiple Meta blocks are valid on the same document.
 
-This is not a feature designed for everyday use. It follows naturally from the language design, and it brings its own benefits: placing a comment or licence notice before frontmatter is a legal and ordinary thing to do. See the [spec](spec/TOC.md) for details.
+This is not a feature designed for everyday use. It follows naturally from the language design, and it brings its own benefits: placing a comment or license notice before frontmatter is a legal and ordinary thing to do. See the [spec](spec/TOC.md) for details.
 
 ---
 

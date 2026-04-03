@@ -59,21 +59,31 @@ The heading node is consumed into its enclosing `Section` node. Consumers receiv
 
 A paragraph is a contiguous sequence of non-blank lines that do not match any other block construct. Once a paragraph has begun, no block element can interrupt it — the paragraph continues until a blank line is encountered (see §8.1).
 
-Inline content of all lines is parsed and concatenated. A single newline between lines is treated as a soft break — it becomes a space in the AST (no node emitted).
+Inline content of all lines is parsed and concatenated. A single newline between lines is a **soft break** — it is folded to zero: no character is emitted and no AST node is produced. Lines concatenate directly. Leading spaces on continuation lines are stripped before inline parsing.
+
+To introduce a word boundary across a line break, place a single trailing space before the newline. That space is preserved as `Text(" ")`.
 
 A text break is produced by placing `\` at the end of a line (see §10.6).
 
 ```
-Input:
+Input (default — no separator):
   First line
   second line\
   third line
 
 AST:
   Paragraph
-  ├── Text("First line second line")
+  ├── Text("First linesecond line")
   ├── TextBreak
   └── Text("third line")
+
+Input (trailing space — explicit word boundary):
+  First line 
+  second line
+
+AST:
+  Paragraph
+  └── Text("First line second line")
 ```
 
 ---

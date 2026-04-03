@@ -44,7 +44,7 @@ Each block candidate is classified by its first line:
 
 Inline content is parsed left-to-right within each block that contains inline content. The parser:
 
-1. Scans for openers (`**`, `__`, `~~`, ` `` `, `[`, `![`, `::`, `{{`, `@`, `""`, `''`, `$$`).
+1. Scans for openers (`**`, `__`, `~~`, '\`\`', `[`, `![`, `::`, `{{`, `@`, `""`, `''`, `$$`).
 2. On finding an opener, scans forward for a valid closer.
 3. If no closer found before paragraph/block end: emits opener as `Text` and advances.
 4. Resolves escape sequences `\x` before delimiter matching.
