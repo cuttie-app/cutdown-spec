@@ -22,15 +22,16 @@ Trailing spaces on any line are ignored.
 
 ### 8.3 Comments
 
-A line whose first character is `#` is a **comment line**.
+A line whose first non-whitespace character is `#` is a **comment line**. Leading spaces are stripped before this check (§8.2), so an indented `  # comment` is a comment just as `# comment` is.
 
 ```
 # This is a comment
+  # This is also a comment
 ```
 
 - Comment lines produce no AST node.
 - Comment lines are **invisible** — they are not block separators.
-- `#` appearing anywhere other than the first character of a line is literal text.
+- `#` appearing anywhere other than the first non-whitespace position of a line is literal text.
 - Comment lines are stripped during block boundary analysis (before classification).
 
 ### 8.4 Block Classification

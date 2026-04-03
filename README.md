@@ -118,7 +118,6 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 | Path | Contents |
 |---|---|
 | [`spec/`](spec/) | Language specification §1–§16 |
-| [`grammar/`](grammar/) | Formal PEG grammar and semantic pass rules |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`extensions/`](extensions/) | Extension specs (task-item, mention) |
 | [`policies/`](policies/) | Governance and conformance policies |
@@ -138,7 +137,7 @@ The spec is under active development. Breaking changes may occur before 1.0.0.
 
 No parser implementations exist yet.
 
-The formal grammar ([`grammar/GRAMMAR.peg`](grammar/GRAMMAR.peg)) and semantic rules ([`grammar/SEMANTICS.md`](grammar/SEMANTICS.md)) are the starting point for building one. The conformance corpus ([`tests/`](tests/)) provides 87 golden tests covering all spec sections and all diagnostic codes.
+The spec ([`spec/`](spec/)) and conformance corpus ([`tests/`](tests/)) are the starting point for building one. The corpus provides golden YAML tests covering all spec sections and all diagnostic codes.
 
 ## Tooling
 
@@ -160,9 +159,8 @@ There is no official MIME type. `text/x-cutdown` may be used informally.
 
 | Resource | Description |
 |---|---|
-| [`grammar/GRAMMAR.peg`](grammar/GRAMMAR.peg) | Formal PEG recognition grammar |
-| [`grammar/SEMANTICS.md`](grammar/SEMANTICS.md) | CST → AST transformation passes |
-| [`tests/`](tests/) | 87 conformance tests (golden YAML, all CDN codes) |
+| [`spec/`](spec/) | Language specification §1–§16 |
+| [`tests/`](tests/) | Conformance tests (golden YAML, all CDN codes) |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference |
 
 ---
