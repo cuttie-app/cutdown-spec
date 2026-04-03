@@ -65,7 +65,7 @@ In Cutdown there is nothing to sanitize. The injection surface does not exist.
 
 **Frontmatter belongs where you put it.**
 
-In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, licence notice, or authored content. In Cutdown, a Meta block can appear anywhere on a page. Multiple Meta blocks are valid on the same page.
+In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, licence notice, or authored content. In Cutdown, a Meta block can appear anywhere on a document. Multiple Meta blocks are valid on the same document.
 
 This is not a feature designed for everyday use. It follows naturally from the language design, and it brings its own benefits: placing a comment or licence notice before frontmatter is a legal and ordinary thing to do. See the [spec](spec/TOC.md) for details.
 

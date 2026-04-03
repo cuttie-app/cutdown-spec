@@ -28,11 +28,42 @@ Section {
 
 Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
 
-### 7.2 Headingless Documents
+### 7.2 Sections inside Block Containers
+
+`Section` nodes may appear inside block containers: `ListItem`, `TaskItem`, `QuoteBlock`, and `NamedBlock`. All of these have children typed as `(Section | Block)[]`.
+
+Section scoping inside a block container follows the same level-based open/close logic as at Page level (§13.5), but is **bounded by the container**:
+
+- A Section opened inside a container cannot extend beyond that container's closing boundary.
+- Headings inside a container have no effect on the Section hierarchy outside the container.
+- Section Assembly (§13.5) runs independently on each container's child list.
+
+```
+Input:
+  - intro
+
+    = Inner Section
+
+    paragraph
+
+  - next item
+
+  paragraph after list
+
+AST:
+  List
+  ├── ListItem
+  │   └── Section(level=1, "Inner Section")
+  │       └── Paragraph("paragraph")
+  └── ListItem { Text("next item") }
+  Paragraph("paragraph after list")   ← belongs to outer scope, unaffected
+```
+
+### 7.3 Headingless Documents
 
 A document with no headings is valid. Its root `Document` node contains `Page[]` children. Each Page may contain `Block[]` children directly.
 
-### 7.3 Section Boundary Example
+### 7.4 Section Boundary Example
 
 ```
 Input:
@@ -61,7 +92,7 @@ AST:
   └── Section(level=1, "Next Title")
 ```
 
-### 7.4 Pages
+### 7.5 Pages
 
 Every document has at least one Page. Pages are the top-level children of the Document node.
 

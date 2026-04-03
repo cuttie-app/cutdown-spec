@@ -35,7 +35,7 @@ A line whose **first character** is `#` is a comment — produces no AST node, i
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters: `= # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " '`
+Special characters: `= # * _ ~  $ [ ] ( ) ! { } : - > / \ | " '` and \`
 
 ---
 
@@ -64,7 +64,7 @@ Any non-blank lines not matching another block. Single newline → space (soft b
 --- {.attrs}
 ```
 
-Three or more `-`. Creates a page break.
+Three or more `-`. Creates a page break on top level. Exist as ThematicBreak node only if declared inside Block elements.
 
 ### Code Block → `CodeBlock`
 
@@ -84,7 +84,7 @@ key: value
 ~~~
 ```
 
-Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Unclosed → warning CDN-0002.
+Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
 ### Math Block → `MathBlock`
 
@@ -106,17 +106,20 @@ Content is literal. Unclosed → warning CDN-0003.
 
 Every line must start with `>`. No lazy continuation. Nesting by counting `>` chars.
 
-### Lists → `List` / `ListItem`
+### Lists → `List` / `ListItem` / `TaskItem`
 
 ```
-- unordered item          (marker: `- `)
+- unordered item          (marker: '- ')
   - nested (2-space indent per level)
 
-1. ordered item           (marker: `{n}. `)
+1. ordered item           (marker: '{n}. ')
 2. second item
+
+- [ ] task item
+  - [x] nest task item    ({ checked: true})
 ```
 
-Only `-` for unordered; only `.` delimiter for ordered. Actual numbers ignored. 2-space indent per nesting level (aligns with YAML convention). Tight vs loose: blank line between items → `loose: true`.
+Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. 2-space indent per nesting level (aligns with YAML convention). Tight vs loose: blank line between items → `loose: true`. Respects indentation.
 
 ### Tables → `Table`
 
@@ -182,11 +185,10 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 | `''text''` | `QuoteInline(single)` | Single `'` = literal |
 | `[text](url)` | `Link(external)` | |
 | `[text][page]` | `Link(page)` | target has no prefix |
-| `[text][#tag]` | `Link(tag)` | |
+| `[text][#tag]` | `Link(tag)` | resolved by consumer |
 | `[text][^ref]` | `Link(ref)` | resolved by consumer |
 | `[text][@cite]` | `Link(cite)` | resolved by consumer |
 | `![alt](src)` | `ImageInline` | |
-| `@handle` | `Mention` _(ext)_ | `[ID_LITERAL]+` ASCII only (§1) |
 | `::name {attrs}` | `Span` | Empty. `::` without name = literal. |
 | `{{key}}` | `Variable` | `{{}}` invalid = literal |
 | `\` at line end | `TextBreak` | |
@@ -211,7 +213,7 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 ```
 - item {.a}{.b}   →  List({.b}, ListItem({.a}, Text("item")))
-| td | {.a}{.b}   →  Table({.b}, Row({.a}, ...))    ← last row only
+| td | {.a}{.b}   →  Table({.b}, Row({.a}, ...))     ← last row only
 | td | {.a}       →  Table({.a}, Row(...))           ← mid-table: 1 slot (Row only)
 ```
 
@@ -237,23 +239,11 @@ Document
 
 ## Precedence (inline, highest first)
 
-1. Code fence ` ``` `, Meta fence `~~~`, Math fence `$$$` — content always literal
-2. Inline code ` `` ` — content literal
+1. Code fence \`\`\`, Meta fence `~~~`, Math fence `$$$` — content always literal
+2. Inline code \`\` — content literal
 3. Escape `\x`
 4. Links `[...](...)`  and images `![...]()`
 5. Inline math `$$`
 6. Emphasis `**`, Strong `__`, Strikethrough `~~`, QuoteInline `""` `''`
-7. `@mention`
-8. `::span`
-9. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
-
----
-
-## Extensions
-
-| Extension | Trigger | AST Node |
-|-----------|---------|----------|
-| Task Item | `- [ ] ` / `- [x] ` in unordered list | `TaskItem { checked: bool, children: (Block\|Inline)[] }` |
-| Mention | `@handle` in inline context | `Mention { value: string }` |
-
-Parser MUST emit extension nodes. Consumer MAY ignore them.
+7. `::span`
+8. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)

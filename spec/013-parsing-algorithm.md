@@ -56,22 +56,26 @@ Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { k
 
 ### 13.5 Section Assembly
 
-After all blocks are classified, heading blocks are used to assemble `Section` nodes:
+After all blocks are classified, heading blocks are used to assemble `Section` nodes. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`).
 
-1. Walk the flat block list left-to-right.
-2. On encountering a heading of level `n`: close all open sections of level ≥ `n`, then open a new `Section(level=n)`.
+For each block list (Page-level or container-level):
+
+1. Walk the list left-to-right.
+2. On encountering a heading of level `n`: close all open sections of level ≥ `n` within this list, then open a new `Section(level=n)`.
 3. All subsequent non-heading blocks belong to the innermost open section.
+4. All open sections are closed at the end of the list. Section scope never crosses the container boundary.
 
 ### 13.6 Page Assembly
 
-Pages are assembled during block classification (Phase 3):
+Pages are assembled during block classification (Phase 3). Page Assembly applies **only at Page scope** — blocks inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`) never trigger Page Assembly regardless of their type.
 
 1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
-2. On encountering a `Meta` block:
+2. On encountering a `Meta` block **at Page scope**:
    - If the current Page's `meta` is `null`: assign this Meta block to `Page.meta`. No new Page is created.
    - Otherwise: close the current Page, open a new Page, assign the Meta block to the new Page's `meta`.
-3. On encountering a `ThematicBreak`: close the current Page, open a new Page, place the `ThematicBreak` as the first child of the new Page.
-4. All other blocks are appended to the current Page's `children`.
-5. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
+3. On encountering a `ThematicBreak` **at Page scope**: close the current Page, open a new Page, place the `ThematicBreak` as the first child of the new Page.
+4. A `ThematicBreak` inside a block container emits a `ThematicBreak` node within that container but does not affect Page Assembly.
+5. All other blocks are appended to the current Page's `children`.
+6. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 
 ---

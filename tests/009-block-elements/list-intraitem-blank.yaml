@@ -1,6 +1,6 @@
 id: list-intraitem-blank
 section: "9.7.5"
-description: Blank line within a single list item creates block children; blank line between items sets loose=true
+description: Blank line + col-0 marker resets the list; blank line + indented content absorbed making item block-mode and list loose
 
 input: |
   - First item
@@ -11,12 +11,15 @@ input: |
 
 ast:
   - type: List
-    loose: true
+    loose: false
     children:
       - type: ListItem
         children:
           - type: Text
             value: First item
+  - type: List
+    loose: true
+    children:
       - type: ListItem
         children:
           - type: Paragraph

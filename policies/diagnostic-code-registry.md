@@ -177,3 +177,18 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | introduced_in | 0.1.5 |
 | status | active |
 | owner | Language |
+
+---
+
+### CDN-0030 — Meta block inside block container
+
+| Field | Value |
+|---|---|
+| code | CDN-0030 |
+| title | Meta block inside block container |
+| level | warning |
+| trigger | A `~~~` fence opener is encountered inside a block container (`ListItem`, `TaskItem`, `QuoteBlock`, or `NamedBlock`) |
+| recovery | The entire raw span — including the opening `~~~` line, all content lines, and the closing `~~~` line — is emitted as a single `Paragraph` with literal text. No `Meta` node is created. |
+| introduced_in | 0.2.1 |
+| status | active |
+| owner | Language |

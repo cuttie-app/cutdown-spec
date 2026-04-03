@@ -1,6 +1,6 @@
 id: list-loose
 section: "9.7.3"
-description: Blank line between items sets loose=true on the List node (advisory flag)
+description: Blank line between col-0 items resets the list; produces two separate tight List nodes (loose lists require indented items)
 
 input: |
   - Item one
@@ -9,12 +9,15 @@ input: |
 
 ast:
   - type: List
-    loose: true
+    loose: false
     children:
       - type: ListItem
         children:
           - type: Text
             value: Item one
+  - type: List
+    loose: false
+    children:
       - type: ListItem
         children:
           - type: Text

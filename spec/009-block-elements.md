@@ -24,7 +24,7 @@ Regex: ^(={1,9}) (.+)$
 | `======== Heading` | 8 |
 | `========= Heading` | 9 |
 
-A heading MUST be preceded by a blank line (or be the first non-comment line of the document).
+A heading MUST be preceded by a blank line (or be the first non-comment line of the document, or the first non-comment line of the current block container — see §7.2).
 
 Heading text is parsed as **full inline content** — all inline formatting (emphasis, links, inline code, math, etc.) is valid inside a heading.
 
@@ -83,7 +83,8 @@ AST:
 **Syntax:** `---` or more dashes (3 or more consecutive `-` at line start). Any characters between the dashes and the optional `{attrs}` are silently dropped.
 
 - `---` always produces a `ThematicBreak` node — there is no position restriction.
-- `ThematicBreak` creates a **page break**: a new Page is opened and the `ThematicBreak` node becomes the first child of that new Page.
+- At **Page scope**: `ThematicBreak` creates a page break — a new Page is opened and the `ThematicBreak` node becomes the first child of that new Page.
+- Inside a **block container** (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`): `ThematicBreak` emits a `ThematicBreak` node but does **not** create a new Page. Page Assembly (§13.6) only applies at Page scope.
 - May carry attributes for consumer use (e.g., styled dividers).
 
 ```
@@ -119,6 +120,9 @@ content
 - Minimum fence length: exactly 3 backticks. Variable-length fences are not supported.
 - Nesting: not supported. The first ` ``` ` closing line ends the block.
 - Unclosed fence: content runs to end of document.
+- **Inside block containers:** legal inside `ListItem`, `TaskItem`, `QuoteBlock`, and `NamedBlock`. The closing fence is recognised after leading-space stripping regardless of indentation. Content indentation handling varies by container:
+  - `ListItem` / `TaskItem` / `NamedBlock`: the container's base indentation offset is stripped from each content line before storing in `content`.
+  - `QuoteBlock`: only the `>` prefix is stripped (per §9.6); no additional space stripping applies to code block content.
 
 > **Out of scope:** Embedding a literal Cutdown code block inside a `CodeBlock` with `language="cutdown"` is intentionally unsupported. Because fence length is fixed at exactly 3 backticks and nesting is not supported, there is no way to represent a ` ``` ` fence line as literal content. Authors who need to show Cutdown examples inside a Cutdown document SHOULD use a `:::example` Named Block; rendering is the consumer's responsibility.
 
@@ -143,7 +147,8 @@ content
 - Content: raw string — passed as-is to the consumer.
 - Closing fence: `~~~` on its own line.
 - Unclosed fence: content runs to end of document.
-- May appear anywhere in the document. Multiple Meta blocks are allowed.
+- **Inside block containers:** illegal. When a `~~~` fence opener is encountered inside a `ListItem`, `TaskItem`, `QuoteBlock`, or `NamedBlock`, the entire raw span — including the opening `~~~` line, all content lines, and the closing `~~~` line — is emitted as a single `Paragraph` with literal text. A warning-level diagnostic is emitted on the opening fence line.
+- May appear anywhere **at Page scope**. Multiple Meta blocks are allowed.
 - A Meta block always fills the current Page's `meta` field. If `Page.meta` is already set, the Meta block opens a new Page first, then fills that Page's `meta`. No Meta block ever appears in `Page.children`.
 - No attributes supported on Meta blocks.
 
@@ -198,7 +203,7 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
   - Nested item
 ```
 
-- Nesting: exactly 2 spaces of indentation per level.
+- Nesting: determined by column comparison using the stack model (§9.7.5). Two spaces of indentation per level is a **style recommendation** only.
 
 #### 9.7.2 Ordered List
 
@@ -215,9 +220,11 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 
 #### 9.7.3 Tight vs Loose
 
-A list is **loose** if any of its items are separated by blank lines. A loose list sets `loose: true` on the `List` node.
+A list is **loose** if the parser absorbs a blank line within the list scope — i.e., a blank line followed by content at col > 0 that is claimed by the list (see §9.7.5). A loose list sets `loose: true` on the `List` node.
 
-`loose` is an **advisory flag** — it records a structural fact about the source (blank lines were present between items). Consumers MAY use it to influence rendering (e.g. wrapping items in `<p>` tags). Consumers MAY ignore it. The parser does not alter `ListItem` children based on looseness; the flag is purely informational.
+`loose` is an **advisory flag** — it records a structural fact about the source. Consumers MAY use it to influence rendering (e.g. wrapping items in `<p>` tags). Consumers MAY ignore it. The parser does not alter `ListItem` children based on looseness; the flag is purely informational.
+
+Note: a blank line followed by a col-0 marker always ends the current list and starts a new `List` node — it does not make the first list loose. Loose lists require items with indentation (col > 0) so the blank line can be absorbed.
 
 Trailing attr lines (lines consisting solely of `{attrs}` with no preceding blank line) are NOT treated as blank lines for loose detection purposes.
 
@@ -286,14 +293,67 @@ Example B — task first, numeric second:
   └── ListItem { children: [Text("Numeric becomes unordered")] }
 ```
 
-#### 9.7.5 Multiline List Items
+#### 9.7.5 List Indentation Model
 
-A list item continues on subsequent lines if they are indented by ≥ 2 spaces (matching the nesting indentation level). A line with less indentation ends the item.
+Cutdown uses a **stack-based, column-relative** model for all list types (unordered, ordered, task). Nesting is determined by comparing marker columns, not by fixed indentation increments.
 
-A blank line within a single list item creates a block boundary inside the item — the item's children become `Block[]` (paragraphs, nested lists, etc.). The list itself is **not** marked loose by intra-item blank lines; only blank lines **between** items trigger `loose: true`.
+**Definitions:**
+- The **column** of a line is its count of leading spaces before the first non-space character. Recorded from the original source before leading-space stripping (§8.2).
+- The parser maintains a **nesting stack** of `(col, item)` pairs representing the currently open items from outermost to innermost.
+
+**New marker at column C** (pop-then-push rule):
+1. While the stack is non-empty and `C ≤ top.col`: pop.
+2. Push the new item at column C.
+
+A marker with `C > top.col` is a nested child (+1 depth). A marker with `C ≤ top.col` closes items until a shallower ancestor is found, then opens a sibling.
+
+**Non-marker line (continuation text) at column C:**
+1. While the stack depth ≥ 2 and `C < second-from-top.col`: pop.
+2. Continue the now-current item.
+
+Depth-0 items (no parent on the stack) accept any non-blank non-marker line unconditionally (threshold = −∞).
+
+**Blank lines:**
+- Blank line followed by content at **col 0** → block boundary. The current `List` node ends. If the next line is a list marker, a new `List` node begins.
+- Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item (`ListItem.children` becomes `Block[]`). The `List` is marked `loose: true`.
+
+**Style note:** Two spaces of indentation per nesting level is recommended. The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
 
 ```
-Input:
+Input (standard):
+  - item 0.0
+  - item 1.0
+    - item 1.1
+    - item 1.2
+
+AST:
+  List { ordered: false, loose: false }
+  ├── ListItem { Text("item 0.0") }
+  └── ListItem { Text("item 1.0") }
+      └── List { ordered: false, loose: false }
+          ├── ListItem { Text("item 1.1") }
+          └── ListItem { Text("item 1.2") }
+```
+
+```
+Input (arbitrary indentation — stack resolves):
+          - item 0.0   ← col 10, base; stack: [(10, 0.0)]
+        continuation   ← col 8, depth-0 → continues 0.0
+      - item 1.0       ← col 6, 6≤10 → pop; push; stack: [(6, 1.0)]
+            - item 1.1 ← col 12, 12>6 → push; stack: [(6, 1.0),(12, 1.1)]
+         content 1.1   ← col 9, parent.col=6, 9≥6 → continues 1.1
+     content 1.0 lvl   ← col 5, parent.col=6, 5<6 → pop 1.1; depth-0 → continues 1.0
+
+AST:
+  List { ordered: false, loose: false }
+  ├── ListItem { Text("item 0.0 continuation") }
+  └── ListItem { Text("item 1.0 content 1.0 lvl") }
+      └── List { ordered: false, loose: false }
+          └── ListItem { Text("item 1.1 content 1.1") }
+```
+
+```
+Input (loose list — absorbed blank line):
   - First item
     continues here
   - Second item
@@ -590,6 +650,7 @@ $$$
 - Closing fence: `$$$` on its own line.
 - Unclosed fence: content runs to end of document.
 - Attributes on opening line follow standard attribute syntax (§5).
+- **Inside block containers:** legal. Closing fence recognised after leading-space stripping. Content indentation handling follows the same rules as `CodeBlock` (§9.4): `ListItem`/`TaskItem`/`NamedBlock` strip their base offset; `QuoteBlock` strips only the `>` prefix.
 
 ```
 AST: MathBlock { formula: string, attributes: Attributes }

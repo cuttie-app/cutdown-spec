@@ -18,6 +18,8 @@ Any number of leading spaces (including none) are stripped before block classifi
 
 Trailing spaces on any line are ignored.
 
+**List exception:** For list blocks, the parser records the **original column** of each marker (before stripping) for use in the list nesting stack model (§9.7.5). Block type detection still uses the stripped line; the column is a separate piece of metadata used only during list parsing.
+
 ### 8.3 Comments
 
 A line whose first character is `#` is a **comment line**.
