@@ -9,4 +9,4 @@ input: |
 
 ast:
   - type: MathBlock
-    formula: E = mc^2
+    formula: "E = mc^2"

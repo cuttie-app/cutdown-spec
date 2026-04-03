@@ -1,6 +1,6 @@
 id: block-cannot-interrupt-paragraph
 section: "8.1"
-description: A heading-like line within a paragraph run is treated as paragraph content; soft break becomes space
+description: A heading-like line within a paragraph run is treated as paragraph content; soft break folds to zero
 
 input: |
   Paragraph text
@@ -11,4 +11,4 @@ ast:
   - type: Paragraph
     children:
       - type: Text
-        value: Paragraph text = Not a heading still paragraph
+        value: Paragraph text= Not a headingstill paragraph

@@ -124,7 +124,7 @@ content
 - Opening fence: ` ``` ` optionally followed by a language identifier and/or attributes.
 - Language identifier: `[ID_LITERAL]+` (see §1), optional. Defaults to `"text"` when absent.
 - Attributes: optional, follow standard attribute syntax (§5).
-- Content: literal — no inline parsing is performed inside a code block.
+- Content: literal — no inline parsing is performed inside a code block. Content lines are joined with `\n`; no trailing `\n` is appended. Blank lines within the fence are preserved verbatim.
 - Closing fence: ` ``` ` on its own line.
 - Fence character: backtick only. `~~~` is reserved for metadata (§9.5).
 - Minimum fence length: exactly 3 backticks. Variable-length fences are not supported.
@@ -154,7 +154,7 @@ content
 
 - Opening fence: `~~~` optionally followed by a format identifier.
 - Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `yaml`.
-- Content: raw string — passed as-is to the consumer.
+- Content: raw string — passed as-is to the consumer. Content lines are joined with `\n` and a single trailing `\n` is appended (ensuring the string is valid input for YAML/TOML/JSON parsers).
 - Closing fence: `~~~` on its own line.
 - Unclosed fence: content runs to end of document.
 - **Inside block containers:** illegal. When a `~~~` fence opener is encountered inside a `ListItem`, `TaskItem`, `QuoteBlock`, or `NamedBlock`, the entire raw span — including the opening `~~~` line, all content lines, and the closing `~~~` line — is emitted as a single `Paragraph` with literal text. A warning-level diagnostic is emitted on the opening fence line.
@@ -356,10 +356,13 @@ Input (arbitrary indentation — stack resolves):
 
 AST:
   List { ordered: false, loose: false }
-  ├── ListItem { Text("item 0.0 continuation") }
-  └── ListItem { Text("item 1.0 content 1.0 lvl") }
-      └── List { ordered: false, loose: false }
-          └── ListItem { Text("item 1.1 content 1.1") }
+  ├── ListItem
+  |   └── Text("item 0.0continuation")
+  └── ListItem
+      ├── Text("item 1.0")
+      ├── List { ordered: false, loose: false }
+      |   └── ListItem { Text("item 1.1 content 1.1") }
+      └── Text ("content 1.1")
 ```
 
 ```
@@ -656,7 +659,7 @@ $$$
 ```
 
 - Opening fence: `$$$` optionally followed by attributes.
-- Content: **literal** — no inline parsing is performed. Passed as raw string to the consumer (KaTeX or equivalent).
+- Content: **literal** — no inline parsing is performed. Passed as raw string to the consumer (KaTeX or equivalent). Content lines are joined with `\n`; no trailing `\n` is appended. Blank lines within the fence are preserved verbatim.
 - Closing fence: `$$$` on its own line.
 - Unclosed fence: content runs to end of document.
 - Attributes on opening line follow standard attribute syntax (§5).

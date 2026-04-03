@@ -12,4 +12,4 @@ ast:
       - type: Paragraph
         children:
           - type: Text
-            value: Hello World
+            value: HelloWorld

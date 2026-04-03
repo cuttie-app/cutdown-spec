@@ -20,4 +20,4 @@ ast:
               - type: Text
                 value: item
           - type: MathBlock
-            formula: "x^2 + y^2\n"
+            formula: "x^2 + y^2"

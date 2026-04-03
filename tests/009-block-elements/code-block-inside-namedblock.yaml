@@ -15,4 +15,4 @@ ast:
     children:
       - type: CodeBlock
         language: js
-        content: "const x = 1\n"
+        content: const x = 1

@@ -21,4 +21,4 @@ ast:
                 value: item
           - type: CodeBlock
             language: js
-            content: "const x = 1\n"
+            content: const x = 1
