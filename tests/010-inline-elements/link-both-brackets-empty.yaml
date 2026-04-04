@@ -13,6 +13,8 @@ ast:
         children: []
         target: ""
         attributes:
-          id: anchor
-          class:
-            - marker
+          - key: id
+            value: anchor
+          - key: class
+            value:
+              - marker

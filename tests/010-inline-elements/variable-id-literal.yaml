@@ -11,10 +11,6 @@ ast:
       - type: Variable
         key: valid-key
       - type: Text
-        value: " "
-      - type: Text
-        value: "{{invalid key}}"
-      - type: Text
-        value: " "
+        value: " {{invalid key}} "
       - type: Variable
         key: also.valid_1
