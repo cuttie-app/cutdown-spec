@@ -78,5 +78,6 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | `class=` alongside `.class` syntax | CDN-0021 | `class=` dropped; `.class` tokens kept |
 | Duplicate custom attribute key | CDN-0022 | Duplicate dropped; first value kept |
 | `~~~` fence inside a block container | CDN-0030 | Raw span (including fence lines) emitted as literal `Paragraph`; no `Meta` node created |
+| Crossed inline boundaries (`** __ … ** … __`) | CDN-0014 | Greedy parse unchanged; diagnostic only — span on the crossing closer |
 
 Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.

@@ -180,6 +180,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
+### CDN-0014 — Crossed inline element boundaries
+
+| Field | Value |
+|---|---|
+| code | CDN-0014 |
+| title | Crossed inline element boundaries |
+| level | warning |
+| trigger | An inline element A closes via its delimiter while an opener of a **different** inline type B (one of `**`, `__`, `~~`, `""`, `''`, `[`) was present inside A's content and emitted as literal text — and a closer for B exists in the inline stream after A's boundary. Span points to A's closing delimiter (the crossing closer). |
+| recovery | Existing greedy left-to-right behavior applies unchanged. No AST change. The diagnostic is informational only. |
+| introduced_in | 0.3.2 |
+| status | active |
+| owner | Language |
+
+---
+
 ### CDN-0030 — Meta block inside block container
 
 | Field | Value |

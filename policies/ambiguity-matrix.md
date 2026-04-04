@@ -139,34 +139,86 @@ Paragraph
 └── Text("[@smith2025]")
 ```
 
-### 4) Mention behavior in normal inline context
+### 4) Inline boundary crossing (CDN-0014)
+
+Greedy left-to-right parse is unchanged. CDN-0014 is emitted at the span of the crossing closer.
 
 Input:
 
 ```text
-Hey @alice.
+** a __ b ** c __
 ```
 
 Expected AST:
 
 ```text
 Paragraph
-├── Text("Hey ")
-├── UserLink("alice")
-└── Text(".")
+├── Emphasis([Text("a __ b")])
+└── Text(" c __")
+```
+
+Expected diagnostics:
+
+```text
+CDN-0014  warning  span: the closing "**" (col 9)
+message: Crossed inline boundaries: "**" closes while "__" (col 5) is still open
 ```
 
 Input:
 
 ```text
-email@domain.com
+"" q start [link "" q end][/path]
 ```
 
 Expected AST:
 
 ```text
 Paragraph
-└── Text("email@domain.com")
+├── QuoteInline([Text("q start [link")])
+└── Text(" q end][/path]")
+```
+
+Expected diagnostics:
+
+```text
+CDN-0014  warning  span: the closing '""' (col 16)
+message: Crossed inline boundaries: '""' closes while "[" (col 10) is still open
+```
+
+Input (valid nesting — no diagnostic):
+
+```text
+** __ text __ **
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── Emphasis([Strong([Text("text")])])
+```
+
+Expected diagnostics: none
+
+Input (triple crossing — two CDN-0014 emitted):
+
+```text
+** __ ~~ text ** __ ~~
+```
+
+Expected AST:
+
+```text
+Paragraph
+├── Emphasis([Text("__ ~~ text")])
+└── Text(" __ ~~")
+```
+
+Expected diagnostics:
+
+```text
+CDN-0014  warning  span: closing "**" (col 15)  — closes while "__" (col 4) is open
+CDN-0014  warning  span: closing "**" (col 15)  — closes while "~~" (col 7) is open
 ```
 
 ## Change Checklist
