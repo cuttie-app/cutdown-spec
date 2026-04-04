@@ -1,6 +1,40 @@
 ## 10. Inline Elements
 
-Inline content is parsed left-to-right with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
+### 10.0 Inline Rules
+
+**Inline rules** is the shared parsing procedure applied to all inline contexts. Inline content is parsed left-to-right with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
+
+**Active openers** (in priority order — see §11):
+
+| Opener(s) | Element |
+|-----------|---------|
+| \`\` | `CodeInline` |
+| `\x` | Escape |
+| `[`, `![` | `Link`, `ImageInline` |
+| `$$` | `MathInline` |
+| `**`, `__`, `~~`, `""`, `''` | `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline` |
+| `::` | `Span` |
+| `{{` | `Variable` |
+
+Any character that does not form a recognized opener — including special characters (§4.1) that fail to complete a valid construct — is emitted as `Text`. Escaping (§4) applies: `\x` before a special character emits that character as `Text`.
+
+**Inline context locations** — inline rules run in every place marked "(parsed by inline rules)" in this spec:
+
+| Location | Section |
+|----------|---------|
+| Heading text | §9.1 |
+| Paragraph content | §9.2 |
+| List item and task item content | §9.7 |
+| Table cell content | §9.8.3 |
+| `ImageBlock` `alt` | §9.9.3 |
+| `RefDefinition` content | §9.11 |
+| Children of `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline` | §10.2–10.4, 10.12 |
+| `[text]` slot of `Link` | §10.7 |
+| `alt` slot of `ImageInline` | §10.8 |
+
+The return type of inline rules is `Inline[]` (see §1 for the `Inline` union type).
+
+**Crossed boundary warning (CDN-0014):** When element A closes via its delimiter while an opener of a *different* inline type B (`**`, `__`, `~~`, `""`, `''`, `[`) is present inside A's content but emitted as literal text — and a B-closer exists after A's boundary — the parser emits CDN-0014 at the span of A's closing delimiter. The greedy parse result is unchanged.
 
 ### 10.1 Text
 
@@ -25,6 +59,7 @@ Consecutive text tokens MUST be merged by the parser into a single `Text` node.
 - Unclosed `**`: emitted as `Text("**")`.
 - Same-type nesting: MUST NOT be used. `**a **b** c**` → the first `**` is the opener, the second `**` closes it. The remaining `c**` is `Text("c")` + `Text("**")`.
 - Cross-type nesting: allowed (see §10.3).
+- Crossing (interleaved, not nested) emits CDN-0014 at the closing `**` (see §10.0).
 
 ```
 AST: Emphasis { children: Inline[], attributes: Attributes }
@@ -51,6 +86,7 @@ AST: Emphasis { children: Inline[], attributes: Attributes }
 - A single `_` is literal text and never a strong marker.
 - Same rules as Emphasis (§10.2): run of 3, greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with Emphasis is allowed: `**__text__**` and `__**text**__` are both valid.
+- Crossing (interleaved, not nested) emits CDN-0014 at the closing `__` (see §10.0).
 
 ```
 AST: Strong { children: Inline[], attributes: Attributes }
@@ -68,6 +104,7 @@ AST: Strong { children: Inline[], attributes: Attributes }
 - A single `~` is literal text (and not a metadata fence marker in inline context).
 - Same rules as Emphasis (§10.2): greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with Emphasis and Strong is allowed.
+- Crossing (interleaved, not nested) emits CDN-0014 at the closing `~~` (see §10.0).
 
 ```
 AST: Strikethrough { children: Inline[], attributes: Attributes }
@@ -152,11 +189,15 @@ AST: Link { kind: "external", children: Inline[], href: string, attributes: Attr
 
 **Page link:** `[text][path/to/page]`
 
+Target uses `PATH_LITERAL` characters (§1): `[a-zA-Z0-9._/-]`. An empty target is allowed (see edge cases below).
+
 ```
 AST: Link { kind: "page", children: Inline[], target: string, attributes: Attributes }
 ```
 
 **Tag link:** `[text][#tag/path]`
+
+`#` is the classifier prefix; the path after `#` uses `PATH_LITERAL` characters (§1).
 
 ```
 AST: Link { kind: "tag", children: Inline[], target: string, attributes: Attributes }
@@ -164,27 +205,27 @@ AST: Link { kind: "tag", children: Inline[], target: string, attributes: Attribu
 
 **Reference link:** `[text][^ref-id]`
 
+`^` is the classifier prefix; `ref-id` uses `ID_LITERAL` characters (§1): `[a-zA-Z0-9._-]`.
+
 ```
 AST: Link { kind: "ref", children: Inline[], target: string, attributes: Attributes }
 ```
 
 **Citation link:** `[text][@cite-id]`
 
+`@` is the classifier prefix. Cutdown does not enforce a lexical pattern for the text after `@` — any non-`]` characters are accepted. If the second bracket's content starts with `@`, the parser emits `Link { kind: "cite" }`.
+
+The empty-text form `[][@cite-id]` is valid and preserved in the AST.
+
+Citation resolution is the consumer's responsibility (for example, against an external bibliography source).
+
 ```
 AST: Link { kind: "cite", children: Inline[], target: string, attributes: Attributes }
 ```
 
-The empty-text form `[][@cite-id]` is valid and preserved in the AST.
-
-For citation links, Cutdown does not enforce a lexical pattern for the target text after `@`. If the bracket form is valid and the second bracket content starts with `@`, the parser emits `Link { kind: "cite" }`.
-
-Inside the second bracket target of a special link (`[text][...]`), a leading `@` is reserved for citation-link classification. Mention parsing does not run in that target slot.
-
-The shorthand form `[@cite-id]` is not a citation link in Cutdown. It is parsed by normal inline rules and is not emitted as `Link { kind: "cite" }`.
+The shorthand form `[@cite-id]` is **not** a citation link. It is parsed by normal inline rules and emitted as plain bracket text.
 
 Cutdown does NOT validate that a matching `[^ref-id]:` definition exists. That is the consumer's responsibility.
-
-Cutdown does NOT validate `@cite-id`. Citation resolution is the consumer's responsibility (for example, against an external bibliography source).
 
 Special links may carry attributes: `[text][#tag] {.highlight}`.
 
@@ -192,7 +233,7 @@ Special links may carry attributes: `[text][#tag] {.highlight}`.
 
 **Empty text, non-empty target:** `[][target]` is valid — `Link { kind: "page", children: [], target: "target" }`.
 
-**Both brackets empty:** `[][]` → `Text("[][]")` — literal.
+**Both brackets empty:** `[][]` is valid — `Link { kind: "page", children: [], target: "" }`. Rationale: allows inserting an empty inline anchor with custom attributes to enrich content, e.g., `[]{}{#anchor .marker}`.
 
 **Empty href:** `[]()` → `Link { kind: "external", children: [], href: "" }` — valid. Empty href is a meaningful value.
 
@@ -273,12 +314,11 @@ $ not math $               → Text("$ not math $")
 **Syntax:** `{{key}}`
 
 - A variable is an inline element.
-- `key` is parsed as raw inner text between `{{` and `}}`.
-- Cutdown does not enforce a lexical pattern for `key`.
-- Matching is delimiter-based: first valid `}}` closes the variable.
+- `key` MUST use `ID_LITERAL` characters (§1): `[a-zA-Z0-9._-]`. A `{{...}}` whose inner content contains characters outside `ID_LITERAL` is emitted as literal text.
+- Matching is delimiter-based: first valid `}}` closes the variable candidate; the key is then validated against `ID_LITERAL`.
 - Unclosed `{{`: emitted as literal text.
-- Variables are parsed only in inline-text contexts where inline parsing is active (for example, paragraphs, headings, blockquote content).
-- In contexts without inline parsing, `{{...}}` remains literal content.
+- Variables are parsed only in inline contexts where inline rules are active (see §10.0).
+- In contexts without inline parsing (code blocks, math blocks, metadata blocks), `{{...}}` remains literal content.
 - Variables MAY carry trailing universal attributes (§5): `{{key}} {#id .class}`.
 - Empty-key form `{{}}` is invalid and emitted as literal text.
 - Brace-family tie-break: when `{` can start either a variable or an attribute block, `{{` is matched first (longest opener), then parsing proceeds left-to-right.
@@ -302,6 +342,7 @@ AST: Variable { key: string, attributes: Attributes }
 - Cross-kind nesting **IS allowed**: `""'' inner ''""` is valid (single inside double, or double inside single).
 - Unmatched opener: emitted as `Text('""')` or `Text("''")`
 - Whitespace rules follow §12.2 (boundary-to-literal stripped; adjacent boundaries collapsed).
+- Crossing with another inline type (including link brackets `[`) emits CDN-0014 at the closing `""` or `''` (see §10.0).
 
 ```
 AST: QuoteInline { kind: "double"|"single", children: Inline[], attributes: Attributes }

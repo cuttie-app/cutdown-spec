@@ -26,7 +26,7 @@ Regex: ^(={1,9}) (.+)$
 
 A heading MUST be preceded by a blank line (or be the first non-comment line of the document, or the first non-comment line of the current block container — see §7.2).
 
-Heading text is parsed as **full inline content** — all inline formatting (emphasis, links, inline code, math, etc.) is valid inside a heading.
+Heading text is **parsed by inline rules (§10)** — all inline formatting (emphasis, links, inline code, math, etc.) is valid inside a heading. The result is `Inline[]`.
 
 #### Heading Attributes — Last-Attr Rule
 
@@ -59,7 +59,7 @@ The heading node is consumed into its enclosing `Section` node. Consumers receiv
 
 A paragraph is a contiguous sequence of non-blank lines that do not match any other block construct. Once a paragraph has begun, no block element can interrupt it — the paragraph continues until a blank line is encountered (see §8.1).
 
-Inline content of all lines is parsed and concatenated. A single newline between lines is a **soft break** — it is folded to zero: no character is emitted and no AST node is produced. Lines concatenate directly. Leading spaces on continuation lines are stripped before inline parsing.
+Inline content of all lines is **parsed by inline rules (§10)** and concatenated. The result is `Inline[]`. A single newline between lines is a **soft break** — it is folded to zero: no character is emitted and no AST node is produced. Lines concatenate directly. Leading spaces on continuation lines are stripped before inline parsing.
 
 To introduce a word boundary across a line break, place a single trailing space before the newline. That space is preserved as `Text(" ")`.
 
@@ -214,6 +214,12 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 ```
 
 - Nesting: determined by column comparison using the stack model (§9.7.5). Two spaces of indentation per level is a **style recommendation** only.
+- The text following the marker on the same line is **parsed by inline rules (§10)**. The result is `Inline[]`. The `-` character has no special meaning inside inline content — `- - item` is a list item whose inline content is `Text("- item")`.
+
+```
+Input:  - - - nested item
+AST:    ListItem { children: [Text("- - nested item")] }
+```
 
 #### 9.7.2 Ordered List
 
@@ -227,6 +233,12 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 
 - Only `.` delimiter supported. `)` is not a list marker.
 - The actual number in the source is ignored. The AST carries a `start` attribute for the first item offset.
+- The text following the marker on the same line is **parsed by inline rules (§10)**. The result is `Inline[]`. The `N.` pattern has no special meaning inside inline content — `1. 2. 3. item` is a list item whose inline content is `Text("2. 3. item")`.
+
+```
+Input:  1. 2. 3. nested item
+AST:    ListItem { children: [Text("2. 3. nested item")] }
+```
 
 #### 9.7.3 Tight vs Loose
 
@@ -329,6 +341,20 @@ Depth-0 items (no parent on the stack) accept any non-blank non-marker line unco
 
 **Style note:** Two spaces of indentation per nesting level is recommended. The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
 
+**Inline content and continuation lines:** The text content on a marker line (after the `- ` or `N. ` marker) and any subsequent continuation lines are all parsed by inline rules (§10). A continuation line at col > 0 that is claimed by a depth-0 item (col 0) is absorbed unconditionally — depth-0 items have no threshold and accept any non-blank non-marker line.
+
+```
+Input:
+  - - - nested item
+        whom belongs the line?
+
+AST:
+  List { ordered: false }
+  └── ListItem { children: [Text("- - nested item whom belongs the line?")] }
+```
+
+(The continuation at col 8 is absorbed by the depth-0 item. Soft-break: trailing space on line 1 preserves word boundary; without trailing space, lines concatenate directly.)
+
 ```
 Input (standard):
   - item 0.0
@@ -430,7 +456,7 @@ Rendering of comma and decimal alignment is the consumer's responsibility.
 
 #### 9.8.3 Table Rules
 
-- Cell content is parsed as inline markup.
+- Cell content is **parsed by inline rules (§10)**. The result is `Inline[]`.
 - Colspan and rowspan are not supported.
 - Pipe-less table syntax is **not supported**. Leading and trailing `|` are required and MUST be consistent within a table.
 - `Cell` and `Column` do not carry `attributes`.
@@ -492,8 +518,25 @@ Any line beginning with `/` is a **file reference block**.
 **Syntax:** `/path/to/file.ext {attrs}`
 
 - Leading `/` is mandatory.
-- Path traversal (`/../`) is allowed. Cutdown does not validate paths.
-- Optional attributes after the path.
+- The path uses `PATH_LITERAL` characters (§1): `[a-zA-Z0-9._/-]`. Path traversal (`/../`) is allowed. Cutdown does not validate paths.
+- Optional attributes after the path (separated by at least one space).
+
+**Fragment identifier (`#`):** If the path contains `#`, everything from the first `#` to the next space (or end of line, before `{attrs}`) is extracted as the fragment. `src` stores the portion before `#`; `fragment` stores the portion after `#`.
+
+```
+/path/to/page.cutdown#section-id
+→ FileRef { src: "/path/to/page.cutdown", fragment: "section-id" }
+```
+
+**Query string (`?`):** `?` and everything after it (up to a space or `#`) is included in `src` verbatim. No separate `query` field is produced. The `?` character is not special to the Cutdown parser — query string interpretation is the consumer's responsibility.
+
+```
+/path/to/file.ext?q=value
+→ FileRef { src: "/path/to/file.ext?q=value", fragment: null }
+
+/path/to/file.ext?q=value#section
+→ FileRef { src: "/path/to/file.ext?q=value", fragment: "section" }
+```
 
 ```
 AST: FileRef { src: string, fragment: string|null, group: "image"|"video"|"audio"|null, attributes: Attributes }
@@ -549,6 +592,8 @@ AST:
 #### 9.9.3 ImageBlock
 
 A line at block level beginning with `![` is classified as an `ImageBlock`.
+
+The `alt` content is **parsed by inline rules (§10)**. The result is `Inline[]`.
 
 ```
 AST: ImageBlock { alt: Inline[], src: string, attributes: Attributes }
@@ -638,7 +683,7 @@ AST:
 
 - MUST start at the beginning of a line.
 - `id` may contain `[ID_LITERAL]+` (see §1). Case-sensitive.
-- Content is parsed as inline content.
+- Content is **parsed by inline rules (§10)**. The result is `Inline[]`.
 - Multiple definitions with the same `id`: last definition wins; earlier ones are discarded. This is intentional: a host document can override any definition from a transcluded fragment by placing its own definition after the include point. First-wins would make override order depend on fragment inclusion order, which is unpredictable.
 - Cutdown does not validate that every `[^id]` link has a matching definition.
 
