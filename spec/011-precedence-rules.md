@@ -12,9 +12,8 @@ When multiple constructs compete for the same input, the following priority appl
 | 6 | Links and images `[...](...)`  | Matched before emphasis runs |
 | 7 | Inline math `$$` | Matched before emphasis; content is literal |
 | 8 | Emphasis `**`, Strong `__`, Strikethrough `~~`, QuoteInline `""` `''` | Left-to-right greedy |
-| 9 | `@mention` | Matched after emphasis |
-| 10 | Named span `::name` | Matched after mention |
-| 11 | Variable `{{key}}` / Attributes `{...}` | Longest opener wins (`{{` before `{`), then left-to-right |
+| 9 | Named span `::name` | Matched after emphasis |
+| 10 | Variable `{{key}}` / Attributes `{...}` | Longest opener wins (`{{` before `{`), then left-to-right |
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.
 
