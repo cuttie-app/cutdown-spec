@@ -14,7 +14,6 @@ ast:
           - type: QuoteBlock
             children:
               - type: List
-                loose: true
                 children:
                   - type: ListItem
                     value: item
