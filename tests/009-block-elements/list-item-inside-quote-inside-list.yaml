@@ -1,13 +1,13 @@
 id: list-item-inside-quote-inside-list
-# section: "9.4"
-# description: CodeBlock inside a list item is legal; list item's base offset (2 spaces) is stripped from content lines
+section: "9.7"
+description: A list item inside a QuoteBlock inside a list item is legal; the outer list is tight (single item, no blank lines)
 
 input: |
   - > - item
 
 ast:
   - type: List
-    loose: true
+    loose: false
     children:
       - type: ListItem
         children:
@@ -16,4 +16,6 @@ ast:
               - type: List
                 children:
                   - type: ListItem
-                    value: item
+                    children:
+                      - type: Text
+                        value: item
