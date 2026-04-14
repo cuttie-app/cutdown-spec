@@ -1,0 +1,20 @@
+id: heading-inside-quote-inside-list
+# section: "9.4"
+# description: CodeBlock inside a list item is legal; list item's base offset (2 spaces) is stripped from content lines
+
+input: |
+  - > = Heading item
+
+ast:
+  - type: List
+    loose: true
+    children:
+      - type: ListItem
+        children:
+          - type: QuoteBlock
+            children:
+              - type: Section
+                level: 1
+                heading:
+                  - type: Text
+                    value: Heading item
