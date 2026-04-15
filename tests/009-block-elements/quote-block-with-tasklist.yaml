@@ -1,0 +1,25 @@
+id: quote-block-with-tasklist
+section: "9.6"
+description: Task items inside a QuoteBlock are parsed normally; checked and unchecked TaskItems retain their nature within the QuoteBlock's sub-parser
+
+input: |
+  > - [ ] todo
+  > - [x] done
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: List
+        ordered: false
+        loose: false
+        children:
+          - type: TaskItem
+            checked: false
+            children:
+              - type: Text
+                value: todo
+          - type: TaskItem
+            checked: true
+            children:
+              - type: Text
+                value: done

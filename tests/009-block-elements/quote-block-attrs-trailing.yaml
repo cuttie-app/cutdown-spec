@@ -1,0 +1,18 @@
+id: quote-block-attrs-trailing
+section: "9.6"
+description: Trailing {attrs} on the QuoteBlock's first content line are claimed by the QuoteBlock node
+
+input: |
+  > Hello world {.callout}
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Hello world
+    attributes:
+      - key: class
+        value:
+          - callout
