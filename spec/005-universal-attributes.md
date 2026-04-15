@@ -17,12 +17,19 @@ Token types inside `{}`:
 
 ### 5.2 Placement
 
-Attributes MUST appear **after** their target element on the **same line**.
+Attributes appear **after** their target element, either on the **same line** or on the **immediately following line** (no blank line between). Both placements are equivalent and produce identical AST output.
 
 ```
-== Section {#intro}
+== Section {#intro}          ← same-line placement
+
 **bold text** {.highlight}
-:::callout {.warning}
+::span {.warning}
+
+== Section                   ← following-line placement (equivalent)
+{#intro}
+
+::span
+{.warning}
 ```
 
 #### Block Opening Lines — Last-Attr Rule
@@ -101,6 +108,27 @@ Multiline equivalents (all produce identical AST):
   {.b}
 ```
 
+#### Following-line placement for block elements
+
+A standalone `{attrs}` line immediately after any block element (no blank line between) attaches to that block. This applies to all block types — QuoteBlock, CodeBlock, NamedBlock, List, ThematicBreak, etc.:
+
+```
+> content               > content {.note}
+{.note}          ≡
+                        > content
+                        > {.note}
+
+:::note                 :::note {.warning}
+content          ≡      content
+:::                     :::
+{.warning}
+
+---                     --- {.divider}
+{.divider}       ≡
+```
+
+A `{attrs}` line that appears **inside** a block container (e.g., as the last `>` line of a QuoteBlock) attaches to the **container**, not to the last child block inside it.
+
 #### Trailing attr lines and loose-list detection
 
 A line consisting solely of `{attrs}` immediately after a list item with no preceding blank line is a **trailing attr line**, not a blank line. Loose list detection ignores trailing attr lines.
@@ -116,8 +144,6 @@ A line consisting solely of `{attrs}` immediately after a list item with no prec
 - item two
 ```
 
-`{attrs}` may appear at the end of a Paragraph or ListItem either on the same line as the final content line, or on the immediately following line (no blank line between). A line consisting solely of `{attrs}` immediately after a paragraph (no blank line) is consumed as part of the paragraph's scope chain and does not start a new block.
-
 ### 5.3 Orphan Attributes
 
 An `{...}` sequence that cannot be assigned to any segment in the current scope chain is an **orphan**.
@@ -126,9 +152,17 @@ Orphan behaviour depends on position:
 
 | Position | Behaviour | Example |
 |---|---|---|
-| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is ")` + `Text("{high}")` |
-| After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
+| Start of inline content (no preceding element to attach to) | `Text("{...}")` emitted verbatim | `{.class} text` → `Text("{.class} text")` |
+| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is {high}")` |
+| After a blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | silently dropped (no AST output) | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
+
+The start-of-span case is a direct consequence of the general rule: `{attrs}` can only attach to a *preceding* element. With nothing before it, there is no element to claim the token, so it is emitted verbatim. This is not a special case — it falls out of the orphan definition naturally.
+
+```
+> {.class} content    →  QuoteBlock > Paragraph > Text("{.class}content")   ← orphan, no preceding element
+> content {.class}    →  QuoteBlock({class:"class"}) > Paragraph > Text("content")  ← trailing, attaches
+```
 
 `{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
 
@@ -140,11 +174,11 @@ price is \{high\}  →  Text("price is {high}")
 
 ### 5.4 Attribute Inside Link Text
 
-`{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
+`{attrs}` appearing inside `[...]` follows the same rules as paragraph inline content: it attaches to the immediately preceding inline element. When no preceding element exists, the orphan rule (§5.3) applies and the token is emitted as literal text.
 
 ```
 [**bold** {.foo}](url)  →  Link { children: [Emphasis({class:"foo"}, "bold")], href: "url" }
-[{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
+[{.foo} text](url)      →  Link { children: [Text("{.foo} text")], href: "url" }   ({.foo} orphan → literal)
 ```
 
 ---
