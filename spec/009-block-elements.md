@@ -108,6 +108,7 @@ AST: ThematicBreak { attributes: Attributes }
 --- {.page-end}      → ThematicBreak { attributes: { class: ["page-end"] } }
 --- some text {.x}   → ThematicBreak { attributes: { class: ["x"] } }  (text dropped)
 ```
+*→ [test: thematic-break-basic](../tests/009-block-elements/thematic-break-basic.yaml), [test: thematic-break-attrs](../tests/009-block-elements/thematic-break-attrs.yaml), [test: thematic-break-text-dropped](../tests/009-block-elements/thematic-break-text-dropped.yaml)*
 
 ---
 
@@ -479,6 +480,7 @@ Mid-table (not last row):
 | td1 | td2 | {.a}       →  Row({.a}, ...)                 ← 1 slot only
 | td1 | td2 | {.a}{.b}   →  Row({.b}, ...)   {.a} dropped  ← 1 slot; extra dropped
 ```
+*→ [test: table-attrs-last-row](../tests/009-block-elements/table-attrs-last-row.yaml), [test: table-attrs-last-row-single](../tests/009-block-elements/table-attrs-last-row-single.yaml), [test: table-attrs-last-row-noop](../tests/009-block-elements/table-attrs-last-row-noop.yaml)*
 
 ```
 AST:

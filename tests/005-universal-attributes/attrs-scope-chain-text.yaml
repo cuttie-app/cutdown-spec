@@ -1,0 +1,22 @@
+id: attrs-scope-chain-text
+section: "5.2"
+description: "Text list items: two trailing {} distribute right-to-left — last to List, preceding to ListItem"
+
+input: |
+  - text {.a}{.b}
+
+ast:
+  - type: List
+    ordered: false
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: text
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]

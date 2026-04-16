@@ -1,0 +1,15 @@
+id: quote-inline-single-spaced
+section: "10.13"
+description: "Whitespace at boundaries of '' delimiters is stripped"
+
+input: |
+  '' hi ''
+
+ast:
+  - type: Paragraph
+    children:
+      - type: QuoteInline
+        kind: single
+        children:
+          - type: Text
+            value: hi

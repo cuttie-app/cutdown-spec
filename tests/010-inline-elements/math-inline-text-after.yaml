@@ -1,0 +1,14 @@
+id: math-inline-text-after
+section: "10.10"
+description: "MathInline followed by text on the same line — closing $$ ends the formula, remaining text continues as Text"
+
+input: |
+  $$ formula $$ now text.
+
+ast:
+  - type: Paragraph
+    children:
+      - type: MathInline
+        formula: " formula "
+      - type: Text
+        value: " now text."

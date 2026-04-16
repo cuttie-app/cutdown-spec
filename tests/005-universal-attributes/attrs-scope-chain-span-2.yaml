@@ -1,0 +1,22 @@
+id: attrs-scope-chain-span-2
+section: "5.2"
+description: "Two trailing {} on list item with Span: last to List, preceding to ListItem (Span gets nothing)"
+
+input: |
+  - ::sp {.a}{.b}
+
+ast:
+  - type: List
+    ordered: false
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Span
+            name: sp
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]

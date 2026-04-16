@@ -1,0 +1,12 @@
+id: math-inline-single-dollar
+section: "10.10"
+description: "Single $ is not a math delimiter — emitted as literal text"
+
+input: |
+  $ not math $
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "$ not math $"

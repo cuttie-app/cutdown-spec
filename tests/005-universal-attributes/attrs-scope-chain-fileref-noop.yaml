@@ -1,0 +1,16 @@
+id: attrs-scope-chain-fileref-noop
+section: "5.2"
+description: "Empty {} as last token is no-op on FileRefGroup; preceding {.a} goes to FileRef"
+
+input: |
+  /img.png {.a}{}
+
+ast:
+  - type: FileRefGroup
+    group: image
+    children:
+      - type: FileRef
+        src: /img.png
+        attributes:
+          - key: class
+            value: [a]

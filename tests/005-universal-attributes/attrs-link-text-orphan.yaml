@@ -1,0 +1,16 @@
+id: attrs-link-text-orphan
+section: "5.4"
+description: "Leading {attrs} inside link brackets with no preceding element is orphan — emitted as literal text"
+
+input: |
+  [{.foo} text](url)
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Link
+        kind: external
+        href: url
+        children:
+          - type: Text
+            value: "{.foo} text"

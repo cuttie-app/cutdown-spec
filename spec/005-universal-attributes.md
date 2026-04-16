@@ -43,6 +43,7 @@ An empty `{}` as the last token explicitly assigns no attributes to the block, f
 = Heading **bold**{.b} {}      →  Section({},        [Text("Heading "), Strong({class:"b"}, "bold")])
 = Heading **bold** {#h}        →  Section({id:"h"},  [Text("Heading "), Strong("bold")])
 ```
+*→ [test: attrs-heading-last-attr-inline](../tests/005-universal-attributes/attrs-heading-last-attr-inline.yaml), [test: attrs-heading-last-attr-empty](../tests/005-universal-attributes/attrs-heading-last-attr-empty.yaml), [test: attrs-heading-last-attr-simple](../tests/005-universal-attributes/attrs-heading-last-attr-simple.yaml)*
 
 This rule applies only in block opening line context. In paragraph context all `{...}` follow inline attachment rules exclusively.
 
@@ -85,6 +86,7 @@ Single NL does not break the attr chain. A sequence of `{}` blocks may span mult
 - text {.a}          →  List({.a}, ListItem(Text("text")))
 - text {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Text("text")))   ← {.a} dropped (Text has no attrs)
 ```
+*→ [test: attrs-scope-chain-span](../tests/005-universal-attributes/attrs-scope-chain-span.yaml), [test: attrs-scope-chain-span-2](../tests/005-universal-attributes/attrs-scope-chain-span-2.yaml), [test: attrs-scope-chain-span-1](../tests/005-universal-attributes/attrs-scope-chain-span-1.yaml), [test: attrs-scope-chain-span-empty](../tests/005-universal-attributes/attrs-scope-chain-span-empty.yaml), [test: attrs-scope-chain-span-noop](../tests/005-universal-attributes/attrs-scope-chain-span-noop.yaml), [test: attrs-scope-chain-text](../tests/005-universal-attributes/attrs-scope-chain-text.yaml), [test: attrs-scope-chain-text-1](../tests/005-universal-attributes/attrs-scope-chain-text-1.yaml), [test: attrs-scope-chain-text-3](../tests/005-universal-attributes/attrs-scope-chain-text-3.yaml)*
 
 Same rule applies to `FileRefGroup` and `ImageGroup`:
 
@@ -94,6 +96,7 @@ Same rule applies to `FileRefGroup` and `ImageGroup`:
 /img.png {}         →  FileRefGroup({},   FileRef(...))    ← {} no-op on group
 /img.png {.a}{}     →  FileRefGroup({},   FileRef({.a}, ...))
 ```
+*→ [test: attrs-scope-chain-fileref](../tests/005-universal-attributes/attrs-scope-chain-fileref.yaml), [test: attrs-scope-chain-fileref-1](../tests/005-universal-attributes/attrs-scope-chain-fileref-1.yaml), [test: attrs-scope-chain-fileref-empty](../tests/005-universal-attributes/attrs-scope-chain-fileref-empty.yaml), [test: attrs-scope-chain-fileref-noop](../tests/005-universal-attributes/attrs-scope-chain-fileref-noop.yaml)*
 
 Multiline equivalents (all produce identical AST):
 
@@ -163,6 +166,7 @@ The start-of-span case is a direct consequence of the general rule: `{attrs}` ca
 > {.class} content    →  QuoteBlock > Paragraph > Text("{.class}content")   ← orphan, no preceding element
 > content {.class}    →  QuoteBlock({class:"class"}) > Paragraph > Text("content")  ← trailing, attaches
 ```
+*→ [test: attrs-orphan-quoteblock](../tests/005-universal-attributes/attrs-orphan-quoteblock.yaml)*
 
 `{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
 
@@ -171,6 +175,7 @@ Authors who want a literal `{` SHOULD escape it with `\{` to make intent explici
 ```
 price is \{high\}  →  Text("price is {high}")
 ```
+*→ [test: attrs-escape-brace](../tests/005-universal-attributes/attrs-escape-brace.yaml)*
 
 ### 5.4 Attribute Inside Link Text
 
@@ -180,5 +185,6 @@ price is \{high\}  →  Text("price is {high}")
 [**bold** {.foo}](url)  →  Link { children: [Emphasis({class:"foo"}, "bold")], href: "url" }
 [{.foo} text](url)      →  Link { children: [Text("{.foo} text")], href: "url" }   ({.foo} orphan → literal)
 ```
+*→ [test: attrs-link-text](../tests/005-universal-attributes/attrs-link-text.yaml), [test: attrs-link-text-orphan](../tests/005-universal-attributes/attrs-link-text-orphan.yaml)*
 
 ---

@@ -1,0 +1,20 @@
+id: thematic-break-text-dropped
+section: "9.3"
+description: "Characters between dashes and trailing {attrs} are silently dropped; attrs attach to ThematicBreak"
+
+input: |
+  Before
+
+  --- some text {.x}
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Before
+  - children:
+      - type: ThematicBreak
+        attributes:
+          - key: class
+            value: [x]

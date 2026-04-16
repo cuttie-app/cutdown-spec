@@ -75,6 +75,7 @@ AST: Emphasis { children: Inline[], attributes: Attributes }
 ** text → Text("**") + Text(" text")   (unclosed)
 * text * → Text("* text *")            (single asterisk = literal)
 ```
+*→ [test: emphasis-basic](../tests/010-inline-elements/emphasis-basic.yaml), [test: emphasis-triple](../tests/010-inline-elements/emphasis-triple.yaml), [test: emphasis-unclosed](../tests/010-inline-elements/emphasis-unclosed.yaml), [test: emphasis-single-asterisk](../tests/010-inline-elements/emphasis-single-asterisk.yaml)*
 
 ---
 
@@ -306,6 +307,7 @@ $$ formula $$ now text.   → MathInline { formula: " formula " } + Text(" now t
 $$unclosed                 → Text("$$") + Text("unclosed")
 $ not math $               → Text("$ not math $")
 ```
+*→ [test: math-inline-spaced](../tests/010-inline-elements/math-inline-spaced.yaml), [test: math-inline-text-after](../tests/010-inline-elements/math-inline-text-after.yaml), [test: math-inline-unclosed](../tests/010-inline-elements/math-inline-unclosed.yaml), [test: math-inline-single-dollar](../tests/010-inline-elements/math-inline-single-dollar.yaml)*
 
 ---
 
@@ -356,5 +358,6 @@ AST: QuoteInline { kind: "double"|"single", children: Inline[], attributes: Attr
 ""'' inner ''""       → QuoteInline { kind: "double", children: [QuoteInline { kind: "single", children: [Text("inner")] }] }
 "" unclosed           → Text('""') + Text(" unclosed")
 ```
+*→ [test: quote-inline-double-spaced](../tests/010-inline-elements/quote-inline-double-spaced.yaml), [test: quote-inline-single-spaced](../tests/010-inline-elements/quote-inline-single-spaced.yaml), [test: quote-inline-cross-nesting](../tests/010-inline-elements/quote-inline-cross-nesting.yaml), [test: quote-inline-unclosed](../tests/010-inline-elements/quote-inline-unclosed.yaml)*
 
 ---

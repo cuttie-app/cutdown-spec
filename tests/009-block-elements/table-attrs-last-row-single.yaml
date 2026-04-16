@@ -1,0 +1,24 @@
+id: table-attrs-last-row-single
+section: "9.8.3"
+description: "Single {} on last row goes to Table"
+
+input: |
+  | td1 | td2 | {.a}
+
+ast:
+  - type: Table
+    kind: simple
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: td1
+          - type: Cell
+            children:
+              - type: Text
+                value: td2
+    attributes:
+      - key: class
+        value: [a]

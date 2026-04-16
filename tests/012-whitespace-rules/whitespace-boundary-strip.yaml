@@ -1,0 +1,14 @@
+id: whitespace-boundary-strip
+section: "12.2"
+description: "Leading and trailing whitespace inside ** delimiters is stripped"
+
+input: |
+  ** bb **
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Emphasis
+        children:
+          - type: Text
+            value: bb
