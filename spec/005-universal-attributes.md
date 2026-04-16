@@ -17,19 +17,12 @@ Token types inside `{}`:
 
 ### 5.2 Placement
 
-Attributes appear **after** their target element, either on the **same line** or on the **immediately following line** (no blank line between). Both placements are equivalent and produce identical AST output.
+Attributes MUST appear **after** their target element on the **same line**.
 
 ```
-== Section {#intro}          ← same-line placement
-
+== Section {#intro}
 **bold text** {.highlight}
-::span {.warning}
-
-== Section                   ← following-line placement (equivalent)
-{#intro}
-
-::span
-{.warning}
+:::callout {.warning}
 ```
 
 #### Block Opening Lines — Last-Attr Rule
@@ -43,7 +36,6 @@ An empty `{}` as the last token explicitly assigns no attributes to the block, f
 = Heading **bold**{.b} {}      →  Section({},        [Text("Heading "), Strong({class:"b"}, "bold")])
 = Heading **bold** {#h}        →  Section({id:"h"},  [Text("Heading "), Strong("bold")])
 ```
-*→ [test: attrs-heading-last-attr-inline](../tests/005-universal-attributes/attrs-heading-last-attr-inline.yaml), [test: attrs-heading-last-attr-empty](../tests/005-universal-attributes/attrs-heading-last-attr-empty.yaml), [test: attrs-heading-last-attr-simple](../tests/005-universal-attributes/attrs-heading-last-attr-simple.yaml)*
 
 This rule applies only in block opening line context. In paragraph context all `{...}` follow inline attachment rules exclusively.
 
@@ -86,7 +78,6 @@ Single NL does not break the attr chain. A sequence of `{}` blocks may span mult
 - text {.a}          →  List({.a}, ListItem(Text("text")))
 - text {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Text("text")))   ← {.a} dropped (Text has no attrs)
 ```
-*→ [test: attrs-scope-chain-span](../tests/005-universal-attributes/attrs-scope-chain-span.yaml), [test: attrs-scope-chain-span-2](../tests/005-universal-attributes/attrs-scope-chain-span-2.yaml), [test: attrs-scope-chain-span-1](../tests/005-universal-attributes/attrs-scope-chain-span-1.yaml), [test: attrs-scope-chain-span-empty](../tests/005-universal-attributes/attrs-scope-chain-span-empty.yaml), [test: attrs-scope-chain-span-noop](../tests/005-universal-attributes/attrs-scope-chain-span-noop.yaml), [test: attrs-scope-chain-text](../tests/005-universal-attributes/attrs-scope-chain-text.yaml), [test: attrs-scope-chain-text-1](../tests/005-universal-attributes/attrs-scope-chain-text-1.yaml), [test: attrs-scope-chain-text-3](../tests/005-universal-attributes/attrs-scope-chain-text-3.yaml)*
 
 Same rule applies to `FileRefGroup` and `ImageGroup`:
 
@@ -96,7 +87,6 @@ Same rule applies to `FileRefGroup` and `ImageGroup`:
 /img.png {}         →  FileRefGroup({},   FileRef(...))    ← {} no-op on group
 /img.png {.a}{}     →  FileRefGroup({},   FileRef({.a}, ...))
 ```
-*→ [test: attrs-scope-chain-fileref](../tests/005-universal-attributes/attrs-scope-chain-fileref.yaml), [test: attrs-scope-chain-fileref-1](../tests/005-universal-attributes/attrs-scope-chain-fileref-1.yaml), [test: attrs-scope-chain-fileref-empty](../tests/005-universal-attributes/attrs-scope-chain-fileref-empty.yaml), [test: attrs-scope-chain-fileref-noop](../tests/005-universal-attributes/attrs-scope-chain-fileref-noop.yaml)*
 
 Multiline equivalents (all produce identical AST):
 
@@ -110,27 +100,6 @@ Multiline equivalents (all produce identical AST):
   {.a}
   {.b}
 ```
-
-#### Following-line placement for block elements
-
-A standalone `{attrs}` line immediately after any block element (no blank line between) attaches to that block. This applies to all block types — QuoteBlock, CodeBlock, NamedBlock, List, ThematicBreak, etc.:
-
-```
-> content               > content {.note}
-{.note}          ≡
-                        > content
-                        > {.note}
-
-:::note                 :::note {.warning}
-content          ≡      content
-:::                     :::
-{.warning}
-
----                     --- {.divider}
-{.divider}       ≡
-```
-
-A `{attrs}` line that appears **inside** a block container (e.g., as the last `>` line of a QuoteBlock) attaches to the **container**, not to the last child block inside it.
 
 #### Trailing attr lines and loose-list detection
 
@@ -147,6 +116,8 @@ A line consisting solely of `{attrs}` immediately after a list item with no prec
 - item two
 ```
 
+`{attrs}` may appear at the end of a Paragraph or ListItem either on the same line as the final content line, or on the immediately following line (no blank line between). A line consisting solely of `{attrs}` immediately after a paragraph (no blank line) is consumed as part of the paragraph's scope chain and does not start a new block.
+
 ### 5.3 Orphan Attributes
 
 An `{...}` sequence that cannot be assigned to any segment in the current scope chain is an **orphan**.
@@ -155,18 +126,9 @@ Orphan behaviour depends on position:
 
 | Position | Behaviour | Example |
 |---|---|---|
-| Start of inline content (no preceding element to attach to) | `Text("{...}")` emitted verbatim | `{.class} text` → `Text("{.class} text")` |
-| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is {high}")` |
-| After a blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
+| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is ")` + `Text("{high}")` |
+| After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | silently dropped (no AST output) | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
-
-The start-of-span case is a direct consequence of the general rule: `{attrs}` can only attach to a *preceding* element. With nothing before it, there is no element to claim the token, so it is emitted verbatim. This is not a special case — it falls out of the orphan definition naturally.
-
-```
-> {.class} content    →  QuoteBlock > Paragraph > Text("{.class}content")   ← orphan, no preceding element
-> content {.class}    →  QuoteBlock({class:"class"}) > Paragraph > Text("content")  ← trailing, attaches
-```
-*→ [test: attrs-orphan-quoteblock](../tests/005-universal-attributes/attrs-orphan-quoteblock.yaml)*
 
 `{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
 
@@ -175,16 +137,14 @@ Authors who want a literal `{` SHOULD escape it with `\{` to make intent explici
 ```
 price is \{high\}  →  Text("price is {high}")
 ```
-*→ [test: attrs-escape-brace](../tests/005-universal-attributes/attrs-escape-brace.yaml)*
 
 ### 5.4 Attribute Inside Link Text
 
-`{attrs}` appearing inside `[...]` follows the same rules as paragraph inline content: it attaches to the immediately preceding inline element. When no preceding element exists, the orphan rule (§5.3) applies and the token is emitted as literal text.
+`{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 
 ```
 [**bold** {.foo}](url)  →  Link { children: [Emphasis({class:"foo"}, "bold")], href: "url" }
-[{.foo} text](url)      →  Link { children: [Text("{.foo} text")], href: "url" }   ({.foo} orphan → literal)
+[{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
 ```
-*→ [test: attrs-link-text](../tests/005-universal-attributes/attrs-link-text.yaml), [test: attrs-link-text-orphan](../tests/005-universal-attributes/attrs-link-text-orphan.yaml)*
 
 ---
