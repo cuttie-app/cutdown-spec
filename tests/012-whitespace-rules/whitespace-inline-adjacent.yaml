@@ -1,0 +1,18 @@
+id: whitespace-inline-adjacent
+section: "12.2"
+description: "Inline elements adjacent to surrounding text with no space — text nodes emit without gaps"
+
+input: |
+  aa**bb**cc
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: aa
+      - type: Emphasis
+        children:
+          - type: Text
+            value: bb
+      - type: Text
+        value: cc

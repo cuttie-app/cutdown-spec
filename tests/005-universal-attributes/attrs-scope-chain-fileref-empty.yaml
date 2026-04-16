@@ -1,0 +1,13 @@
+id: attrs-scope-chain-fileref-empty
+section: "5.2"
+description: "Empty {} on FileRef claims FileRefGroup slot but assigns nothing"
+
+input: |
+  /img.png {}
+
+ast:
+  - type: FileRefGroup
+    group: image
+    children:
+      - type: FileRef
+        src: /img.png

@@ -1,0 +1,20 @@
+id: attrs-heading-last-attr-simple
+section: "5.2"
+description: "Last-attr rule: single trailing {} on heading line goes to Section; inline element gets no attrs"
+
+input: |
+  = Heading **bold** {#h}
+
+ast:
+  - type: Section
+    level: 1
+    heading:
+      - type: Text
+        value: "Heading "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: bold
+    attributes:
+      - key: id
+        value: h

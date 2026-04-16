@@ -1,0 +1,12 @@
+id: attrs-escape-brace
+section: "5.3"
+description: "Escaped \\{ and \\} produce literal braces — not parsed as attribute block"
+
+input: |
+  price is \{high\}
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "price is {high}"

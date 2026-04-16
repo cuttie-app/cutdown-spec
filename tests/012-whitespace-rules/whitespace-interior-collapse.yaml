@@ -1,0 +1,14 @@
+id: whitespace-interior-collapse
+section: "12.2"
+description: "Multiple interior spaces inside delimiters are collapsed to single space, then boundary-stripped"
+
+input: |
+  **  text  **
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Emphasis
+        children:
+          - type: Text
+            value: text

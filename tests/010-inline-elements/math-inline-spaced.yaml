@@ -1,0 +1,12 @@
+id: math-inline-spaced
+section: "10.10"
+description: "$$ delimiters with spaces around formula; formula value preserves interior spaces"
+
+input: |
+  $$ a^2 + b^2 $$
+
+ast:
+  - type: Paragraph
+    children:
+      - type: MathInline
+        formula: " a^2 + b^2 "

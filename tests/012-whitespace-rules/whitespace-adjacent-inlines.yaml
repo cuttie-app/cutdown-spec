@@ -1,0 +1,20 @@
+id: whitespace-adjacent-inlines
+section: "12.2"
+description: "Two separate inline elements separated by a space — space is preserved as Text(\" \") between them"
+
+input: |
+  __ bb __ ** cc **
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Strong
+        children:
+          - type: Text
+            value: bb
+      - type: Text
+        value: " "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: cc
