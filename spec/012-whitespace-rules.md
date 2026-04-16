@@ -40,6 +40,5 @@ aa**bb**cc         → Text("aa") + Emphasis([Text("bb")]) + Text("cc")
 __ ** bb **__      → Strong([Emphasis([Text("bb")])])   (space between __ and ** = zero)
 __ bb __ ** cc **  → Strong([Text("bb")]) + Text(" ") + Emphasis([Text("cc")])
 ```
-*→ [test: whitespace-boundary-strip](../tests/012-whitespace-rules/whitespace-boundary-strip.yaml), [test: whitespace-interior-collapse](../tests/012-whitespace-rules/whitespace-interior-collapse.yaml), [test: whitespace-empty-delimiter](../tests/012-whitespace-rules/whitespace-empty-delimiter.yaml), [test: whitespace-inline-adjacent](../tests/012-whitespace-rules/whitespace-inline-adjacent.yaml), [test: whitespace-nested-boundary](../tests/012-whitespace-rules/whitespace-nested-boundary.yaml), [test: whitespace-adjacent-inlines](../tests/012-whitespace-rules/whitespace-adjacent-inlines.yaml)*
 
 ---
