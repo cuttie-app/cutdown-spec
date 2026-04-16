@@ -1,6 +1,6 @@
 id: quote-block-attrs-own-line
 section: "9.6"
-description: "A {attrs}-only first line produces orphan attribute; {attrs} at end on line, at the end of QuoteBlock produces QuoteBlock attribute property."
+description: A {attrs}-only first line produces orphan attribute;  {attrs} at end on line, at the end of QuoteBlock produces QuoteBlock attribute property.
 
 input: |
   > {.callout}
