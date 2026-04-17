@@ -4,18 +4,14 @@ Cutdown is a markup language that produces an AST. There is no HTML output. The 
 
 ---
 
-## Identifier Character Set
-
-`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
-
----
-
 ## Input
 
 - UTF-8 only. NFC normalization recommended.
 - BOM stripped. Null bytes replaced with U+FFFD.
 - Line endings normalized to `\n`. Tabs → single space (except inside fences).
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
+
+`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
 
 ---
 
@@ -31,17 +27,31 @@ A line whose **first character** is `#` is a comment — produces no AST node, i
 
 ---
 
-## Escaping
+## Document Model
 
-`\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
+Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. ThematicBreaks `---` on top level and Meta fence `~~~` produces Pages' breaks.
 
-Special characters: `= # * _ ~  $ [ ] ( ) ! { } : - > / \ | " '` and \`
+```
+Document
+└── Page[]
+    ├── meta: Meta | null
+    └── children: (ThematicBreak | Section | Block)[]
+```
+
+- Every document has ≥ 1 Page.
+- `---` → new Page (ThematicBreak is first child of new Page).
+- `Meta` block → fills current `Page.meta`; if already set, opens new Page first.
+- Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
 
 ---
 
 ## Block Elements
 
 Blocks are separated by **blank lines**. Block elements cannot interrupt a paragraph.
+
+### Paragraph
+
+Any non-blank lines not matching another block. Single newline → space (soft break). `\` at line end → `TextBreak`.
 
 ### Headings → `Section`
 
@@ -53,9 +63,6 @@ Blocks are separated by **blank lines**. Block elements cannot interrupt a parag
 
 Must be preceded by a blank line (or start of document). Inline content allowed. Sections are scoped to their containing block context (NamedBlock, QuoteBlock, ListItem).
 
-### Paragraph
-
-Any non-blank lines not matching another block. Single newline → space (soft break). `\` at line end → `TextBreak`.
 
 ### Thematic Break → `ThematicBreak` + new Page
 
@@ -64,7 +71,17 @@ Any non-blank lines not matching another block. Single newline → space (soft b
 --- {.attrs}
 ```
 
-Three or more `-`. Creates a page break on top level. Exist as ThematicBreak node only if declared inside Block elements.
+Three or more `-`. Creates a page break on top level. Exist as ThematicBreak node only if declared inside Block elements. ThematicBreak indide other Blcoks is a normal block-level element (not a page break).
+
+### Meta Block (Frontmatter) → `Meta`
+
+```
+~~~yaml
+key: value
+~~~
+```
+
+Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
 ### Code Block → `CodeBlock`
 
@@ -76,15 +93,6 @@ literal content — no inline parsing
 
 Language defaults to `"text"`. Fixed 3-backtick fence. No nesting. Unclosed → warning CDN-0001.
 
-### Meta Block (Frontmatter) → `Meta`
-
-```
-~~~yaml
-key: value
-~~~
-```
-
-Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
 ### Math Block → `MathBlock`
 
@@ -115,7 +123,7 @@ Every line must start with `>`. No lazy continuation. Nesting by counting `>` ch
 1. ordered item           (marker: '{n}. ')
 2. second item
 
-- [ ] task item
+- [ ] task item           (marker: '- [{x / X / space}] ')
   - [x] nest task item    ({ checked: true})
 ```
 
@@ -148,7 +156,7 @@ Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRe
 ![alt text](src) {attrs}
 ```
 
-Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRefGroup`.
+Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRefGroup`. Image can be declared inside Inline context as well (as `ImageInline`).
 
 ### Named Block → `NamedBlock`
 
@@ -174,28 +182,28 @@ Must start at line start. Last definition wins (supports transclusion override).
 
 Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal text.
 
-| Syntax | Node | Notes |
-|--------|------|-------|
-| `**text**` | `Emphasis` | Single `*` = literal |
-| `__text__` | `Strong` | Single `_` = literal |
-| `~~text~~` | `Strikethrough` | Single `~` = literal |
-| ` ``code`` ` | `CodeInline` | Single `` ` `` = literal. Content literal. |
-| `$$formula$$` | `MathInline` | Single `$` = literal. Content literal. |
-| `""text""` | `QuoteInline(double)` | Single `"` = literal |
-| `''text''` | `QuoteInline(single)` | Single `'` = literal |
-| `[text](url)` | `Link(external)` | |
-| `[text][page]` | `Link(page)` | target has no prefix |
-| `[text][#tag]` | `Link(tag)` | resolved by consumer |
-| `[text][^ref]` | `Link(ref)` | resolved by consumer |
+| Syntax          | Node | Notes |
+|-----------------|------|-------|
+| `**text**`      | `Emphasis` | Single `*` = literal |
+| `__text__`      | `Strong` | Single `_` = literal |
+| `~~text~~`      | `Strikethrough` | Single `~` = literal |
+| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal. |
+| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal. |
+| `""text""`      | `QuoteInline(double)` | Single `"` = literal |
+| `''text''`      | `QuoteInline(single)` | Single `'` = literal |
+| `[text](url)`   | `Link(external)` | |
+| `[text][page]`  | `Link(page)` | target has no prefix |
+| `[text][#tag]`  | `Link(tag)` | resolved by consumer |
+| `[text][^ref]`  | `Link(ref)` | resolved by consumer |
 | `[text][@cite]` | `Link(cite)` | resolved by consumer |
-| `![alt](src)` | `ImageInline` | |
+| `![alt](src)`   | `ImageInline` | |
 | `::name {attrs}` | `Span` | Empty. `::` without name = literal. |
-| `{{key}}` | `Variable` | `{{}}` invalid = literal |
+| `{{key}}`       | `Variable` | `{{}}` invalid = literal |
 | `\` at line end | `TextBreak` | |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting not allowed (greedy close).
 
-Run of 3 (`***`, `___`, `~~~`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal.
+Inside inline context run of 3 (`***`, `___`, `~~~`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal.
 
 ---
 
@@ -221,29 +229,20 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 ---
 
-## Document Model
+## Escaping
 
-```
-Document
-└── Page[]
-    ├── meta: Meta | null
-    └── children: (ThematicBreak | Section | Block)[]
-```
+`\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-- Every document has ≥ 1 Page.
-- `---` → new Page (ThematicBreak is first child of new Page).
-- `Meta` block → fills current `Page.meta`; if already set, opens new Page first.
-- Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
+Special characters: `= # * _ ~  $ [ ] ( ) ! { } : - > / \ | " '` and \`
 
 ---
 
 ## Precedence (inline, highest first)
 
 1. Code fence \`\`\`, Meta fence `~~~`, Math fence `$$$` — content always literal
-2. Inline code \`\` — content literal
+2. Inline code \`\`, Inline math `$$` — content literal
 3. Escape `\x`
-4. Links `[...](...)`  and images `![...]()`
-5. Inline math `$$`
+4. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
+5. Links `[...](...)`  and images `![...]()`
 6. Emphasis `**`, Strong `__`, Strikethrough `~~`, QuoteInline `""` `''`
 7. `::span`
-8. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
