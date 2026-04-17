@@ -43,15 +43,6 @@
 | `Variable` | `key: string, attributes` |
 | `QuoteInline` | `kind: "double"\|"single", children: Inline[], attributes` |
 
-### Renamed Fields (v0.1.2 → v0.1.3)
-
-- `Link.text` → `Link.children`
-- `Image` (inline node) → `ImageInline`
-- `Row.cells` → `Row.children`
-- `RefDefinition.content` → `RefDefinition.children`
-- `AnonymousBlock` → `NamedBlock`
-- `CodeBlock { language: string|null }` → `CodeBlock { language: string = "text" }`
-- `Column { align: ...|null }` → `Column { align: ... = "left" }`
 
 ### Attributes Type
 

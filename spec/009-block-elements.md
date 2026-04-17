@@ -2,31 +2,30 @@
 
 ### 9.1 Headings
 
-**Syntax:** `={n} TEXT`
+- **Syntax:** `={n} TEXT`
 
 - `n` equal signs (`=`), where `n` is in range `[1..9]`
 - Followed by exactly one space
 - Followed by inline content
 
-```
-Regex: ^(={1,9}) (.+)$
-```
 
-| Syntax | Level |
-|--------|-------|
-| `= Heading` | 1 |
-| `== Heading` | 2 |
-| `=== Heading` | 3 |
-| `==== Heading` | 4 |
-| `===== Heading` | 5 |
-| `====== Heading` | 6 |
-| `======= Heading` | 7 |
-| `======== Heading` | 8 |
-| `========= Heading` | 9 |
+| Syntax              | Level |
+|---------------------|-------|
+| `= Heading`         | 1     |
+| `== Heading`        | 2     |
+| `=== Heading`       | 3     |
+| `==== Heading`      | 4     |
+| `===== Heading`     | 5     |
+| `====== Heading`    | 6     |
+| `======= Heading`   | 7     |
+| `======== Heading`  | 8     |
+| `========= Heading` | 9     |
 
 A heading MUST be preceded by a blank line (or be the first non-comment line of the document, or the first non-comment line of the current block container — see §7.2).
 
 Heading text is **parsed by inline rules (§10)** — all inline formatting (emphasis, links, inline code, math, etc.) is valid inside a heading. The result is `Inline[]`.
+
+Headings are not outstanding block elements — they are consumed into their enclosing `Section` node. The heading line opens a new `Section` at the appropriate level, and the heading content becomes that Section's `content`. Consumers receive `Section` nodes, not bare `Heading` nodes. `Section` is closed by the next heading of the same or higher level, or by the end of the current block container, or by end of document.
 
 #### Heading Attributes — Last-Attr Rule
 
@@ -37,25 +36,42 @@ An explicit empty `{}` as the last token means the heading carries no attributes
 ```
 = H1 [with link](..){.class}
 ```
+
 → `{.class}` is the last token → claimed by heading.
-→ AST: `Section(level=1, {class:"class"}, [Text("H1 "), Link(children=[Text("with link")], href="..")])`
+
+```
+→ AST:
+  Section
+    ├── level: 1
+    ├── heading: [Text("H1 "), Link(children=[Text("with link")], href="..")]
+    └── attributes: { class: ["class"] }
+```
 
 ```
 = H1 [with link](..){.class}{}
 ```
-→ `{}` is the last token → heading has no attributes.
-→ `{.class}` attaches to preceding inline element (the link).
-→ AST: `Section(level=1, {}, [Text("H1 "), Link(children=[Text("with link")], href="..", {class:"class"})])`
+
+→ `{}` is the last token → heading has no attributes.  
+→ `{.class}` attaches to preceding inline element (the link).  
+
+```
+→ AST:
+  Section
+    ├── level: 1
+    └── heading: [Text("H1 "), Link(children=[Text("with link")], href="..", {class:"class"})]
+```
 
 This rule applies only to lines that open a block construct (headings, named blocks). In paragraph context all `{...}` follow inline attachment rules exclusively.
 
-AST: `Heading { level: 2, content: Inline[], attributes: Attributes }`
+AST: `Heading { level: 2, heading: Inline[], attributes?: Attributes }`
 
 The heading node is consumed into its enclosing `Section` node. Consumers receive `Section`, not bare `Heading` nodes.
 
 ---
 
 ### 9.2 Paragraphs
+
+- **Syntax:** Any non-blank lines that do not match another block construct.
 
 A paragraph is a contiguous sequence of non-blank lines that do not match any other block construct. Once a paragraph has begun, no block element can interrupt it — the paragraph continues until a blank line is encountered (see §8.1).
 
@@ -90,7 +106,7 @@ AST:
 
 ### 9.3 Thematic Break
 
-**Syntax:** `---` or more dashes (3 or more consecutive `-` at line start). Any characters between the dashes and the optional `{attrs}` are silently dropped.
+- **Syntax:** `---` or more dashes (3 or more consecutive `-` at line start). Any characters between the dashes and the optional `{attrs}` are silently dropped.
 
 - `---` always produces a `ThematicBreak` node — there is no position restriction.
 - At **Page scope**: `ThematicBreak` creates a page break — a new Page is opened and the `ThematicBreak` node becomes the first child of that new Page.
@@ -98,7 +114,7 @@ AST:
 - May carry attributes for consumer use (e.g., styled dividers).
 
 ```
-AST: ThematicBreak { attributes: Attributes }
+AST: ThematicBreak { attributes?: Attributes }
 ```
 
 **Examples:**
@@ -113,7 +129,7 @@ AST: ThematicBreak { attributes: Attributes }
 
 ### 9.4 Code Block
 
-**Syntax:** Fenced with exactly three backticks.
+- **Syntax:** Fenced with exactly three backticks.
 
 ````
 ```language {attrs}
@@ -121,30 +137,30 @@ content
 ```
 ````
 
-- Opening fence: ` ``` ` optionally followed by a language identifier and/or attributes.
+- Opening fence: '\`\`\`' optionally followed by a language identifier and/or attributes.
 - Language identifier: `[ID_LITERAL]+` (see §1), optional. Defaults to `"text"` when absent.
 - Attributes: optional, follow standard attribute syntax (§5).
 - Content: literal — no inline parsing is performed inside a code block. Content lines are joined with `\n`; no trailing `\n` is appended. Blank lines within the fence are preserved verbatim.
-- Closing fence: ` ``` ` on its own line.
+- Closing fence: '\`\`\`' on its own line.
 - Fence character: backtick only. `~~~` is reserved for metadata (§9.5).
 - Minimum fence length: exactly 3 backticks. Variable-length fences are not supported.
-- Nesting: not supported. The first ` ``` ` closing line ends the block.
+- Nesting: not supported. The first '\`\`\`' closing line ends the block.
 - Unclosed fence: content runs to end of document.
-- **Inside block containers:** legal inside `ListItem`, `TaskItem`, `QuoteBlock`, and `NamedBlock`. The closing fence is recognised after leading-space stripping regardless of indentation. Content indentation handling varies by container:
+- **Inside block containers:** legal inside `ListItem`, `TaskItem`, `QuoteBlock`, and `NamedBlock`. The closing fence is recognized after leading-space stripping regardless of indentation. Content indentation handling varies by container:
   - `ListItem` / `TaskItem` / `NamedBlock`: the container's base indentation offset is stripped from each content line before storing in `content`.
   - `QuoteBlock`: only the `>` prefix is stripped (per §9.6); no additional space stripping applies to code block content.
 
-> **Out of scope:** Embedding a literal Cutdown code block inside a `CodeBlock` with `language="cutdown"` is intentionally unsupported. Because fence length is fixed at exactly 3 backticks and nesting is not supported, there is no way to represent a ` ``` ` fence line as literal content. Authors who need to show Cutdown examples inside a Cutdown document SHOULD use a `:::example` Named Block; rendering is the consumer's responsibility.
+> **Out of scope:** Embedding a literal Cutdown code block inside a `CodeBlock` with `language="cutdown"` is intentionally unsupported. Because fence length is fixed at exactly 3 backticks and nesting is not supported, there is no way to represent a '\`\`\`' fence line as literal content. Authors who need to show Cutdown examples inside a Cutdown document SHOULD use a `:::example` Named Block; rendering is the consumer's responsibility.
 
 ```
-AST: CodeBlock { language: string = "text", content: string, attributes: Attributes }
+AST: CodeBlock { language: string = "text", content: string, attributes?: Attributes }
 ```
 
 ---
 
 ### 9.5 Meta block (Frontmatter)
 
-**Syntax:** Fenced with exactly three tildes.
+- **Syntax:** Fenced with exactly three tildes.
 
 ```
 ~~~format
@@ -156,17 +172,17 @@ content
 - Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `yaml`.
 - Content: raw string — passed as-is to the consumer. Content lines are joined with `\n` and a single trailing `\n` is appended (ensuring the string is valid input for YAML/TOML/JSON parsers).
 - Closing fence: `~~~` on its own line.
-- Unclosed fence: content runs to end of document.
-- **Inside block containers:** illegal. When a `~~~` fence opener is encountered inside a `ListItem`, `TaskItem`, `QuoteBlock`, or `NamedBlock`, the entire raw span — including the opening `~~~` line, all content lines, and the closing `~~~` line — is emitted as a single `Paragraph` with literal text. A warning-level diagnostic is emitted on the opening fence line.
+- Unclosed fence: content runs to end of document, but emits warning CDN-0002 for the opening fence line.
 - May appear anywhere **at Page scope**. Multiple Meta blocks are allowed.
 - A Meta block always fills the current Page's `meta` field. If `Page.meta` is already set, the Meta block opens a new Page first, then fills that Page's `meta`. No Meta block ever appears in `Page.children`.
+- **Inside block containers:** illegal. When a `~~~` fence opener is encountered inside a `ListItem`, `TaskItem`, `QuoteBlock`, or `NamedBlock`, the entire raw span — including the opening `~~~` line, all content lines, and the closing `~~~` line — is emitted as a single `Paragraph` with literal text. Emits warning CDN-0013 for the opening line.
 - No attributes supported on Meta blocks.
 
 ```
 AST: Meta { format: "yaml"|"toml"|"json" = "yaml", raw: string }
 ```
 
-**Meta Transclusion:** A Meta block may include an `include:` key listing paths to external files. Cutdown emits this as a normal `Meta` node. Resolution is the consumer's responsibility.
+#### Example:
 
 ```
 ~~~yaml
@@ -181,7 +197,7 @@ include:
 
 ### 9.6 QuoteBlock
 
-**Syntax:** Lines prefixed with `>`.
+- **Syntax:** Lines prefixed with `>`.
 
 ```
 > This is a quoted block.
@@ -193,10 +209,9 @@ include:
 - The `>` prefix and one optional following space are stripped from each line before parsing content.
 - Content is parsed as full block content (paragraphs, lists, code blocks, nested quotes, etc.).
 - Nesting: `>>` = blockquote inside blockquote. `>>>` = triple nesting, etc. Both `>>` and `> >` (with spaces between `>`) are valid nesting syntax. Nesting depth = count of leading `>` characters.
-- `{attr}` trailing on the first `>` line attaches to the QuoteBlock. Only the first line's trailing `{attr}` is claimed by the block; subsequent lines' trailing `{attr}` follow inline attachment rules.
 
 ```
-AST: QuoteBlock { children: Block[], attributes: Attributes }
+AST: QuoteBlock { children: Block[], attributes?: Attributes }
 ```
 
 ---
@@ -205,7 +220,7 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 
 #### 9.7.1 Unordered List
 
-**Marker:** The list marker is the minus-hyphen character (`-`) only, followed by one space.
+- **Marker:** The list marker is the minus-hyphen character (`-`) only, followed by one space.
 
 ```
 - Item one
@@ -218,12 +233,13 @@ AST: QuoteBlock { children: Block[], attributes: Attributes }
 
 ```
 Input:  - - - nested item
+
 AST:    ListItem { children: [Text("- - nested item")] }
 ```
 
 #### 9.7.2 Ordered List
 
-**Marker:** `{number}.` followed by one space.
+- **Marker:** `{number}.` followed by one space.
 
 ```
 1. First item
@@ -237,6 +253,7 @@ AST:    ListItem { children: [Text("- - nested item")] }
 
 ```
 Input:  1. 2. 3. nested item
+
 AST:    ListItem { children: [Text("2. 3. nested item")] }
 ```
 
@@ -254,7 +271,7 @@ Trailing attr lines (lines consisting solely of `{attrs}` with no preceding blan
 
 Task items are unordered list items prefixed with a checkbox marker. They emit `TaskItem` nodes carrying a `checked` boolean.
 
-**Syntax:**
+- **Syntax:** hyphen `-` followed by a space, then a checkbox marker (`[ ]`, `[x]`, or `[X]`), then a space, then inline content.
 
 ```
 - [ ] Unchecked task
@@ -268,7 +285,7 @@ Task items are unordered list items prefixed with a checkbox marker. They emit `
 - `TaskItem` follows the same multiline and block-promotion rules as `ListItem` (§9.7.5).
 
 ```
-AST: TaskItem { checked: bool, children: (Block | Inline)[], attributes: Attributes }
+AST: TaskItem { checked: bool, children: (Block | Inline)[], attributes?: Attributes }
 ```
 
 **Example:**
@@ -419,6 +436,8 @@ For `{attr}` on list items, see the scope-chain rule in §5.2.
 
 ### 9.8 Tables
 
+- **Syntax:** `| ... |` (with leading and trailing `|` required).
+
 Two table variants are supported, distinguished by the presence of a delimiter row.
 
 #### 9.8.1 Simple Pipe Table
@@ -443,14 +462,14 @@ A delimiter row follows the first (header) row.
 
 **Delimiter row alignment syntax:**
 
-| Delimiter | Alignment |
-|-----------|-----------|
-| `\|------|` | none (default left) |
-| `\|:-----|` | left |
-| `\|-----:|` | right |
-| `\|:----:|` | center |
-| `\|-----,|` | comma (thousands separator style) |
-| `\|-----.|` | decimal (decimal point alignment) |
+| Delimiter     | Alignment |
+|---------------|-----------|
+| '\|------\|'  | none (default left) |
+| '\|:-----\|'  | left |
+| '\|-----:\|'  | right |
+| '\|:----:\|'  | center |
+| '\|-----,\|'  | comma (thousands separator style) |
+| '\|-----.\|'  | decimal (decimal point alignment) |
 
 Rendering of comma and decimal alignment is the consumer's responsibility.
 
@@ -467,10 +486,14 @@ Rendering of comma and decimal alignment is the consumer's responsibility.
 
 ```
 | td1 | td2 | {.a}{.b}   →  Table({.b}, Row({.a}, Cell(td1), Cell(td2)))
+
 | td1 | td2 | {.a}       →  Table({.a}, Row(...))          ← single {} = Table slot
+
 | td1 | td2 | {.a}{}     →  Table({},   Row({.a}, ...))    ← {} no-op on Table; {.a} to Row
+
 | td1 | td2 |
 {.a}{.b}                 →  Table({.b}, Row({.a}, ...))    ← multiline equivalent
+
 | td1 | td2 |
 {.a}
 {.b}                     →  Table({.b}, Row({.a}, ...))    ← same
@@ -483,16 +506,16 @@ Mid-table (not last row):
 ```
 AST:
   Table {
-    kind:        "simple" | "gfm",
-    head:        Row[] | null,
-    body:        Row[],
-    columns:     Column[],
-    attributes:  Attributes
+    kind:         "simple" | "gfm",
+    head:         Row[] | null,
+    body:         Row[],
+    columns:      Column[],
+    attributes?:  Attributes
   }
 
   Row {
-    children:   Cell[],
-    attributes: Attributes
+    children:     Cell[],
+    attributes?:  Attributes
   }
 
   Cell {
@@ -513,13 +536,22 @@ Note: `Cell` does not carry an `align` field — consumers derive alignment from
 
 ### 9.9 File References
 
-Any line beginning with `/` is a **file reference block**.
+- **Syntax:** `/path/to/file.ext {attrs}`
 
-**Syntax:** `/path/to/file.ext {attrs}`
+Any line beginning with `/` is a **file reference block**.
 
 - Leading `/` is mandatory.
 - The path uses `PATH_LITERAL` characters (§1): `[a-zA-Z0-9._/-]`. Path traversal (`/../`) is allowed. Cutdown does not validate paths.
+- Spaces are not allowed in the path.
 - Optional attributes after the path (separated by at least one space).
+- String after slash treated as schema-less URL. Cutdown does not validate that the path is a valid URL or file path. The consumer is responsible for interpreting the path string.
+
+**Query string (`?`):** `?` is allowed in the path. If path contains `?` the parser extracts the query string as a separate `query` field, and `src` stores the portion before `?`. The `?` character is not special to the Cutdown parser — query string interpretation is the consumer's responsibility.
+
+``` 
+/path/to/page.cutdown?section=id
+→ FileRef { src: "/path/to/page.cutdown", query: "section=id" }
+```
 
 **Fragment identifier (`#`):** If the path contains `#`, everything from the first `#` to the next space (or end of line, before `{attrs}`) is extracted as the fragment. `src` stores the portion before `#`; `fragment` stores the portion after `#`.
 
@@ -528,18 +560,8 @@ Any line beginning with `/` is a **file reference block**.
 → FileRef { src: "/path/to/page.cutdown", fragment: "section-id" }
 ```
 
-**Query string (`?`):** `?` and everything after it (up to a space or `#`) is included in `src` verbatim. No separate `query` field is produced. The `?` character is not special to the Cutdown parser — query string interpretation is the consumer's responsibility.
-
 ```
-/path/to/file.ext?q=value
-→ FileRef { src: "/path/to/file.ext?q=value", fragment: null }
-
-/path/to/file.ext?q=value#section
-→ FileRef { src: "/path/to/file.ext?q=value", fragment: "section" }
-```
-
-```
-AST: FileRef { src: string, fragment: string|null, group: "image"|"video"|"audio"|null, attributes: Attributes }
+AST: FileRef { src: string, fragment: string|null, group: "image"|"video"|"audio"|null, attributes?: Attributes }
 ```
 
 #### 9.9.1 Known Groups
@@ -557,7 +579,7 @@ The extension list for each group is configurable by the consumer. The above are
 
 #### 9.9.2 Grouping
 
-Consecutive `FileRef` lines belonging to the **same known group** (with no blank line between them) are wrapped in a `FileRefGroup`.
+Consecutive `FileRef` lines belonging to the **same known group** (with no blank line between them) are wrapped in a `FileRefGroup`. Blank line breaks the group. Different groups do not merge — two consecutive lines of different groups produce two separate `FileRefGroup` nodes.
 
 ```
 AST: FileRefGroup { group: "image"|"video"|"audio", children: (FileRef | ImageBlock)[] }
@@ -591,12 +613,14 @@ AST:
 
 #### 9.9.3 ImageBlock
 
+- **Syntax:** `![alt text](/path/to/image.ext {attrs})`
+
 A line at block level beginning with `![` is classified as an `ImageBlock`.
 
 The `alt` content is **parsed by inline rules (§10)**. The result is `Inline[]`.
 
 ```
-AST: ImageBlock { alt: Inline[], src: string, attributes: Attributes }
+AST: ImageBlock { alt: Inline[], src: string, attributes?: Attributes }
 ```
 
 Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`. The `FileRefGroup` may contain `FileRef` or `ImageBlock` children when `group` is `"image"`.
@@ -604,17 +628,7 @@ Consecutive `ImageBlock` lines with no blank line between them are wrapped in a 
 `{attr}` on an `ImageBlock` line: trailing on the same line.
 `{attr}` for an `ImageGroup` (FileRefGroup of images): trailing rule after last item line (no blank line).
 
-#### 9.9.4 Content Transclusion
-
-Files with extensions `.cutdown`, `.markdown`, or `.md` are emitted as `FileRef { group: null }`. The consuming application is responsible for loading and embedding the referenced document's content. Each included document carries its own document outline.
-
-A fragment identifier targets a specific section:
-
-```
-/path/to/page.cutdown#section-id
-```
-
-→ `FileRef { src: "/path/to/page.cutdown", fragment: "section-id", group: null }`
+`ImageBlock` and `ImageInline` have the same Markdown-like syntax. The difference is that `ImageBlock` is a block element that must be at the start of a line, while `ImageInline` is an inline element that can appear anywhere within a line (within inline context, see §10.0). Both share the same parsing rules for alt text, path, and attributes.
 
 ---
 
@@ -637,7 +651,7 @@ A fragment identifier targets a specific section:
 > **Document Outline note:** In the Document Outline (a derived view — see §7.4), each `NamedBlock` is treated as a named section entry within its containing Page. This is distinct from `Section` nodes produced by headings. Consumers that build a Document Outline SHOULD include `NamedBlock` names as outline entries.
 
 ```
-AST: NamedBlock { name: string, attributes: Attributes, children: Block[] }
+AST: NamedBlock { name: string, children: Block[], attributes?: Attributes }
 ```
 
 **Indentation collapsing inside NamedBlock:** The first content line inside a `:::` container establishes the base indentation level (its leading space count). That many spaces are stripped from all content lines before parsing. Lines with fewer leading spaces than the base have all available leading spaces stripped. The closing `:::` is recognized regardless of its own leading indentation.
@@ -688,7 +702,7 @@ AST:
 - Cutdown does not validate that every `[^id]` link has a matching definition.
 
 ```
-AST: RefDefinition { id: string, children: Inline[], attributes: Attributes }
+AST: RefDefinition { id: string, children: Inline[], attributes?: Attributes }
 ```
 
 ---
@@ -711,7 +725,7 @@ $$$
 - **Inside block containers:** legal. Closing fence recognised after leading-space stripping. Content indentation handling follows the same rules as `CodeBlock` (§9.4): `ListItem`/`TaskItem`/`NamedBlock` strip their base offset; `QuoteBlock` strips only the `>` prefix.
 
 ```
-AST: MathBlock { formula: string, attributes: Attributes }
+AST: MathBlock { formula: string, attributes?: Attributes }
 ```
 
 **Example:**
@@ -725,7 +739,7 @@ Input:
 AST:
   MathBlock {
     formula: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
-    attributes: { id: "eq1", class: ["display"] }
+    attributes?: { id: "eq1", class: ["display"] }
   }
 ```
 
