@@ -7,6 +7,10 @@ input: |
 
   --- some text {.x}
 
+diagnostics:
+  - code: CDN-0010
+    level: warning
+
 pages:
   - children:
       - type: Paragraph

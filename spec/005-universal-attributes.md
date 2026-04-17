@@ -32,7 +32,7 @@ On lines that open a block construct (headings, named blocks), the **last `{...}
 An empty `{}` as the last token explicitly assigns no attributes to the block, freeing earlier `{...}` to bind inward.
 
 ```
-= Heading **bold**{.b} {#h}    →  Section({id:"h"}, [Text("Heading "), Strong({class:"b"}, "bold")])
+= Heading **bold**{.b} {#h}    →  Section({id:"h"},  [Text("Heading "), Strong({class:"b"}, "bold")])
 = Heading **bold**{.b} {}      →  Section({},        [Text("Heading "), Strong({class:"b"}, "bold")])
 = Heading **bold** {#h}        →  Section({id:"h"},  [Text("Heading "), Strong("bold")])
 ```

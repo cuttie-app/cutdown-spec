@@ -13,7 +13,7 @@ ast:
       - type: Paragraph
         children:
           - type: Text
-            value: "{.class}content"
+            value: "{.class} content"
 
   - type: QuoteBlock
     children:
