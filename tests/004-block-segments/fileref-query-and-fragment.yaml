@@ -7,6 +7,6 @@ input: |
 
 ast:
   - type: FileRef
-    src: /path/to/file.ext?q=value
+    path: /path/to/file.ext?q=value
+    query: '?q=value'
     fragment: section-id
-    group: null
