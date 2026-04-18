@@ -1,6 +1,6 @@
 ## 1. Conventions
 
-The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **MAY** are used as defined in [RFC 2119].
+The keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **MAY** are used as defined in [RFC 2119].
 
 **Examples** are shown as:
 
