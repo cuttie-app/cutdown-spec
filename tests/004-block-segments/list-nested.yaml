@@ -9,12 +9,14 @@ input: |
 
 ast:
   - type: List
+    start: null
     children:
       - type: ListItem
         children:
           - type: Text
             value: Item one
           - type: List
+            start: null
             children:
               - type: ListItem
                 children:

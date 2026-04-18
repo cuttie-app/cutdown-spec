@@ -8,13 +8,17 @@ input: |
 
 ast:
   - type: List
-    ordered: true
     loose: false
+    start: 1
     children:
       - type: ListItem
         children:
           - type: Text
             value: First ordered item
+  - type: List
+    loose: false
+    start: null
+    children:
       - type: TaskItem
         checked: false
         children:
