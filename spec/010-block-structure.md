@@ -1,6 +1,6 @@
-## 8. Block Structure
+## 10. Block Structure and Block Boundaries
 
-### 8.1 Block Boundaries
+### 10.1 Block Boundaries
 
 Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (after normalization).
 
@@ -10,47 +10,33 @@ A parser identifies block boundaries by scanning for blank line sequences. Each 
 
 **Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a thematic break, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
 
-Comments (§8.3) are stripped before any other processing.
+Comments (§2) are stripped before any other processing.
 
-### 8.2 Leading and Trailing Whitespace
+### 10.2 Leading and Trailing Whitespace
 
 Any number of leading spaces (including none) are stripped before block classification. Indentation is never significant for block type detection in Cutdown. Indented code blocks (as in CommonMark) are not supported.
 
 Trailing spaces on any line are ignored.
 
-**List exception:** For list blocks, the parser records the **original column** of each marker (before stripping) for use in the list nesting stack model (§9.7.5). Block type detection still uses the stripped line; the column is a separate piece of metadata used only during list parsing.
+**List exception:** For list blocks, the parser records the **original column** of each marker (before stripping) for use in the list nesting stack model (§10.5). Block type detection still uses the stripped line; the column is a separate piece of metadata used only during list parsing.
 
-### 8.3 Comments
+### 10.3 Block Classification
 
-A line whose first non-whitespace character is `#` is a **comment line**. Leading spaces are stripped before this check (§8.2), so an indented `  # comment` is a comment just as `# comment` is.
+Each block candidate is classified by its first line (see §9.3 for the full classification table).
 
-```
-# This is a comment
-  # This is also a comment
-```
-
-- Comment lines produce no AST node.
-- Comment lines are **invisible** — they are not block separators.
-- `#` appearing anywhere other than the first non-whitespace position of a line is literal text.
-- Comment lines are stripped during block boundary analysis (before classification).
-
-### 8.4 Block Classification
-
-Each block candidate is classified by its first line (see §13.3 for the full classification table).
-
-### 8.5 Syntax Primitives
+### 10.4 Syntax Primitives
 
 Cutdown uses two structural patterns for delimiters:
 
-#### 8.5.1 Doubled-symbol inline delimiter
+#### 10.4.1 Doubled-symbol inline delimiter
 
 Any two identical characters form an inline block delimiter:
 
     <Symbol><Symbol> content <Symbol><Symbol> {attrs}
 
-The opener and closer are the same doubled symbol. Inline blocks delimited this way are composable (nestable with other types). The parser recognizes a built-in exclusive list of doubled symbols (see §10). Unrecognized doubled symbols are emitted as literal text.
+The opener and closer are the same doubled symbol. Inline blocks delimited this way are composable (nestable with other types). The parser recognizes a built-in exclusive list of doubled symbols (see §5). Unrecognized doubled symbols are emitted as literal text.
 
-#### 8.5.2 Tripled-symbol block delimiter
+#### 10.4.2 Tripled-symbol block delimiter
 
 Any three identical characters form a block delimiter:
 
@@ -58,18 +44,18 @@ Any three identical characters form a block delimiter:
     content
     <Symbol><Symbol><Symbol>
 
-The opener may carry an optional name and attributes. The closer is the bare tripled symbol. The parser recognizes a built-in exclusive list of tripled symbols (see §9). Unrecognized tripled symbols are emitted as literal text.
+The opener may carry an optional name and attributes. The closer is the bare tripled symbol. The parser recognizes a built-in exclusive list of tripled symbols (see §4). Unrecognized tripled symbols are emitted as literal text.
 
-#### 8.5.3 Delimiter placement
+#### 10.4.3 Delimiter placement
 
 Doubled-symbol delimiters may appear:
 - Surrounded by spaces: `aa ** bb ** cc`
 - Adjacent to literal text on one or both sides: `aa**bb**cc`
 - Adjacent to another delimiter: `__**text**__`
 
-In all cases the delimiter is recognized. Whether an unmatched opener is treated as literal text follows the same rule as all inline constructs (§10, §13.4).
+In all cases the delimiter is recognized. Whether an unmatched opener is treated as literal text follows the same rule as all inline constructs (§5, §9.4).
 
-#### 8.5.4 Symbol repetition
+#### 10.4.4 Symbol repetition
 
 When N identical characters appear at an inline position, the following rules apply:
 
@@ -98,7 +84,7 @@ When N identical characters appear at an inline position, the following rules ap
 
 Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table.
 
-#### 8.5.5 Delimiter collisions
+#### 10.4.5 Delimiter collisions
 
 When N identical characters appear and the parser recognizes a delimiter of length 2 or 3 at that position, the maximum recognized length is consumed as the delimiter. Any remaining characters are treated as literal content.
 
@@ -112,5 +98,64 @@ Known collisions:
 | `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
 | `---` non-line-start | literal text (ThematicBreak only classified at line start) |
+
+### 10.5 List Indentation Model
+
+Cutdown uses a **stack-based, column-relative** model for all list types (unordered, ordered, task). Nesting is determined by comparing marker columns, not by fixed indentation increments.
+
+**Definitions:**
+- The **column** of a line is its count of leading spaces before the first non-space character. Recorded from the original source before leading-space stripping (§10.2).
+- The parser maintains a **nesting stack** of `(col, item)` pairs representing the currently open items from outermost to innermost.
+
+**New marker at column C** (pop-then-push rule):
+1. While the stack is non-empty and `C ≤ top.col`: pop.
+2. Push the new item at column C.
+
+A marker with `C > top.col` is a nested child (+1 depth). A marker with `C ≤ top.col` closes items until a shallower ancestor is found, then opens a sibling.
+
+**Non-marker line (continuation text) at column C:**
+1. While the stack depth ≥ 2 and `C < second-from-top.col`: pop.
+2. Continue the now-current item.
+
+Depth-0 items (no parent on the stack) accept any non-blank non-marker line unconditionally (threshold = −∞).
+
+**Blank lines:**
+- Blank line followed by content at **col 0** → block boundary. The current `List` node ends. If the next line is a list marker, a new `List` node begins.
+- Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item (`ListItem.children` becomes `Block[]`). The `List` is marked `loose: true`.
+
+**Style note:** Two spaces of indentation per nesting level is recommended. The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
+
+```
+Input (standard):
+  - item 0.0
+  - item 1.0
+    - item 1.1
+    - item 1.2
+
+AST:
+  List { ordered: false, loose: false }
+  ├── ListItem { Text("item 0.0") }
+  └── ListItem { Text("item 1.0") }
+      └── List { ordered: false, loose: false }
+          ├── ListItem { Text("item 1.1") }
+          └── ListItem { Text("item 1.2") }
+```
+
+```
+Input (loose list — absorbed blank line):
+  - First item
+    continues here
+  - Second item
+
+    This starts a new paragraph inside item two.
+
+AST:
+  List { ordered: false, loose: true }
+  ├── ListItem
+  │   └── Text("First item continues here")
+  └── ListItem
+      ├── Paragraph("Second item")
+      └── Paragraph("This starts a new paragraph inside item two.")
+```
 
 ---
