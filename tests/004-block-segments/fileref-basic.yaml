@@ -7,4 +7,6 @@ input: |
 
 ast:
   - type: FileRef
-    src: /docs/report.pdf
+    path: /docs/report.pdf
+    query: ''
+    fragment: ''

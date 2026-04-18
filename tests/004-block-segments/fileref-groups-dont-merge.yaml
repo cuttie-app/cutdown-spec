@@ -4,7 +4,9 @@ description: FileRef lines from different known groups do not merge into the sam
 
 input: |
   /a.png
+  /a.jpg
   /b.mp4
+  /c.mp4
 
 ast:
   - type: FileRefGroup
@@ -12,10 +14,20 @@ ast:
     children:
       - type: FileRef
         src: /a.png
-        group: image
+        query: ''
+        fragment: ''
+      - type: FileRef
+        src: /a.jpg
+        query: ''
+        fragment: ''
   - type: FileRefGroup
     group: video
     children:
       - type: FileRef
         src: /b.mp4
-        group: video
+        query: ''
+        fragment: ''
+      - type: FileRef
+        src: /c.mp4
+        query: ''
+        fragment: ''

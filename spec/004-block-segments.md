@@ -494,7 +494,6 @@ interface FileRef {
   path: string
   fragment: string | ''
   query: string | ''
-  group: "image" | "video" | "audio" | null
   attributes: Attribute[]
 }
 ```
@@ -505,7 +504,6 @@ interface FileRef {
 - `fragment` and `query` are mutually independent — either, both, or neither may be present. If absent, they are set to empty string `''` (not null).
 - Empty path (line with only `/`) is invalid state and produces string literal for whole line.
 - `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
-- Unknown-extension files have `group: null` and are never grouped.
 
 **Known Groups (defaults):**
 
