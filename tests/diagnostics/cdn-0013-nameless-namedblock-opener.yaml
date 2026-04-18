@@ -1,5 +1,5 @@
 id: cdn-0013-nameless-namedblock-opener
-section: "9.10"
+section: "4.13"
 description: "::: not followed immediately by [ID_LITERAL]; block classified as Paragraph; all content literal; CDN-0013 warning"
 
 input: |

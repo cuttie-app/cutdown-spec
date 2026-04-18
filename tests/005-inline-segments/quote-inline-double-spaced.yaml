@@ -1,0 +1,15 @@
+id: quote-inline-double-spaced
+section: "5.8"
+description: "Whitespace at boundaries of \"\" delimiters is stripped; interior text is trimmed"
+
+input: |
+  "" hello ""
+
+ast:
+  - type: Paragraph
+    children:
+      - type: QuoteInline
+        kind: double
+        children:
+          - type: Text
+            value: hello

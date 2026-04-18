@@ -1,5 +1,5 @@
 id: cdn-0014-emphasis-strong-cross
-section: "10.2"
+section: "5.2"
 description: "** closes while __ is open inside its content; CDN-0014 at the crossing ** closer; trailing __ is orphaned literal"
 
 input: |

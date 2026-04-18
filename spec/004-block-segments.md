@@ -112,7 +112,7 @@ interface Meta {
 - Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
 - Always fills `Page.meta`. If `Page.meta` is already set, opens a new Page first. Never appears in `Page.children`.
-- Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0013.
+- Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.
 - No `attributes` field.
 

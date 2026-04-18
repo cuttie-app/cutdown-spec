@@ -1,0 +1,24 @@
+id: table-attrs-last-row-noop
+section: "4.8"
+description: "Empty {} is no-op on Table; preceding {.a} goes to Row"
+
+input: |
+  | td1 | td2 | {.a}{}
+
+ast:
+  - type: Table
+    kind: simple
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: td1
+          - type: Cell
+            children:
+              - type: Text
+                value: td2
+        attributes:
+          - key: class
+            value: [a]

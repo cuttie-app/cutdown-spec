@@ -1,0 +1,16 @@
+id: attrs-scope-chain-fileref-1
+section: "6.2"
+description: "Single {} on FileRef goes to FileRefGroup"
+
+input: |
+  /img.png {.a}
+
+ast:
+  - type: FileRefGroup
+    group: image
+    children:
+      - type: FileRef
+        src: /img.png
+    attributes:
+      - key: class
+        value: [a]

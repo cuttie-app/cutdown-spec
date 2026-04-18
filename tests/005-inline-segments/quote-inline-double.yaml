@@ -1,0 +1,15 @@
+id: quote-inline-double
+section: "5.8"
+description: '"" delimiters produce QuoteInline with kind=double'
+
+input: |
+  ""hello""
+
+ast:
+  - type: Paragraph
+    children:
+      - type: QuoteInline
+        kind: double
+        children:
+          - type: Text
+            value: hello

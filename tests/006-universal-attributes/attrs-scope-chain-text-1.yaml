@@ -1,0 +1,19 @@
+id: attrs-scope-chain-text-1
+section: "6.2"
+description: "Single trailing {} on text list item goes to List"
+
+input: |
+  - text {.a}
+
+ast:
+  - type: List
+    ordered: false
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: text
+    attributes:
+      - key: class
+        value: [a]

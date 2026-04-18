@@ -1,0 +1,21 @@
+id: list-item-inside-quote-inside-list
+section: "4.7"
+description: A list item inside a QuoteBlock inside a list item is legal; the outer list is tight (single item, no blank lines)
+
+input: |
+  - > - item
+
+ast:
+  - type: List
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: QuoteBlock
+            children:
+              - type: List
+                children:
+                  - type: ListItem
+                    children:
+                      - type: Text
+                        value: item

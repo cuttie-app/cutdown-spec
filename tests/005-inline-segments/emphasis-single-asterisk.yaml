@@ -1,0 +1,12 @@
+id: emphasis-single-asterisk
+section: "5.2"
+description: "Single * surrounded by spaces is literal text, not an emphasis delimiter"
+
+input: |
+  * text *
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "* text *"

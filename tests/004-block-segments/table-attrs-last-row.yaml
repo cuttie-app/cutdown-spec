@@ -1,0 +1,27 @@
+id: table-attrs-last-row
+section: "4.8"
+description: "Last row: two trailing {} distribute to Table and Row; single {} goes to Table only; empty {} is no-op on Table"
+
+input: |
+  | td1 | td2 | {.a}{.b}
+
+ast:
+  - type: Table
+    kind: simple
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: td1
+          - type: Cell
+            children:
+              - type: Text
+                value: td2
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]

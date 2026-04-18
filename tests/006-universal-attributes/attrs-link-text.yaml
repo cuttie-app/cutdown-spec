@@ -1,0 +1,21 @@
+id: attrs-link-text
+section: "6.4"
+description: "{attrs} inside link brackets attaches to preceding inline; leading {attrs} with no preceding element is orphan (literal)"
+
+input: |
+  [**bold** {.foo}](url)
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Link
+        kind: external
+        href: url
+        children:
+          - type: Emphasis
+            children:
+              - type: Text
+                value: bold
+            attributes:
+              - key: class
+                value: [foo]
