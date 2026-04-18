@@ -13,21 +13,21 @@ ast:
     group: image
     children:
       - type: FileRef
-        src: /a.png
+        path: /a.png
         query: ''
         fragment: ''
       - type: FileRef
-        src: /a.jpg
+        path: /a.jpg
         query: ''
         fragment: ''
   - type: FileRefGroup
     group: video
     children:
       - type: FileRef
-        src: /b.mp4
+        path: /b.mp4
         query: ''
         fragment: ''
       - type: FileRef
-        src: /c.mp4
+        path: /c.mp4
         query: ''
         fragment: ''

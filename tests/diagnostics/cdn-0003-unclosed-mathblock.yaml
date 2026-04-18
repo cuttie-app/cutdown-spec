@@ -6,7 +6,7 @@ input: "$$$\nE = mc^2\n"
 
 ast:
   - type: MathBlock
-    formula: "E = mc^2"
+    raw: "E = mc^2"
 
 diagnostics:
   - code: CDN-0003

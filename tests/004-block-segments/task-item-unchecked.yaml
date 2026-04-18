@@ -3,12 +3,13 @@ section: "4.7.2"
 description: "- [ ] produces TaskItem with checked: false"
 
 input: |
-  - []  Sell milk
+  - [] Sell milk
   - [ ] Buy milk
 
 ast:
   - type: List
     kind: "checklist"
+    start: null
     loose: false
     children:
       - type: TaskItem

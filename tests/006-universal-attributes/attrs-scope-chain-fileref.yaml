@@ -10,7 +10,9 @@ ast:
     group: image
     children:
       - type: FileRef
-        src: /img.png
+        path: /img.png
+        query: ''
+        fragment: ''
         attributes:
           - key: class
             value: [a]
