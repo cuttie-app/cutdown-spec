@@ -3,6 +3,7 @@ section: "4.7.2"
 description: "- [ ] produces TaskItem with checked: false"
 
 input: |
+  - []  Sell milk
   - [ ] Buy milk
 
 ast:
@@ -10,6 +11,11 @@ ast:
     ordered: false
     loose: false
     children:
+      - type: TaskItem
+        checked: false
+        children:
+          - type: Text
+            value: Sell milk
       - type: TaskItem
         checked: false
         children:
