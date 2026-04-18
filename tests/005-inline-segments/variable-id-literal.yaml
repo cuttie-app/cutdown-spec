@@ -14,3 +14,7 @@ ast:
         value: " {{invalid key}} "
       - type: Variable
         key: also.valid_1
+
+diagnostics:
+  - code: CDN-0015
+    level: warning

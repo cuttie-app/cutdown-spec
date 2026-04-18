@@ -9,6 +9,7 @@ input: |
 ast:
   - type: List
     kind: "checklist"
+    start: null
     loose: false
     children:
       - type: TaskItem

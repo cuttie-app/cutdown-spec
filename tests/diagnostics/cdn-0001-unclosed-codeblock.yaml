@@ -7,7 +7,7 @@ input: "```python\nx = 1\n"
 ast:
   - type: CodeBlock
     language: python
-    content: x = 1
+    raw: x = 1
 
 diagnostics:
   - code: CDN-0001

@@ -16,5 +16,9 @@ ast:
         level: 1
         heading:
           - type: Text
-            value: Title content
+            value: "Title  "
         children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: content
