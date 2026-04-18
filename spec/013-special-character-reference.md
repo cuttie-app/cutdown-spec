@@ -1,4 +1,4 @@
-## 15. Special Character Reference
+## 13. Special Character Reference
 
 | Character | Role | Escapable |
 |-----------|------|-----------|

@@ -1,6 +1,6 @@
-## 5. Universal Attributes
+## 6. Universal Attributes
 
-### 5.1 Syntax
+### 6.1 Syntax
 
 ```
 {#id .class key=value key="value with spaces"}
@@ -15,7 +15,7 @@ Token types inside `{}`:
 
 > **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
 
-### 5.2 Placement
+### 6.2 Placement
 
 Attributes MUST appear **after** their target element on the **same line**.
 
@@ -43,7 +43,7 @@ This rule applies only in block opening line context. In paragraph context all `
 
 - `Meta`: no attributes supported.
 - `RefDefinition`: has `attributes`.
-- `Table`: see §9.8.3 for row and table attr placement.
+- `Table`: see §4 for row and table attr placement.
 - `List / FileRefGroup / ImageGroup / QuoteBlock / Paragraph`: scope-chain rule (Rule B) — see below.
 - `Cell`, `Column`, `Page`, `Document`: no attributes supported.
 
@@ -118,7 +118,7 @@ A line consisting solely of `{attrs}` immediately after a list item with no prec
 
 `{attrs}` may appear at the end of a Paragraph or ListItem either on the same line as the final content line, or on the immediately following line (no blank line between). A line consisting solely of `{attrs}` immediately after a paragraph (no blank line) is consumed as part of the paragraph's scope chain and does not start a new block.
 
-### 5.3 Orphan Attributes
+### 6.3 Orphan Attributes
 
 An `{...}` sequence that cannot be assigned to any segment in the current scope chain is an **orphan**.
 
@@ -132,13 +132,13 @@ Orphan behaviour depends on position:
 
 `{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
 
-Authors who want a literal `{` SHOULD escape it with `\{` to make intent explicit. The parser handles unescaped `{` via fallback (emits `Text("{")` if no matching `}` is found), but relying on fallback is fragile:
+Authors who want a literal `{` SHOULD escape it with `\{` to make intent explicit:
 
 ```
 price is \{high\}  →  Text("price is {high}")
 ```
 
-### 5.4 Attribute Inside Link Text
+### 6.4 Attribute Inside Link Text
 
 `{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 

@@ -32,15 +32,56 @@ PATH_LITERAL = [a-zA-Z0-9._/-]
 
 `PATH_LITERAL` is used for path-like values: page link targets, tag link targets, and file reference paths.
 
+### Segment
+
+A **segment** is any node in the Cutdown AST — Block or Inline. This term is used throughout the spec when no distinction between block and inline is needed.
+
+### Block Type
+
+A **Block** segment is any node that occupies a full line-level slot in the document.
+
+```
+Block =
+    | Paragraph
+    | Section
+    | Meta
+    | CodeBlock
+    | MathBlock
+    | QuoteBlock
+    | List
+    | Table
+    | ImageBlock
+    | ThematicBreak
+    | FileRef
+    | FileRefGroup
+    | NamedBlock
+    | RefDefinition
+```
+
+Container blocks carry `children: (Block | Inline)[]`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
+
 ### Inline Type
 
-Throughout this spec, `Inline` refers to the union of all inline node types:
+An **Inline** segment is any node parsed within inline content.
 
 ```
-Inline = Text | Emphasis | Strong | Strikethrough | CodeInline | TextBreak
-       | Link | ImageInline | Span | MathInline | Variable | QuoteInline
+Inline =
+    | Text
+    | Emphasis
+    | Strong
+    | Strikethrough
+    | Link
+    | CodeInline
+    | MathInline
+    | QuoteInline
+    | ImageInline
+    | Span
+    | Variable
+    | TextBreak
 ```
 
-Wherever an AST node carries `Inline[]`, the content of that field was produced by the inline parsing rules (§10). All inline contexts are explicitly marked with "parsed by inline rules (§10)".
+Container inlines carry `children: Inline[]`. Leaf inlines carry no children. Most inline nodes carry `attributes: Attribute[]`.
+
+Wherever an AST node carries `Inline[]`, the content was produced by the inline parsing rules (§5). All inline contexts are explicitly marked "parsed by inline rules."
 
 ---

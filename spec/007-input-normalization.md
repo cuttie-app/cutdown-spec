@@ -1,4 +1,4 @@
-## 2. Input Normalization
+## 7. Input Normalization
 
 Before any parsing begins, the following transformations are applied in order:
 

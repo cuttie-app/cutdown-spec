@@ -38,50 +38,20 @@ Cutdown is a simple markup language with the bare minimum features to structure 
 
 ## Table of Contents
 
-1. [Conventions](001-conventions.md)
-2. [Input Normalization](002-input-normalization.md)
-3. [Segments](003-segments.md)
-4. [Escaping](004-escaping.md)
-5. [Universal Attributes](005-universal-attributes.md)
-   - 5.1 Syntax
-   - 5.2 Placement
-6. [Block Interface](006-block-interface.md)
-7. [Document Model](007-document-model.md)
-   - 7.4 Pages
-8. [Block Structure](008-block-structure.md)
-   - 8.5 Syntax Primitives
-9. [Block Elements](009-block-elements.md)
-   - 9.1 Headings
-   - 9.2 Paragraphs
-   - 9.3 Thematic Break
-   - 9.4 Code Block
-   - 9.5 Meta block (Frontmatter)
-   - 9.6 QuoteBlock
-   - 9.7 Lists (Task Items)
-   - 9.8 Tables
-   - 9.9 File References
-   - 9.10 Named Block
-   - 9.11 Reference Definition
-   - 9.12 Block Math Formula
-   - 9.13 Comments
-10. [Inline Elements](010-inline-elements.md)
-    - 10.1 Text
-    - 10.2 Emphasis
-    - 10.3 Strong
-    - 10.4 Strikethrough
-    - 10.5 Inline Code
-    - 10.6 Text Break
-    - 10.7 Links
-    - 10.8 Inline Image
-    - 10.9 Named Span
-    - 10.10 Inline Math Formula
-    - 10.11 Variable
-    - 10.12 Inline Quote
+1. [Conventions](001-conventions.md) — Identifier charset, Segment, Block type, Inline type
+2. [Comments](002-comments.md)
+3. [Document Model](003-document-model.md) — Document, Page, Section
+4. [Block Segments](004-block-segments.md) — Paragraph, ThematicBreak, CodeBlock, Meta, QuoteBlock, List, ListItem, TaskItem, Table, FileRef, FileRefGroup, ImageBlock, NamedBlock, RefDefinition, MathBlock
+5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Strikethrough, CodeInline, TextBreak, Link, ImageInline, Span, MathInline, Variable, QuoteInline
+6. [Universal Attributes](006-universal-attributes.md)
+7. [Input Normalization](007-input-normalization.md)
+8. [Escaping](008-escaping.md)
+9. [Parsing Algorithm](009-parsing-algorithm.md)
+10. [Block Structure and Block Boundaries](010-block-structure.md)
 11. [Precedence Rules](011-precedence-rules.md)
 12. [Whitespace Rules](012-whitespace-rules.md)
-13. [Parsing Algorithm](013-parsing-algorithm.md)
+13. [Special Character Reference](013-special-character-reference.md)
 14. [AST Node Reference](014-ast-node-reference.md)
-15. [Special Character Reference](015-special-character-reference.md)
-16. [Name and Compliance](016-name-and-compliance.md)
+15. [Name and Compliance](015-name-and-compliance.md)
 
 ---

@@ -28,7 +28,7 @@ Within any inline block (Emphasis, Strong, Strikethrough, MathInline, QuoteInlin
 | Interior whitespace runs | Collapsed to one space |
 | Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
 
-`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. The paragraph-level soft-break rule (single `\n` → zero) also applies: a `CodeInline` spanning two lines of a paragraph has the newline removed with no replacement in `value`. For multi-line code, use `CodeBlock` (§9.4).
+`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. The paragraph-level soft-break rule (single `\n` → zero) also applies: a `CodeInline` spanning two lines of a paragraph has the newline removed with no replacement in `value`. For multi-line code, use `CodeBlock` (§4).
 
 **Examples:**
 
