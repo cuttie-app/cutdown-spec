@@ -2,7 +2,7 @@
 
 ---
 
-### Paragraph
+### 4.1 Paragraph
 
 **Syntax:** Any non-blank lines that do not match another block construct.
 
@@ -40,7 +40,7 @@ AST:
 
 ---
 
-### Section
+### 4.2 Section (Heading)
 
 **Syntax:** `={n} inline-content {attrs}`
 
@@ -89,7 +89,7 @@ interface Section {
 
 ---
 
-### Meta (Front Matter)
+### 4.3 Meta (Front Matter)
 
 **Syntax:** Fenced with exactly three tildes.
 
@@ -126,7 +126,7 @@ title: My Document
 
 ---
 
-### CodeBlock
+### 4.4 CodeBlock
 
 **Syntax:** Fenced with exactly three backticks.
 
@@ -155,7 +155,7 @@ interface CodeBlock {
 
 ---
 
-### MathBlock
+### 4.5 MathBlock
 
 **Syntax:** Fenced with exactly three dollar signs.
 
@@ -197,7 +197,7 @@ AST:
 
 ---
 
-### QuoteBlock
+### 4.6 QuoteBlock
 
 **Syntax:** Lines prefixed with `>`.
 
@@ -223,7 +223,7 @@ interface QuoteBlock {
 
 ---
 
-### List
+### 4.7 List
 
 **Syntax:** One or more list items sharing a common indentation level.
 
@@ -259,7 +259,7 @@ interface List {
 
 ---
 
-#### ListItem
+#### 4.7.1 ListItem
 
 **Syntax:** A list marker followed by content, with optional indented continuation lines.
 
@@ -279,7 +279,7 @@ interface ListItem {
 
 ---
 
-#### TaskItem
+#### 4.7.2 TaskItem
 
 **Syntax:** `- [ ] content` or `- [x] content`
 
@@ -316,7 +316,7 @@ AST:
 
 ---
 
-### Table
+### 4.8 Table
 
 **Syntax:** `| ... |` — leading and trailing `|` required on every row.
 
@@ -378,7 +378,7 @@ Mid-table row:
 
 ---
 
-### ImageBlock
+### 4.9 ImageBlock
 
 **Syntax:** `![alt text](src) {attrs}`
 
@@ -397,11 +397,11 @@ interface ImageBlock {
 
 - `alt` is **parsed by inline rules**. Result is `Inline[]`.
 - Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
-- `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be at the start of a line.
+- `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be the only one segment on the line.
 
 ---
 
-### ThematicBreak
+### 4.10 ThematicBreak
 
 **Syntax:** `--- {attrs}`
 
@@ -429,7 +429,7 @@ interface ThematicBreak {
 
 ---
 
-### FileRef
+### 4.11 FileRef
 
 **Syntax:** `/path/to/file.ext {attrs}`
 
@@ -464,7 +464,7 @@ interface FileRef {
 
 ---
 
-### FileRefGroup
+### 4.12 FileRefGroup
 
 Consecutive `FileRef` or `ImageBlock` lines of the **same known group** with no blank line between them are automatically wrapped in a `FileRefGroup`. Not produced by explicit syntax — assembled during parsing.
 
@@ -500,7 +500,7 @@ AST:
 
 ---
 
-### NamedBlock
+### 4.13 NamedBlock
 
 **Syntax:**
 
@@ -539,7 +539,7 @@ interface NamedBlock {
 
 ---
 
-### RefDefinition
+### 4.14 RefDefinition
 
 **Syntax:** `[^id]: inline content`
 
