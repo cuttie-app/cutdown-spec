@@ -9,13 +9,17 @@ input: |
 ast:
   - type: List
     ordered: false
-    loose: false
+    start: null
     children:
       - type: TaskItem
         checked: false
         children:
           - type: Text
             value: Task item first
+  - type: List
+    ordered: false
+    start: 1
+    children:
       - type: ListItem
         children:
           - type: Text

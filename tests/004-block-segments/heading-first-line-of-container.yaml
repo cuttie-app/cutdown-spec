@@ -4,7 +4,7 @@ description: A heading as the first non-comment line of a block container needs 
 
 input: |
   :::note
-  = Title
+  = Title  
   content
   :::
 
@@ -16,9 +16,5 @@ ast:
         level: 1
         heading:
           - type: Text
-            value: Title
+            value: Title content
         children:
-          - type: Paragraph
-            children:
-              - type: Text
-                value: content

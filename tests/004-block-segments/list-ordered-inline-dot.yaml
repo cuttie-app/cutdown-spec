@@ -7,7 +7,7 @@ input: |
 
 ast:
   - type: List
-    ordered: true
+    start: 1
     children:
       - type: ListItem
         children:
