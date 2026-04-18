@@ -9,7 +9,7 @@ Input:
   <cutdown source>
 
 AST:
-  <node representation>
+  <segment representation>
 ```
 
 A `→` symbol means "produces AST node."

@@ -31,7 +31,7 @@ interface Text {
 }
 ```
 
-Consecutive text tokens MUST be merged into a single `Text` node by the parser.
+Consecutive text tokens MUST be merged into a single `Text` segment by the parser.
 
 ---
 
@@ -335,6 +335,6 @@ interface TextBreak {
 |-------------|--------------------------------------------------------------------|
 | `word\n`    | Soft break — folded to zero; lines concatenate directly            |
 | `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
-| `word\\n`   | `TextBreak` node — explicit rendered line break                    |
+| `word\\n`   | `TextBreak` segment — explicit rendered line break                 |
 
 ---

@@ -13,7 +13,7 @@ Before any parsing begins, the following transformations are applied in order:
   - Leading tab on a block line → treated as one leading space, then stripped by block classification
   - Tab inside inline content → treated as a single space (participates in whitespace collapsing)
   - Tab inside code/meta/math fences → preserved literally (no change)
-7. **HTML entities:** HTML character references (`&amp;`, `&lt;`, `&#160;`, `&nbsp;`, etc.) are **not decoded**. They are emitted as literal `Text` nodes. The parser has no HTML entity table. Consumers rendering to HTML are responsible for deciding whether to re-encode or pass through.
-8. **BiDi Control Characters:** Unicode bidirectional control characters (e.g., `U+200E` LRM, `U+200F` RLM, `U+2066`–`U+2069` Isolates) MUST be preserved literally in `Text` nodes. The parser performs no special BiDi-aware reordering; it operates strictly on logical character order.
+7. **HTML entities:** HTML character references (`&amp;`, `&lt;`, `&#160;`, `&nbsp;`, etc.) are **not decoded**. They are emitted as literal `Text` segments. The parser has no HTML entity table. Consumers rendering to HTML are responsible for deciding whether to re-encode or pass through.
+8. **BiDi Control Characters:** Unicode bidirectional control characters (e.g., `U+200E` LRM, `U+200F` RLM, `U+2066`–`U+2069` Isolates) MUST be preserved literally in `Text` segments. The parser performs no special BiDi-aware reordering; it operates strictly on logical character order.
 
 ---

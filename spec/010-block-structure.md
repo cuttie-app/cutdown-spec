@@ -120,7 +120,7 @@ A marker with `C > top.col` is a nested child (+1 depth). A marker with `C ≤ t
 Depth-0 items (no parent on the stack) accept any non-blank non-marker line unconditionally (threshold = −∞).
 
 **Blank lines:**
-- Blank line followed by content at **col 0** → block boundary. The current `List` node ends. If the next line is a list marker, a new `List` node begins.
+- Blank line followed by content at **col 0** → block boundary. The current `List` segment ends. If the next line is a list marker, a new `List` node begins.
 - Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item (`ListItem.children` becomes `Block[]`). The `List` is marked `loose: true`.
 
 **Style note:** Two spaces of indentation per nesting level is recommended. The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.

@@ -39,7 +39,7 @@ An empty `{}` as the last token explicitly assigns no attributes to the block, f
 
 This rule applies only in block opening line context. In paragraph context all `{...}` follow inline attachment rules exclusively.
 
-#### Per-node placement rules
+#### Per-segment placement rules
 
 - `Meta`: no attributes supported.
 - `RefDefinition`: has `attributes`.
@@ -51,7 +51,7 @@ This rule applies only in block opening line context. In paragraph context all `
 
 A sequence of `{attr}` blocks at the end of an inline context is distributed **right-to-left** through a scope chain. The **last** `{}` in the sequence is claimed by the **highest segment** in the current hierarchy; each preceding `{}` claims the next lower segment. Any `{}` blocks at the front of the sequence that have no segment to claim are **silently dropped**.
 
-An empty `{}` is valid syntax. It claims its slot and assigns nothing to that node's attributes.
+An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
 `{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, `{` is emitted as `Text("{")` and parsing continues normally.
 

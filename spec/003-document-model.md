@@ -1,6 +1,6 @@
 ## 3. Document Model
 
-A Cutdown document is a tree rooted at a `Document` node. Every file produces at least one `Page`, even if empty.
+A Cutdown document is a tree rooted at a `Document` segment. Every file produces at least one `Page`, even if empty.
 
 ---
 

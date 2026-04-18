@@ -21,7 +21,7 @@ interface Paragraph {
 - All lines are **parsed by inline rules** and concatenated. Result is `Inline[]`.
 - A single newline between lines is a **soft break** — folded to zero; lines concatenate directly with no character emitted.
 - A single trailing space before the newline is preserved as `Text(" ")` (explicit word boundary).
-- `\` at line end produces a `TextBreak` node (explicit line break).
+- `\` at line end produces a `TextBreak` segment (explicit line break).
 
 **Example:**
 
@@ -44,7 +44,7 @@ AST:
 
 **Syntax:** `={n} inline-content {attrs}`
 
-A heading creates a `Section` node. Consumers receive `Section` nodes — there is no bare `Heading` node in the AST. A section contains all subsequent blocks until a heading of equal or lesser level, end of the current block container, or end of document.
+A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A section contains all subsequent blocks until a heading of equal or lesser level, end of the current block container, or end of document.
 
 **AST type:**
 
@@ -303,7 +303,7 @@ interface List {
 - `isOrdered` is determined by the **first item's marker**.
 - `isOrdered` computed as `start == null -> isOrdered = true`.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
-- A blank line followed by a col-0 marker ends the current list and starts a new `List` node.
+- A blank line followed by a col-0 marker ends the current list and starts a new `List` segment.
 
 ---
 
@@ -345,7 +345,7 @@ interface TaskItem {
 - Marker: `- ` followed immediately by `[]`/`[ ]`  (unchecked) or `[x]`/`[X]` (checked), then one space and content.
 - Only unordered list items may carry a checkbox. An ordered list item never produces a `TaskItem`.
 - A `List` CANNOT contain a mix of `ListItem` and `TaskItem` children.
-- Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` node.
+- Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` segment.
 - Follows the same multiline and block-promotion rules as `ListItem`.
 
 **Example:**
@@ -467,8 +467,8 @@ interface ThematicBreak {
 }
 ```
 
-- At **Page scope**: creates a page break — a new `Page` is opened and the `ThematicBreak` node becomes its first child.
-- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` node but does **not** create a new Page.
+- At **Page scope**: creates a page break — a new `Page` segment is opened and the `ThematicBreak` segment becomes its first child.
+- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` segment but does **not** create a new Page.
 
 **Examples:**
 
@@ -533,7 +533,7 @@ interface FileRefGroup {
 ```
 
 - A blank line breaks any active group.
-- Different groups do not merge — two consecutive lines of different groups produce two separate `FileRefGroup` nodes.
+- Different groups do not merge — two consecutive lines of different groups produce two separate `FileRefGroup` segments.
 - Unknown-extension files are never grouped.
 
 **Example:**

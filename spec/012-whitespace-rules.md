@@ -12,8 +12,8 @@
 | Tabs inside code/metadata/math fences | Preserved literally |
 | Blank lines inside code fence | Preserved literally in `content` string |
 | Blank lines inside metadata fence | Passed through in `raw` string |
-| Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST node; lines concatenate directly |
-| Hard break (`\` at line end) | Produces `TextBreak` node |
+| Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
+| Hard break (`\` at line end) | Produces `TextBreak` segment |
 
 ### 12.2 Inline Block Whitespace
 
