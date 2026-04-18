@@ -10,7 +10,7 @@ input: |
 ast:
   - type: CodeBlock
     language: js
-    content: "const x = 1;"
+    raw: "const x = 1;"
     attributes:
       - key: class
         value: [example]
