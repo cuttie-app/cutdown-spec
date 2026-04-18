@@ -1,0 +1,12 @@
+id: link-cite-shorthand-no-text
+section: "5.5"
+description: "[@cite-id] with no separate text bracket is NOT a cite link; emitted as plain bracket text"
+
+input: |
+  [@smith2024]
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "[@smith2024]"

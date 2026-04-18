@@ -1,0 +1,19 @@
+id: attrs-scope-chain-fileref
+section: "6.2"
+description: "Two trailing {} on FileRef: last to FileRefGroup, preceding to FileRef"
+
+input: |
+  /img.png {.a}{.b}
+
+ast:
+  - type: FileRefGroup
+    group: image
+    children:
+      - type: FileRef
+        src: /img.png
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]

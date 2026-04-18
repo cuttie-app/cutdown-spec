@@ -1,0 +1,44 @@
+id: quote-block-attrs-own-line
+section: "4.6"
+description: A {attrs}-only first line produces orphan attribute;  {attrs} at end on line, at the end of QuoteBlock produces QuoteBlock attribute property.
+
+input: |
+  > {.callout}
+  > content 1
+
+  > content 2
+  > {.callout}
+
+  > content 3
+  >
+  {.callout}
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "{.callout}content 1"
+
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: content 2
+    attributes:
+      - key: class
+        value:
+          - callout
+
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: content 3
+    attributes:
+      - key: class
+        value:
+          - callout

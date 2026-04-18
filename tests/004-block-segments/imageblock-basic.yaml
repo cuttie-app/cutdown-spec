@@ -1,0 +1,13 @@
+id: imageblock-basic
+section: "4.9"
+description: A line at block level beginning with ![ is classified as ImageBlock
+
+input: |
+  ![A sunset](photos/sunset.jpg)
+
+ast:
+  - type: ImageBlock
+    alt:
+      - type: Text
+        value: A sunset
+    src: photos/sunset.jpg

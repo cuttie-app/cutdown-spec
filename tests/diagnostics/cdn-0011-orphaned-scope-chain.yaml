@@ -1,5 +1,5 @@
 id: cdn-0011-orphaned-scope-chain
-section: "5.2"
+section: "6.2"
 description: "Three {} tokens on a 2-slot list context; front token has no slot and is discarded; no warning (CDN-0011 should not emitted)"
 
 input: |

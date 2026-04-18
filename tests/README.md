@@ -8,12 +8,13 @@ Fixtures are organized by spec section. Each subdirectory maps to one section:
 
 ```
 tests/
-  004-escaping/
-  005-universal-attributes/
-  007-document-model/
-  008-block-structure/
-  009-block-elements/
-  010-inline-elements/
+  003-document-model/
+  004-block-segments/
+  005-inline-segments/
+  006-universal-attributes/
+  008-escaping/
+  010-block-structure/
+  012-whitespace-rules/
   diagnostics/          ← one fixture per CDN-xxxx diagnostic code
 ```
 
@@ -25,7 +26,7 @@ Each `.yaml` file is a single fixture:
 
 ```yaml
 id: emphasis-basic
-section: "10.2"
+section: "5.2"
 description: "** delimiters produce Emphasis; single * is literal text"
 
 input: "**bold**"
@@ -118,7 +119,7 @@ Fixtures in `diagnostics/` test warning behaviour. The fixture asserts both the 
 
 ```yaml
 id: cdn-0001-unclosed-codeblock
-section: "9.4"
+section: "4.4"
 description: "Unclosed ``` fence; content runs to end of document; CDN-0001 warning emitted"
 
 input: "```python\nx = 1\n"

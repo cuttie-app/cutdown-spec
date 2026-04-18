@@ -1,0 +1,25 @@
+id: attrs-scope-chain-span
+section: "6.2"
+description: "Three trailing {} on list item with Span: distribute right-to-left — last to List, middle to ListItem, first to Span"
+
+input: |
+  - ::sp {.a}{.b}{.c}
+
+ast:
+  - type: List
+    ordered: false
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Span
+            name: sp
+            attributes:
+              - key: class
+                value: [a]
+        attributes:
+          - key: class
+            value: [b]
+    attributes:
+      - key: class
+        value: [c]

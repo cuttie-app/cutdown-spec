@@ -195,6 +195,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
+### CDN-0015 — Invalid or empty Variable key
+
+| Field | Value |
+|---|---|
+| code | CDN-0015 |
+| title | Invalid or empty Variable key |
+| level | warning |
+| trigger | A `{{...}}` token contains zero characters (empty key `{{}}`) or one or more characters that are not `[a-zA-Z0-9._-]` (non-`ID_LITERAL`) |
+| recovery | The entire `{{...}}` span is emitted as literal `Text`; no `Variable` node is created |
+| introduced_in | 0.3.4 |
+| status | active |
+| owner | Language |
+
+---
+
 ### CDN-0030 — Meta block inside block container
 
 | Field | Value |

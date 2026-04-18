@@ -306,8 +306,8 @@ interface Variable {
 }
 ```
 
-- `key` MUST use `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. A `{{...}}` with invalid key characters is emitted as literal text.
-- Unclosed `{{` → literal text. Empty-key `{{}}` → literal text.
+- `key` MUST use `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
+- Unclosed `{{` → literal text. Empty-key `{{}}` → literal text → warning CDN-0015.
 - Variables are only parsed in inline contexts where inline rules are active (not inside code/math/meta blocks).
 - Brace tie-break: `{{` is always matched before `{` (longest opener wins).
 - May carry trailing attributes: `{{key}} {#id .class}`.

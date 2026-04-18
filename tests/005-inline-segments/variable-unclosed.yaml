@@ -1,0 +1,12 @@
+id: variable-unclosed
+section: "5.11"
+description: "Unclosed {{ with no matching }} is emitted as literal text"
+
+input: |
+  {{unclosed
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "{{unclosed"
