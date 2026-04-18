@@ -10,8 +10,8 @@ ast:
   - type: QuoteBlock
     children:
       - type: List
-        ordered: false
         loose: false
+        start: null
         children:
           - type: TaskItem
             checked: false

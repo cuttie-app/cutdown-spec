@@ -22,6 +22,10 @@ ast:
         children:
           - type: Text
             value: Write spec
+  - type: List
+    ordered: false
+    loose: false
+    children:
       - type: ListItem
         children:
           - type: Text

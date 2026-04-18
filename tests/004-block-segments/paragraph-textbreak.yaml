@@ -2,7 +2,9 @@ id: paragraph-textbreak
 section: "4.1"
 description: Backslash at end of line produces a TextBreak node; parsing continues on the next line
 
-input: "First line\\\nsecond line\n"
+input: |
+  First line\
+  second line
 
 ast:
   - type: Paragraph

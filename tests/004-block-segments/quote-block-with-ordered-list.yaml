@@ -10,7 +10,6 @@ ast:
   - type: QuoteBlock
     children:
       - type: List
-        ordered: true
         loose: false
         start: 1
         children:
