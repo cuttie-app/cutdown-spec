@@ -28,7 +28,7 @@ A logical division within a document. Every document has at least one Page.
 ```typescript
 interface Page {
   type: "Page"
-  meta: Meta | null
+  meta: Meta | {}
   children: Block[]
 }
 ```
