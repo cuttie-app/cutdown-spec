@@ -44,7 +44,6 @@ A **Block** segment is any node that occupies a full line-level slot in the docu
 Block =
     | Paragraph
     | Section
-    | Meta
     | CodeBlock
     | MathBlock
     | QuoteBlock
@@ -76,7 +75,6 @@ Inline =
     | QuoteInline
     | ImageInline
     | Span
-    | Variable
     | TextBreak
 ```
 

@@ -6,7 +6,7 @@ Inline content is parsed left-to-right with no backtracking. When an opener has 
 
 | Location | Section |
 |----------|---------|
-| Heading text | §3 |
+| Heading text | §4 |
 | Paragraph content | §4 |
 | List item and task item content | §4 |
 | Table cell content | §4 |
@@ -107,63 +107,6 @@ interface Strikethrough {
 
 ---
 
-### CodeInline
-
-**Syntax:** ` ``code`` `
-
-**AST type:**
-
-```typescript
-interface CodeInline {
-  type: "CodeInline"
-  value: string
-  attributes: Attribute[]
-}
-```
-
-- Double backtick only. Single backtick is always literal text.
-- Content is **literal** — no inline parsing, no escape processing.
-- Unmatched ` `` ` → `Text("``")`. Single `` ` `` → `Text("`")`.
-- Triple backtick in inline context: ` ``` ` = ` `` ` (opener) + `` ` `` (literal inside).
-- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside ` ``...`` ` is folded to zero.
-
-**Examples:**
-
-```
-``code``          → CodeInline { value: "code" }
-`not code`        → Text("`") + Text("not code") + Text("`")
-```text```        → CodeInline { value: "`text" }
-``test
-continues``       → CodeInline { value: "testcontinues" }   (soft break → zero)
-```
-
----
-
-### TextBreak
-
-**Syntax:** `\` as the last character of a line (before `\n`).
-
-**AST type:**
-
-```typescript
-interface TextBreak {
-  type: "TextBreak"
-}
-```
-
-- The `\` and the following newline are consumed. Inline parsing continues on the next line.
-- `\` must be the last non-whitespace character on the line (trailing spaces stripped before this check).
-
-**Line-ending summary:**
-
-| Line ending | Result |
-|---|---|
-| `word\n` | Soft break — folded to zero; lines concatenate directly |
-| `word \n` | Trailing space preserved — `Text("word ")` emitted |
-| `word\\n` | `TextBreak` node — explicit rendered line break |
-
----
-
 ### Link
 
 **Syntax:** Several forms depending on link kind.
@@ -199,8 +142,101 @@ interface Link {
 
 ```
 [][target]    → Link { kind: "page", children: [], target: "target" }
-[][]          → Link { kind: "page", children: [], target: "" }
+[][]          ��� Link { kind: "page", children: [], target: "" }
 []()          → Link { kind: "external", children: [], href: "" }
+```
+
+---
+
+### CodeInline
+
+**Syntax:** ` ``code`` `
+
+**AST type:**
+
+```typescript
+interface CodeInline {
+  type: "CodeInline"
+  value: string
+  attributes: Attribute[]
+}
+```
+
+- Double backtick only. Single backtick is always literal text.
+- Content is **literal** — no inline parsing, no escape processing.
+- Unmatched ` `` ` → `Text("``")`. Single `` ` `` → `Text("`")`.
+- Triple backtick in inline context: ` ``` ` = ` `` ` (opener) + `` ` `` (literal inside).
+- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside ` ``...`` ` is folded to zero.
+
+**Examples:**
+
+```
+``code``          → CodeInline { value: "code" }
+`not code`        → Text("`") + Text("not code") + Text("`")
+```text```        → CodeInline { value: "`text" }
+``test
+continues``       → CodeInline { value: "testcontinues" }   (soft break → zero)
+```
+
+---
+
+### MathInline
+
+**Syntax:** `$$formula$$`
+
+**AST type:**
+
+```typescript
+interface MathInline {
+  type: "MathInline"
+  formula: string
+  attributes: Attribute[]
+}
+```
+
+- `$$` opener and closer. A single `$` is always literal text.
+- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
+- Run of 3: `$$$` at inline position = `$$` (opener/closer) + `$` (literal).
+- Unclosed `$$` → `Text("$$")`. Same-type nesting not allowed.
+
+**Examples:**
+
+```
+$$ a^2 + b^2 $$      → MathInline { formula: " a^2 + b^2 " }
+$$unclosed            → Text("$$") + Text("unclosed")
+$ not math $          → Text("$ not math $")
+```
+
+---
+
+### QuoteInline
+
+**Syntax:** `"" content ""` or `'' content ''`
+
+**AST type:**
+
+```typescript
+interface QuoteInline {
+  type: "QuoteInline"
+  kind: "double" | "single"
+  children: Inline[]
+  attributes: Attribute[]
+}
+```
+
+- `""` = double-quote style (`kind: "double"`). `''` = single-quote style (`kind: "single"`).
+- A single `"` or `'` is always literal text.
+- Same-kind nesting not allowed. Cross-kind nesting IS allowed: `""'' inner ''""`.
+- Unmatched opener → `Text('""')` or `Text("''")`.
+- Whitespace rules follow §12 (boundary whitespace stripped; adjacent boundaries collapsed).
+
+**Examples:**
+
+```
+"" hello ""          → QuoteInline { kind: "double", children: [Text("hello")] }
+'' hi ''             → QuoteInline { kind: "single", children: [Text("hi")] }
+""'' inner ''""      → QuoteInline { kind: "double", children: [QuoteInline { kind: "single", ... }] }
+"" unclosed          → Text('""') + Text(" unclosed")
 ```
 
 ---
@@ -256,35 +292,6 @@ Hello ::marker {#here .highlight} world
 
 ---
 
-### MathInline
-
-**Syntax:** `$$formula$$`
-
-**AST type:**
-
-```typescript
-interface MathInline {
-  type: "MathInline"
-  formula: string
-  attributes: Attribute[]
-}
-```
-
-- `$$` opener and closer. A single `$` is always literal text.
-- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
-- Run of 3: `$$$` at inline position = `$$` (opener/closer) + `$` (literal).
-- Unclosed `$$` → `Text("$$")`. Same-type nesting not allowed.
-
-**Examples:**
-
-```
-$$ a^2 + b^2 $$      → MathInline { formula: " a^2 + b^2 " }
-$$unclosed            → Text("$$") + Text("unclosed")
-$ not math $          → Text("$ not math $")
-```
-
----
-
 ### Variable
 
 **Syntax:** `{{key}}`
@@ -307,34 +314,27 @@ interface Variable {
 
 ---
 
-### QuoteInline
+### TextBreak
 
-**Syntax:** `"" content ""` or `'' content ''`
+**Syntax:** `\` as the last character of a line (before `\n`).
 
 **AST type:**
 
 ```typescript
-interface QuoteInline {
-  type: "QuoteInline"
-  kind: "double" | "single"
-  children: Inline[]
-  attributes: Attribute[]
+interface TextBreak {
+  type: "TextBreak"
 }
 ```
 
-- `""` = double-quote style (`kind: "double"`). `''` = single-quote style (`kind: "single"`).
-- A single `"` or `'` is always literal text.
-- Same-kind nesting not allowed. Cross-kind nesting IS allowed: `""'' inner ''""`.
-- Unmatched opener → `Text('""')` or `Text("''")`.
-- Whitespace rules follow §12 (boundary whitespace stripped; adjacent boundaries collapsed).
+- The `\` and the following newline are consumed. Inline parsing continues on the next line.
+- `\` must be the last non-whitespace character on the line (trailing spaces stripped before this check).
 
-**Examples:**
+**Line-ending summary:**
 
-```
-"" hello ""          → QuoteInline { kind: "double", children: [Text("hello")] }
-'' hi ''             → QuoteInline { kind: "single", children: [Text("hi")] }
-""'' inner ''""      → QuoteInline { kind: "double", children: [QuoteInline { kind: "single", ... }] }
-"" unclosed          → Text('""') + Text(" unclosed")
-```
+| Line ending | Result |
+|---|---|
+| `word\n` | Soft break — folded to zero; lines concatenate directly |
+| `word \n` | Trailing space preserved — `Text("word ")` emitted |
+| `word\\n` | `TextBreak` node — explicit rendered line break |
 
 ---

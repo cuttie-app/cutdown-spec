@@ -40,30 +40,88 @@ AST:
 
 ---
 
-### ThematicBreak
+### Section
 
-**Syntax:** `--- {attrs}`
+**Syntax:** `={n} inline-content {attrs}`
 
-Three or more consecutive `-` at line start. Any characters between the dashes and the optional `{attrs}` are silently dropped.
+A heading creates a `Section` node. Consumers receive `Section` nodes — there is no bare `Heading` node in the AST. A section contains all subsequent blocks until a heading of equal or lesser level, end of the current block container, or end of document.
 
 **AST type:**
 
 ```typescript
-interface ThematicBreak {
-  type: "ThematicBreak"
+interface Section {
+  type: "Section"
+  level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+  heading: Inline[]
+  children: Block[]
   attributes: Attribute[]
 }
 ```
 
-- At **Page scope**: creates a page break — a new `Page` is opened and the `ThematicBreak` node becomes its first child.
-- Inside a **block container** (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` node but does **not** create a new Page.
+| Syntax              | Level |
+|---------------------|-------|
+| `= Heading`         | 1     |
+| `== Heading`        | 2     |
+| `=== Heading`       | 3     |
+| `==== Heading`      | 4     |
+| `===== Heading`     | 5     |
+| `====== Heading`    | 6     |
+| `======= Heading`   | 7     |
+| `======== Heading`  | 8     |
+| `========= Heading` | 9     |
+
+- Heading content is **parsed by inline rules**. Result is `Inline[]`.
+- A heading MUST be preceded by a blank line (or be the first non-comment line of the document or block container).
+- The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
+- Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
+- Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). Scoping follows the same level logic but is **bounded by the container** — never crosses container boundaries.
 
 **Examples:**
 
 ```
----              → ThematicBreak {}
---- {.page-end}  → ThematicBreak { attributes: { class: ["page-end"] } }
---- some text    → ThematicBreak {}  (text dropped)
+= H1 [with link](..){.class}
+→ Section { level: 1, heading: [Text("H1 "), Link(...)], attributes: { class: ["class"] } }
+
+= H1 [with link](..){.class}{}
+→ {} is last token → Section carries no attributes; {.class} attaches to Link
+→ Section { level: 1, heading: [Text("H1 "), Link(..., {class:"class"})], attributes: {} }
+```
+
+---
+
+### Meta (Front Matter)
+
+**Syntax:** Fenced with exactly three tildes.
+
+```
+~~~format
+content
+~~~
+```
+
+**AST type:**
+
+```typescript
+interface Meta {
+  type: "Meta"
+  format: "yaml" | "toml" | "json"  // default: "yaml"
+  raw: string
+}
+```
+
+- Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
+- Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
+- Always fills `Page.meta`. If `Page.meta` is already set, opens a new Page first. Never appears in `Page.children`.
+- Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0013.
+- Unclosed fence → warning CDN-0002.
+- No `attributes` field.
+
+**Example:**
+
+```
+~~~yaml
+title: My Document
+~~~
 ```
 
 ---
@@ -97,39 +155,44 @@ interface CodeBlock {
 
 ---
 
-### Meta
+### MathBlock
 
-**Syntax:** Fenced with exactly three tildes.
+**Syntax:** Fenced with exactly three dollar signs.
 
 ```
-~~~format
-content
-~~~
+$$$ {attrs}
+\LaTeX formula
+$$$
 ```
 
 **AST type:**
 
 ```typescript
-interface Meta {
-  type: "Meta"
-  format: "yaml" | "toml" | "json"  // default: "yaml"
-  raw: string
+interface MathBlock {
+  type: "MathBlock"
+  formula: string
+  attributes: Attribute[]
 }
 ```
 
-- Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
-- Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
-- Always fills `Page.meta`. If `Page.meta` is already set, opens a new Page first. Never appears in `Page.children`.
-- Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0013.
-- Unclosed fence → warning CDN-0002.
-- No `attributes` field.
+- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
+- Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
+- Unclosed fence: content runs to end of document → warning CDN-0003.
+- Legal inside block containers. Indentation handling follows the same rules as `CodeBlock`.
 
 **Example:**
 
 ```
-~~~yaml
-title: My Document
-~~~
+Input:
+  $$$ {.display #eq1}
+  \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+  $$$
+
+AST:
+  MathBlock {
+    formula: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
+    attributes: { id: "eq1", class: ["display"] }
+  }
 ```
 
 ---
@@ -205,7 +268,7 @@ interface List {
 ```typescript
 interface ListItem {
   type: "ListItem"
-  children: (Section | Block | Inline)[]
+  children: (Block | Inline)[]
   attributes: Attribute[]
 }
 ```
@@ -226,7 +289,7 @@ interface ListItem {
 interface TaskItem {
   type: "TaskItem"
   checked: boolean
-  children: (Section | Block | Inline)[]
+  children: (Block | Inline)[]
   attributes: Attribute[]
 }
 ```
@@ -315,6 +378,57 @@ Mid-table row:
 
 ---
 
+### ImageBlock
+
+**Syntax:** `![alt text](src) {attrs}`
+
+A line at block level beginning with `![` is classified as an `ImageBlock`.
+
+**AST type:**
+
+```typescript
+interface ImageBlock {
+  type: "ImageBlock"
+  alt: Inline[]
+  src: string
+  attributes: Attribute[]
+}
+```
+
+- `alt` is **parsed by inline rules**. Result is `Inline[]`.
+- Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
+- `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be at the start of a line.
+
+---
+
+### ThematicBreak
+
+**Syntax:** `--- {attrs}`
+
+Three or more consecutive `-` at line start. Any characters between the dashes and the optional `{attrs}` are silently dropped.
+
+**AST type:**
+
+```typescript
+interface ThematicBreak {
+  type: "ThematicBreak"
+  attributes: Attribute[]
+}
+```
+
+- At **Page scope**: creates a page break — a new `Page` is opened and the `ThematicBreak` node becomes its first child.
+- Inside a **block container** (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` node but does **not** create a new Page.
+
+**Examples:**
+
+```
+---              → ThematicBreak {}
+--- {.page-end}  → ThematicBreak { attributes: { class: ["page-end"] } }
+--- some text    → ThematicBreak {}  (text dropped)
+```
+
+---
+
 ### FileRef
 
 **Syntax:** `/path/to/file.ext {attrs}`
@@ -386,29 +500,6 @@ AST:
 
 ---
 
-### ImageBlock
-
-**Syntax:** `![alt text](src) {attrs}`
-
-A line at block level beginning with `![` is classified as an `ImageBlock`.
-
-**AST type:**
-
-```typescript
-interface ImageBlock {
-  type: "ImageBlock"
-  alt: Inline[]
-  src: string
-  attributes: Attribute[]
-}
-```
-
-- `alt` is **parsed by inline rules**. Result is `Inline[]`.
-- Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
-- `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be at the start of a line.
-
----
-
 ### NamedBlock
 
 **Syntax:**
@@ -469,47 +560,5 @@ interface RefDefinition {
 - Content is **parsed by inline rules**. Result is `Inline[]`.
 - **Last definition wins** when multiple definitions share the same `id`. This allows a host document to override any definition from a transcluded fragment.
 - Cutdown does not validate that every `[^id]` link has a matching definition.
-
----
-
-### MathBlock
-
-**Syntax:** Fenced with exactly three dollar signs.
-
-```
-$$$ {attrs}
-\LaTeX formula
-$$$
-```
-
-**AST type:**
-
-```typescript
-interface MathBlock {
-  type: "MathBlock"
-  formula: string
-  attributes: Attribute[]
-}
-```
-
-- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
-- Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
-- Unclosed fence: content runs to end of document → warning CDN-0003.
-- Legal inside block containers. Indentation handling follows the same rules as `CodeBlock`.
-
-**Example:**
-
-```
-Input:
-  $$$ {.display #eq1}
-  \int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
-  $$$
-
-AST:
-  MathBlock {
-    formula: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
-    attributes: { id: "eq1", class: ["display"] }
-  }
-```
 
 ---
