@@ -1,6 +1,6 @@
 id: list-mixed-numeric-task
 section: "4.7"
-description: "Numeric-first list containing a task item: list is ordered, TaskItem retains its nature"
+description: "Numbered list followed by a task item: numeric items form kind=numbered; task item starts a new kind=checklist List"
 
 input: |
   1. First ordered item
@@ -8,6 +8,7 @@ input: |
 
 ast:
   - type: List
+    kind: "numbered"
     loose: false
     start: 1
     children:
@@ -16,6 +17,7 @@ ast:
           - type: Text
             value: First ordered item
   - type: List
+    kind: "checklist"
     loose: false
     start: null
     children:

@@ -11,6 +11,7 @@ input: |
 
 ast:
   - type: List
+    kind: "bullet"
     loose: false
     children:
       - type: ListItem
@@ -18,6 +19,7 @@ ast:
           - type: Text
             value: First item
   - type: List
+    kind: "bullet"
     loose: true
     children:
       - type: ListItem

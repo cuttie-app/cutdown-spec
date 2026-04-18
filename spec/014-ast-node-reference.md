@@ -9,20 +9,20 @@
 
 ### Block Segments
 
-| Segment         | Fields |
-|-----------------|--------|
-| `Paragraph`     | `type: "Paragraph", children: Inline[], attributes` |
-| `Section`       | `type: "Section", level: 1..9, heading: Inline[], children: Block[], attributes` |
-| `CodeBlock`     | `type: "CodeBlock", language: string = "text", content: string, attributes` |
-| `MathBlock`     | `type: "MathBlock", formula: string, attributes` |
-| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attributes` |
-| `List`          | `type: "List", ordered: bool, start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
-| `Table`         | `type: "Table", kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], attributes` |
-| `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, attributes` |
-| `ThematicBreak` | `type: "ThematicBreak", attributes` |
-| `FileRef`       | `type: "FileRef", src: string, fragment: string\|null, query: string\|null, group: "image"\|"video"\|"audio"\|null, attributes` |
-| `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], attributes` |
-| `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], attributes` |
+| Segment         | Fields                                                                                                                               |
+|-----------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| `Paragraph`     | `type: "Paragraph", children: Inline[], attributes`                                                                                  |
+| `Section`       | `type: "Section", level: 1..9, heading: Inline[], children: Block[], attributes`                                                     |
+| `CodeBlock`     | `type: "CodeBlock", language: string = "text", raw: string, attributes`                                                              |
+| `MathBlock`     | `type: "MathBlock", raw: string, attributes`                                                                                         |
+| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attributes`                                                                                  |
+| `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
+| `Table`         | `type: "Table", kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], attributes`                                |
+| `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, attributes`                                                                         |
+| `ThematicBreak` | `type: "ThematicBreak", attributes`                                                                                                  |
+| `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', attributes`                                                 |
+| `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], attributes`                              |
+| `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], attributes`                                                                    |
 
 ### Inline Segments
 
@@ -32,7 +32,7 @@
 | `Emphasis`      | `type: "Emphasis", children: Inline[], attributes` |
 | `Strong`        | `type: "Strong", children: Inline[], attributes` |
 | `Strikethrough` | `type: "Strikethrough", children: Inline[], attributes` |
-| `Link`          | `type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|null, target: string\|null, attributes` |
+| `Link`          | `type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|'', target: string\|'', attributes` |
 | `CodeInline`    | `type: "CodeInline", value: string, attributes` |
 | `MathInline`    | `type: "MathInline", formula: string, attributes` |
 | `QuoteInline`   | `type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
@@ -42,16 +42,16 @@
 
 ### Special Nodes
 
-| Segment         | Fields |
-|-----------------|--------|
-| `Meta`          | `type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
-| `RefDefinition` | `type: "RefDefinition", id: string, children: Inline[], attributes` |
-| `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes` |
-| `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes` |
+| Segment         | Fields                                                                          |
+|-----------------|---------------------------------------------------------------------------------|
+| `Meta`          | `type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string`            |
+| `RefDefinition` | `type: "RefDefinition", ref: string, children: Inline[], attributes`            |
+| `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes`                     |
+| `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
 | `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
-| `Row`           | `type: "Row", children: Cell[], attributes` |
-| `Cell`          | `type: "Cell", children: Inline[], row: number, column: number` |
-| `Variable`      | `type: "Variable", key: string, attributes` |
+| `Row`           | `type: "Row", children: Cell[], attributes`                                     |
+| `Cell`          | `type: "Cell", children: Inline[], row: number, column: number`                 |
+| `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
 ### Attributes Type
 

@@ -10,6 +10,7 @@ ast:
   - type: QuoteBlock
     children:
       - type: List
+        kind: "checklist"
         loose: false
         start: null
         children:

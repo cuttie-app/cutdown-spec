@@ -11,6 +11,7 @@ input: |
 
 ast:
   - type: List
+    kind: "bullet"
     loose: true
     children:
       - type: ListItem

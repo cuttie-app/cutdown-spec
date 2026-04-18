@@ -7,7 +7,7 @@ input: |
 
 ast:
   - type: List
-    ordered: false
+    kind: "bullet"
     children:
       - type: ListItem
         children:

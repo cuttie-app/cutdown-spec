@@ -21,6 +21,7 @@ ast:
         value: Outer
     children:
       - type: List
+        kind: "bullet"
         loose: true
         children:
           - type: ListItem

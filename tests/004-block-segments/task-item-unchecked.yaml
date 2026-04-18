@@ -8,7 +8,7 @@ input: |
 
 ast:
   - type: List
-    ordered: false
+    kind: "checklist"
     loose: false
     children:
       - type: TaskItem

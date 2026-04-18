@@ -1,6 +1,6 @@
 id: list-mixed-task-numeric
 section: "4.7"
-description: "TaskItem-first list with numeric item: whole list is unordered, numeric item becomes plain ListItem"
+description: "Checklist followed by a numbered marker: task items form kind=checklist; numeric item starts a new kind=numbered List"
 
 input: |
   - [ ] Task item first
@@ -8,7 +8,7 @@ input: |
 
 ast:
   - type: List
-    ordered: false
+    kind: "checklist"
     start: null
     children:
       - type: TaskItem
@@ -17,7 +17,7 @@ ast:
           - type: Text
             value: Task item first
   - type: List
-    ordered: false
+    kind: "numbered"
     start: 1
     children:
       - type: ListItem

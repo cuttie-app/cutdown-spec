@@ -6,6 +6,7 @@ input: "    - item A\n\n    - item B\n"
 
 ast:
   - type: List
+    kind: "bullet"
     loose: true
     children:
       - type: ListItem
