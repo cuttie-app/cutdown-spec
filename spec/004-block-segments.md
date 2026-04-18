@@ -122,6 +122,12 @@ interface Meta {
 ~~~yaml
 title: My Document
 ~~~
+
+AST:
+    Page {
+        meta: Meta { format: "yaml", raw: "title: My Document\n" },
+        children: []
+    }
 ```
 
 ---
@@ -142,12 +148,12 @@ content
 interface CodeBlock {
   type: "CodeBlock"
   language: string  // default: "text"
-  content: string
+  raw: string
   attributes: Attribute[]
 }
 ```
 
-- Language identifier uses `[ID_LITERAL]+`. Defaults to `"text"` when absent.
+- Language identifier uses `[ID_LITERAL]+`. If omitted (means equal empty string) should be made default to `"text"`.
 - Content is **literal** — no inline parsing. Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
 - Fixed 3-backtick fence. Variable-length fences not supported. No nesting.
 - Unclosed fence: content runs to end of document → warning CDN-0001.
@@ -170,7 +176,7 @@ $$$
 ```typescript
 interface MathBlock {
   type: "MathBlock"
-  formula: string
+  raw: string
   attributes: Attribute[]
 }
 ```
@@ -190,8 +196,8 @@ Input:
 
 AST:
   MathBlock {
-    formula: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
-    attributes: { id: "eq1", class: ["display"] }
+    raw: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
+    attributes: [{ id: "eq1"}, {class: ["display"] }]
   }
 ```
 
@@ -218,9 +224,51 @@ interface QuoteBlock {
 ```
 
 - Every line MUST begin with `>`. No lazy continuation — a line without `>` ends the quote.
+- In same time QuoteBlock supports trailing lines without `>` in same way as Paragraph.
 - The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
 - Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters.
 
+**Examples:**
+
+```
+Input:
+  > Line 1
+  > Line 2
+  > Line 3
+
+AST:
+    QuoteBlock
+    └── Paragraph { children: [Text("Line 1 Line 2 Line 3")] }
+```
+
+```
+Input:
+  > Line 1
+  >>> Line 2
+  >> Line 3
+
+AST:
+    QuoteBlock
+    ├── Paragraph { children: [Text("Line 1")] }
+    └── QuoteBlock
+        ├── QuoteBlock
+        |   └──── Paragraph { children: [Text("Line 2")] }
+        └── Paragraph { children: [Text("Line 3")] }
+```
+
+```
+Input:
+  > Line 1
+  Line 2
+  Line 3
+
+  Line 4
+
+AST:
+    QuoteBlock
+    └─── Paragraph { children: [Text("Line 1 Line 2 Line 3")] }
+    Paragraph { children: [Text("Line 4")] }
+```
 ---
 
 ### 4.7 List
@@ -243,7 +291,6 @@ interface QuoteBlock {
 ```typescript
 interface List {
   type: "List"
-  ordered: boolean
   start: number | null  // first item number for ordered lists; null for unordered
   loose: boolean
   children: (ListItem | TaskItem)[]
@@ -253,7 +300,8 @@ interface List {
 
 - Unordered marker: `-` followed by one space. Only `-` is supported.
 - Ordered marker: `{number}.` followed by one space. Only `.` delimiter; `)` is not supported. Actual numbers are ignored except for `start`.
-- `ordered` is determined by the **first item's marker**.
+- `isOrdered` is determined by the **first item's marker**.
+- `isOrdered` computed as `start == null -> isOrdered = true`.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` node.
 
@@ -294,9 +342,10 @@ interface TaskItem {
 }
 ```
 
-- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]` (checked), then one space and content.
+- Marker: `- ` followed immediately by `[]`/`[ ]`  (unchecked) or `[x]`/`[X]` (checked), then one space and content.
 - Only unordered list items may carry a checkbox. An ordered list item never produces a `TaskItem`.
-- A `List` may contain a mix of `ListItem` and `TaskItem` children.
+- A `List` CANNOT contain a mix of `ListItem` and `TaskItem` children.
+- Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` node.
 - Follows the same multiline and block-promotion rules as `ListItem`.
 
 **Example:**
@@ -336,7 +385,7 @@ Two variants distinguished by the presence of a delimiter row:
 interface Table {
   type: "Table"
   kind: "simple" | "gfm"
-  head: Row[] | null   // null for simple tables
+  head: Row[]   // [] for simple tables
   body: Row[]
   columns: Column[]
   attributes: Attribute[]
@@ -371,7 +420,9 @@ interface Column {
 
 ```
 | td1 | td2 | {.a}{.b}  →  Table({.b}, Row({.a}, ...))
+
 | td1 | td2 | {.a}      →  Table({.a}, Row(...))         ← single {} = Table slot
+
 Mid-table row:
 | td1 | td2 | {.a}      →  Row({.a}, ...)                ← 1 slot only
 ```
@@ -417,7 +468,7 @@ interface ThematicBreak {
 ```
 
 - At **Page scope**: creates a page break — a new `Page` is opened and the `ThematicBreak` node becomes its first child.
-- Inside a **block container** (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` node but does **not** create a new Page.
+- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` node but does **not** create a new Page.
 
 **Examples:**
 
@@ -431,7 +482,7 @@ interface ThematicBreak {
 
 ### 4.11 FileRef
 
-**Syntax:** `/path/to/file.ext {attrs}`
+**Syntax:** `/path {attrs}`
 
 Any line beginning with `/` is a file reference block.
 
@@ -440,17 +491,19 @@ Any line beginning with `/` is a file reference block.
 ```typescript
 interface FileRef {
   type: "FileRef"
-  src: string
-  fragment: string | null
-  query: string | null
+  path: string
+  fragment: string | ''
+  query: string | ''
   group: "image" | "video" | "audio" | null
   attributes: Attribute[]
 }
 ```
 
-- Path uses `PATH_LITERAL` characters: `[a-zA-Z0-9._/-]`. Spaces not allowed.
+- `path` starts with `/` and uses wide range of characters, except `<` `>` `:` `"` `\` `|` `*` `{` `}` and whitespace. The first space (if any) separates the path from `{attrs}`.
 - Fragment (`#`): everything from the first `#` to the next space (or end of line, before `{attrs}`) is extracted as `fragment`. `src` stores the portion before `#`.
 - Query (`?`): if path contains `?`, the parser extracts the query string as `query`. `src` stores the portion before `?`.
+- `fragment` and `query` are mutually independent — either, both, or neither may be present. If absent, they are set to empty string `''` (not null).
+- Empty path (line with only `/`) is invalid state and produces string literal for whole line.
 - `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
 - Unknown-extension files have `group: null` and are never grouped.
 
@@ -541,7 +594,7 @@ interface NamedBlock {
 
 ### 4.14 RefDefinition
 
-**Syntax:** `[^id]: inline content`
+**Syntax:** `[^ref]: inline content`
 
 MUST start at the beginning of a line.
 
@@ -550,15 +603,16 @@ MUST start at the beginning of a line.
 ```typescript
 interface RefDefinition {
   type: "RefDefinition"
-  id: string
+  ref: string
   children: Inline[]
   attributes: Attribute[]
 }
 ```
 
-- `id` uses `[ID_LITERAL]+`. Case-sensitive.
+- `ref` uses `[ID_LITERAL]+` characters. Case-sensitive.
+- Empty `ref` (line starting with `[^]:`) is invalid state and produces string literal for whole line.
+- Empty content (`[^ref]:`) is valid and produces an empty `children` array.
 - Content is **parsed by inline rules**. Result is `Inline[]`.
-- **Last definition wins** when multiple definitions share the same `id`. This allows a host document to override any definition from a transcluded fragment.
-- Cutdown does not validate that every `[^id]` link has a matching definition.
+- Cutdown does not validate that every `[^ref]` link has a matching definition.
 
 ---

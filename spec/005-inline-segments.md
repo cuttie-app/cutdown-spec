@@ -6,15 +6,15 @@ Inline content is parsed left-to-right with no backtracking. When an opener has 
 
 | Location | Section |
 |----------|---------|
-| Heading text | §4 |
-| Paragraph content | §4 |
-| List item and task item content | §4 |
-| Table cell content | §4 |
-| `ImageBlock` `alt` | §4 |
-| `RefDefinition` content | §4 |
-| Children of `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline` | §5 |
-| `[text]` slot of `Link` | §5 |
-| `alt` slot of `ImageInline` | §5 |
+| Heading text | §4      |
+| Paragraph content | §4      |
+| List item and task item content | §4      |
+| Table cell content | §4      |
+| `alt` slot of `ImageBlock` | §4      |
+| `alt` slot of `ImageInline` | §5      |
+| `RefDefinition` content | §4      |
+| Children of `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline` | §5      |
+| `[text]` slot of `Link` | §5      |
 
 ---
 
@@ -118,8 +118,8 @@ interface Link {
   type: "Link"
   kind: "external" | "page" | "tag" | "ref" | "cite"
   children: Inline[]
-  href: string | null    // for kind: "external"
-  target: string | null  // for kind: "page" | "tag" | "ref" | "cite"
+  href: string            // for kind: "external", otherwise empty string
+  target: string          // for kind: "page" | "tag" | "ref" | "cite", otherwise empty string
   attributes: Attribute[]
 }
 ```
@@ -142,7 +142,7 @@ interface Link {
 
 ```
 [][target]    → Link { kind: "page", children: [], target: "target" }
-[][]          ��� Link { kind: "page", children: [], target: "" }
+[][]          → Link { kind: "page", children: [], target: "" }
 []()          → Link { kind: "external", children: [], href: "" }
 ```
 
@@ -150,7 +150,7 @@ interface Link {
 
 ### 5.6 CodeInline
 
-**Syntax:** ` ``code`` `
+**Syntax:** '\`\`code\`\`'
 
 **AST type:**
 
@@ -164,19 +164,19 @@ interface CodeInline {
 
 - Double backtick only. Single backtick is always literal text.
 - Content is **literal** — no inline parsing, no escape processing.
-- Unmatched ` `` ` → `Text("``")`. Single `` ` `` → `Text("`")`.
-- Triple backtick in inline context: ` ``` ` = ` `` ` (opener) + `` ` `` (literal inside).
-- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside ` ``...`` ` is folded to zero.
+- Unmatched '\`\`' → `Text("``")`. Single '\`' → `Text("`")`.
+- Triple backtick in inline context: \`\`\` = \`\` (opener) + \` (literal inside).
+- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside \`\`...\`\` is folded to zero. See §12 for full whitespace rules.
 
 **Examples:**
 
-```
+````
 ``code``          → CodeInline { value: "code" }
 `not code`        → Text("`") + Text("not code") + Text("`")
 ```text```        → CodeInline { value: "`text" }
 ``test
 continues``       → CodeInline { value: "testcontinues" }   (soft break → zero)
-```
+````
 
 ---
 
@@ -273,7 +273,7 @@ An empty inline placeholder/hook for consumer post-processing.
 ```typescript
 interface Span {
   type: "Span"
-  name: string
+  name: string  // non-empty string
   children: []  // always empty
   attributes: Attribute[]
 }
@@ -327,14 +327,14 @@ interface TextBreak {
 ```
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
-- `\` must be the last non-whitespace character on the line (trailing spaces stripped before this check).
+- The `\` must be the last non-whitespace character on the line.
 
 **Line-ending summary:**
 
-| Line ending | Result |
-|---|---|
-| `word\n` | Soft break — folded to zero; lines concatenate directly |
-| `word \n` | Trailing space preserved — `Text("word ")` emitted |
-| `word\\n` | `TextBreak` node — explicit rendered line break |
+| Line ending | Result                                                             |
+|-------------|--------------------------------------------------------------------|
+| `word\n`    | Soft break — folded to zero; lines concatenate directly            |
+| `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
+| `word\\n`   | `TextBreak` node — explicit rendered line break                    |
 
 ---
