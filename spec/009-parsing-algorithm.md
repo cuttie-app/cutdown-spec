@@ -1,6 +1,6 @@
 ## 9. Parsing Algorithm
 
-Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT backtrack: once a token or node has been emitted, it is never re-interpreted. An opener with no valid closer before the end of the inline context is emitted as literal text and parsing continues forward.
+Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT backtrack: once a token or segment has been emitted, it is never re-interpreted. An opener with no valid closer before the end of the inline context is emitted as literal text and parsing continues forward.
 
 ### 9.1 Phase 1 — Normalization
 
@@ -50,13 +50,13 @@ Inline content is parsed left-to-right within each block that contains inline co
 4. Resolves escape sequences `\x` before delimiter matching.
 5. Collects trailing `{attrs}` after each completed inline element.
 
-Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` nodes is the consumer's responsibility.
+Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
 
 Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { kind: "cite" }` in-place. Citation resolution is the consumer's responsibility.
 
 ### 9.5 Section Assembly
 
-After all blocks are classified, heading blocks are used to assemble `Section` nodes. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`).
+After all blocks are classified, heading blocks are used to assemble `Section` segments. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`).
 
 For each block list (Page-level or container-level):
 
@@ -74,7 +74,7 @@ Pages are assembled during block classification (Phase 3). Page Assembly applies
    - If the current Page's `meta` is `null`: assign this Meta block to `Page.meta`. No new Page is created.
    - Otherwise: close the current Page, open a new Page, assign the Meta block to the new Page's `meta`.
 3. On encountering a `ThematicBreak` **at Page scope**: close the current Page, open a new Page, place the `ThematicBreak` as the first child of the new Page.
-4. A `ThematicBreak` inside a block container emits a `ThematicBreak` node within that container but does not affect Page Assembly.
+4. A `ThematicBreak` inside a block container emits a `ThematicBreak` segment within that container but does not affect Page Assembly.
 5. All other blocks are appended to the current Page's `children`.
 6. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 
