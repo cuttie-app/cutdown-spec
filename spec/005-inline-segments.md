@@ -18,7 +18,7 @@ Inline content is parsed left-to-right with no backtracking. When an opener has 
 
 ---
 
-### Text
+### 5.1 Text
 
 Any sequence of characters not matched by another inline rule.
 
@@ -35,7 +35,7 @@ Consecutive text tokens MUST be merged into a single `Text` node by the parser.
 
 ---
 
-### Emphasis
+### 5.2 Emphasis
 
 **Syntax:** `**inline content**`
 
@@ -67,7 +67,7 @@ interface Emphasis {
 
 ---
 
-### Strong
+### 5.3 Strong
 
 **Syntax:** `__inline content__`
 
@@ -87,7 +87,7 @@ interface Strong {
 
 ---
 
-### Strikethrough
+### 5.4 Strikethrough
 
 **Syntax:** `~~inline content~~`
 
@@ -107,7 +107,7 @@ interface Strikethrough {
 
 ---
 
-### Link
+### 5.5 Link
 
 **Syntax:** Several forms depending on link kind.
 
@@ -148,7 +148,7 @@ interface Link {
 
 ---
 
-### CodeInline
+### 5.6 CodeInline
 
 **Syntax:** ` ``code`` `
 
@@ -180,7 +180,7 @@ continues``       → CodeInline { value: "testcontinues" }   (soft break → ze
 
 ---
 
-### MathInline
+### 5.7 MathInline
 
 **Syntax:** `$$formula$$`
 
@@ -209,7 +209,7 @@ $ not math $          → Text("$ not math $")
 
 ---
 
-### QuoteInline
+### 5.8 QuoteInline
 
 **Syntax:** `"" content ""` or `'' content ''`
 
@@ -241,7 +241,7 @@ interface QuoteInline {
 
 ---
 
-### ImageInline
+### 5.9 ImageInline
 
 **Syntax:** `![alt](src) {attrs}`
 
@@ -262,7 +262,7 @@ interface ImageInline {
 
 ---
 
-### Span
+### 5.10 Span
 
 **Syntax:** `::name {attrs}`
 
@@ -292,7 +292,7 @@ Hello ::marker {#here .highlight} world
 
 ---
 
-### Variable
+### 5.11 Variable
 
 **Syntax:** `{{key}}`
 
@@ -314,7 +314,7 @@ interface Variable {
 
 ---
 
-### TextBreak
+### 5.12 TextBreak
 
 **Syntax:** `\` as the last character of a line (before `\n`).
 
