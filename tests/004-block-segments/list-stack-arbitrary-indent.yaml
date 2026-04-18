@@ -9,12 +9,14 @@ input: |
 
 ast:
   - type: List
+    kind: "bullet"
     children:
       - type: ListItem
         children:
           - type: Text
             value: item A
           - type: List
+            kind: "bullet"
             children:
               - type: ListItem
                 children:

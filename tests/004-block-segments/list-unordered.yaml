@@ -8,6 +8,7 @@ input: |
 
 ast:
   - type: List
+    kind: "bullet"
     children:
       - type: ListItem
         children:

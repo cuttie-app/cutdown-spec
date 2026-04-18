@@ -7,6 +7,7 @@ input: |
 
 ast:
   - type: List
+    kind: "bullet"
     loose: false
     children:
       - type: ListItem
@@ -14,6 +15,7 @@ ast:
           - type: QuoteBlock
             children:
               - type: List
+                kind: "bullet"
                 children:
                   - type: ListItem
                     children:

@@ -6,7 +6,7 @@ input: "- - - nested item \n      continuation line\n"
 
 ast:
   - type: List
-    ordered: false
+    kind: "bullet"
     children:
       - type: ListItem
         children:

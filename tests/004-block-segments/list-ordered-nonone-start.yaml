@@ -8,7 +8,7 @@ input: |
 
 ast:
   - type: List
-    ordered: true
+    kind: "numbered"
     start: 3
     children:
       - type: ListItem
