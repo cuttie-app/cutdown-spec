@@ -10,4 +10,4 @@ input: |
 ast:
   - type: CodeBlock
     language: text
-    content: hello world
+    raw: "hello world"

@@ -10,4 +10,4 @@ input: |
 ast:
   - type: CodeBlock
     language: text
-    content: "**bold** and __strong__"
+    raw: "**bold** and __strong__"
