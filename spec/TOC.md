@@ -1,8 +1,8 @@
 # Cutdown Markup Language Specification
 
 - **Status:** Draft
-- **Version:** 0.3.3
-- **Date:** 2026-04-04
+- **Version:** 0.4.0
+- **Date:** 2026-06-14
 - **Inspired by:** Djot, CommonMark
 - **Versioning policy:** [`policies/versioning-policy.md`](policies/versioning-policy.md)
 - **Change publication policy:** [`policies/change-publication-policy.md`](policies/change-publication-policy.md)

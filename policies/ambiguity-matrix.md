@@ -311,6 +311,77 @@ CDN-0014  warning  span: the closing "^^" (col 11)
 message: Crossed inline boundaries: "^^" closes while "**" (col 6) is still open
 ```
 
+### 6) CodeInline escape (`` \` `` only)
+
+Input:
+
+```text
+``\`x``
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── CodeInline(value="`x")
+```
+
+Input (double backslash stays literal — `\\` is NOT an escape inside CodeInline):
+
+```text
+``a\\b``
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── CodeInline(value="a\\b")
+```
+
+Input (unknown `\X` stays literal):
+
+```text
+``\nb``
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── CodeInline(value="\nb")
+```
+
+Note: the `value` above contains the two literal characters `\` and `n`, not a newline.
+
+Input (escape lets multi-backtick embed — the motivating case):
+
+```text
+``\`\`\`x``
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── CodeInline(value="```x")
+```
+
+Input (interaction with run-of-3 opener collapse):
+
+```text
+```\`x```
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── CodeInline(value="``x")
+```
+
+The opener `` ``` `` collapses via run-of-3 to `` `` `` (double opener) + literal `` ` `` (in content). Then `` \` `` inside contributes another literal `` ` `` for a value of `` ``x ``.
+
 ## Change Checklist
 
 For every new inline token:

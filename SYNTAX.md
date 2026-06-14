@@ -198,7 +198,7 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 | `__text__`      | `Strong` | Single `_` = literal |
 | `~~text~~`      | `Strikethrough` | Single `~` = literal |
 | `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc. |
-| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal. |
+| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`. |
 | `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal. |
 | `""text""`      | `QuoteInline(double)` | Single `"` = literal |
 | `''text''`      | `QuoteInline(single)` | Single `'` = literal |
@@ -251,7 +251,7 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 ## Precedence (inline, highest first)
 
 1. Code fence \`\`\`, Meta fence `~~~`, Math fence `$$$` — content always literal
-2. Inline code \`\`, Inline math `$$` — content literal
+2. Inline code \`\` — content literal except `` \` `` (see §5.6); Inline math `$$` — content literal
 3. Escape `\x`
 4. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
 5. Links `[...](...)`  and images `![...]()`

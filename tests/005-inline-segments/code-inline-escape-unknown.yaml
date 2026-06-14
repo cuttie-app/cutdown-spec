@@ -1,0 +1,11 @@
+id: code-inline-escape-unknown
+section: "5.6"
+description: "Inside CodeInline, an unknown \\X (X not ` or \\) emits both characters literally (per §8 rule for non-special)"
+
+input: "``\\nb``\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: CodeInline
+        value: "\\nb"
