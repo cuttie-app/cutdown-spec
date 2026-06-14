@@ -1,0 +1,16 @@
+id: spoiler-block-basic
+section: "4.15"
+description: "^^^ opens a SpoilerBlock; ^^^ on its own line closes it; body is parsed as blocks"
+
+input: |
+  ^^^
+  Some content
+  ^^^
+
+ast:
+  - type: SpoilerBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Some content

@@ -23,6 +23,7 @@
 | `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', attributes`                                                 |
 | `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], attributes`                              |
 | `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], attributes`                                                                    |
+| `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], attributes`                                                                                |
 
 ### Inline Segments
 
@@ -32,6 +33,7 @@
 | `Emphasis`      | `type: "Emphasis", children: Inline[], attributes` |
 | `Strong`        | `type: "Strong", children: Inline[], attributes` |
 | `Strikethrough` | `type: "Strikethrough", children: Inline[], attributes` |
+| `Spoiler`       | `type: "Spoiler", children: Inline[], attributes` |
 | `Link`          | `type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|'', target: string\|'', attributes` |
 | `CodeInline`    | `type: "CodeInline", value: string, attributes` |
 | `MathInline`    | `type: "MathInline", formula: string, attributes` |

@@ -616,3 +616,55 @@ interface RefDefinition {
 - Cutdown does not validate that every `[^ref]` link has a matching definition.
 
 ---
+
+### 4.15 SpoilerBlock
+
+**Syntax:** Fenced with exactly three carets.
+
+```
+^^^ {attrs}
+  content
+^^^
+```
+
+**AST type:**
+
+```typescript
+interface SpoilerBlock {
+  type: "SpoilerBlock"
+  children: Block[]
+  attributes: Attribute[]
+}
+```
+
+- Opening: `^^^` at line start, optionally followed by `{attrs}`. The opening line carries no other content.
+- Closing: `^^^` on its own line.
+- Content is **parsed as blocks** — paragraphs, lists, images, and `:::` NamedBlocks are all permitted. This is the **only** XXX-fence in Cutdown whose body is parsed (code/meta/math fences hold literal content); the contrast is intentional, because a Spoiler hides *meaning*, not *structure*.
+- **No nested SpoilerBlocks.** The first `^^^` line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
+- Fixed 3-caret fence. Variable-length fences not supported.
+- **Indentation collapsing:** the first content line establishes the base indentation; that many leading spaces are stripped from all content lines before parsing — same rule as `NamedBlock` (§4.13).
+- Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
+- Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, and other `SpoilerBlock`s. Container indentation is stripped from content lines.
+- Semantic variants (NSFW, redacted, entertainment-spoiler) are carried in `attributes`; `SpoilerBlock` has no `kind` field.
+
+**Example:**
+
+```
+Input:
+  ^^^ {.nsfw}
+  Plot twist: **the butler** did it.
+
+  - and so did the gardener
+  ^^^
+
+AST:
+  SpoilerBlock {
+    attributes: { class: ["nsfw"] },
+    children: [
+      Paragraph([Text("Plot twist: "), Emphasis([Text("the butler")]), Text(" did it.")]),
+      List { kind: "bullet", children: [ListItem([Text("and so did the gardener")])] }
+    ]
+  }
+```
+
+---

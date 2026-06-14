@@ -1,0 +1,14 @@
+id: spoiler-basic
+section: "5.12"
+description: "^^ delimiters produce Spoiler; single ^ is literal text"
+
+input: |
+  ^^hidden^^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Text
+            value: hidden

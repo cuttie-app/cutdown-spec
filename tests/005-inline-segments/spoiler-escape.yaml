@@ -1,0 +1,12 @@
+id: spoiler-escape
+section: "5.12"
+description: "\\^ before a caret consumes the backslash and emits a literal ^; the remaining ^^ opener has no closer and is also literal"
+
+input: |
+  \^^x^^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^^x^^"

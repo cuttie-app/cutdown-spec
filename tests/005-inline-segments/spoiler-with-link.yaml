@@ -1,0 +1,18 @@
+id: spoiler-with-link
+section: "5.12"
+description: "Links (higher precedence than emphasis family) parse inside Spoiler children"
+
+input: |
+  ^^[text](/url)^^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Link
+            kind: external
+            children:
+              - type: Text
+                value: text
+            href: /url

@@ -1,0 +1,16 @@
+id: spoiler-run-of-three
+section: "5.12"
+description: "^^^ in inline context = ^^ (opener) + ^ (literal inside); closing ^^^ = ^^ (closer) + ^ (literal after)"
+
+input: |
+  ^^^x^^^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Text
+            value: "^x"
+      - type: Text
+        value: "^"

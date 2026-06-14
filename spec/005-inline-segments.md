@@ -314,7 +314,40 @@ interface Variable {
 
 ---
 
-### 5.12 TextBreak
+### 5.12 Spoiler
+
+**Syntax:** `^^inline content^^`
+
+**AST type:**
+
+```typescript
+interface Spoiler {
+  type: "Spoiler"
+  children: Inline[]
+  attributes: Attribute[]
+}
+```
+
+- `^^` opener and closer. A single `^` is always literal text in inline context. (Inside `[...][^id]` link/definition target slots, `^` retains its reference-marker role per §5.5 / §4.14 — that context is delimited and never reaches the Spoiler parser.)
+- Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
+- Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy left-to-right close, unclosed `^^` → `Text("^^")`, no same-type nesting.
+- Cross-nesting with `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline`, and `Link` is allowed.
+- Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.
+
+**Examples:**
+
+```
+^^hidden^^         → Spoiler([Text("hidden")])
+^^^x^^^            → Spoiler([Text("^x")]) + Text("^^")
+^^ open            → Text("^^") + Text(" open")            (unclosed)
+^ not spoiler ^    → Text("^ not spoiler ^")               (single caret = literal)
+**^^x^^**          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
+^^a ^^b^^ c^^      → Spoiler([Text("a")]) + Text("b") + Spoiler([Text("c")])   (greedy)
+```
+
+---
+
+### 5.13 TextBreak
 
 **Syntax:** `\` as the last character of a line (before `\n`).
 

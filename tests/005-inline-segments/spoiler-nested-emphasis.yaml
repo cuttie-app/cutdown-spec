@@ -1,0 +1,16 @@
+id: spoiler-nested-emphasis
+section: "5.12"
+description: "Cross-type nesting is allowed; Spoiler inside Emphasis"
+
+input: |
+  **^^x^^**
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Emphasis
+        children:
+          - type: Spoiler
+            children:
+              - type: Text
+                value: x

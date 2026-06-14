@@ -1,0 +1,21 @@
+id: spoiler-block-nested-in-named
+section: "4.15"
+description: SpoilerBlock can nest inside a NamedBlock and vice-versa; the two fence families interleave freely
+
+input: |
+  :::callout
+  ^^^
+  hidden inside callout
+  ^^^
+  :::
+
+ast:
+  - type: NamedBlock
+    name: callout
+    children:
+      - type: SpoilerBlock
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: hidden inside callout

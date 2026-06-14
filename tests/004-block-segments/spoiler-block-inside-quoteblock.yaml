@@ -1,0 +1,18 @@
+id: spoiler-block-inside-quoteblock
+section: "4.15"
+description: SpoilerBlock inside a QuoteBlock is legal; only the > prefix is stripped
+
+input: |
+  > ^^^
+  > hidden
+  > ^^^
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: SpoilerBlock
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: hidden

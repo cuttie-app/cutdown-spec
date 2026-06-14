@@ -1,0 +1,12 @@
+id: spoiler-single-caret-literal
+section: "5.12"
+description: "A single ^ is always literal text in inline context; no Spoiler is opened"
+
+input: |
+  ^ not spoiler ^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ not spoiler ^"

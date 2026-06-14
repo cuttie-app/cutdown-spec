@@ -1,0 +1,20 @@
+id: spoiler-boundary-cross
+section: "5.12"
+description: "^^ closes while ** is open inside its content; CDN-0014 at the crossing ^^ closer; trailing ** is orphaned literal"
+
+input: |
+  ^^ a ** b ^^ c **
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Text
+            value: "a ** b"
+      - type: Text
+        value: " c **"
+
+diagnostics:
+  - code: CDN-0014
+    level: warning
