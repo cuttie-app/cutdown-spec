@@ -18,6 +18,6 @@ The following characters are special and may be escaped:
 = # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " ' ^
 ```
 
-Inside a fenced code block, metadata block, or fenced math block, no escaping is processed — content is always literal.
+Inside a metadata block (`~~~`), code block (` ``` `), or math block (`$$$`), no escaping is processed — content is always literal. Inside `CodeInline` (`` `` ``), only `` \` `` is processed (→ literal `` ` ``); every other backslash is literal. See §5.6.
 
 ---

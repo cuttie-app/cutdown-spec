@@ -1,0 +1,15 @@
+id: code-inline-escape-with-run-of-three
+section: "5.6"
+description: "Both mechanisms combined: triple-backtick opener collapses (run-of-3) into a double opener + one literal `, then \\` inside contributes a second literal `"
+
+input: "a ```\\`x``` z\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "a "
+      - type: CodeInline
+        value: "``x"
+      - type: Text
+        value: "` z"

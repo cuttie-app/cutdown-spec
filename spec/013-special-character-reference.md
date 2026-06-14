@@ -7,7 +7,7 @@
 | `*` | Emphasis delimiter (`**`) | Yes |
 | `_` | Strong delimiter (`__`) | Yes |
 | `~` | Strikethrough (`~~`) / metadata fence (`~~~`) | Yes |
-| \`  | Inline code (\`\`) / code fence (\`\`\`) | Yes |
+| \`  | Inline code (\`\`) / code fence (\`\`\`) — escapable inside CodeInline as `` \` `` | Yes |
 | `[` | Link/image opener | Yes |
 | `]` | Link/image closer | Yes |
 | `(` | Link URL opener | Yes |
@@ -19,7 +19,7 @@
 | `-` | List marker / thematic break | Yes |
 | `>` | QuoteBlock marker | Yes |
 | `/` | File reference (line start) | Yes |
-| `\` | Escape character / hard break | Yes |
+| `\` | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |
 | \|  | Table cell separator | Yes |
 | `^` | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
 | `$` | Inline math (`$$`) / block math (`$$$`) | Yes |

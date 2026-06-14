@@ -1,0 +1,11 @@
+id: code-inline-escape-backtick
+section: "5.6"
+description: "Inside CodeInline, \\` is processed as a literal backtick that does not close the span; lets authors embed multi-backtick content (motivating case)"
+
+input: "``\\`\\`\\`x``\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: CodeInline
+        value: "```x"
