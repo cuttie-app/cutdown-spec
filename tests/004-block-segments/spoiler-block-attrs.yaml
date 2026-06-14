@@ -1,0 +1,21 @@
+id: spoiler-block-attrs
+section: "4.15"
+description: "Attributes on the opening ^^^ line are attached to the SpoilerBlock node"
+
+input: |
+  ^^^ {.nsfw #note1}
+  Content
+  ^^^
+
+ast:
+  - type: SpoilerBlock
+    attributes:
+      - key: class
+        value: [nsfw]
+      - key: id
+        value: note1
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Content

@@ -70,8 +70,11 @@ When N identical characters appear at an inline position, the following rules ap
 | \` | literal | `CodeInline` open/close | \`\` + \` literal¹ | `CodeInline("")` empty | `CodeInline("\`")` |
 | `~` | literal | `Strikethrough` open/close | `~~` + `~` literal¹ | `Strikethrough([])` empty | `Strikethrough([])` + `~` literal |
 | `$` | literal | `MathInline` open/close | `$$` + `$` literal¹ | `MathInline("")` empty | `MathInline("$")` |
+| `^` | literal² | `Spoiler` open/close | `^^` + `^` literal¹ | `Spoiler([])` empty | `Spoiler([])` + `^` literal |
 
-¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$` are block fences (CodeBlock, Meta, MathBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
+¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$`, `^^^` are block fences (CodeBlock, Meta, MathBlock, SpoilerBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
+
+² A single `^` is literal in inline context. Inside a `[...][^id]` link/definition target slot it retains its reference-marker role (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
 
 **Block/structural symbols**:
 
@@ -97,6 +100,7 @@ Known collisions:
 | \`\`\` at inline position | \`\` (CodeInline opener) + \` (literal inside) |
 | `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
+| `^^^` at inline position | `^^` (Spoiler opener) + `^` (literal) |
 | `---` non-line-start | literal text (ThematicBreak only classified at line start) |
 
 ### 10.5 List Indentation Model

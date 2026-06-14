@@ -15,7 +15,7 @@ A backslash before a **non-special** character emits both the backslash and the 
 The following characters are special and may be escaped:
 
 ```
-= # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " '
+= # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " ' ^
 ```
 
 Inside a fenced code block, metadata block, or fenced math block, no escaping is processed — content is always literal.

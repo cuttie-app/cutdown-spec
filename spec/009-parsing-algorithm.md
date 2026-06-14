@@ -18,6 +18,7 @@ Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT ba
    - Meta blocks: `~~~` opens until the next `~~~` (or end of document).
    - Named blocks `:::` open until a closing `:::` (or end of document).
    - Math blocks: `$$$` opens until the next `$$$` (or end of document).
+   - Spoiler blocks: `^^^` opens until the next `^^^` (or end of document, or end of the enclosing block container). SpoilerBlocks do not nest — see §4.15.
 
 ### 9.3 Phase 3 — Block Classification
 
@@ -36,6 +37,7 @@ Each block candidate is classified by its first line:
 | `^[0-9]+\. ` | List (ordered) |
 | `^\[^[ID_LITERAL]` | RefDefinition |
 | `^\$\$\$` | MathBlock |
+| `^\^\^\^` | SpoilerBlock |
 | `^/` | FileRef |
 | `^!\[` | ImageBlock |
 | (anything else) | Paragraph |
@@ -44,7 +46,7 @@ Each block candidate is classified by its first line:
 
 Inline content is parsed left-to-right within each block that contains inline content. The parser:
 
-1. Scans for openers (`**`, `__`, `~~`, '\`\`', `[`, `![`, `::`, `{{`, `""`, `''`, `$$`).
+1. Scans for openers (`**`, `__`, `~~`, `^^`, '\`\`', `[`, `![`, `::`, `{{`, `""`, `''`, `$$`).
 2. On finding an opener, scans forward for a valid closer.
 3. If no closer found before paragraph/block end: emits opener as `Text` and advances.
 4. Resolves escape sequences `\x` before delimiter matching.
@@ -56,7 +58,7 @@ Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { k
 
 ### 9.5 Section Assembly
 
-After all blocks are classified, heading blocks are used to assemble `Section` segments. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`).
+After all blocks are classified, heading blocks are used to assemble `Section` segments. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
 
 For each block list (Page-level or container-level):
 
@@ -67,7 +69,7 @@ For each block list (Page-level or container-level):
 
 ### 9.6 Page Assembly
 
-Pages are assembled during block classification (Phase 3). Page Assembly applies **only at Page scope** — blocks inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`) never trigger Page Assembly regardless of their type.
+Pages are assembled during block classification (Phase 3). Page Assembly applies **only at Page scope** — blocks inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`) never trigger Page Assembly regardless of their type.
 
 1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
 2. On encountering a `Meta` block **at Page scope**:

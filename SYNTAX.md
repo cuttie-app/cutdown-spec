@@ -168,6 +168,16 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 
 `:::` + name required. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
 
+### Spoiler Block → `SpoilerBlock`
+
+```
+^^^ {attrs}
+  content (any blocks, including nested ^^^ and :::)
+^^^
+```
+
+Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+
 ### Reference Definition → `RefDefinition`
 
 ```
@@ -187,6 +197,7 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 | `**text**`      | `Emphasis` | Single `*` = literal |
 | `__text__`      | `Strong` | Single `_` = literal |
 | `~~text~~`      | `Strikethrough` | Single `~` = literal |
+| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc. |
 | \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal. |
 | `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal. |
 | `""text""`      | `QuoteInline(double)` | Single `"` = literal |
@@ -203,7 +214,7 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting not allowed (greedy close).
 
-Inside inline context run of 3 (`***`, `___`, `~~~`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal.
+Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal.
 
 ---
 
@@ -233,7 +244,7 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters: `= # * _ ~  $ [ ] ( ) ! { } : - > / \ | " '` and \`
+Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 
 ---
 
@@ -244,5 +255,5 @@ Special characters: `= # * _ ~  $ [ ] ( ) ! { } : - > / \ | " '` and \`
 3. Escape `\x`
 4. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
 5. Links `[...](...)`  and images `![...]()`
-6. Emphasis `**`, Strong `__`, Strikethrough `~~`, QuoteInline `""` `''`
+6. Emphasis `**`, Strong `__`, Strikethrough `~~`, Spoiler `^^`, QuoteInline `""` `''`
 7. `::span`

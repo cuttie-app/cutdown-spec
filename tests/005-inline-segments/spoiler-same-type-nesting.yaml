@@ -1,0 +1,20 @@
+id: spoiler-same-type-nesting
+section: "5.12"
+description: "Same-type nesting not allowed; greedy first-close wins. ^^a ^^b^^ c^^ → two adjacent Spoiler nodes around literal b."
+
+input: |
+  ^^a ^^b^^ c^^
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Text
+            value: a
+      - type: Text
+        value: b
+      - type: Spoiler
+        children:
+          - type: Text
+            value: c

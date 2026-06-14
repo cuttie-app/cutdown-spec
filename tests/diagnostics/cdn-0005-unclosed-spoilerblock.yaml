@@ -1,0 +1,17 @@
+id: cdn-0005-unclosed-spoilerblock
+section: "4.15"
+description: "Unclosed ^^^ opener; content runs to end of document as SpoilerBlock children; CDN-0005 warning emitted"
+
+input: "^^^\nSome content\n"
+
+ast:
+  - type: SpoilerBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Some content
+
+diagnostics:
+  - code: CDN-0005
+    level: warning

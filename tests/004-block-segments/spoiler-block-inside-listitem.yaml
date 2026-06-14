@@ -1,0 +1,28 @@
+id: spoiler-block-inside-listitem
+section: "4.15"
+description: SpoilerBlock inside a list item is legal; list item's base offset (2 spaces) is stripped from content lines
+
+input: |
+  - item
+
+    ^^^
+    hidden
+    ^^^
+
+ast:
+  - type: List
+    kind: "bullet"
+    loose: true
+    children:
+      - type: ListItem
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: item
+          - type: SpoilerBlock
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: hidden

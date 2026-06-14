@@ -221,6 +221,96 @@ CDN-0014  warning  span: closing "**" (col 15)  — closes while "__" (col 4) is
 CDN-0014  warning  span: closing "**" (col 15)  — closes while "~~" (col 7) is open
 ```
 
+### 5) Spoiler `^^` opener
+
+Input:
+
+```text
+\^^secret^^
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── Text("^^secret^^")
+```
+
+Input:
+
+```text
+^^{{var}}^^
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── Spoiler([Variable(key="var")])
+```
+
+Input:
+
+```text
+^^ open
+```
+
+Expected AST:
+
+```text
+Paragraph
+├── Text("^^")
+└── Text(" open")
+```
+
+Input:
+
+```text
+**^^x^^**
+```
+
+Expected AST:
+
+```text
+Paragraph
+└── Emphasis([Spoiler([Text("x")])])
+```
+
+Input:
+
+```text
+^^^x^^^
+```
+
+Expected AST:
+
+```text
+Paragraph
+├── Spoiler([Text("^x")])
+└── Text("^^")
+```
+
+Input (boundary crossing — CDN-0014):
+
+```text
+^^ a ** b ^^ c **
+```
+
+Expected AST:
+
+```text
+Paragraph
+├── Spoiler([Text("a ** b")])
+└── Text(" c **")
+```
+
+Expected diagnostics:
+
+```text
+CDN-0014  warning  span: the closing "^^" (col 11)
+message: Crossed inline boundaries: "^^" closes while "**" (col 6) is still open
+```
+
 ## Change Checklist
 
 For every new inline token:

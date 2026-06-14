@@ -21,7 +21,7 @@
 | `/` | File reference (line start) | Yes |
 | `\` | Escape character / hard break | Yes |
 | \|  | Table cell separator | Yes |
-| `^` | Reference link/definition marker | Yes |
+| `^` | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
 | `$` | Inline math (`$$`) / block math (`$$$`) | Yes |
 | `"` | Inline quote delimiter (`""`) | Yes |
 | `'` | Inline quote delimiter (`''`) | Yes |

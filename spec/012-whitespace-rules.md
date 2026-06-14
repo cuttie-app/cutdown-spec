@@ -17,7 +17,7 @@
 
 ### 12.2 Inline Block Whitespace
 
-Within any inline block (Emphasis, Strong, Strikethrough, MathInline, QuoteInline):
+Within any inline block (Emphasis, Strong, Strikethrough, Spoiler, MathInline, QuoteInline):
 
 | Situation | Rule |
 |-----------|------|

@@ -75,6 +75,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
+### CDN-0005 — Unclosed SpoilerBlock fence
+
+| Field | Value |
+|---|---|
+| code | CDN-0005 |
+| title | Unclosed SpoilerBlock fence |
+| level | warning |
+| trigger | A `^^^` opening fence has no matching closing `^^^` before end of document (or end of the enclosing block container) |
+| recovery | Content from the opening fence to the boundary is treated as `SpoilerBlock` children (parsed as blocks) |
+| introduced_in | next |
+| status | active |
+| owner | Language |
+
+---
+
 ### CDN-0010 — ThematicBreak text content dropped
 
 | Field | Value |
@@ -187,7 +202,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0014 |
 | title | Crossed inline element boundaries |
 | level | warning |
-| trigger | An inline element A closes via its delimiter while an opener of a **different** inline type B (one of `**`, `__`, `~~`, `""`, `''`, `[`) was present inside A's content and emitted as literal text — and a closer for B exists in the inline stream after A's boundary. Span points to A's closing delimiter (the crossing closer). |
+| trigger | An inline element A closes via its delimiter while an opener of a **different** inline type B (one of `**`, `__`, `~~`, `^^`, `""`, `''`, `[`) was present inside A's content and emitted as literal text — and a closer for B exists in the inline stream after A's boundary. Span points to A's closing delimiter (the crossing closer). |
 | recovery | Existing greedy left-to-right behavior applies unchanged. No AST change. The diagnostic is informational only. |
 | introduced_in | 0.3.2 |
 | status | active |

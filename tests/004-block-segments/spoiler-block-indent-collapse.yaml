@@ -1,0 +1,19 @@
+id: spoiler-block-indent-collapse
+section: "4.15"
+description: The first content line establishes the base indentation; that many spaces are stripped from all content lines
+
+input: |
+  ^^^
+    > qa
+    > qb
+  ^^^
+
+ast:
+  - type: SpoilerBlock
+    children:
+      - type: QuoteBlock
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: qaqb

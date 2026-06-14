@@ -1,0 +1,17 @@
+id: spoiler-attrs
+section: "5.12"
+description: "Trailing {attrs} attach to the Spoiler node; .nsfw conveys a semantic variant"
+
+input: |
+  ^^hidden^^{.nsfw}
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Spoiler
+        children:
+          - type: Text
+            value: hidden
+        attributes:
+          - key: class
+            value: [nsfw]
