@@ -20,4 +20,8 @@ The following characters are special and may be escaped:
 
 Inside a metadata block (`~~~`), code block (` ``` `), or math block (`$$$`), no escaping is processed — content is always literal. Inside `CodeInline` (`` `` ``), only `` \` `` is processed (→ literal `` ` ``); every other backslash is literal. See §5.6.
 
+Inside a `CommentBlock` (`###`), no escaping is processed — content is always literal. Inside a `CommentInline` (`## ... <EOL>`), no escaping is processed; the comment text is captured verbatim from `##` to the LF.
+
+**Writing a literal `##`** (avoid forming a `CommentInline` opener): use `\##` or `#\#`. The parser sees `\#` → literal `#`, and the doubled-delimiter never forms.
+
 ---

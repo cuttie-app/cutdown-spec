@@ -11,14 +11,15 @@ Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT ba
 ### 9.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. Strip comment lines (lines where first character is `#`).
-3. Identify block boundaries: a sequence of non-blank lines bounded by blank lines (or document start/end) is a **block candidate**.
+2. **Detect CommentInline boundaries.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned. On lines outside any opaque context, scan left-to-right for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found, record the boundary: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. The `##` and its payload are reserved for the resulting block; block classification (Phase 3) operates on the pre-`##` substring of each line. Comments inside `CodeInline`/`MathInline`/quoted-attr values are not boundaries (they will be re-detected during inline parsing in Phase 4 — confirming the same outcome).
+3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**.
 4. Special blocks that override blank-line boundaries:
    - Code fences: ` ``` ` opens until the next ` ``` ` (or end of document).
    - Meta blocks: `~~~` opens until the next `~~~` (or end of document).
    - Named blocks `:::` open until a closing `:::` (or end of document).
    - Math blocks: `$$$` opens until the next `$$$` (or end of document).
    - Spoiler blocks: `^^^` opens until the next `^^^` (or end of document, or end of the enclosing block container). SpoilerBlocks do not nest — see §4.15.
+   - Comment blocks: `###` opens until the next bare `###` at the same column (or end of document). Content is opaque — see §2.3.
 
 ### 9.3 Phase 3 — Block Classification
 
@@ -38,6 +39,7 @@ Each block candidate is classified by its first line:
 | `^\[^[ID_LITERAL]` | RefDefinition |
 | `^\$\$\$` | MathBlock |
 | `^\^\^\^` | SpoilerBlock |
+| `^###` | CommentBlock |
 | `^/` | FileRef |
 | `^!\[` | ImageBlock |
 | (anything else) | Paragraph |
@@ -51,6 +53,8 @@ Inline content is parsed left-to-right within each block that contains inline co
 3. If no closer found before paragraph/block end: emits opener as `Text` and advances.
 4. Resolves escape sequences `\x` before delimiter matching.
 5. Collects trailing `{attrs}` after each completed inline element.
+
+CommentInline boundaries are NOT detected during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives the pre-`##` substring of each line and emits the recorded CommentInline node at the appropriate position in the resulting inline stream (source order, interleaved with parsed inline content). When the pre-`##` substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades to literal text per the unclosed-opener rule above. See §2.2 for examples.
 
 Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
 
