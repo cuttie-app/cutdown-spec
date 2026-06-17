@@ -1,0 +1,11 @@
+id: escape-codeblock-opener
+section: "8.2"
+description: "Escaped triple-backtick at line start does not open CodeBlock; residual backticks re-enter inline parsing per §8.2"
+
+input: "\\`\\`\\` three literal backticks\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "``` three literal backticks"

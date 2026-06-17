@@ -1,0 +1,15 @@
+id: escape-namedblock-opener
+section: "8.2"
+description: "`\\:::name` at line start suppresses NamedBlock opener AND suppresses CDN-0013; escape is deliberate author signal"
+
+input: |
+  \:::callout
+  not a named block
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: ":::callout not a named block"
+
+diagnostics: []

@@ -1,0 +1,13 @@
+id: escape-meta-opener
+section: "8.2"
+description: "`\\~~~` at line start suppresses Meta opener; line becomes Paragraph"
+
+input: |
+  \~~~yaml
+  title: x
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "~~~yaml title: x"

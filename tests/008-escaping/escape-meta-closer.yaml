@@ -1,0 +1,13 @@
+id: escape-meta-closer
+section: "8.3"
+description: "`\\~` inside Meta body emits literal tilde; escaped triple-tilde line does NOT close the Meta fence"
+
+input: |
+  ~~~yaml
+  rule: "\~~~"
+  ~~~
+
+ast:
+  - type: Meta
+    format: "yaml"
+    raw: "rule: \"~~~\"\n"

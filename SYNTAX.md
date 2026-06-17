@@ -265,6 +265,40 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 
+### Block-opener escape (line start)
+
+`\` before any one char of a block marker suppresses the opener; line becomes a Paragraph with marker chars as literal text.
+
+| Marker | Escape (any of) | Result |
+|---|---|---|
+| `=` ... `=========` heading | `\=`, `\==`, ... | literal |
+| `- ` list | `\- item` | literal |
+| `> ` quote | `\> text` | literal |
+| `---` thematic break | `\---`, `-\--`, `--\-` | literal **+ suppresses page break** |
+| `/path` file ref | `\/path` | literal |
+| `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
+| `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
+| `$$$` math | `\$$$`, `$\$$`, `$$\$` | literal |
+| `###` comment block | `\###`, `#\##`, `##\#` | literal |
+| `:::name` named block | `\:::name`, etc. | literal — **no CDN-0013** |
+| `^^^` spoiler | `\^^^`, etc. | literal |
+
+`##` CommentInline (mid-line) uses `\##` or `#\#` per §5.14.
+
+### Opaque-block closer escape
+
+Narrow per-block escape; all other `\X` inside opaque content is literal.
+
+| Block | Escape | Notes |
+|---|---|---|
+| CodeInline / CodeBlock | `` \` `` | three backticks in row → `` \`\`\` `` |
+| Meta | `\~` | any one of three closer chars |
+| CommentBlock | `\#` | always escapes `#`, no run-length check |
+| MathBlock | — | **no escape** (LaTeX owns `\`); literal `$$$` line unsupported |
+| CommentInline | — | content fully verbatim; LF closes |
+
+NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a content line.
+
 ---
 
 ## Precedence (inline, highest first)

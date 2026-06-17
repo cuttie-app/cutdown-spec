@@ -165,7 +165,7 @@ interface CodeInline {
 ```
 
 - Double backtick only. Single backtick is always literal text.
-- Content is **literal** — no inline parsing. **One escape sequence is processed**: `` \` `` → literal `` ` `` (does not close the span). Every other backslash is literal, including `\\` (two literal backslashes) and any other `\X` (per §8 non-special rule).
+- Content is **literal** — no inline parsing. **One escape sequence is processed**: `` \` `` → literal `` ` `` (does not close the span). Every other backslash is literal, including `\\` (two literal backslashes) and any other `\X` (per §8 non-special rule). See §8.3.
 - Unmatched '\`\`' → `Text("``")`. Single '\`' → `Text("`")`.
 - Triple backtick in inline context: \`\`\` = \`\` (opener) + \` (literal inside).
 - Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside \`\`...\`\` is folded to zero. See §12 for full whitespace rules.

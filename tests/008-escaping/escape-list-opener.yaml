@@ -1,0 +1,12 @@
+id: escape-list-opener
+section: "8.2"
+description: "`\\-` at line start suppresses list marker; line becomes Paragraph"
+
+input: |
+  \- not a list item
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "- not a list item"
