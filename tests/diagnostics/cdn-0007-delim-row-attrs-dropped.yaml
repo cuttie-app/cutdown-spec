@@ -1,0 +1,43 @@
+id: cdn-0007-delim-row-attrs-dropped
+section: "4.8"
+description: "`{attrs}` on a table delimiter row are dropped; CDN-0007 warning emitted; alignment metadata still parsed normally"
+
+input: |
+  | Head A | Head B |
+  | ------ | -----: | {.green}
+  | AA     | BB     |
+
+ast:
+  - type: Table
+    kind: gfm
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: right
+    head:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: "Head A "
+          - type: Cell
+            children:
+              - type: Text
+                value: "Head B "
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: "AA     "
+          - type: Cell
+            children:
+              - type: Text
+                value: "BB     "
+
+diagnostics:
+  - code: CDN-0007
+    level: warning

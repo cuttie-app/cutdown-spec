@@ -1,0 +1,14 @@
+id: comment-inline-midline
+section: "2.2"
+description: "`##` is recognized mid-line; preceding text becomes Text, the rest becomes CommentInline"
+
+input: |
+  foo bar ## trailing comment
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "foo bar "
+      - type: CommentInline
+        text: " trailing comment"

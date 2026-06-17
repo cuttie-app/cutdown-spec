@@ -1,0 +1,17 @@
+id: comment-inline-in-meta-literal
+section: "2.2"
+description: "`##` inside a Meta block is literal; Meta content is opaque to Cutdown comment recognition"
+
+input: |
+  ~~~yaml
+  title: doc
+  ## yaml comment, not Cutdown
+  ~~~
+
+ast: []
+pages:
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: doc\n## yaml comment, not Cutdown\n"
+    children: []

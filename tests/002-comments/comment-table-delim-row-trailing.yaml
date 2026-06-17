@@ -1,0 +1,39 @@
+id: comment-table-delim-row-trailing
+section: "4.8"
+description: "Trailing `## comment` on a delimiter row attaches to the preceding header Row.comments[], after the header's own-line comment if present"
+
+input: |
+  | Head A | Head B | ## header note
+  | ------ | ------ | ## delim note
+  | AA     | BB     |
+
+ast:
+  - type: Table
+    kind: gfm
+    head:
+      - type: Row
+        comments:
+          - type: CommentInline
+            text: " header note"
+          - type: CommentInline
+            text: " delim note"
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: "Head A "
+          - type: Cell
+            children:
+              - type: Text
+                value: "Head B "
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: "AA     "
+          - type: Cell
+            children:
+              - type: Text
+                value: "BB     "

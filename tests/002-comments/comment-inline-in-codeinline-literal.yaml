@@ -1,0 +1,12 @@
+id: comment-inline-in-codeinline-literal
+section: "2.2"
+description: "`##` inside CodeInline is literal; CodeInline content wins over comment recognition"
+
+input: |
+  ``code ## not a comment``
+
+ast:
+  - type: Paragraph
+    children:
+      - type: CodeInline
+        value: "code ## not a comment"

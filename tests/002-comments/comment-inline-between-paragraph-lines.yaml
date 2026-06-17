@@ -1,0 +1,18 @@
+id: comment-inline-between-paragraph-lines
+section: "2.2"
+description: "A `##`-prefixed line between paragraph lines is still part of the paragraph; CommentInline is interleaved in source order"
+
+input: |
+  First line
+  ## comment between
+  Second line
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "First line"
+      - type: CommentInline
+        text: " comment between"
+      - type: Text
+        value: "Second line"

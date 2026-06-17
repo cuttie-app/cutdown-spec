@@ -1,0 +1,17 @@
+id: comment-inline-after-attrs-transparent
+section: "2.6"
+description: "CommentInline is transparent to attribute resolution; trailing `{attrs}` still claim their scope-chain slot"
+
+input: |
+  some text {.p} ## tail comment
+
+ast:
+  - type: Paragraph
+    attributes:
+      - key: class
+        value: [p]
+    children:
+      - type: Text
+        value: "some text "
+      - type: CommentInline
+        text: " tail comment"

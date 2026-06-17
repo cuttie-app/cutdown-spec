@@ -1,0 +1,12 @@
+id: comment-inline-escape
+section: "2.2"
+description: "`\\##` writes a literal `##` in text; no CommentInline is produced"
+
+input: |
+  \## not a comment
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "## not a comment"

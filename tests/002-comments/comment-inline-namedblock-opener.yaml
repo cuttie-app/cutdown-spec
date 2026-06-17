@@ -1,0 +1,22 @@
+id: comment-inline-namedblock-opener
+section: "2.6"
+description: "Trailing comment on a NamedBlock opener; attrs claim the block, CommentInline becomes first child of body"
+
+input: |
+  :::callout {.warn} ## opener note
+  content
+  :::
+
+ast:
+  - type: NamedBlock
+    name: callout
+    attributes:
+      - key: class
+        value: [warn]
+    children:
+      - type: CommentInline
+        text: " opener note"
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "content"

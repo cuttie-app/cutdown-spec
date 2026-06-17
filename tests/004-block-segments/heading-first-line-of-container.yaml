@@ -1,6 +1,6 @@
 id: heading-first-line-of-container
 section: "4.2"
-description: A heading as the first non-comment line of a block container needs no preceding blank line
+description: A heading as the first line of a block container needs no preceding blank line
 
 input: |
   :::note

@@ -1,0 +1,13 @@
+id: comment-block-basic
+section: "2.3"
+description: "Bare `###` opener and bare `###` closer; content captured as opaque raw string with trailing newline"
+
+input: |
+  ###
+  draft note
+  TODO: revise
+  ###
+
+ast:
+  - type: CommentBlock
+    text: "draft note\nTODO: revise\n"
