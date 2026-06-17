@@ -1,0 +1,24 @@
+id: comment-table-row-trailing
+section: "4.8"
+description: "Trailing `## comment` after a row's content is attached to Row.comments[0], NOT to any cell"
+
+input: |
+  | AA | BB | ## what is this?
+
+ast:
+  - type: Table
+    kind: simple
+    body:
+      - type: Row
+        comments:
+          - type: CommentInline
+            text: " what is this?"
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: "AA"
+          - type: Cell
+            children:
+              - type: Text
+                value: "BB"

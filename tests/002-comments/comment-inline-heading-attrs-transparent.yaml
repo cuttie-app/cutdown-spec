@@ -1,0 +1,19 @@
+id: comment-inline-heading-attrs-transparent
+section: "2.6"
+description: "Last-Attr Rule treats CommentInline as transparent; `{.c}` still claims Section"
+
+input: |
+  = Heading {.c} ## note
+
+ast:
+  - type: Section
+    level: 1
+    attributes:
+      - key: class
+        value: [c]
+    heading:
+      - type: Text
+        value: "Heading "
+      - type: CommentInline
+        text: " note"
+    children: []

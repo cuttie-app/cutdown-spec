@@ -1,0 +1,14 @@
+id: comment-inline-in-link-text-degrades
+section: "2.2"
+description: "`##` inside link text swallows `](url)` to EOL; `[` opener has no closer and degrades to literal"
+
+input: |
+  [text ## here](url)
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "[text "
+      - type: CommentInline
+        text: " here](url)"

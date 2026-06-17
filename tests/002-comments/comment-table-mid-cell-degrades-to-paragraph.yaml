@@ -1,0 +1,14 @@
+id: comment-table-mid-cell-degrades-to-paragraph
+section: "4.8"
+description: "`##` mid-cell makes the pre-`##` substring fail row grammar (no closing `|`); block candidate falls back to Paragraph"
+
+input: |
+  | Head ## comment | Next |
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "| Head "
+      - type: CommentInline
+        text: " comment | Next |"

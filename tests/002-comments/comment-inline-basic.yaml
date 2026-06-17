@@ -1,0 +1,10 @@
+id: comment-inline-basic
+section: "2.2"
+description: A line starting with `##` becomes a CommentInline; the `##` prefix is stripped from text
+
+input: |
+  ## a whole-line comment
+
+ast:
+  - type: CommentInline
+    text: " a whole-line comment"

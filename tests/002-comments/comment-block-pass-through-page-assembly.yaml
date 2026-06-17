@@ -1,0 +1,26 @@
+id: comment-block-pass-through-page-assembly
+section: "2.4"
+description: "CommentBlock at Page scope is pass-through; it does NOT consume the Meta slot of the current Page"
+
+input: |
+  ###
+  preamble note
+  ###
+  ~~~yaml
+  title: doc
+  ~~~
+
+  content
+
+pages:
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: doc\n"
+    children:
+      - type: CommentBlock
+        text: "preamble note\n"
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "content"
