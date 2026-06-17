@@ -2,6 +2,8 @@
 
 Inline content is parsed left-to-right with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
 
+The `##` opener (CommentInline, §5.14) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule.
+
 **Inline rules run in:**
 
 | Location | Section |
@@ -372,5 +374,41 @@ interface TextBreak {
 | `word\n`    | Soft break — folded to zero; lines concatenate directly            |
 | `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
 | `word\\n`   | `TextBreak` segment — explicit rendered line break                 |
+
+---
+
+### 5.14 CommentInline
+
+**Syntax:** `## inline-content` — runs to end of line. See §2.2 for the full normative semantics; this section restates the inline surface.
+
+**AST type:**
+
+```typescript
+interface CommentInline {
+  type: "CommentInline"
+  text: string  // content after the leading `##`, up to but not including the LF
+}
+```
+
+- `##` is recognized **anywhere** on a line — at line start AND mid-line. There is no closer; the construct terminates at the next `\n`.
+- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, attribute `}`, or any other inline construct's closer. An unclosed opener before the `##` degrades to literal per §9.4.
+- CommentInline boundaries are detected during Phase 2 preprocessing (§9.2), not by the inline parser at the moment it scans across content. This means an `##` on a line is recognized even if the surrounding line would otherwise fail block classification — block classification operates on the pre-`##` substring of each line. See §2.2 for the architectural rationale and examples.
+- A single `#` is always literal text (see §10.4.4). Run of 3 `###` at **inline position** parses as `##` (CommentInline opener) + the trailing `#` becomes part of the comment text.
+- `##` is **not** recognized inside opaque inline contexts: `CodeInline`, `MathInline`, and quoted attribute values. In those, `##` is literal verbatim.
+- Literal `##` in normal text is written `\##` or `#\#` (§8).
+- CommentInline does NOT carry `attributes`.
+- Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
+- CommentInline is **transparent to attribute resolution**: a trailing `## comment` does not prevent preceding `{attrs}` from claiming their scope-chain slot. See §2.6.
+
+**Examples:**
+
+```
+## a whole-line comment    → CommentInline { text: " a whole-line comment" }
+foo ## tail                → Text("foo ") + CommentInline { text: " tail" }
+**bold ## tail             → Text("**bold ") + CommentInline { text: " tail" }
+``code ## not``            → CodeInline { value: "code ## not" }
+\## foo                    → Text("## foo")
+### at inline              → CommentInline { text: "# at inline" }
+```
 
 ---

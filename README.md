@@ -31,15 +31,15 @@ You write structure. You write content.
 
 That single rule is what made Markdown worth learning. No extra syntax. No delimiters. No toolbar. Two blocks of text separated by a double Enter are structurally paragraphs — you think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
 
-**`#` for author comments.**
+**`##` for author comments, `###` for block comments.**
 
-Finally, markup has a legal way to place a comment — a part of the source that is stripped from rendering. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
+Finally, markup has a legal way to place a comment — a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
 
-The syntax is aligned with YAML — the format used for frontmatter on the same page — and with C++, PHP, Perl, and most other programming languages. Comment-with-`#` is common practice everywhere except Markdown. That gap is now closed.
+`## comment` is a single-line comment (line-start or mid-line; runs to end of line). `### ... ###` brackets a block. The syntax is family-aligned with C++/JS `//`, Python `#`, and YAML `#` — a familiar shape from any keyboard. Comments are first-class AST nodes (`CommentInline`, `CommentBlock`) so that formatters, IDE folding, and comment-thread tools can round-trip them; the default render policy is hidden.
 
 **`=` instead of `#` for headings.**
 
-With `#` doing something useful elsewhere, a different heading marker was needed. `=` was chosen — and it was a considered choice.
+With `#`-doubled doing something useful elsewhere, a different heading marker was needed. `=` was chosen — and it was a considered choice.
 
 Why does a non-US keyboard matter here? Heading markers appear in the overwhelming majority of documents. If a writer on a French, German, Italian, or UK English keyboard cannot reach the heading character as a single keypress, that is a friction point in every document they write. The octothorpe ended up as a heading marker by accident — it was picked, it stuck, and use became tradition. That accident is worth correcting.
 

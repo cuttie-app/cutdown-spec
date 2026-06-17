@@ -71,7 +71,7 @@ interface Section {
 | `========= Heading` | 9     |
 
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
-- A heading MUST be preceded by a blank line (or be the first non-comment line of the document or block container).
+- A heading MUST be preceded by a blank line (or be the first line of the document or block container).
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
 - Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). Scoping follows the same level logic but is **bounded by the container** — never crosses container boundaries.
@@ -396,6 +396,7 @@ interface Table {
 interface Row {
   type: "Row"
   children: Cell[]
+  comments: CommentInline[]   // trailing comments from this row's own line and from a following delimiter row
   attributes: Attribute[]
 }
 
@@ -417,6 +418,17 @@ interface Column {
 - Colspan and rowspan are not supported.
 - Delimiter row alignment: `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal.
 - `Row` and `Table` attributes follow the scope-chain rule (§6): last `{}` → `Table`; preceding `{}` → `Row`. The `Table` slot is only available from the **last row's** chain.
+
+**Trailing comments on table rows.** A `## comment` appearing on a row line after the row's content (and after any trailing `{attrs}`) is detected by Phase 2 (§9.2) and attached to that Row's `comments` array, NOT to any cell. The row's `comments` array preserves source order:
+
+- index 0 — the row's own-line trailing comment (if any).
+- index 1+ — comments from following delimiter rows (see below).
+
+A `##` appearing inside the cell content portion of the line (before the row's closing `|`) makes the pre-`##` substring fail the row grammar (no closing `|` after the partial cell). The block candidate falls back to Paragraph, and the CommentInline is appended to the Paragraph's children. See §2.2 for examples.
+
+**Attributes on the delimiter row are not supported.** `{attrs}` after the alignment markers on a delimiter row are dropped → warning CDN-0007. The delimiter row is structural metadata (alignment only) and has no AST shape to carry attributes.
+
+**Trailing comments on the delimiter row** ARE supported. A `## comment` on the delimiter row is attached to the preceding header Row's `comments` array, appended after the header row's own-line trailing comment (if any).
 
 **Row/Table attribute examples:**
 
@@ -665,6 +677,54 @@ AST:
       List { kind: "bullet", children: [ListItem([Text("and so did the gardener")])] }
     ]
   }
+```
+
+---
+
+### 4.16 CommentBlock
+
+**Syntax:** Fenced with exactly three octothorpes. See §2.3 for the full normative semantics; this section restates the block-level surface.
+
+```
+###
+opaque content
+###
+```
+
+**AST type:**
+
+```typescript
+interface CommentBlock {
+  type: "CommentBlock"
+  text: string
+}
+```
+
+- Opening: bare `###` at the container's effective column. **No** `[name]` and **no** `{attrs}` are recognized on the opener line. Any trailing characters on the opener line are part of the opener (ignored).
+- Closing: a line whose stripped content is exactly `###` at the same column as the opener.
+- Content is **opaque** — captured verbatim with no inline or block parsing. Lines joined with `\n`; a single trailing `\n` is appended.
+- Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
+- Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
+- `CommentBlock` is a pass-through node for Page Assembly (§9.6). It never splits Pages, and never consumes a Meta slot.
+- Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
+- No `attributes` field.
+
+**Example:**
+
+```
+Input:
+  intro paragraph
+
+  ###
+  draft note — revise before publish
+  ###
+
+  next paragraph
+
+AST:
+  Paragraph([Text("intro paragraph")])
+  CommentBlock { text: "draft note — revise before publish\n" }
+  Paragraph([Text("next paragraph")])
 ```
 
 ---

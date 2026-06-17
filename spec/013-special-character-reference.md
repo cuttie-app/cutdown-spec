@@ -3,7 +3,7 @@
 | Character | Role | Escapable |
 |-----------|------|-----------|
 | `=` | Heading marker (line start) | Yes |
-| `#` | Comment (line start) | Yes |
+| `#` | CommentInline (`##`, anywhere) / CommentBlock (`###`, line start) | Yes |
 | `*` | Emphasis delimiter (`**`) | Yes |
 | `_` | Strong delimiter (`__`) | Yes |
 | `~` | Strikethrough (`~~`) / metadata fence (`~~~`) | Yes |

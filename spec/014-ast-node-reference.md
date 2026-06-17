@@ -24,6 +24,7 @@
 | `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], attributes`                              |
 | `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], attributes`                                                                    |
 | `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], attributes`                                                                                |
+| `CommentBlock`  | `type: "CommentBlock", text: string` — no `attributes`. Hidden by default (§2.5).                                                    |
 
 ### Inline Segments
 
@@ -41,6 +42,7 @@
 | `ImageInline`   | `type: "ImageInline", alt: Inline[], src: string, attributes` |
 | `Span`          | `type: "Span", name: string, children: [], attributes` |
 | `TextBreak`     | `type: "TextBreak"` |
+| `CommentInline` | `type: "CommentInline", text: string` — no `attributes`. Hidden by default (§2.5). |
 
 ### Special Nodes
 
@@ -51,7 +53,7 @@
 | `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes`                     |
 | `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
 | `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
-| `Row`           | `type: "Row", children: Cell[], attributes`                                     |
+| `Row`           | `type: "Row", children: Cell[], comments: CommentInline[], attributes`          |
 | `Cell`          | `type: "Cell", children: Inline[], row: number, column: number`                 |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
