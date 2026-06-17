@@ -75,6 +75,7 @@ interface Section {
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
 - Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). Scoping follows the same level logic but is **bounded by the container** — never crosses container boundaries.
+- **Opener escape:** `\=` at line start suppresses heading formation at **any** level — `\=`, `\==`, `\===` ... all become `Paragraph([Text("= ...")])`. See §8.2.
 
 **Examples:**
 
@@ -115,6 +116,7 @@ interface Meta {
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.
 - No `attributes` field.
+- **Closer escape:** `\~` inside the body emits a literal `~` (consumes the `\`). A line `\~~~`, `~\~~`, or `~~\~` therefore does NOT close the fence. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 
 **Example:**
 
@@ -158,6 +160,7 @@ interface CodeBlock {
 - Fixed 3-backtick fence. Variable-length fences not supported. No nesting.
 - Unclosed fence: content runs to end of document → warning CDN-0001.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
+- **Closer escape:** `` \` `` inside the body emits a literal `` ` `` (consumes the `\`). A line `` \``` ``, `` `\`` ``, or `` ``\` `` therefore does NOT close the fence. All other `\X` sequences are literal (including `\\` → two chars). See §8.3. Opener escape: see §8.2.
 
 ---
 
@@ -185,6 +188,7 @@ interface MathBlock {
 - Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
 - Unclosed fence: content runs to end of document → warning CDN-0003.
 - Legal inside block containers. Indentation handling follows the same rules as `CodeBlock`.
+- **No closer escape — LaTeX owns `\`.** Every backslash inside a MathBlock body is literal, including `\$`. A literal `$$$` line inside the body therefore prematurely closes the fence; this is an accepted unsupported case (wrap such content in a `CodeBlock` or split the math). See §8.3. Opener escape (`\$$$`): see §8.2.
 
 **Example:**
 
@@ -227,6 +231,7 @@ interface QuoteBlock {
 - In same time QuoteBlock supports trailing lines without `>` in same way as Paragraph.
 - The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
 - Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters.
+- **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
 
 **Examples:**
 
@@ -305,6 +310,7 @@ interface List {
 - `start` is non-null only for `kind: "numbered"`.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment.
+- **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.
 
 ---
 
@@ -483,6 +489,7 @@ interface ThematicBreak {
 
 - At **Page scope**: creates a page break — a new `Page` segment is opened and the `ThematicBreak` segment becomes its first child.
 - Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` segment but does **not** create a new Page.
+- **Opener escape:** `\---`, `-\--`, or `--\-` at line start → `Paragraph([Text("---")])`. The page-break side effect at Page scope is suppressed along with the break. See §8.2.
 
 **Examples:**
 
@@ -518,6 +525,7 @@ interface FileRef {
 - `fragment` and `query` are mutually independent — either, both, or neither may be present. If absent, they are set to empty string `''` (not null).
 - Empty path (line with only `/`) is invalid state and produces string literal for whole line.
 - `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
+- **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
 
 **Known Groups (defaults):**
 
@@ -588,7 +596,7 @@ interface NamedBlock {
 
 - Opening: `:::` followed immediately by a block name (`[ID_LITERAL]+`), then optional attributes.
 - Closing: `:::` on its own line (no name).
-- A `:::` opener not followed immediately by an `ID_LITERAL` character does NOT open a NamedBlock — classified as a Paragraph → warning CDN-0013.
+- A `:::` opener not followed immediately by an `ID_LITERAL` character does NOT open a NamedBlock — classified as a Paragraph → warning CDN-0013. **Exception:** if the line begins with an escaped opener (`\:::`, `:\::`, `::\:`), no warning is emitted — the escape is a deliberate author signal. See §8.2.
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Indentation collapsing:** The first content line establishes the base indentation. That many leading spaces are stripped from all content lines before parsing.
@@ -658,6 +666,7 @@ interface SpoilerBlock {
 - Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, and other `SpoilerBlock`s. Container indentation is stripped from content lines.
 - Semantic variants (NSFW, redacted, entertainment-spoiler) are carried in `attributes`; `SpoilerBlock` has no `kind` field.
+- **Escape:** SpoilerBlock body is **not opaque** — children are parsed as blocks. Use §8.2 block-opener escape (`\^^^`, `^\^^`, `^^\^`) on a content line to prevent it from closing the fence.
 
 **Example:**
 
@@ -708,6 +717,7 @@ interface CommentBlock {
 - `CommentBlock` is a pass-through node for Page Assembly (§9.6). It never splits Pages, and never consumes a Meta slot.
 - Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
 - No `attributes` field.
+- **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 
 **Example:**
 

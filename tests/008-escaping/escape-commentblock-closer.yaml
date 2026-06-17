@@ -1,0 +1,14 @@
+id: escape-commentblock-closer
+section: "8.3"
+description: "`\\#` inside CommentBlock body emits literal `#`; escaped triple-octothorpe line does NOT close the fence"
+
+input: |
+  ###
+  notes
+  \###
+  more notes
+  ###
+
+ast:
+  - type: CommentBlock
+    text: "notes\n###\nmore notes\n"

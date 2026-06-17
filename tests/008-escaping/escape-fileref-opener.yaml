@@ -1,0 +1,12 @@
+id: escape-fileref-opener
+section: "8.2"
+description: "`\\/path` at line start suppresses FileRef; line becomes Paragraph"
+
+input: |
+  \/photos/a.png
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "/photos/a.png"

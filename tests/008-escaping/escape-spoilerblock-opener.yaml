@@ -1,0 +1,13 @@
+id: escape-spoilerblock-opener
+section: "8.2"
+description: "`\\^^^` at line start suppresses SpoilerBlock opener; line becomes Paragraph"
+
+input: |
+  \^^^
+  not a spoiler
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^^^ not a spoiler"

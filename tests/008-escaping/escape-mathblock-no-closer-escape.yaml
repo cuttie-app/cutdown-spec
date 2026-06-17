@@ -1,0 +1,12 @@
+id: escape-mathblock-no-closer-escape
+section: "8.3"
+description: "MathBlock has NO closer escape — LaTeX owns `\\`. Every backslash is literal; `\\$$$` is captured verbatim as `\\$$$` content (does NOT escape to literal `$$$`)."
+
+input: |
+  $$$
+  \alpha + \beta
+  $$$
+
+ast:
+  - type: MathBlock
+    raw: "\\alpha + \\beta\n"

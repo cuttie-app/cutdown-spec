@@ -1,5 +1,7 @@
 ## 13. Special Character Reference
 
+Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block closer escapes).
+
 | Character | Role | Escapable |
 |-----------|------|-----------|
 | `=` | Heading marker (line start) | Yes |

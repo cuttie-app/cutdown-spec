@@ -1,0 +1,13 @@
+id: escape-mathblock-opener
+section: "8.2"
+description: "`\\$$$` at line start suppresses MathBlock opener; line becomes Paragraph"
+
+input: |
+  \$$$
+  x^2
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "$$$ x^2"

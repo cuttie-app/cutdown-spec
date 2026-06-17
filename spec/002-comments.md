@@ -82,6 +82,7 @@ all captured as a single opaque string
 - `###` is recognized at Page scope AND inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), following the same column rules as other tripled-fence blocks (§9.2.4, §10.5).
 - Unclosed `###` consumes to end-of-document and emits a `CommentBlock` with the captured content → warning CDN-0006. The opaque content gives the parser no way to observe container boundaries from inside the comment — the same rule applies to all opaque fences (CodeBlock, Meta, MathBlock).
 - `###` inside an open `CodeBlock`, `MathBlock`, or `Meta` body is literal content (opaque siblings win).
+- **Closer escape:** `\#` inside the body emits a literal `#`. A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. All other `\X` is literal (including `\\` → two chars). See §8.3.
 
 **AST type:**
 
