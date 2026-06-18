@@ -9,4 +9,4 @@ input: |
 
 ast:
   - type: MathBlock
-    raw: "\\alpha + \\beta\n"
+    raw: "\\alpha + \\beta"

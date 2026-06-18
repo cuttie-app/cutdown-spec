@@ -21,19 +21,19 @@ ast:
           - type: Cell
             children:
               - type: Text
-                value: "Head A "
+                value: "Head A"
           - type: Cell
             children:
               - type: Text
-                value: "Head B "
+                value: "Head B"
     body:
       - type: Row
         children:
           - type: Cell
             children:
               - type: Text
-                value: "AA     "
+                value: "AA"
           - type: Cell
             children:
               - type: Text
-                value: "BB     "
+                value: "BB"

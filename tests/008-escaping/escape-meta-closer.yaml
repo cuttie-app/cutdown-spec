@@ -7,7 +7,9 @@ input: |
   rule: "\~~~"
   ~~~
 
-ast:
-  - type: Meta
-    format: "yaml"
-    raw: "rule: \"~~~\"\n"
+pages:
+  - meta:
+      type: Meta
+      format: "yaml"
+      raw: "rule: \"~~~\"\n"
+    children: []
