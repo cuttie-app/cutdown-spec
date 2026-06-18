@@ -1,11 +1,9 @@
 id: paragraph-only-comment-not-elided
 section: "10"
-description: "A Paragraph containing only a CommentInline child is NOT elided — the Paragraph node still exists in the AST"
+description: "A standalone `##` line at Page scope becomes a top-level CommentInline (no Paragraph wrap, per §2.2 Phase-2 preprocessing)"
 
 input: "## just a comment\n"
 
 ast:
-  - type: Paragraph
-    children:
-      - type: CommentInline
-        text: just a comment
+  - type: CommentInline
+    text: " just a comment"
