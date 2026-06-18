@@ -1,0 +1,13 @@
+id: trim-namedblock-empty-body
+section: "10.6"
+description: "A NamedBlock whose body is empty (or all blanks) after edge-trim produces `children: []` — no diagnostic, container is preserved"
+
+input: |
+  :::note
+
+  :::
+
+ast:
+  - type: NamedBlock
+    name: note
+    children: []

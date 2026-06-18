@@ -25,6 +25,8 @@ Attributes MUST appear **after** their target element on the **same line**.
 :::callout {.warning}
 ```
 
+Whitespace between a segment and its attaching `{...}` is consumed by the attachment and does not appear in the AST. See §12 for the full rule.
+
 #### Block Opening Lines — Last-Attr Rule
 
 On lines that open a block construct (headings, named blocks), the **last `{...}` token on the line is claimed by the block**. All earlier `{...}` tokens on the same line follow inline attachment rules and bind to their immediately preceding inline element.

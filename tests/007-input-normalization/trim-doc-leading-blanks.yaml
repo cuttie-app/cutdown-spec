@@ -1,0 +1,11 @@
+id: trim-doc-leading-blanks
+section: "7"
+description: "Leading blank lines (including whitespace-only lines) at document start are stripped by §7 step 6 — no diagnostic"
+
+input: "\n\n   \n\nHello world\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: Hello world

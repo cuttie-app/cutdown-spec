@@ -1,0 +1,14 @@
+id: attr-strip-paragraph-trailing
+section: "12"
+description: "Whitespace immediately before a consumed trailing `{attr}` on a paragraph end is stripped from the preceding Text — Paragraph attrs claim the slot via scope-chain"
+
+input: "paragraph text  {.p}\n"
+
+ast:
+  - type: Paragraph
+    attributes:
+      - key: class
+        value: [p]
+    children:
+      - type: Text
+        value: paragraph text

@@ -9,6 +9,8 @@ Cutdown is a markup language that produces an AST. There is no HTML output. The 
 - UTF-8 only. NFC normalization recommended.
 - BOM stripped. Null bytes replaced with U+FFFD.
 - Line endings normalized to `\n`. Tabs → single space (except inside fences).
+- Leading and trailing blank lines (whitespace-only lines) stripped from the document. A document of only blanks → empty AST.
+- Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
 `ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
@@ -243,7 +245,7 @@ Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""
 {#id .class key=value key="spaced value"}
 ```
 
-Attach **after** their target on the same line (or next line, no blank line between).
+Attach **after** their target on the same line (or next line, no blank line between). Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 
 **Block opening lines (headings, named blocks):** last `{...}` on the line → claimed by the block. Earlier `{...}` attach to preceding inline elements. Empty `{}` as last token = no attrs on block.
 

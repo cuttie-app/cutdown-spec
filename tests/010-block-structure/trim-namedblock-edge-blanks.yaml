@@ -1,0 +1,19 @@
+id: trim-namedblock-edge-blanks
+section: "10.6"
+description: "Leading and trailing blank lines inside a NamedBlock body are stripped before children are parsed"
+
+input: |
+  :::note
+
+  content
+
+  :::
+
+ast:
+  - type: NamedBlock
+    name: note
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: content

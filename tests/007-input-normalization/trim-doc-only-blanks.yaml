@@ -1,0 +1,7 @@
+id: trim-doc-only-blanks
+section: "7"
+description: "A document consisting entirely of blank lines normalizes to empty — empty AST, no diagnostic"
+
+input: "\n\n   \n\t\n\n"
+
+ast: []
