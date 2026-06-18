@@ -1,0 +1,20 @@
+id: attr-strip-namedblock-opener
+section: "12"
+description: "Whitespace between a NamedBlock name and its consumed `{attr}` on the opener line is stripped — no trailing-space leak into the name token"
+
+input: |
+  :::note   {.warn}
+  content
+  :::
+
+ast:
+  - type: NamedBlock
+    name: note
+    attributes:
+      - key: class
+        value: [warn]
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: content

@@ -1,0 +1,11 @@
+id: paragraph-only-comment-not-elided
+section: "10"
+description: "A Paragraph containing only a CommentInline child is NOT elided — the Paragraph node still exists in the AST"
+
+input: "## just a comment\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: CommentInline
+        text: just a comment

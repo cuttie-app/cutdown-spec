@@ -1,0 +1,11 @@
+id: trim-doc-trailing-blanks
+section: "7"
+description: "Trailing blank lines (including whitespace-only lines) at document end are stripped by §7 step 6 — no diagnostic"
+
+input: "Hello world\n\n   \n\n\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: Hello world

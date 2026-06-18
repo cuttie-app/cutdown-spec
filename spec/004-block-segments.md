@@ -231,6 +231,7 @@ interface QuoteBlock {
 - In same time QuoteBlock supports trailing lines without `>` in same way as Paragraph.
 - The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
 - Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters.
+- **Body edge-blank trim:** After `>` stripping, leading and trailing blank lines inside the quoted body are stripped before children are parsed. See §10.6.
 - **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
 
 **Examples:**
@@ -600,6 +601,7 @@ interface NamedBlock {
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Indentation collapsing:** The first content line establishes the base indentation. That many leading spaces are stripped from all content lines before parsing.
+- **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 
 **Example:**
 
@@ -663,6 +665,7 @@ interface SpoilerBlock {
 - **No nested SpoilerBlocks.** The first `^^^` line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
 - Fixed 3-caret fence. Variable-length fences not supported.
 - **Indentation collapsing:** the first content line establishes the base indentation; that many leading spaces are stripped from all content lines before parsing — same rule as `NamedBlock` (§4.13).
+- **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 - Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, and other `SpoilerBlock`s. Container indentation is stripped from content lines.
 - Semantic variants (NSFW, redacted, entertainment-spoiler) are carried in `attributes`; `SpoilerBlock` has no `kind` field.

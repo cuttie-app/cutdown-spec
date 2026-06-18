@@ -1,0 +1,11 @@
+id: attr-orphan-no-strip
+section: "12"
+description: "When `{...}` falls through to literal Text per §6.3 (orphan in inline middle), the preceding whitespace is NOT stripped — the strip rule only applies when `{attr}` is consumed by an attribute slot"
+
+input: "aa text {orphan} bb\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "aa text {orphan} bb"

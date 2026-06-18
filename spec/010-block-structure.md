@@ -166,4 +166,53 @@ AST:
       └── Paragraph("This starts a new paragraph inside item two.")
 ```
 
+### 10.6 Container-Edge Blank Lines
+
+Leading and trailing **blank lines** (lines containing only whitespace per §10.1) are stripped from the body of non-opaque block containers before their children are parsed. No diagnostic is emitted.
+
+**Applies to:**
+- `NamedBlock` (§4.13)
+- `SpoilerBlock` (§4.15)
+- `QuoteBlock` (§4.6)
+- `ListItem` / `TaskItem` (§4.7)
+
+**Does NOT apply to opaque containers** — their bodies are captured verbatim:
+- `CodeBlock` (§4.4)
+- `Meta` (§4.3)
+- `MathBlock` (§4.5)
+- `CommentBlock` (§4.16)
+
+**Pipeline order:**
+1. Document-edge blank-line strip (§7 step 6).
+2. Block classification and container body extraction.
+3. **Container-edge blank-line strip (this section).**
+4. Indent-base detection (NamedBlock / SpoilerBlock — §4.13 / §4.15). The "first content line" that establishes the base indentation is the first non-blank content line *after* edge-trim.
+5. Child parsing.
+
+A container whose body is empty after edge-trim produces `children: []` with no diagnostic. The container itself is preserved — it is a deliberate author construct.
+
+```
+Input:
+  :::note
+
+  content
+
+  :::
+
+AST:
+  NamedBlock { name: "note", children: [Paragraph([Text("content")])] }
+```
+
+```
+Input:
+  :::note
+
+  :::
+
+AST:
+  NamedBlock { name: "note", children: [] }
+```
+
+For `QuoteBlock`, a "blank line in the body" is a line whose `>`-stripped content is empty (e.g., `> ` alone, or `>` alone). Such lines at the leading or trailing edge of the quoted body are stripped before child parsing.
+
 ---

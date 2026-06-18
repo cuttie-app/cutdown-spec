@@ -1,0 +1,15 @@
+id: trim-codeblock-edge-blanks-preserved
+section: "10.6"
+description: "Opaque containers (CodeBlock here) are exempt from §10.6 edge-blank trim — blank lines inside the body are preserved verbatim"
+
+input: |
+  ```text
+
+  hello
+
+  ```
+
+ast:
+  - type: CodeBlock
+    language: text
+    raw: "\nhello\n"
