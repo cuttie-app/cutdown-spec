@@ -1,0 +1,17 @@
+id: caption-imageblock-basic
+section: "6.5"
+description: "A `^ ` line immediately after an ImageBlock sets caption; ImageInline on a line with other text does not qualify"
+
+input: |
+  ![alt text](photo.jpg)
+  ^ Photo from the event
+
+ast:
+  - type: ImageBlock
+    alt:
+      - type: Text
+        value: "alt text"
+    src: "photo.jpg"
+    caption:
+      - type: Text
+        value: "Photo from the event"

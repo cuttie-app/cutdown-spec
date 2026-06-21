@@ -1,0 +1,16 @@
+id: cdn-0008-orphaned-caption-no-predecessor
+section: "6.5"
+description: "CDN-0008: `^ ` line as the first block in scope has no captionable predecessor; emitted as Paragraph with literal text including the `^ ` prefix"
+
+input: |
+  ^ Caption with no block above
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ Caption with no block above"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

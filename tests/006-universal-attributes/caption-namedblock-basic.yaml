@@ -1,0 +1,21 @@
+id: caption-namedblock-basic
+section: "6.5"
+description: "A `^ ` line immediately after a NamedBlock closing `:::` sets caption on the NamedBlock node"
+
+input: |
+  :::box
+  Some content here.
+  :::
+  ^ Box caption text
+
+ast:
+  - type: NamedBlock
+    name: box
+    caption:
+      - type: Text
+        value: "Box caption text"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "Some content here."

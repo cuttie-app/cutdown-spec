@@ -1,0 +1,21 @@
+id: cdn-0008-orphaned-caption-non-captionable
+section: "6.5"
+description: "CDN-0008: `^ ` line after a Paragraph (non-captionable block) is orphaned; emitted as Paragraph with literal text"
+
+input: |
+  Some paragraph text here.
+  ^ Not a caption
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "Some paragraph text here."
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ Not a caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

@@ -1,0 +1,25 @@
+id: caption-table-basic
+section: "6.5"
+description: "A `^ ` line immediately after a table (no blank line) sets the table's caption field; no separate AST node is produced"
+
+input: |
+  | Name | Score |
+  ^ Results from the first cohort
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "Results from the first cohort"
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: Name
+          - type: Cell
+            children:
+              - type: Text
+                value: Score

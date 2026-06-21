@@ -1,0 +1,30 @@
+id: caption-second-line-is-paragraph
+section: "6.5"
+description: "The first `^ ` line fills the caption slot; a second consecutive `^ ` line has no captionable predecessor (slot filled) — emitted as Paragraph + CDN-0008"
+
+input: |
+  | col |
+  ^ First caption
+  ^ Second caption
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "First caption"
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: col
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ Second caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

@@ -167,12 +167,19 @@ A line at block start consisting of `^` followed by a single space and then any 
 1. That block is captionable (see table below), and
 2. No blank line appears between the block's last line and the `^ ` line.
 
-A trailing `{attrs}` line between the block and the caption line is **transparent** — it does not break binding. The caption still binds to the same block:
+Two constructs between the block and the caption line are **transparent** — they do not break binding:
+
+- A trailing `{attrs}` line (sets the block's attributes; does not emit a node).
+- A standalone `CommentInline` line (`## ...` on its own line at page scope; emitted as a node, but invisible by default and semantically inert to structure).
 
 ```
 | col |
 {#tbl-one}
 ^ Caption text   →  Table { caption: [...], attributes: [{id:"tbl-one"}] }
+
+| col |
+## editorial note
+^ Caption text   →  Table { caption: [...] }, CommentInline { text: "..." }
 ```
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line (the caption slot is already filled, or the first `^ ` line itself had no captionable predecessor) is treated as an orphaned caption → `Paragraph` + warning CDN-0008.

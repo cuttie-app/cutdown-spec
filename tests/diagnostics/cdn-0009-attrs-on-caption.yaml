@@ -1,0 +1,25 @@
+id: cdn-0009-attrs-on-caption
+section: "6.5"
+description: "CDN-0009: a trailing `{attrs}` sequence on a caption line has no scope-chain slot; emitted as literal Text; the parent block's attributes are unaffected"
+
+input: |
+  | col |
+  ^ Caption text {.highlight}
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "Caption text {.highlight}"
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: col
+
+diagnostics:
+  - code: CDN-0009
+    level: warning

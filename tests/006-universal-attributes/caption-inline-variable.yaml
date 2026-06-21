@@ -1,0 +1,23 @@
+id: caption-inline-variable
+section: "6.5"
+description: "{{variable}} nodes are valid caption content — parsed as Variable, resolved by consumer"
+
+input: |
+  ```python
+  x = 1
+  ```
+  ^ Version {{version}} — {{author}}
+
+ast:
+  - type: CodeBlock
+    language: python
+    raw: "x = 1"
+    caption:
+      - type: Text
+        value: "Version "
+      - type: Variable
+        key: version
+      - type: Text
+        value: " — "
+      - type: Variable
+        key: author

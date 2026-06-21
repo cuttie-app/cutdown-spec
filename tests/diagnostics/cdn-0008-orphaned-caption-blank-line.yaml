@@ -1,0 +1,23 @@
+id: cdn-0008-orphaned-caption-blank-line
+section: "6.5"
+description: "CDN-0008: a blank line between a captionable block and a `^ ` line breaks binding; the `^ ` is orphaned"
+
+input: |
+  ![alt](photo.jpg)
+
+  ^ Orphaned caption
+
+ast:
+  - type: ImageBlock
+    alt:
+      - type: Text
+        value: alt
+    src: "photo.jpg"
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ Orphaned caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

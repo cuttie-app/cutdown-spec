@@ -1,0 +1,30 @@
+id: cdn-0008-orphaned-caption-slot-filled
+section: "6.5"
+description: "CDN-0008: after the first `^ ` line fills the caption slot, a second `^ ` line has no captionable predecessor (pointer cleared); emitted as Paragraph"
+
+input: |
+  | col |
+  ^ First caption
+  ^ Second caption
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "First caption"
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: col
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ Second caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

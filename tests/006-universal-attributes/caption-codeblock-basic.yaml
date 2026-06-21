@@ -1,0 +1,17 @@
+id: caption-codeblock-basic
+section: "6.5"
+description: "A `^ ` line immediately after a CodeBlock closing fence sets caption on the CodeBlock node"
+
+input: |
+  ```python
+  x = 1
+  ```
+  ^ A simple assignment
+
+ast:
+  - type: CodeBlock
+    language: python
+    raw: "x = 1"
+    caption:
+      - type: Text
+        value: "A simple assignment"

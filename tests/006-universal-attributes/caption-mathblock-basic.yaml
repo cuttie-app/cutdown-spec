@@ -1,0 +1,16 @@
+id: caption-mathblock-basic
+section: "6.5"
+description: "A `^ ` line immediately after a MathBlock closing fence sets caption on the MathBlock node"
+
+input: |
+  $$$
+  E = mc^2
+  $$$
+  ^ Mass-energy equivalence
+
+ast:
+  - type: MathBlock
+    raw: "E = mc^2"
+    caption:
+      - type: Text
+        value: "Mass-energy equivalence"

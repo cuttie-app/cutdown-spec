@@ -1,0 +1,26 @@
+id: caption-scope-local-inside-namedblock
+section: "6.5"
+description: "Caption binding is scope-local: a `^ ` inside a NamedBlock binds to the last captionable child in that scope; a `^ ` after the closing `:::` binds to the NamedBlock itself"
+
+input: |
+  :::figure
+    ![alt](photo.jpg)
+    ^ Inner image caption
+  :::
+  ^ Named block caption
+
+ast:
+  - type: NamedBlock
+    name: figure
+    caption:
+      - type: Text
+        value: "Named block caption"
+    children:
+      - type: ImageBlock
+        alt:
+          - type: Text
+            value: alt
+        src: "photo.jpg"
+        caption:
+          - type: Text
+            value: "Inner image caption"

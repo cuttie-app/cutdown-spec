@@ -1,0 +1,27 @@
+id: caption-inline-emphasis
+section: "6.5"
+description: "Caption text is parsed by the full inline rule set — emphasis, strong, and other inline constructs are valid"
+
+input: |
+  ![alt](photo.jpg)
+  ^ Photo by **Jane Doe**, __2025__
+
+ast:
+  - type: ImageBlock
+    alt:
+      - type: Text
+        value: alt
+    src: "photo.jpg"
+    caption:
+      - type: Text
+        value: "Photo by "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: "Jane Doe"
+      - type: Text
+        value: ", "
+      - type: Strong
+        children:
+          - type: Text
+            value: "2025"

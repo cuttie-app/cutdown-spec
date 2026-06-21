@@ -1,0 +1,24 @@
+id: caption-spoilerblock-basic
+section: "6.5"
+description: "A `^ ` line immediately after a SpoilerBlock closing `^^^` sets caption on the SpoilerBlock node"
+
+input: |
+  ^^^
+  Plot twist: the butler did it.
+  ^^^
+  ^ Spoiler for *The Mystery at Thornfield*
+
+ast:
+  - type: SpoilerBlock
+    caption:
+      - type: Text
+        value: "Spoiler for "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: "The Mystery at Thornfield"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "Plot twist: the butler did it."

@@ -1,0 +1,24 @@
+id: caption-filerefgroup-basic
+section: "6.5"
+description: "A `^ ` line immediately after the last member of a FileRefGroup sets caption on the group, not the last child"
+
+input: |
+  /photos/a.png
+  /photos/b.jpg
+  ^ Two photos from the event
+
+ast:
+  - type: FileRefGroup
+    group: image
+    caption:
+      - type: Text
+        value: "Two photos from the event"
+    children:
+      - type: FileRef
+        path: "/photos/a.png"
+        fragment: ""
+        query: ""
+      - type: FileRef
+        path: "/photos/b.jpg"
+        fragment: ""
+        query: ""
