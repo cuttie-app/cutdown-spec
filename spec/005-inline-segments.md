@@ -280,7 +280,7 @@ interface ImageInline {
 
 ---
 
-### 5.10 Span
+### 5.10 Span (NamedInline segment)
 
 **Syntax:** `::name {attrs}`
 
@@ -367,7 +367,7 @@ interface Spoiler {
 
 ### 5.13 TextBreak
 
-**Syntax:** `\` as the last character of a line (before `\n`).
+**Syntax:** `\<EOL>`, backslash as the last character of a line (before `\n`).
 
 **AST type:**
 
@@ -378,7 +378,7 @@ interface TextBreak {
 ```
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
-- The `\` must be the last non-whitespace character on the line.
+  - The `\` must be the last non-whitespace character on the line, unless rest of the line is whitespaces followed by a `##` CommentInline (which consumes the rest of the line). See §5.14.
 
 **Line-ending summary:**
 
@@ -392,7 +392,7 @@ interface TextBreak {
 
 ### 5.14 CommentInline
 
-**Syntax:** `## inline-content` — runs to end of line. See §2.2 for the full normative semantics; this section restates the inline surface.
+**Syntax:** `## inline-content <EOL>` — runs to end of line. See §2.2 for the full normative semantics; this section restates the inline surface.
 
 **AST type:**
 
