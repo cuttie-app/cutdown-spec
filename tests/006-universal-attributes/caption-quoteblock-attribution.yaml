@@ -4,7 +4,7 @@ description: "A `^ ` line after a QuoteBlock sets the `attribution` field (not `
 
 input: |
   > To be, or not to be.
-  ^ William Shakespeare, *Hamlet*, Act 3
+  ^ William Shakespeare, **Hamlet**, Act 3
 
 ast:
   - type: QuoteBlock

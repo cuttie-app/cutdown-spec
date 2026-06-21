@@ -14,7 +14,7 @@ ast:
       - type: Text
         value: "Caption text"
     reflection:
-      - line: 2
+      - line: 1
         text: "editorial note"
     rows:
       - type: Row
