@@ -27,17 +27,17 @@ You write structure. You write content.
 
 ## Why Cutdown
 
-**Plain text separated by a blank line is a paragraph.**
+### **Plain text separated by a blank line is a paragraph.**
 
 That single rule is what made Markdown worth learning. No extra syntax. No delimiters. No toolbar. Two blocks of text separated by a double Enter are structurally paragraphs — you think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
 
-**`##` for author comments, `###` for block comments.**
+### **`##` for author comments, `###` for block comments.**
 
 Finally, markup has a legal way to place a comment — a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
 
 `## comment` is a single-line comment (line-start or mid-line; runs to end of line). `### ... ###` brackets a block. The syntax is family-aligned with C++/JS `//`, Python `#`, and YAML `#` — a familiar shape from any keyboard. Comments are first-class AST nodes (`CommentInline`, `CommentBlock`) so that formatters, IDE folding, and comment-thread tools can round-trip them; the default render policy is hidden.
 
-**`=` instead of `#` for headings.**
+### **`=` instead of `#` for headings.**
 
 With `#`-doubled doing something useful elsewhere, a different heading marker was needed. `=` was chosen — and it was a considered choice.
 
@@ -45,25 +45,25 @@ Why does a non-US keyboard matter here? Heading markers appear in the overwhelmi
 
 AsciiDoc, Typst uses the same convention: `= Document Title`, `== Section`. It is not without precedent. `=` is unambiguous, carries no meaning in prose or code, and is reachable from every keyboard. The count encodes the depth: `=` is level one, `==` is level two. Consistent everywhere.
 
-**Doubled delimiters only. Single characters are text.**
+### **Doubled delimiters only. Single characters are text.**
 
 Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~strikethrough~~`, `$$math$$`. Single characters are always literal text — no exceptions, no flanking rules.
 
 Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
 
-**What you type is what is stored.**
+### **What you type is what is stored.**
 
 Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation happens in the renderer — configured by locale, applied consistently. In source, your text is exactly what you typed.
 
 This matters in practice. A content pipeline handling technical documentation, pricing, or any mix of prose and code needs predictable literal characters. Silent substitution is a class of bugs that appears only at render time, varies by parser, and is hard to trace back to source.
 
-**Angle brackets are ordinary text.**
+### **Angle brackets are ordinary text.**
 
 `<em>` in a Cutdown document is literal text — not a tag, not an escape hatch. Angle brackets carry no special meaning. This is a deliberate break from Markdown, where raw HTML passes through to output by default. That passthrough is a known XSS vector: any pipeline accepting user-written Markdown and rendering it to HTML must add a separate sanitizer. Every tool handles this differently, producing inconsistent behavior and a security surface that belongs to the language, not the application.
 
 In Cutdown there is nothing to sanitize. The injection surface does not exist.
 
-**A newline inside a paragraph is nothing.**
+### **A newline inside a paragraph is nothing.**
 
 In HTML, a bare newline in source is collapsed to a space — `word\nword` renders as `word word`. Markdown inherits this: a single line break inside a paragraph is folded to a space. The reasoning is that authors wrap long lines at 80 characters for readability, so the parser quietly joins those lines with a space.
 
@@ -75,7 +75,7 @@ With NL→zero, CJK prose wraps freely at any character. Western prose retains w
 
 The rule is uniform: it applies inside inline spans (Emphasis, Strong, etc.) as well as plain paragraph text. Leading spaces on continuation lines are stripped before inline parsing to prevent mid-word space artifacts.
 
-**Frontmatter belongs where you put it.**
+### **Frontmatter belongs where you put it.**
 
 In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, license notice, or authored content. In Cutdown, a Meta block can appear anywhere on a document. Multiple Meta blocks are valid on the same document.
 
@@ -119,7 +119,6 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 |---|---|
 | [`spec/`](spec/) | Language specification §1–§16 |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
-| [`extensions/`](extensions/) | Extension specs (task-item, mention) |
 | [`policies/`](policies/) | Governance and conformance policies |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference for tooling and AI agents |
 
@@ -127,7 +126,7 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 
 ## Spec status
 
-**Version:** 0.3.3 · **Status:** Draft
+**Version:** 0.x.x · **Status:** Draft
 
 The spec is under active development. Breaking changes may occur before 1.0.0.
 
@@ -135,7 +134,7 @@ The spec is under active development. Breaking changes may occur before 1.0.0.
 
 ## Implementations
 
-No parser implementations exist yet.
+- **cutdown-ts** — TypeScript parser and AST generator. [GitHub](https://github.com/cuttie-app/cutdown-ts), [npm](https://www.npmjs.com/package/cutdown-parser), [npmx.dev](https://npmx.dev/package/cutdown-parser)
 
 The spec ([`spec/`](spec/)) and conformance corpus ([`tests/`](tests/)) are the starting point for building one. The corpus provides golden YAML tests covering all spec sections and all diagnostic codes.
 
