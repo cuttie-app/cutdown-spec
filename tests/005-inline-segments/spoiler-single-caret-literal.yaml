@@ -10,3 +10,7 @@ ast:
     children:
       - type: Text
         value: "^ not spoiler ^"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

@@ -35,7 +35,7 @@ That single rule is what made Markdown worth learning. No extra syntax. No delim
 
 Finally, markup has a legal way to place a comment — a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
 
-`## comment` is a single-line comment (line-start or mid-line; runs to end of line). `### ... ###` brackets a block. The syntax is family-aligned with C++/JS `//`, Python `#`, and YAML `#` — a familiar shape from any keyboard. Comments are first-class AST nodes (`CommentInline`, `CommentBlock`) so that formatters, IDE folding, and comment-thread tools can round-trip them; the default render policy is hidden.
+`## comment` is a single-line comment (line-start or mid-line; runs to end of line). `### ... ###` brackets a block. The syntax is family-aligned with C++/JS `//`, Python `#`, and YAML `#` — a familiar shape from any keyboard. Comments are first-class AST nodes (`Block.reflection`, `CommentBlock`) so that formatters, IDE folding, and comment-thread tools can round-trip them; the default render policy is hidden.
 
 ### **`=` instead of `#` for headings.**
 

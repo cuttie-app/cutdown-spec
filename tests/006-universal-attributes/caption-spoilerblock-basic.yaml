@@ -6,7 +6,7 @@ input: |
   ^^^
   Plot twist: the butler did it.
   ^^^
-  ^ Spoiler for *The Mystery at Thornfield*
+  ^ Spoiler for **The Mystery at Thornfield**
 
 ast:
   - type: SpoilerBlock
