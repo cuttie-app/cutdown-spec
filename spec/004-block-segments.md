@@ -406,7 +406,6 @@ interface Table {
 interface Row {
   type: "Row"
   children: Cell[]
-  comments: CommentInline[]   // trailing comments from this row's own line and from a following delimiter row
   attributes: Attribute[]
 }
 
@@ -430,16 +429,13 @@ interface Column {
 - `Row` and `Table` attributes follow the scope-chain rule (§6): last `{}` → `Table`; preceding `{}` → `Row`. The `Table` slot is only available from the **last row's** chain.
 - **Supports caption line (§6.5).** A `^ text` line immediately after the table's last row (no blank line) sets `caption: Inline[]` on this node.
 
-**Trailing comments on table rows.** A `## comment` appearing on a row line after the row's content (and after any trailing `{attrs}`) is detected by Phase 2 (§9.2) and attached to that Row's `comments` array, NOT to any cell. The row's `comments` array preserves source order:
+**Trailing `## comment` on table rows.** A `## comment` appearing on a row line (after any trailing `{attrs}`) is detected by Phase 2 (§9.2). The payload is stored in `Table.reflection` (bubbling rule — see §2.2), NOT attached to any `Row` or cell.
 
-- index 0 — the row's own-line trailing comment (if any).
-- index 1+ — comments from following delimiter rows (see below).
-
-A `##` appearing inside the cell content portion of the line (before the row's closing `|`) makes the pre-`##` substring fail the row grammar (no closing `|` after the partial cell). The block candidate falls back to Paragraph, and the CommentInline is appended to the Paragraph's children. See §2.2 for examples.
+A `##` appearing inside the cell content portion of the line (before the row's closing `|`) makes the pre-`##` substring fail the row grammar (no closing `|` after the partial cell). The block candidate falls back to Paragraph — the `##` payload then attaches to that Paragraph's `reflection`. See §2.2 for examples.
 
 **Attributes on the delimiter row are not supported.** `{attrs}` after the alignment markers on a delimiter row are dropped → warning CDN-0007. The delimiter row is structural metadata (alignment only) and has no AST shape to carry attributes.
 
-**Trailing comments on the delimiter row** ARE supported. A `## comment` on the delimiter row is attached to the preceding header Row's `comments` array, appended after the header row's own-line trailing comment (if any).
+**Trailing `## comment` on the delimiter row** IS supported. The payload is stored in `Table.reflection` at the delimiter row's `line:` offset (one line after the header row).
 
 **Row/Table attribute examples:**
 

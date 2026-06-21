@@ -1,6 +1,6 @@
 id: comment-inline-after-attrs-transparent
 section: "2.6"
-description: "CommentInline is transparent to attribute resolution; trailing `{attrs}` still claim their scope-chain slot"
+description: "`##` payload stored in reflection; trailing `{attrs}` still claim their scope-chain slot unaffected"
 
 input: |
   some text {.p} ## tail comment
@@ -13,5 +13,6 @@ ast:
     children:
       - type: Text
         value: "some text "
-      - type: CommentInline
-        text: " tail comment"
+    reflection:
+      - line: 0
+        text: "tail comment"

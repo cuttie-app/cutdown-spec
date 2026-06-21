@@ -11,7 +11,7 @@ Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT ba
 ### 9.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect CommentInline boundaries.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned. On lines outside any opaque context, scan left-to-right for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found, record the boundary: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. The `##` and its payload are reserved for the resulting block; block classification (Phase 3) operates on the pre-`##` substring of each line. Comments inside `CodeInline`/`MathInline`/quoted-attr values are not boundaries (they will be re-detected during inline parsing in Phase 4 — confirming the same outcome).
+2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned, except for the opener line (first line of the fence) and the closer line (the closing fence). On all other lines, scan left-to-right for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**.
 4. Special blocks that override blank-line boundaries:
    - Code fences: ` ``` ` opens until the next ` ``` ` (or end of document).
@@ -54,7 +54,7 @@ Inline content is parsed left-to-right within each block that contains inline co
 4. Resolves escape sequences `\x` before delimiter matching.
 5. Collects trailing `{attrs}` after each completed inline element.
 
-CommentInline boundaries are NOT detected during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives the pre-`##` substring of each line and emits the recorded CommentInline node at the appropriate position in the resulting inline stream (source order, interleaved with parsed inline content). When the pre-`##` substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades to literal text per the unclosed-opener rule above. See §2.2 for examples.
+`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades to literal text per the unclosed-opener rule above. See §2.2 for examples.
 
 Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
 

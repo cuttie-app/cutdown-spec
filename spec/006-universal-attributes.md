@@ -167,10 +167,11 @@ A line at block start consisting of `^` followed by a single space and then any 
 1. That block is captionable (see table below), and
 2. No blank line appears between the block's last line and the `^ ` line.
 
-Two constructs between the block and the caption line are **transparent** — they do not break binding:
+One construct between the block and the caption line is **transparent** — it does not break binding:
 
 - A trailing `{attrs}` line (sets the block's attributes; does not emit a node).
-- A standalone `CommentInline` line (`## ...` on its own line at page scope; emitted as a node, but invisible by default and semantically inert to structure).
+
+Standalone `## comment` lines do not break binding either, because they are never emitted as sibling nodes — they attach to the preceding block's `reflection` (§2.2) and leave the block stream uninterrupted.
 
 ```
 | col |
@@ -179,7 +180,7 @@ Two constructs between the block and the caption line are **transparent** — th
 
 | col |
 ## editorial note
-^ Caption text   →  Table { caption: [...] }, CommentInline { text: "..." }
+^ Caption text   →  Table { caption: [...], reflection: [{ line: 2, text: "editorial note" }] }
 ```
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line (the caption slot is already filled, or the first `^ ` line itself had no captionable predecessor) is treated as an orphaned caption → `Paragraph` + warning CDN-0008.
@@ -220,7 +221,7 @@ All captionable blocks default these fields to `null` when no caption line is pr
 
 **Inline content.** The caption text is parsed by the full inline rule set:
 
-- `##` CommentInline behaves normally — consumes to EOL.
+- `##` behaves normally — consumes to EOL; payload stored in the caption's parent block `reflection` at the caption line's offset.
 - `{{variable}}` is allowed — `Variable` nodes are valid caption content.
 - A trailing `{attrs}` sequence at end of the caption line is emitted as literal text and does not attach to anything → warning CDN-0009. Caption text inherits no scope-chain slot; the parent block's attributes are set independently.
 

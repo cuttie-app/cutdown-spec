@@ -5,7 +5,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | Character | Role | Escapable |
 |-----------|------|-----------|
 | `=` | Heading marker (line start) | Yes |
-| `#` | CommentInline (`##`, anywhere) / CommentBlock (`###`, line start) | Yes |
+| `#` | `##` line comment → Reflection entry (anywhere) / CommentBlock (`###`, line start) | Yes |
 | `*` | Emphasis delimiter (`**`) | Yes |
 | `_` | Strong delimiter (`__`) | Yes |
 | `~` | Strikethrough (`~~`) / metadata fence (`~~~`) | Yes |

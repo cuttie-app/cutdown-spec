@@ -1,6 +1,6 @@
 id: comment-inline-escape
 section: "2.2"
-description: "`\\##` writes a literal `##` in text; no CommentInline is produced"
+description: "`\\##` writes a literal `##` in text; no reflection entry is produced"
 
 input: |
   \## not a comment

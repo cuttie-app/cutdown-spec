@@ -1,6 +1,6 @@
 ## 2. Comments
 
-Cutdown has two comment constructs that share the `#` symbol and follow the doubled/tripled-delimiter rule (§10.4). Both are emitted as AST nodes (`CommentInline`, `CommentBlock`) so that tooling can round-trip, fold, attribute, and selectively reveal them. The default render policy is **hidden**: conforming renderers SHOULD omit Comment\* nodes from output. Consumers MAY opt in to emit them.
+Cutdown has two comment constructs that share the `#` symbol and follow the doubled/tripled-delimiter rule (§10.4). `##` stores comment payloads as **Reflection entries** on blocks; `###` (`CommentBlock`) produces a separate AST segment. Both are hidden from rendering by default.
 
 ### 2.1 Single `#` is literal
 
@@ -11,57 +11,89 @@ A single `#` is literal text in all positions. There is no whitespace rule, no l
 foo # bar        →  Paragraph([Text("foo # bar")])
 ```
 
-### 2.2 `##` — CommentInline (line comment)
+### 2.2 `##` — Line Comment (Reflection)
 
-`##` opens an inline comment that runs to the end of the line. It is recognized at line-start AND mid-line.
+`##` opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
 
 ```
 ## a whole-line comment
 foo ## trailing comment
 ```
 
-- The `##` and everything up to (but not including) the next `\n` becomes one `CommentInline` segment. The `##` prefix is stripped from `text`.
-- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, table cell `|`, attribute `}`, or any other inline construct's closer. If `##` appears inside an open inline construct, that construct's closer (and any text after it on the same line) is swallowed into the comment text. The unclosed opener degrades to literal per §9.4.
-- **CommentInline boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line. The CommentInline is then attached to the resulting block per the placement rules below.
-- `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content (the enclosing opaque fence is detected first; lines inside are not scanned for `##`).
-- `##` is **not** recognized inside inline opaque contexts that are tokenized at the inline level: `CodeInline` and `MathInline` (their content is captured before `##` would match) and quoted attribute values.
+- The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value.
+- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, table cell `|`, attribute `}`, or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
+- **`##` boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line.
+- `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (relative `line: 0`) and the **closer line** (relative `line: N`) are scanned.
+- `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values.
 - A literal `##` in normal text is written `\##` or `#\#` (§8).
 
-**Examples of opaque-to-delimiters behaviour:**
-
-```
-[text ## comment](url)
-  →  Text("[text ")  +  CommentInline { text: " comment](url)" }
-  (the `[` opener has no `]` closer before `##` swallows it; degrades to literal)
-
-| Head ## comment | Next |
-  →  the line's pre-`##` substring is `| Head `, which does not satisfy the
-     Table row grammar (no closing `|` after the only cell). The block
-     candidate falls back to Paragraph:
-     Paragraph([Text("| Head "), CommentInline { text: " comment | Next |" }])
-
-| AA | BB | ## row comment
-  →  pre-`##` substring `| AA | BB | ` IS a valid 2-cell row. CommentInline
-     is attached to Row.comments[0] (see §4.8).
-```
-
-**AST type:**
+**`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the nearest enclosing block:
 
 ```typescript
-interface CommentInline {
-  type: "CommentInline"
-  text: string  // content after the leading `##`, up to but not including the LF
+interface Reflection {
+  line: number   // 0-indexed offset from the block's opener line in source
+  text: string   // payload after ##, one leading space stripped
 }
 ```
+
+Every block type carries `reflection: Reflection[] | null` (null when no `##` is present). See §14 for the full list.
+
+#### Trailing inline `##` (on a structural line)
+
+When `##` appears after content on a line that belongs to a block, the payload is recorded at that line's `line:` index within the block.
+
+**Bubbling rule.** When the structural line belongs to a *child* of a container, the payload bubbles to the **outermost container** at that scope level:
+
+| Structural line | `reflection` attaches to |
+|---|---|
+| Table row line | `Table` (not `Row`) |
+| List item line | `List` (not `ListItem`) |
+| NamedBlock / QuoteBlock / FileRefGroup opener | that container |
+
+#### Standalone `## comment` line
+
+A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.2).
+
+- Attaches to the **immediately preceding structural block** in the current scope at `line:` = source offset from that block's opener line. Consecutive standalone comments accumulate as `[N], [N+1], [N+2]…`.
+- **Closes** any active accumulation (continuing Paragraph, open FileRefGroup) before attaching.
+- **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ line: 0, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
+- Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) follows the same scope-local rule, attaching to the preceding sibling block within that scope.
 
 **Examples:**
 
 ```
-## foo              →  CommentInline { text: " foo" }
-foo ## bar          →  Text("foo ") + CommentInline { text: " bar" }
-**bold ## tail      →  Text("**bold ") + CommentInline { text: " tail" }
-``code ## not``     →  CodeInline { value: "code ## not" }
-\## foo             →  Text("## foo")
+## foo                      →  no segment; preceding block gains { line: K, text: "foo" }
+foo ## bar                  →  Text("foo ") — block gains { line: K, text: "bar" }
+``code ## not``             →  CodeInline { value: "code ## not" }
+\## foo                     →  Text("## foo")
+### at inline               →  reflection entry; text: "# at inline"
+
+[text ## comment](url)
+  →  Text("[text ")  (the [ has no ] closer before ## swallows it; degrades to literal)
+     Paragraph.reflection += { line: 0, text: "comment](url)" }
+
+| Head ## comment | Next |
+  →  pre-## `| Head ` fails row grammar (no closing |).
+     Block becomes Paragraph([Text("| Head ")]).
+     Paragraph.reflection += { line: 0, text: "comment | Next |" }
+
+| AA | BB | ## row comment
+  →  pre-## `| AA | BB |` is a valid 2-cell row.
+     Table.reflection += { line: K, text: "row comment" }
+```
+
+Orphan:
+
+```
+Input:
+  ## note with no preceding block
+
+AST:
+  - type: Paragraph
+    children: []
+    reflection:
+      - line: 0
+        text: note with no preceding block
 ```
 
 ### 2.3 `###` — CommentBlock (block comment)
@@ -126,21 +158,19 @@ AST:
 
 ### 2.5 Render policy
 
-`CommentInline` and `CommentBlock` are hidden by default. Conforming renderers (HTML, PDF, markdown round-trip) SHOULD omit them. Tooling renderers (formatter, IDE preview, comment-thread plumbing) MAY iterate over and display them. The default is normative; the opt-in is implementation-defined.
+`Reflection` entries and `CommentBlock` nodes are hidden by default. Conforming renderers (HTML, PDF, markdown round-trip) SHOULD omit them. Tooling renderers (formatter, IDE preview, comment-thread plumbing) MAY read and display them. The default is normative; the opt-in is implementation-defined.
 
 ### 2.6 Interaction with attributes
 
-**`CommentInline` is transparent to attribute resolution.** Attributes (§6) bind to their target as if the comment were not present. A trailing `## comment` after a `{attrs}` block does NOT prevent the attrs from claiming their scope-chain slot.
+**`##` is transparent to attribute resolution.** Because `##` payloads are stored in `reflection` rather than in the inline stream, no scope-chain slot is consumed and no "orphan-due-to-comment" condition arises. Attributes bind exactly as if the `##` were not present.
 
 ```
 == Heading **em** {.a}{.b} ## trailing comment
 ```
 
-Parses as:
-
-- `{.a}` adjacent to `**em**` → per-segment attachment to Strong.
-- `{.b}` is the last `{...}` on the heading line (comment-transparent for the Last-Attr Rule, §6.2) → claims Section.
-- `## trailing comment` → CommentInline appended to Section's `heading` array.
+- `{.a}` adjacent to `**em**` → attaches to Strong.
+- `{.b}` is the last `{...}` on the heading line → claims Section.
+- `## trailing comment` → `Section.reflection += { line: 0, text: "trailing comment" }`.
 
 Result:
 
@@ -148,17 +178,10 @@ Result:
 Section({class:"b"}, level=2,
   heading: [
     Text("Heading "),
-    Strong({class:"a"}, [Text("em")]),
-    CommentInline { text: " trailing comment" }
-  ])
+    Strong({class:"a"}, [Text("em")])
+  ],
+  reflection: [{ line: 0, text: "trailing comment" }]
+)
 ```
-
-The same transparency applies to:
-
-- Paragraph trailing attrs: `text {.p} ## comment` → Paragraph gets `{.p}`; CommentInline appended.
-- NamedBlock opener attrs: `:::callout {.warn} ## note` → NamedBlock gets `{.warn}`; CommentInline appended as first child of the body.
-- List item / table row / FileRefGroup scope chains: each `{}` claims its slot per §6.2; CommentInline appended to the appropriate parent per the per-construct rules in §4.
-
-There is no "orphan-due-to-comment" rule. Authors do not need to split or relocate attrs to make them attach when a trailing comment is present.
 
 ---
