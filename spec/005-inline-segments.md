@@ -35,6 +35,8 @@ interface Text {
 
 Consecutive text tokens MUST be merged into a single `Text` segment by the parser.
 
+Text segments are **literal** — no inline parsing, no escape processing. The only exception is that a `\` at the end of a line (before `\n`) produces a `TextBreak` segment (§5.13) instead of literal text.
+
 ---
 
 ### 5.2 Emphasis
