@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Version:** 0.4.0
 - **Date:** 2026-06-14
-- **Inspired by:** Djot, CommonMark
+- **Inspired by:** CommonMark, Djot, Carve
 - **Versioning policy:** [`policies/versioning-policy.md`](policies/versioning-policy.md)
 - **Change publication policy:** [`policies/change-publication-policy.md`](policies/change-publication-policy.md)
 - **Conformance policy:** [`policies/conformance-policy.md`](policies/conformance-policy.md)
