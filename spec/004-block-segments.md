@@ -467,7 +467,7 @@ interface ImageBlock {
 }
 ```
 
-- `alt` is **parsed by inline rules**. Result is `Inline[]`.
+- See §5.9 for `ImageInline` syntax and parsing details. The same rules apply to `ImageBlock` alt text and src.
 - Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
 - `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be the only one segment on the line.
 
