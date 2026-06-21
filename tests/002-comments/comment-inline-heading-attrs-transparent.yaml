@@ -1,6 +1,6 @@
 id: comment-inline-heading-attrs-transparent
 section: "2.6"
-description: "Last-Attr Rule treats CommentInline as transparent; `{.c}` still claims Section"
+description: "`##` payload stored in Section.reflection; `{.c}` claims Section unaffected"
 
 input: |
   = Heading {.c} ## note
@@ -14,6 +14,7 @@ ast:
     heading:
       - type: Text
         value: "Heading "
-      - type: CommentInline
-        text: " note"
+    reflection:
+      - line: 0
+        text: "note"
     children: []

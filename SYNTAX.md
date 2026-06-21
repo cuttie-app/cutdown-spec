@@ -19,18 +19,18 @@ Cutdown is a markup language that produces an AST. There is no HTML output. The 
 
 ## Comments
 
-Cutdown has two comment constructs. Both are AST citizens (`CommentInline`, `CommentBlock`) and hidden by renderers by default.
+Cutdown has two comment constructs. Both are hidden by renderers by default.
 
-| Form | Node | Notes |
-|------|------|-------|
+| Form | Result | Notes |
+|------|--------|-------|
 | `#` | literal text | Single `#` does nothing — written exactly as typed. |
-| `## … <EOL>` | `CommentInline` | Line comment. Recognized at line-start AND mid-line. Runs to end-of-line. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `CommentBlock` | Block comment. Bare `###` opener, bare `###` closer at same column. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
+| `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
+| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer at same column. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
 
 ```
 # literal hash, not a comment
-## line comment
-foo bar ## tail comment
+## line comment       → stored as reflection on nearest block
+foo bar ## tail       → Text("foo bar ") + reflection entry on block
 
 ###
 opaque block — any content captured raw
@@ -39,11 +39,13 @@ opaque block — any content captured raw
 
 Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades to literal. Example: `[text ## here](url)` → `Text("[text ") + CommentInline(" here](url)")`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades to literal. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
 
-**Transparent to attribute resolution.** A trailing `## comment` does NOT prevent preceding `{attrs}` from claiming their scope-chain slot. `= Heading {.c} ## note` → `Section({class:"c"}, ...)` with CommentInline appended. No "orphan-due-to-comment" rule.
+**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ line: 0, text: "note" }])`.
 
-**Table rows.** A trailing `## comment` after a row's content is attached to `Row.comments[]`, not to any cell. A `## comment` on the delimiter row is attached to the preceding header `Row.comments[]` (after the header's own trailing comment, if any). `{attrs}` on the delimiter row are dropped → CDN-0007.
+**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
+
+**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on the delimiter row are dropped → CDN-0007.
 
 ---
 
@@ -230,12 +232,12 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 | `![alt](src)`   | `ImageInline` | |
 | `::name {attrs}` | `Span` | Empty. `::` without name = literal. |
 | `{{key}}`       | `Variable` | `{{}}` invalid = literal |
-| `## … <EOL>`    | `CommentInline` | Line comment, runs to EOL. Single `#` = literal. Literal `##` = `\##`. |
+| `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
 | `\` at line end | `TextBreak` | |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting not allowed (greedy close).
 
-Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (CommentInline opener, runs to EOL) + the trailing `#` becomes the first character of the comment text.
+Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (line comment, runs to EOL) + the trailing `#` becomes the first character of the payload text.
 
 ---
 
@@ -314,7 +316,7 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 | `:::name` named block | `\:::name`, etc. | literal — **no CDN-0013** |
 | `^^^` spoiler | `\^^^`, etc. | literal |
 
-`##` CommentInline (mid-line) uses `\##` or `#\#` per §5.14.
+`##` line comment (mid-line) uses `\##` or `#\#` per §2.2.
 
 ### Opaque-block closer escape
 
@@ -326,7 +328,6 @@ Narrow per-block escape; all other `\X` inside opaque content is literal.
 | Meta | `\~` | any one of three closer chars |
 | CommentBlock | `\#` | always escapes `#`, no run-length check |
 | MathBlock | — | **no escape** (LaTeX owns `\`); literal `$$$` line unsupported |
-| CommentInline | — | content fully verbatim; LF closes |
 
 NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a content line.
 
@@ -336,7 +337,7 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 
 1. Code fence \`\`\`, Meta fence `~~~`, Math fence `$$$`, CommentBlock fence `###` — content always literal
 2. Inline code \`\` — content literal except `` \` `` (see §5.6); Inline math `$$` — content literal
-3. CommentInline `##` — no closer, runs to EOL, closes any open inline constructs (they degrade to literal)
+3. Line comment `##` — no closer, runs to EOL, payload stored in block reflection, closes any open inline constructs (they degrade to literal)
 4. Escape `\x`
 5. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
 6. Links `[...](...)`  and images `![...]()`

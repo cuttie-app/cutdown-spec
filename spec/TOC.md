@@ -39,10 +39,10 @@ Cutdown is a simple markup language with the bare minimum features to structure 
 ## Table of Contents
 
 1. [Conventions](001-conventions.md) — Identifier charset, Segment, Block type, Inline type
-2. [Comments](002-comments.md) — CommentInline (`##`), CommentBlock (`###`)
+2. [Comments](002-comments.md) — `##` line comment (Block.Reflection), CommentBlock (`###`)
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, ImageBlock, ThematicBreak, FileRef, FileRefGroup, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
-5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Strikethrough, Spoiler, CodeInline, TextBreak, Link, ImageInline, Span, MathInline, Variable, QuoteInline, CommentInline
+5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Strikethrough, Spoiler, CodeInline, TextBreak, Link, ImageInline, Span, MathInline, Variable, QuoteInline
 6. [Universal Attributes](006-universal-attributes.md)
 7. [Input Normalization](007-input-normalization.md)
 8. [Escaping](008-escaping.md)

@@ -10,7 +10,7 @@ A parser identifies block boundaries by scanning for blank line sequences. Each 
 
 **Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a thematic break, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
 
-Comments (§2) are first-class block / inline constructs and produce AST nodes. They are not stripped before block boundary analysis. A line starting with `###` is a block-comment fence; a line starting with `##` is a line comment processed by inline parsing. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
+Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) acts as a blank line for block-boundary purposes and stores its payload as a `Reflection` entry on the nearest block. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
 
 ### 10.2 Leading and Trailing Whitespace
 
@@ -71,13 +71,13 @@ When N identical characters appear at an inline position, the following rules ap
 | `~` | literal | `Strikethrough` open/close | `~~` + `~` literal¹ | `Strikethrough([])` empty | `Strikethrough([])` + `~` literal |
 | `$` | literal | `MathInline` open/close | `$$` + `$` literal¹ | `MathInline("")` empty | `MathInline("$")` |
 | `^` | literal² | `Spoiler` open/close | `^^` + `^` literal¹ | `Spoiler([])` empty | `Spoiler([])` + `^` literal |
-| `#` | literal | `CommentInline` (to EOL, no closer) | `CommentBlock` fence³ | `CommentBlock` fence + `#` literal | `CommentBlock` fence + `##` literal |
+| `#` | literal | `##` line comment → Reflection entry (to EOL, no closer) | `CommentBlock` fence³ | `CommentBlock` fence + `#` literal | `CommentBlock` fence + `##` literal |
 
 ¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$`, `^^^` are block fences (CodeBlock, Meta, MathBlock, SpoilerBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
 
 ² A single `^` is literal in inline context. Inside a `[...][^id]` link/definition target slot it retains its reference-marker role (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
 
-³ `###` is a block fence only when it begins a block candidate (line-start at the container's effective column, per §9.2.4 / §10.5). In inline position, `###` parses as `##` (CommentInline opener — runs to EOL) + `#` (collapsed into the comment text).
+³ `###` is a block fence only when it begins a block candidate (line-start at the container's effective column, per §9.2.4 / §10.5). In inline position, `###` parses as `##` (line comment opener — runs to EOL) + `#` (collapsed into the payload text).
 
 **Block/structural symbols**:
 
@@ -104,7 +104,7 @@ Known collisions:
 | `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
 | `^^^` at inline position | `^^` (Spoiler opener) + `^` (literal) |
-| `###` at inline position | `##` (CommentInline opener — runs to EOL; trailing `#` is part of the comment text) |
+| `###` at inline position | `##` (line comment → Reflection entry; trailing `#` is part of the payload text) |
 | `---` non-line-start | literal text (ThematicBreak only classified at line start) |
 
 ### 10.5 List Indentation Model

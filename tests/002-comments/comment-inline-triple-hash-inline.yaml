@@ -1,6 +1,6 @@
 id: comment-inline-triple-hash-inline
 section: "2.2"
-description: "Run of 3 `###` at inline position is `##` (CommentInline opener) + literal `#` as first char of comment text"
+description: "Run of 3 `###` at inline position is `##` (line comment opener) + literal `#` as first char of payload text"
 
 input: |
   text ### inline triple
@@ -10,5 +10,6 @@ ast:
     children:
       - type: Text
         value: "text "
-      - type: CommentInline
+    reflection:
+      - line: 0
         text: "# inline triple"

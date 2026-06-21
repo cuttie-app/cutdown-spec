@@ -1,10 +1,13 @@
 id: comment-inline-basic
 section: "2.2"
-description: A line starting with `##` becomes a CommentInline; the `##` prefix is stripped from text
+description: "A standalone `##` line with no preceding block is an orphan; produces empty Paragraph with reflection entry"
 
 input: |
   ## a whole-line comment
 
 ast:
-  - type: CommentInline
-    text: " a whole-line comment"
+  - type: Paragraph
+    children: []
+    reflection:
+      - line: 0
+        text: "a whole-line comment"

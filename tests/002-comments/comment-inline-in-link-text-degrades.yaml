@@ -1,6 +1,6 @@
 id: comment-inline-in-link-text-degrades
 section: "2.2"
-description: "`##` inside link text swallows `](url)` to EOL; `[` opener has no closer and degrades to literal"
+description: "`##` inside link text swallows `](url)` to EOL; `[` opener has no closer and degrades to literal; payload stored in reflection"
 
 input: |
   [text ## here](url)
@@ -10,5 +10,6 @@ ast:
     children:
       - type: Text
         value: "[text "
-      - type: CommentInline
-        text: " here](url)"
+    reflection:
+      - line: 0
+        text: "here](url)"

@@ -1,6 +1,6 @@
 id: comment-inline-namedblock-opener
 section: "2.6"
-description: "Trailing comment on a NamedBlock opener; attrs claim the block, CommentInline becomes first child of body"
+description: "Trailing `##` on a NamedBlock opener bubbles to NamedBlock.reflection; attrs claim the block; body is clean"
 
 input: |
   :::callout {.warn} ## opener note
@@ -13,9 +13,10 @@ ast:
     attributes:
       - key: class
         value: [warn]
+    reflection:
+      - line: 0
+        text: "opener note"
     children:
-      - type: CommentInline
-        text: " opener note"
       - type: Paragraph
         children:
           - type: Text

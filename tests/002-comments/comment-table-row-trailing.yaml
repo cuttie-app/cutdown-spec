@@ -1,6 +1,6 @@
 id: comment-table-row-trailing
 section: "4.8"
-description: "Trailing `## comment` after a row's content is attached to Row.comments[0], NOT to any cell"
+description: "Trailing `## comment` after a row's content bubbles to Table.reflection at the row's line offset, NOT to any Row or cell"
 
 input: |
   | AA | BB | ## what is this?
@@ -8,11 +8,11 @@ input: |
 ast:
   - type: Table
     kind: simple
+    reflection:
+      - line: 0
+        text: "what is this?"
     body:
       - type: Row
-        comments:
-          - type: CommentInline
-            text: " what is this?"
         children:
           - type: Cell
             children:

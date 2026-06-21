@@ -18,7 +18,7 @@ The following characters are special and may be escaped:
 = # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " ' ^
 ```
 
-Escaping inside opaque containers (CodeInline, CodeBlock, Meta, MathBlock, CommentInline, CommentBlock) follows narrow per-construct rules — see §8.3.
+Escaping inside opaque containers (CodeInline, CodeBlock, Meta, MathBlock, CommentBlock) follows narrow per-construct rules — see §8.3.
 
 ---
 
@@ -48,7 +48,7 @@ Applies at **line start only** (after container-indent stripping, before the fir
 - The escape suppresses *the block opener only*. Residual characters re-enter normal processing, regardless of which of the three marker chars carried the escape. Example: `` \``` ``, `` `\`` ``, and `` ``\` `` all become a Paragraph containing three backtick characters; inline parsing then opens a `CodeInline` from the first two and leaves the third as a literal `` ` ``. To produce three literal backticks, escape each: `` \`\`\` ``.
 - Attributes that follow an escaped marker are literal text — there is no block to attach them to. `\--- {.cover}` → `Paragraph([Text("--- {.cover}")])`.
 - The rule applies in every block scope (Page scope, ListItem, TaskItem, QuoteBlock, NamedBlock, SpoilerBlock).
-- CommentInline (`##`, mid-line) is escaped per §2.2 / §5.14 with `\##` or `#\#` — that is a separate inline escape, not a block-opener escape.
+- `##` (line comment, mid-line) is escaped with `\##` or `#\#` per §2.2 — that is a separate inline escape, not a block-opener escape.
 - No diagnostic is emitted when an opener is escaped. The backslash is a deliberate author signal.
 
 ---
@@ -64,7 +64,6 @@ Opaque containers (whose content is captured verbatim) admit a single **narrow e
 | Meta (§4.3) | `\~` | literal `~` | literal `\X` |
 | CommentBlock (§4.16) | `\#` | literal `#` | literal `\X` |
 | MathBlock (§4.5) | — **none** | n/a | fully literal (LaTeX owns `\`) |
-| CommentInline (§5.14) | — none | n/a | fully literal (LF closes; no fence char) |
 
 **Notes:**
 

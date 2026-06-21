@@ -1,6 +1,6 @@
 id: comment-table-delim-row-trailing
 section: "4.8"
-description: "Trailing `## comment` on a delimiter row attaches to the preceding header Row.comments[], after the header's own-line comment if present"
+description: "Trailing `##` on header row and delimiter row both bubble to Table.reflection at their respective line offsets"
 
 input: |
   | Head A | Head B | ## header note
@@ -10,13 +10,13 @@ input: |
 ast:
   - type: Table
     kind: gfm
+    reflection:
+      - line: 0
+        text: "header note"
+      - line: 1
+        text: "delim note"
     head:
       - type: Row
-        comments:
-          - type: CommentInline
-            text: " header note"
-          - type: CommentInline
-            text: " delim note"
         children:
           - type: Cell
             children:

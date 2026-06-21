@@ -1,9 +1,12 @@
 id: paragraph-only-comment-not-elided
-section: "10"
-description: "A standalone `##` line at Page scope becomes a top-level CommentInline (no Paragraph wrap, per §2.2 Phase-2 preprocessing)"
+section: "2.2"
+description: "A standalone `##` line at Page scope with no preceding block is an orphan; produces empty Paragraph with reflection entry"
 
 input: "## just a comment\n"
 
 ast:
-  - type: CommentInline
-    text: " just a comment"
+  - type: Paragraph
+    children: []
+    reflection:
+      - line: 0
+        text: "just a comment"

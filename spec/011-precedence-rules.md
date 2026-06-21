@@ -9,7 +9,7 @@ When multiple constructs compete for the same input, the following priority appl
 | 3 | MathBlock `$$$` | Content always literal |
 | 4 | CommentBlock `###` | Content always literal (opaque). See §2.3, §4.16 |
 | 5 | Inline code \`\` `CodeInline` | Content literal |
-| 6 | CommentInline `##` | No closer; runs to EOL. Closes any open inline constructs (they degrade to literal). Not recognized inside CodeInline / MathInline / quoted attribute values. See §2.2, §5.14 |
+| 6 | Line comment `##` | No closer; runs to EOL. Payload stored as `Reflection` entry on enclosing block. Closes any open inline constructs (they degrade to literal). Not recognized inside CodeInline / MathInline / quoted attribute values. See §2.2 |
 | 7 | Escape `\x` | Resolved before delimiter matching |
 | 8 | Links and images `[...](...)`  | Matched before emphasis runs |
 | 9 | Inline math `$$` | Matched before emphasis; content is literal |

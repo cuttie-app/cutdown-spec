@@ -1,6 +1,6 @@
 id: comment-inline-degrades-emphasis
 section: "2.2"
-description: "`##` is opaque to other delimiters; an unclosed `**` opener before it degrades to literal text"
+description: "`##` is opaque to other delimiters; an unclosed `**` opener before it degrades to literal text; payload stored in reflection"
 
 input: |
   **bold ## tail
@@ -10,5 +10,6 @@ ast:
     children:
       - type: Text
         value: "**bold "
-      - type: CommentInline
-        text: " tail"
+    reflection:
+      - line: 0
+        text: "tail"
