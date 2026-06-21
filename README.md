@@ -173,7 +173,7 @@ There is no official MIME type. `text/x-cutdown` may be used informally.
 
 ## Acknowledgements
 
-*Inspired by [CommonMark](https://commonmark.org) and [Djot](https://djot.net).*
+*Inspired by [CommonMark](https://commonmark.org), [Djot](https://djot.net), Carve.*
 
 ---
 
