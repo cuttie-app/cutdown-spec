@@ -1,0 +1,12 @@
+id: table-empty
+section: "4.8"
+description: "Single `|` or `+-` line with no cell content produces a valid empty table"
+
+input: |
+  +-
+
+ast:
+  - type: Table
+    kind: multiline
+    rows: []
+    columns: []

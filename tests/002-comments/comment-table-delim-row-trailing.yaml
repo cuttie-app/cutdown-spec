@@ -1,10 +1,10 @@
 id: comment-table-delim-row-trailing
 section: "4.8"
-description: "Trailing `##` on header row and delimiter row both bubble to Table.reflection at their respective line offsets"
+description: "Trailing `##` on header row and `+:---+` header separator both bubble to Table.reflection at their respective line offsets"
 
 input: |
   | Head A | Head B | ## header note
-  | ------ | ------ | ## delim note
+  +:-------+--------+ ## delim note
   | AA     | BB     |
 
 ast:
@@ -15,8 +15,8 @@ ast:
         text: "header note"
       - line: 1
         text: "delim note"
-    head:
-      - type: Row
+    rows:
+      - type: Header
         children:
           - type: Cell
             children:
@@ -26,7 +26,6 @@ ast:
             children:
               - type: Text
                 value: "Head B"
-    body:
       - type: Row
         children:
           - type: Cell
@@ -37,3 +36,8 @@ ast:
             children:
               - type: Text
                 value: "BB"
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left

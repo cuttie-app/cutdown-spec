@@ -1,6 +1,6 @@
 id: table-simple
 section: "4.8"
-description: Pipe table with no delimiter row; all rows are body rows; no header; columns default to left alignment
+description: GFM pipe table with no header separator; all rows are type Row; columns default to left alignment
 
 input: |
   | Cell A | Cell B |
@@ -8,8 +8,8 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
-    body:
+    kind: gfm
+    rows:
       - type: Row
         children:
           - type: Cell

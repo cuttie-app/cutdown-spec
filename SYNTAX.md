@@ -153,15 +153,30 @@ Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers i
 
 ### Tables → `Table`
 
-```
-| Cell A | Cell B |          ← simple table (no header)
+Two variants: GFM (`kind: "gfm"`, first line starts with `|`) and Multiline (`kind: "multiline"`, first line starts with `+-`).
 
-| Name   | Score |           ← GFM table (has header)
-|:-------|------:|
-| Alice  |    42 |
+```
+| Cell A | Cell B |          ← GFM table (no header, all rows type: "Row")
+
+| Name   | Score |           ← GFM table with header
++:-------|------:+           ← header separator; also sets alignment
+| Alice  |    42 |           ← type: "Row"
+
++-                           ← multiline opener (one logical row follows)
+| single row |
+
++----------+----------+      ← multiline grid
+| Header A | Header B |
++:---------+----------+      ← header separator (colon = left align col 0)
+| Cell A   | Cell B   |
++----------+----------+
 ```
 
-Delimiter alignment: `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal. Leading/trailing `|` required.
+**Header separator:** A `+` row with at least one `:` adjacent to `+` or `-` marks the preceding rows as `type: "Header"`. `+----+` (no colon) is ignored in GFM; acts as a body section delimiter in multiline. Alignment taken from the first header separator only. The `|:---|` piped-delimiter syntax is not supported — use `+:---+` instead.
+
+**Multiline cells:** All `|` lines between two consecutive `+` rows form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
+
+Leading/trailing `|` required in GFM rows. `+-` required as first line for multiline.
 
 ### File Reference → `FileRef`
 

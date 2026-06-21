@@ -9,14 +9,14 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
+    kind: gfm
     caption:
       - type: Text
         value: "Caption text"
     reflection:
       - line: 2
         text: "editorial note"
-    body:
+    rows:
       - type: Row
         children:
           - type: Cell

@@ -9,14 +9,14 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
+    kind: gfm
     caption:
       - type: Text
         value: "Results from the first cohort"
     attributes:
       - key: id
         value: tbl-one
-    body:
+    rows:
       - type: Row
         children:
           - type: Cell

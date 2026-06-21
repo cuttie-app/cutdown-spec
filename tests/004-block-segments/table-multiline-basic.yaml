@@ -1,0 +1,33 @@
+id: table-multiline-basic
+section: "4.8"
+description: "Minimal multiline table: `+-` opener followed by content rows; single logical row; cells are Block[]"
+
+input: |
+  +-
+  | Alpha | Beta |
+
+ast:
+  - type: Table
+    kind: multiline
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            row: 0
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: Alpha
+          - type: Cell
+            row: 0
+            column: 1
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: Beta
+    columns:
+      - type: Column
+      - type: Column
