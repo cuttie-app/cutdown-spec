@@ -1,0 +1,16 @@
+id: caption-fileref-basic
+section: "6.5"
+description: "A `^ ` line immediately after a non-grouped FileRef sets caption on the FileRef node"
+
+input: |
+  /docs/report.pdf
+  ^ Annual report, 2025
+
+ast:
+  - type: FileRef
+    path: "/docs/report.pdf"
+    fragment: ""
+    query: ""
+    caption:
+      - type: Text
+        value: "Annual report, 2025"

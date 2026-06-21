@@ -1,0 +1,36 @@
+id: caption-filerefgroup-mid-run-close
+section: "6.5"
+description: "A `^ ` line mid-run closes the active FileRefGroup at that point and binds to it; the next FileRef starts a new group"
+
+input: |
+  /photos/a.png
+  /photos/b.jpg
+  ^ First group caption
+  /photos/c.png
+  ^ Second group caption
+
+ast:
+  - type: FileRefGroup
+    group: image
+    caption:
+      - type: Text
+        value: "First group caption"
+    children:
+      - type: FileRef
+        path: "/photos/a.png"
+        fragment: ""
+        query: ""
+      - type: FileRef
+        path: "/photos/b.jpg"
+        fragment: ""
+        query: ""
+  - type: FileRefGroup
+    group: image
+    caption:
+      - type: Text
+        value: "Second group caption"
+    children:
+      - type: FileRef
+        path: "/photos/c.png"
+        fragment: ""
+        query: ""

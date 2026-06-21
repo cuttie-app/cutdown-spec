@@ -1,0 +1,24 @@
+id: caption-quoteblock-attribution
+section: "6.5"
+description: "A `^ ` line after a QuoteBlock sets the `attribution` field (not `caption`); the field name reflects the semantic distinction"
+
+input: |
+  > To be, or not to be.
+  ^ William Shakespeare, *Hamlet*, Act 3
+
+ast:
+  - type: QuoteBlock
+    attribution:
+      - type: Text
+        value: "William Shakespeare, "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: Hamlet
+      - type: Text
+        value: ", Act 3"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "To be, or not to be."

@@ -1,0 +1,24 @@
+id: caption-comment-own-line-transparent
+section: "6.5"
+description: "A standalone `## comment` line between a captionable block and a `^ ` line is transparent to caption binding — the CommentInline is emitted as a sibling node but does not break the caption pointer"
+
+input: |
+  | col |
+  ## editorial note
+  ^ Caption text
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "Caption text"
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: col
+  - type: CommentInline
+    text: " editorial note"

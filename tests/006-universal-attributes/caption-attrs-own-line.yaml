@@ -1,0 +1,29 @@
+id: caption-attrs-own-line
+section: "6.5"
+description: "A `{attrs}` trailing line between a captionable block and a `^ ` line is transparent — the caption still binds to the block; both attrs and caption are set"
+
+input: |
+  | Name | Score |
+  {#tbl-one}
+  ^ Results from the first cohort
+
+ast:
+  - type: Table
+    kind: simple
+    caption:
+      - type: Text
+        value: "Results from the first cohort"
+    attributes:
+      - key: id
+        value: tbl-one
+    body:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: Name
+          - type: Cell
+            children:
+              - type: Text
+                value: Score
