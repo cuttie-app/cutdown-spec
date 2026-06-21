@@ -22,7 +22,8 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `>` | QuoteBlock marker | Yes |
 | `/` | File reference (line start) | Yes |
 | `\` | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |
-| \|  | Table cell separator | Yes |
+| \|  | Table cell separator (GFM row) | Yes |
+| `+` | Multiline table opener / separator (`+-`, `+:---+`) | Yes |
 | `^` | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
 | `$` | Inline math (`$$`) / block math (`$$$`) | Yes |
 | `"` | Inline quote delimiter (`""`) | Yes |

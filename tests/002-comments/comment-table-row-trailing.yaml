@@ -7,11 +7,11 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
+    kind: gfm
     reflection:
       - line: 0
         text: "what is this?"
-    body:
+    rows:
       - type: Row
         children:
           - type: Cell

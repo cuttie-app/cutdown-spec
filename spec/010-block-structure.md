@@ -87,6 +87,7 @@ When N identical characters appear at an inline position, the following rules ap
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
 | `-` | list marker (`- `+space) or literal | literal `--` | ThematicBreak (3+) | ThematicBreak (extra chars silently dropped) |
 | `:` | literal | Span prefix `::name` | NamedBlock prefix `:::name` | literal |
+| `+` | Multiline table opener when followed by `-` or `:` (`+-`, `+:`) | — | — | — |
 
 Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table.
 
@@ -175,6 +176,7 @@ Leading and trailing **blank lines** (lines containing only whitespace per §10.
 - `SpoilerBlock` (§4.15)
 - `QuoteBlock` (§4.6)
 - `ListItem` / `TaskItem` (§4.7)
+- Multiline table `Cell` (§4.8) — per-column blank-line detection; each column's edge strips independently
 
 **Does NOT apply to opaque containers** — their bodies are captured verbatim:
 - `CodeBlock` (§4.4)

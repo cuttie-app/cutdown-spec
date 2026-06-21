@@ -1,0 +1,31 @@
+id: table-multiline-attrs
+section: "4.8"
+description: "`{attrs}` on a `+` separator row go to Table; `{attrs}` on a `|` content row go to Row; last `+` row with attrs wins for Table"
+
+input: |
+  +-
+  | cell | {.row-class}
+  +- {.tbl-class}
+
+ast:
+  - type: Table
+    kind: multiline
+    attributes:
+      - key: class
+        value: [tbl-class]
+    rows:
+      - type: Row
+        attributes:
+          - key: class
+            value: [row-class]
+        children:
+          - type: Cell
+            row: 0
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "cell"
+    columns:
+      - type: Column

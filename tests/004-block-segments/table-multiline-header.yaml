@@ -1,0 +1,56 @@
+id: table-multiline-header
+section: "4.8"
+description: "Full-grid multiline table: `+:---+` separator marks preceding rows as type Header and sets column alignment"
+
+input: |
+  +----------+----------+
+  | Header A | Header B |
+  +:---------+---------:+
+  | Cell A   | Cell B   |
+  +----------+----------+
+
+ast:
+  - type: Table
+    kind: multiline
+    rows:
+      - type: Header
+        children:
+          - type: Cell
+            row: 0
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Header A"
+          - type: Cell
+            row: 0
+            column: 1
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Header B"
+      - type: Row
+        children:
+          - type: Cell
+            row: 1
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Cell A"
+          - type: Cell
+            row: 1
+            column: 1
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Cell B"
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: right

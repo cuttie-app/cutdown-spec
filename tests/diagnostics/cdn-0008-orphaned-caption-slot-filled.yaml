@@ -9,11 +9,11 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
+    kind: gfm
     caption:
       - type: Text
         value: "First caption"
-    body:
+    rows:
       - type: Row
         children:
           - type: Cell

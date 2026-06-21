@@ -9,8 +9,8 @@ input: |
 
 ast:
   - type: Table
-    kind: simple
-    body:
+    kind: gfm
+    rows:
       - type: Row
         children:
           - type: Cell

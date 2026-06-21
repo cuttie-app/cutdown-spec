@@ -379,16 +379,30 @@ AST:
 
 ### 4.8 Table
 
-**Syntax:** `| ... |` — leading and trailing `|` required on every row.
+Cutdown supports two table variants, distinguished by the first line.
 
-Two variants distinguished by the presence of a delimiter row:
+**GFM table (`kind: "gfm"`):** First line starts with `|`.
 
 ```
-| Cell A | Cell B |           ← simple table (no header)
+| Cell A | Cell B |                        ← no-header table
 
-| Name   | Score |            ← GFM table
-|:-------|------:|
+| Name   | Score |                         ← GFM table with header
++:-------|------:+                         ← header separator; left / right align
 | Alice  |    42 |
+| Bob    |    17 |
+```
+
+**Multiline table (`kind: "multiline"`):** First line starts with `+-`.
+
+```
++-                                         ← minimal opener (single-row table)
+| single row |
+
++----------+----------+                    ← full grid
+| Header A | Header B |
++:---------+----------+                    ← header separator; left-align col 0
+| Cell A   | Cell B   |
++----------+----------+
 ```
 
 **AST type:**
@@ -396,24 +410,25 @@ Two variants distinguished by the presence of a delimiter row:
 ```typescript
 interface Table {
   type: "Table"
-  kind: "simple" | "gfm"
-  head: Row[]   // [] for simple tables
-  body: Row[]
+  kind: "multiline" | "gfm"
+  rows: Row[]
   columns: Column[]
-  attributes: Attribute[]
+  attributes: Attribute[] | null
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 
 interface Row {
-  type: "Row"
+  type: "Row" | "Header"
   children: Cell[]
-  attributes: Attribute[]
+  attributes: Attribute[] | null
 }
 
 interface Cell {
   type: "Cell"
-  children: Inline[]
-  row: number     // zero-indexed
-  column: number  // zero-indexed
+  children: Inline[] | Block[]   // Inline[] when Table.kind is "gfm"; Block[] when "multiline"
+  row: number                    // zero-indexed position in Table.rows[]
+  column: number                 // zero-indexed
 }
 
 interface Column {
@@ -422,31 +437,119 @@ interface Column {
 }
 ```
 
-- `Cell` content is **parsed by inline rules**. Result is `Inline[]`.
-- `Cell` and `Column` do not carry `attributes`.
-- Colspan and rowspan are not supported.
-- Delimiter row alignment: `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal.
-- `Row` and `Table` attributes follow the scope-chain rule (§6): last `{}` → `Table`; preceding `{}` → `Row`. The `Table` slot is only available from the **last row's** chain.
-- **Supports caption line (§6.5).** A `^ text` line immediately after the table's last row (no blank line) sets `caption: Inline[]` on this node.
+`Cell` and `Column` do not carry `attributes`. Colspan and rowspan are not supported.
 
-**Trailing `## comment` on table rows.** A `## comment` appearing on a row line (after any trailing `{attrs}`) is detected by Phase 2 (§9.2). The payload is stored in `Table.reflection` (bubbling rule — see §2.2), NOT attached to any `Row` or cell.
+---
 
-A `##` appearing inside the cell content portion of the line (before the row's closing `|`) makes the pre-`##` substring fail the row grammar (no closing `|` after the partial cell). The block candidate falls back to Paragraph — the `##` payload then attaches to that Paragraph's `reflection`. See §2.2 for examples.
+#### Header rows
 
-**Attributes on the delimiter row are not supported.** `{attrs}` after the alignment markers on a delimiter row are dropped → warning CDN-0007. The delimiter row is structural metadata (alignment only) and has no AST shape to carry attributes.
+A `+` separator row containing at least one `:` adjacent to a `+` or `-` character is a **header separator**. It marks the group of `|` content rows immediately preceding it (since the previous `+` separator, or the start of the table) as `type: "Header"`. All other `|` content rows are `type: "Row"`.
 
-**Trailing `## comment` on the delimiter row** IS supported. The payload is stored in `Table.reflection` at the delimiter row's `line:` offset (one line after the header row).
+```
+| A | B |
++:--+---+    ← header separator → preceding rows become type: "Header"
+| C | D |    ← type: "Row"
+```
 
-**Row/Table attribute examples:**
+Discontiguous header sections are valid — HTML `<table>` supports mixed `<thead>`/`<tbody>` ordering. A `+:` separator anywhere marks only the rows in the immediately preceding section.
+
+A `+` separator row **without any colon** (`+----+`) behaves differently by kind:
+- **GFM**: ignored — does not affect row types and does not interrupt the table.
+- **Multiline**: marks the preceding section as `type: "Row"` (body section delimiter).
+
+---
+
+#### Column alignment
+
+Alignment is taken from colon positions of the **first header separator** in the table. Subsequent `+:` separator rows do not update alignment.
+
+| Pattern | Alignment |
+|---------|-----------|
+| `:---` | `"left"` |
+| `---:` | `"right"` |
+| `:---:` | `"center"` |
+| `---,` | `"comma"` |
+| `---.` | `"decimal"` |
+| `----` | `"left"` (default) |
+
+A column with no corresponding position in the header separator defaults to `"left"`.
+
+---
+
+#### GFM table specifics
+
+- Leading and trailing `|` required on every content row.
+- Each `|` line is one independent logical row.
+- Cells contain `Inline[]` parsed by full inline rules.
+- The piped-delimiter syntax (`|:---|`) is **not supported**. A line like `|:---|` is treated as a regular `type: "Row"` with cells containing literal dash/colon characters.
+- A `+----+` separator row (no colons) between GFM rows is **ignored** — it has no structural effect.
+
+**Attrs scope chain (GFM).** `{attrs}` on the last content row → scope-chain: last `{}` → Table; preceding `{}` → Row. The Table slot is only available from the last row's chain. `+` separator rows do not participate in GFM scope chain.
 
 ```
 | td1 | td2 | {.a}{.b}  →  Table({.b}, Row({.a}, ...))
-
 | td1 | td2 | {.a}      →  Table({.a}, Row(...))         ← single {} = Table slot
-
 Mid-table row:
 | td1 | td2 | {.a}      →  Row({.a}, ...)                ← 1 slot only
 ```
+
+---
+
+#### Multiline table specifics
+
+**Opener.** A line starting with `+-` opens a `kind: "multiline"` table. Content on the opener line after `+-` (including `{attrs}`) is treated as part of the opener row's attrs — see Attrs scope chain below.
+
+**Row boundaries.** All `|` lines between two consecutive `+` separator rows form one **logical row**. A table with only one `+` separator (the opener, no further `+` rows) produces one logical row from all subsequent `|` lines until the table ends (blank line or container boundary).
+
+**Multi-line cells.** When multiple `|` lines belong to one logical row, each column's content strips are **soft-joined** with a space between lines, mirroring paragraph continuation. `\` at end of a content line produces a `TextBreak` segment in that cell.
+
+**Column boundaries.** Defined by `+` positions in the nearest preceding `+` separator row. If the opener is a minimal `+-` with no column boundary markers, boundaries are inferred from `|` positions in the first content row. Column count = max() of cell count across all logical rows. No diagnostic is emitted for row/column count mismatches.
+
+**Trailing `|`.** Optional on content rows. The last column extends to end of line.
+
+**Cell content — Block context.** Multiline cells are parsed as `Block[]` (full block context: paragraphs, headings, lists, nested tables, named blocks, etc. — same rules as `ListItem`).
+
+Per-column blank-line detection: a cell line is considered blank when its content slice (after stripping leading and trailing whitespace within the column width) is empty. Each column's blank lines are detected independently.
+
+Leading and trailing whitespace is stripped from each line slice within a column before block parsing.
+
+**Attrs scope chain (multiline).** `{attrs}` on a `+` separator row → Table (last `+` row with attrs wins). `{attrs}` on a `|` content row → Row.
+
+```
++----------+ {.tbl}      →  Table({.tbl})
+| cell | {.row}          →  Row({.row})
+```
+
+---
+
+#### Empty tables
+
+A single `|` or `+-` line with no cell content is a valid empty table:
+
+```
++-           →  Table { kind: "multiline", rows: [], columns: [] }
+
++- {#id}     →  Table { kind: "multiline", rows: [], columns: [], attributes: [{id:"id"}] }
+
+|            →  Table { kind: "gfm", rows: [], columns: [] }
+
+| {.tbl}     →  Table { kind: "gfm", rows: [], columns: [], attributes: [{class:["tbl"]}] }
+```
+
+For `| {.tbl}`: no row is present, so `{.tbl}` has no Row slot to claim; it falls through to the Table slot directly.
+
+---
+
+#### Reflection
+
+Trailing `## comment` on any table line (`|` content row or `+` separator row) bubbles to `Table.reflection` at the source `line:` offset. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
+
+---
+
+#### Caption and escaping
+
+- **Supports caption line (§6.5).** A `^ text` line immediately after the table's last line (no blank line) sets `caption: Inline[]`.
+- **Escaping:** `\|` at line start → `Paragraph` (suppresses GFM row); `\+` at line start → `Paragraph` (suppresses multiline opener or separator). See §8.2.
 
 ---
 
