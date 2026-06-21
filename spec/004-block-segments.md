@@ -161,6 +161,7 @@ interface CodeBlock {
 - Unclosed fence: content runs to end of document → warning CDN-0001.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
 - **Closer escape:** `` \` `` inside the body emits a literal `` ` `` (consumes the `\`). A line `` \``` ``, `` `\`` ``, or `` ``\` `` therefore does NOT close the fence. All other `\X` sequences are literal (including `\\` → two chars). See §8.3. Opener escape: see §8.2.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the closing fence (no blank line) sets `caption: Inline[]` on this node.
 
 ---
 
@@ -189,6 +190,7 @@ interface MathBlock {
 - Unclosed fence: content runs to end of document → warning CDN-0003.
 - Legal inside block containers. Indentation handling follows the same rules as `CodeBlock`.
 - **No closer escape — LaTeX owns `\`.** Every backslash inside a MathBlock body is literal, including `\$`. A literal `$$$` line inside the body therefore prematurely closes the fence; this is an accepted unsupported case (wrap such content in a `CodeBlock` or split the math). See §8.3. Opener escape (`\$$$`): see §8.2.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the closing fence (no blank line) sets `caption: Inline[]` on this node.
 
 **Example:**
 
@@ -233,6 +235,7 @@ interface QuoteBlock {
 - Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters.
 - **Body edge-blank trim:** After `>` stripping, leading and trailing blank lines inside the quoted body are stripped before children are parsed. See §10.6.
 - **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
+- **Supports attribution line (§6.5).** A `^ text` line immediately after the closing line (no blank line) sets `attribution: Inline[]` on this node.
 
 **Examples:**
 
@@ -425,6 +428,7 @@ interface Column {
 - Colspan and rowspan are not supported.
 - Delimiter row alignment: `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal.
 - `Row` and `Table` attributes follow the scope-chain rule (§6): last `{}` → `Table`; preceding `{}` → `Row`. The `Table` slot is only available from the **last row's** chain.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the table's last row (no blank line) sets `caption: Inline[]` on this node.
 
 **Trailing comments on table rows.** A `## comment` appearing on a row line after the row's content (and after any trailing `{attrs}`) is detected by Phase 2 (§9.2) and attached to that Row's `comments` array, NOT to any cell. The row's `comments` array preserves source order:
 
@@ -470,6 +474,7 @@ interface ImageBlock {
 - See §5.9 for `ImageInline` syntax and parsing details. The same rules apply to `ImageBlock` alt text and src.
 - Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
 - `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be the only one segment on the line.
+- **Supports caption line (§6.5).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. `ImageInline` does not support captions — it is not a block.
 
 ---
 
@@ -527,6 +532,7 @@ interface FileRef {
 - Empty path (line with only `/`) is invalid state and produces string literal for whole line.
 - `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
 - **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
+- **Supports caption line (§6.5).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. If the `FileRef` is part of an active `FileRefGroup`, the `^ ` line closes the group and binds to it instead (see §4.12).
 
 **Known Groups (defaults):**
 
@@ -556,6 +562,7 @@ interface FileRefGroup {
 - A blank line breaks any active group.
 - Different groups do not merge — two consecutive lines of different groups produce two separate `FileRefGroup` segments.
 - Unknown-extension files are never grouped.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the last member of the group (no blank line) sets `caption: Inline[]` on the `FileRefGroup`. A `^ ` line mid-run closes the group at that point; the next `FileRef`/`ImageBlock` starts a new group.
 
 **Example:**
 
@@ -602,6 +609,7 @@ interface NamedBlock {
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Indentation collapsing:** The first content line establishes the base indentation. That many leading spaces are stripped from all content lines before parsing.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the closing `:::` (no blank line) sets `caption: Inline[]` on this node.
 
 **Example:**
 
@@ -670,6 +678,7 @@ interface SpoilerBlock {
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, and other `SpoilerBlock`s. Container indentation is stripped from content lines.
 - Semantic variants (NSFW, redacted, entertainment-spoiler) are carried in `attributes`; `SpoilerBlock` has no `kind` field.
 - **Escape:** SpoilerBlock body is **not opaque** — children are parsed as blocks. Use §8.2 block-opener escape (`\^^^`, `^\^^`, `^^\^`) on a content line to prevent it from closing the fence.
+- **Supports caption line (§6.5).** A `^ text` line immediately after the closing `^^^` (no blank line) sets `caption: Inline[]` on this node.
 
 **Example:**
 

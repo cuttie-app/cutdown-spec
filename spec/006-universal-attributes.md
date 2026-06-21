@@ -1,4 +1,4 @@
-## 6. Universal Attributes
+## 6. Universal Attributes and Captions
 
 ### 6.1 Syntax
 
@@ -147,6 +147,106 @@ price is \{high\}  →  Text("price is {high}")
 ```
 [**bold** {.foo}](url)  →  Link { children: [Emphasis({class:"foo"}, "bold")], href: "url" }
 [{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
+```
+
+
+### 6.5 Caption Line
+
+A caption line enriches the immediately preceding captionable block with a `caption` (or `attribution`) field. It does not produce a separate AST node.
+
+**Syntax:**
+
+```
+^ inline-content
+```
+
+A line at block start consisting of `^` followed by a single space and then any inline content. The `^` and space are consumed; the remainder is parsed as `Inline[]`.
+
+**Binding rule:** A caption line binds to the immediately preceding block in the current block scope if and only if:
+
+1. That block is captionable (see table below), and
+2. No blank line appears between the block's last line and the `^ ` line.
+
+A trailing `{attrs}` line between the block and the caption line is **transparent** — it does not break binding. The caption still binds to the same block:
+
+```
+| col |
+{#tbl-one}
+^ Caption text   →  Table { caption: [...], attributes: [{id:"tbl-one"}] }
+```
+
+**Single-line only.** A caption is exactly one line. A second consecutive `^ ` line (the caption slot is already filled, or the first `^ ` line itself had no captionable predecessor) is treated as an orphaned caption → `Paragraph` + warning CDN-0008.
+
+**Orphan conditions** (both emit CDN-0008, line becomes `Paragraph`):
+
+- No captionable block precedes `^ ` in the current scope (including `^ ` as first line in a scope).
+- The immediately preceding captionable block already has a caption (slot filled).
+- A blank line separates `^ ` from the preceding block.
+
+**Scope-local.** The "preceding block" is always resolved within the current block scope. A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
+
+**Captionable blocks and their AST fields:**
+
+| Block | Field added |
+|---|---|
+| `Table` | `caption: Inline[] \| null` |
+| `ImageBlock` | `caption: Inline[] \| null` |
+| `CodeBlock` | `caption: Inline[] \| null` |
+| `MathBlock` | `caption: Inline[] \| null` |
+| `FileRef` | `caption: Inline[] \| null` |
+| `FileRefGroup` | `caption: Inline[] \| null` |
+| `NamedBlock` | `caption: Inline[] \| null` |
+| `SpoilerBlock` | `caption: Inline[] \| null` |
+| `QuoteBlock` | `attribution: Inline[] \| null` |
+
+All captionable blocks default these fields to `null` when no caption line is present.
+
+**`FileRefGroup` mid-run close.** A `^ ` line immediately after a `FileRef` or `ImageBlock` that is part of an active group closes the group at that point and binds to it. The next `FileRef`/`ImageBlock` starts a new group:
+
+```
+/a.png
+/b.png
+^ Two-image group caption
+/c.png
+^ Single-image group caption
+```
+
+**Inline content.** The caption text is parsed by the full inline rule set:
+
+- `##` CommentInline behaves normally — consumes to EOL.
+- `{{variable}}` is allowed — `Variable` nodes are valid caption content.
+- A trailing `{attrs}` sequence at end of the caption line is emitted as literal text and does not attach to anything → warning CDN-0009. Caption text inherits no scope-chain slot; the parent block's attributes are set independently.
+
+**Escaping.** `\^` at line start suppresses the caption opener → `Paragraph([Text("^ ...")])`. See §8.2.
+
+**Example:**
+
+```
+Input:
+  | Name | Score |
+  |------|------:|
+  | Alice |   42 |
+  ^ Results from the first cohort
+
+AST:
+  Table {
+    kind: "gfm",
+    caption: [Text("Results from the first cohort")],
+    head: [...],
+    body: [...],
+    attributes: null
+  }
+
+Input:
+  > To be, or not to be.
+  ^ William Shakespeare, *Hamlet*, Act 3
+
+AST:
+  QuoteBlock {
+    attribution: [Text("William Shakespeare, "), Emphasis([Text("Hamlet")]), Text(", Act 3")],
+    children: [Paragraph([Text("To be, or not to be.")])],
+    attributes: null
+  }
 ```
 
 ---

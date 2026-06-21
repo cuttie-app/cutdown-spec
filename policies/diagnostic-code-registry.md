@@ -120,6 +120,36 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
+### CDN-0008 — Orphaned caption line
+
+| Field | Value |
+|---|---|
+| code | CDN-0008 |
+| title | Orphaned caption line |
+| level | warning |
+| trigger | A `^ ` line has no captionable predecessor in the current block scope: (a) no block precedes it in scope, (b) the immediately preceding block is not captionable, (c) the preceding captionable block already has a caption (slot filled), or (d) a blank line separates the `^ ` line from the preceding block |
+| recovery | The `^ ` line is emitted as a `Paragraph` containing the literal text (including the `^ ` prefix) |
+| introduced_in | next |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0009 — Attribute block on caption line ignored
+
+| Field | Value |
+|---|---|
+| code | CDN-0009 |
+| title | Attribute block on caption line ignored |
+| level | warning |
+| trigger | A `{...}` token appears at the end of a caption line (`^ ...`) |
+| recovery | The `{...}` token is emitted as literal `Text` — it does not attach to any node. Caption lines carry no attributes; the parent block's attributes are set independently. |
+| introduced_in | next |
+| status | active |
+| owner | Language |
+
+---
+
 ### CDN-0010 — ThematicBreak text content dropped
 
 | Field | Value |
