@@ -13,17 +13,17 @@
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------|
 | `Paragraph`     | `type: "Paragraph", children: Inline[], attributes`                                                                                  |
 | `Section`       | `type: "Section", level: 1..9, heading: Inline[], children: Block[], attributes`                                                     |
-| `CodeBlock`     | `type: "CodeBlock", language: string = "text", raw: string, attributes`                                                              |
-| `MathBlock`     | `type: "MathBlock", raw: string, attributes`                                                                                         |
-| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attributes`                                                                                  |
+| `CodeBlock`     | `type: "CodeBlock", language: string = "text", raw: string, caption: Inline[]\|null, attributes`                                     |
+| `MathBlock`     | `type: "MathBlock", raw: string, caption: Inline[]\|null, attributes`                                                                |
+| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attribution: Inline[]\|null, attributes`                                                     |
 | `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
-| `Table`         | `type: "Table", kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], attributes`                                |
-| `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, attributes`                                                                         |
+| `Table`         | `type: "Table", kind: "simple"\|"gfm", head: Row[]\|null, body: Row[], columns: Column[], caption: Inline[]\|null, attributes`       |
+| `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, attributes`                                                |
 | `ThematicBreak` | `type: "ThematicBreak", attributes`                                                                                                  |
-| `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', attributes`                                                 |
-| `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], attributes`                              |
-| `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], attributes`                                                                    |
-| `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], attributes`                                                                                |
+| `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', caption: Inline[]\|null, attributes`                        |
+| `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], caption: Inline[]\|null, attributes`     |
+| `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], caption: Inline[]\|null, attributes`                                           |
+| `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, attributes`                                                       |
 | `CommentBlock`  | `type: "CommentBlock", text: string` — no `attributes`. Hidden by default (§2.5).                                                    |
 
 ### Inline Segments

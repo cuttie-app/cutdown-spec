@@ -239,6 +239,35 @@ Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""
 
 ---
 
+## Caption / Attribution
+
+A `^ ` line immediately after a captionable block (no blank line) enriches that block with a `caption` field. No separate AST node is produced.
+
+```
+| col A | col B |
+^ Table caption text                   →  Table { caption: [...] }
+
+![alt](image.png)
+^ Figure caption text                  →  ImageBlock { caption: [...] }
+
+```javascript
+code here
+```
+^ Listing caption                      →  CodeBlock { caption: [...] }
+
+> Quoted text here.
+^ Source attribution                   →  QuoteBlock { attribution: [...] }
+```
+
+Captionable blocks: `Table`, `ImageBlock`, `CodeBlock`, `MathBlock`, `FileRef`, `FileRefGroup`, `NamedBlock`, `SpoilerBlock`. `QuoteBlock` uses `attribution` instead of `caption`.
+
+- Blank line between block and `^ ` → no binding; `^ ` becomes a `Paragraph` (CDN-0008).
+- Second `^ ` line (slot already filled) → `Paragraph` (CDN-0008).
+- `{attrs}` on a caption line → literal text (CDN-0009).
+- Escape: `\^` at line start suppresses the opener.
+
+---
+
 ## Attributes
 
 ```
