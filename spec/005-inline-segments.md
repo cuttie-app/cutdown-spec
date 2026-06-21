@@ -115,6 +115,14 @@ interface Strikethrough {
 
 **Syntax:** Several forms depending on link kind.
 
+```
+[text](url)          → external link
+[text][path/to/page] → page link
+[text][#tag/path]    → tag link
+[text][^ref-id]      → reference link
+[text][@cite-id]     → citation link
+```
+
 **AST type:**
 
 ```typescript
@@ -141,6 +149,7 @@ interface Link {
 - Page target uses `PATH_LITERAL` characters. Tag target: `#` + `PATH_LITERAL`. Ref target: `^` + `ID_LITERAL`. Cite target: `@` + any non-`]` characters.
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
 - Cutdown does not validate link resolution. That is the consumer's responsibility.
+- Cutdown does NOT validate URL syntax and URL schema. Consumers may choose to validate or sanitize `href` values.
 
 **Edge cases:**
 
@@ -149,6 +158,8 @@ interface Link {
 [][]          → Link { kind: "page", children: [], target: "" }
 []()          → Link { kind: "external", children: [], href: "" }
 ```
+
+All cases above are valid and preserved. Consumers may choose to warn about empty targets or hrefs.
 
 ---
 
