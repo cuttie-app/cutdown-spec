@@ -33,7 +33,7 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 foo bar ## tail       → Text("foo bar ") + reflection entry on block
 
 ###
-opaque block — any content captured raw
+  opaque block — any content captured raw
 ###
 ```
 
@@ -71,9 +71,15 @@ Document
 
 Blocks are separated by **blank lines**. Block elements cannot interrupt a paragraph.
 
-### Paragraph
+### Paragraph → `Paragraph`
 
 Any non-blank lines not matching another block. Single newline → space (soft break). `\` at line end → `TextBreak`.
+
+```
+Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
+
+Researchers once believed that some shortcuts would dramatically reduce computational cost, but many of those expectations are ~~now considered unrealistic~~ overly optimistic.
+```
 
 ### Headings → `Section`
 
@@ -84,6 +90,11 @@ Any non-blank lines not matching another block. Single newline → space (soft b
 ```
 
 Must be preceded by a blank line (or start of document). Inline content allowed. Sections are scoped to their containing block context (NamedBlock, QuoteBlock, ListItem).
+
+```
+= Quantum Computing                      {id="quantum-intro" category="science"}
+== __Why__ Classical Computers Struggle  {id="limits"}
+```
 
 
 ### Thematic Break → `ThematicBreak` + new Page
@@ -139,14 +150,14 @@ Every line must start with `>`. No lazy continuation. Nesting by counting `>` ch
 ### Lists → `List` / `ListItem` / `TaskItem`
 
 ```
-- unordered item          (marker: '- ')
+- unordered item          ← (marker: '- ')
   - nested (2-space indent per level)
 
-1. ordered item           (marker: '{n}. ')
+1. ordered item           ← (marker: '{n}. ')
 2. second item
 
-- [ ] task item           (marker: '- [{x / X / space}] ')
-  - [x] nest task item    ({ checked: true})
+- [ ] task item           ← (marker: '- [{x / X / space}] ')
+  - [x] nest task item    ← ({ checked: true})
 ```
 
 Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. 2-space indent per nesting level (aligns with YAML convention). Tight vs loose: blank line between items → `loose: true`. Respects indentation.
@@ -162,9 +173,6 @@ Two variants: GFM (`kind: "gfm"`, first line starts with `|`) and Multiline (`ki
 +:-------|------:+           ← header separator; also sets alignment
 | Alice  |    42 |           ← type: "Row"
 
-+-                           ← multiline opener (one logical row follows)
-| single row |
-
 +----------+----------+      ← multiline grid
 | Header A | Header B |
 +:---------+----------+      ← header separator (colon = left align col 0)
@@ -178,7 +186,7 @@ Two variants: GFM (`kind: "gfm"`, first line starts with `|`) and Multiline (`ki
 
 Leading/trailing `|` required in GFM rows. `+-` required as first line for multiline.
 
-### File Reference → `FileRef`
+### File Reference → `FileRef`, `FileRefGroup`
 
 ```
 /path/to/file.ext {attrs}
@@ -209,7 +217,7 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 
 ```
 ^^^ {attrs}
-  content (any blocks, including nested ^^^ and :::)
+  content (any blocks, including nested :::)
 ^^^
 ```
 
@@ -260,7 +268,7 @@ Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""
 
 A `^ ` line immediately after a captionable block (no blank line) enriches that block with a `caption` field. No separate AST node is produced.
 
-```
+````
 | col A | col B |
 ^ Table caption text                   →  Table { caption: [...] }
 
@@ -274,7 +282,7 @@ code here
 
 > Quoted text here.
 ^ Source attribution                   →  QuoteBlock { attribution: [...] }
-```
+````
 
 Captionable blocks: `Table`, `ImageBlock`, `CodeBlock`, `MathBlock`, `FileRef`, `FileRefGroup`, `NamedBlock`, `SpoilerBlock`. `QuoteBlock` uses `attribution` instead of `caption`.
 

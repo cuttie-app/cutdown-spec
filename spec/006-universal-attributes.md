@@ -149,10 +149,9 @@ price is \{high\}  →  Text("price is {high}")
 [{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
 ```
 
-
 ### 6.5 Caption Line
 
-A caption line enriches the immediately preceding captionable block with a `caption` (or `attribution`) field. It does not produce a separate AST node.
+A caption line enriches the immediately preceding captionable block with a `caption` (or `attribution`, special QuoteBlock case) field. It does not produce a separate AST node.
 
 **Syntax:**
 

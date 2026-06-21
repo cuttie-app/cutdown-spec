@@ -15,6 +15,7 @@ interface Paragraph {
   type: "Paragraph"
   children: Inline[]
   attributes: Attribute[]
+  reflection: Reflection[] | null
 }
 ```
 
@@ -55,6 +56,7 @@ interface Section {
   heading: Inline[]
   children: Block[]
   attributes: Attribute[]
+  reflection: Reflection[] | null
 }
 ```
 
@@ -152,6 +154,8 @@ interface CodeBlock {
   language: string  // default: "text"
   raw: string
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -182,6 +186,8 @@ interface MathBlock {
   type: "MathBlock"
   raw: string
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -226,6 +232,8 @@ interface QuoteBlock {
   type: "QuoteBlock"
   children: Block[]
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -305,6 +313,8 @@ interface List {
   loose: boolean
   children: (ListItem | TaskItem)[]
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -567,6 +577,8 @@ interface ImageBlock {
   alt: Inline[]
   src: string
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -621,6 +633,7 @@ interface FileRef {
   fragment: string | ''
   query: string | ''
   attributes: Attribute[]
+  reflection: Reflection[] | null
 }
 ```
 
@@ -655,6 +668,8 @@ interface FileRefGroup {
   group: "image" | "video" | "audio"
   children: (FileRef | ImageBlock)[]
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -698,6 +713,8 @@ interface NamedBlock {
   name: string
   children: Block[]
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
@@ -735,6 +752,7 @@ interface RefDefinition {
   ref: string
   children: Inline[]
   attributes: Attribute[]
+  reflection: Reflection[] | null
 }
 ```
 
@@ -763,6 +781,8 @@ interface SpoilerBlock {
   type: "SpoilerBlock"
   children: Block[]
   attributes: Attribute[]
+  caption: Inline[] | null
+  reflection: Reflection[] | null
 }
 ```
 
