@@ -161,6 +161,27 @@ interface Link {
 
 All cases above are valid and preserved. Consumers may choose to warn about empty targets or hrefs.
 
+### Link types and meaning
+
+Ordinary links `[text](url)` are for external URLs. At least `(url)` part should be treated as HTML DOM `<a>` `href` attribute value and validated/sanitized accordingly. Consumers may choose to also validate the `url` against a whitelist of allowed URL schemas (e.g. `http:`, `https:`, `mailto:`) and/or emit a warning for suspicious URLs (e.g. `javascript:`).
+
+Tag links `[text][#tag/path]` are for linking to a **tag or category** within the whole project where document is defined. The `target` field contains the tag name, which consumers can resolve according to their internal tagging logic. Cutdown does not specify where tags are defined or how they are resolved.
+
+Reference links `[text][^ref-id]` are for linking to a **reference** definition elsewhere **in the same document**. There can be two way `ref-id` resolution. Either anywhere in the document the `[^ref-id]: target` syntax is used to define a `RefDefinition` segment with the given `id`, or `id` attribute of any segment matches the `ref-id`.
+
+```
+Sample text with a reference to [the API][^api-doc] and [the API table][^api-table].
+
+| Endpoint | Description |
+| ...      | ...         | {#api-table}
+
+[^api-doc]: https://example.com/api-doc
+```
+
+Citation links `[text][@cite-id]` are for linking to a bibliography entry or similar **external reference**. The `target` field contains the citation ID, which consumers can resolve according to their internal citation logic.
+
+Page links `[text][path/to/page]` are for linking to other pages within the same site or system. The `target` field contains the page path, which consumers can resolve according to their internal routing logic. Nevertheless, the client may choose to validate the `target` against a whitelist of allowed page paths and/or emit a warning for suspicious targets.
+
 ---
 
 ### 5.6 CodeInline
@@ -274,9 +295,9 @@ interface ImageInline {
 }
 ```
 
-- `alt` is **parsed by inline rules**. May be empty.
-- `src` may be empty — `![]()` is valid and preserved.
-- For block-level image references, see `ImageBlock` (§4).
+- `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
+- `src` is a raw string. No URL validation or sanitization by Cutdown; consumers may choose to validate/sanitize as needed. `src` may be empty.
+- `![]()` is valid and preserved as `ImageInline { alt: [], src: "" }`.
 
 ---
 
