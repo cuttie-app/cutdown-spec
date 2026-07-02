@@ -2,23 +2,23 @@
 
 You write structure. You write content.
 
-*Cutdown* derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — headings, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
+*Cutdown* derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — pages, sections, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
 
 ---
 
 ## Quick example
 
 ```
-= Hello **world**
+== Hello **world**
 ```
 
 ```json
 {
   "type": "Section",
-  "level": 1,
+  "level": 2,
   "heading": [
     { "type": "Text", "value": "Hello " },
-    { "type": "Emphasis", "children": [{ "type": "Text", "value": "world" }] }
+    { "type": "Strong", "children": [{ "type": "Text", "value": "world" }] }
   ]
 }
 ```
@@ -31,6 +31,50 @@ You write structure. You write content.
 
 That single rule is what made Markdown worth learning. No extra syntax. No delimiters. No toolbar. Two blocks of text separated by a double Enter are structurally paragraphs — you think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
 
+### **Any plain text is already a valid document.**
+
+The parser is a total function. There is no error state, no invalid input, no rejection path. Text that carries no markup is a document of paragraphs; text that carries markup is a document with structure; there is nothing in between and nothing outside.
+
+For a pipeline, this is a load-bearing guarantee: parsing cannot fail, so there is no error-recovery branch to write, no partial-parse state to represent, no malformed-input queue to drain. Every byte sequence in, exactly one tree out — the same tree, from every conforming implementation.
+
+### **Doubled delimiters only. Single characters are plain text.**
+
+Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. A single character is always plain text — no exceptions, no flanking rules.
+
+Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
+
+### **Markup that doesn't resolve becomes plain text.**
+
+An opener with no closer does not poison the line, does not reach backward, does not get repaired by guesswork. The span from the failed opener to the end of the line is emitted as plain text — exactly the characters that were typed, in the order they were typed.
+
+One rule covers every construct. A writer can predict the output of any line by reading it once, left to right, the same way the parser does. A developer gets determinism where markup languages are traditionally at their most creative: the handling of imperfect input.
+
+### **What you type is what is stored.**
+
+Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation happens in the renderer — configured by locale, applied consistently. In source, your text is exactly what you typed.
+
+This matters in practice. A content pipeline handling technical documentation, pricing, or any mix of prose and code needs predictable literal characters. Silent substitution is a class of bugs that appears only at render time, varies by parser, and is hard to trace back to source.
+
+### **A newline inside a paragraph is nothing.**
+
+`word\nword` concatenates to `wordword`. Cutdown inserts no character at a line break — not a space, not anything. If a word boundary is wanted, the writer owns it: `word \nword` keeps the trailing space and yields `word word`.
+
+This makes line wrapping safe in every script. `よう\nこそ` renders as `ようこそ` — *welcome!* — wrapped mid-word and still intact, with no corrupting space injected between characters that carry their own spacing. Western prose keeps its boundaries, because words end in spaces. One rule, uniform inside inline spans and plain paragraph text alike, with no locale table and no heuristic.
+
+### **Angle brackets are plain text.**
+
+`<em>` in a Cutdown document is exactly five characters of content — not a tag, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
+
+The consequence for anyone rendering user-written content: there is nothing to sanitize, because there is no channel through which markup can smuggle executable output. The injection surface does not exist — not narrowed, not filtered: absent by construction.
+
+### **Documents have pages.**
+
+A `---` line cuts a page. A Meta block fills the current page or opens the next one. Sections nest inside pages, and all of it is in the tree: `Document → Page[] → Section → …`. Nothing is inferred by the renderer; pagination and outline are parser output, not post-processing.
+
+Slide decks, paginated articles, per-page metadata — structures that other formats reconstruct downstream with heuristics are first-class nodes here. If your application doesn't need pages, a document is simply one page; the model costs nothing when unused.
+
+A Meta block is legal anywhere, and multiple Meta blocks are valid in one document — a comment or a license notice above frontmatter is ordinary content, not a violation.
+
 ### **`##` for author comments, `###` for block comments.**
 
 Finally, markup has a legal way to place a comment — a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
@@ -39,53 +83,15 @@ Finally, markup has a legal way to place a comment — a part of the source that
 
 ### **`=` instead of `#` for headings.**
 
-With `#`-doubled doing something useful elsewhere, a different heading marker was needed. `=` was chosen — and it was a considered choice.
+`=` is reachable as a single keypress on effectively every keyboard layout, carries no meaning in prose or code, and has precedent: AsciiDoc and Typst use the same convention. Depth is the count — `=` is level one, `==` is level two. Consistent everywhere.
 
-Why does a non-US keyboard matter here? Heading markers appear in the overwhelming majority of documents. If a writer on a French, German, Italian, or UK English keyboard cannot reach the heading character as a single keypress, that is a friction point in every document they write. The octothorpe ended up as a heading marker by accident — it was picked, it stuck, and use became tradition. That accident is worth correcting.
-
-AsciiDoc, Typst uses the same convention: `= Document Title`, `== Section`. It is not without precedent. `=` is unambiguous, carries no meaning in prose or code, and is reachable from every keyboard. The count encodes the depth: `=` is level one, `==` is level two. Consistent everywhere.
-
-### **Doubled delimiters only. Single characters are text.**
-
-Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. Single characters are always literal text — no exceptions, no flanking rules.
-
-Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
-
-### **What you type is what is stored.**
-
-Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation happens in the renderer — configured by locale, applied consistently. In source, your text is exactly what you typed.
-
-This matters in practice. A content pipeline handling technical documentation, pricing, or any mix of prose and code needs predictable literal characters. Silent substitution is a class of bugs that appears only at render time, varies by parser, and is hard to trace back to source.
-
-### **Angle brackets are ordinary text.**
-
-`<em>` in a Cutdown document is literal text — not a tag, not an escape hatch. Angle brackets carry no special meaning. This is a deliberate break from Markdown, where raw HTML passes through to output by default. That passthrough is a known XSS vector: any pipeline accepting user-written Markdown and rendering it to HTML must add a separate sanitizer. Every tool handles this differently, producing inconsistent behavior and a security surface that belongs to the language, not the application.
-
-In Cutdown there is nothing to sanitize. The injection surface does not exist.
-
-### **A newline inside a paragraph is nothing.**
-
-In HTML, a bare newline in source is collapsed to a space — `word\nword` renders as `word word`. Markdown inherits this: a single line break inside a paragraph is folded to a space. The reasoning is that authors wrap long lines at 80 characters for readability, so the parser quietly joins those lines with a space.
-
-Cutdown folds the newline to zero instead. `word\nword` produces `wordword` — the lines concatenate directly, no character inserted.
-
-Why this matters: in CJK writing (Chinese, Japanese, Korean), characters carry their own spacing. A line break between two CJK characters that adds an ASCII space corrupts the text — `こんにちは\n世界` should render as `こんにちは世界`, not `こんにちは 世界`. With HTML/Markdown's NL→space rule, CJK authors must write their entire paragraph on a single line or use special tooling to strip injected spaces. The rule was designed for Western prose and silently breaks East Asian text.
-
-With NL→zero, CJK prose wraps freely at any character. Western prose retains word boundaries because words end with a space before the line break — `word \nword` preserves the trailing space as a `Text(" ")` node, giving `word word`. The author controls the boundary explicitly. Consumer editors can help by inserting a trailing space automatically when Enter is pressed.
-
-The rule is uniform: it applies inside inline spans (Emphasis, Strong, etc.) as well as plain paragraph text. Leading spaces on continuation lines are stripped before inline parsing to prevent mid-word space artifacts.
-
-### **Frontmatter belongs where you put it.**
-
-In most Markdown-based tools, frontmatter is fixed at the top of the file — the first line must be the opening fence, before any comment, license notice, or authored content. In Cutdown, a Meta block can appear anywhere on a document. Multiple Meta blocks are valid on the same document.
-
-This is not a feature designed for everyday use. It follows naturally from the language design, and it brings its own benefits: placing a comment or license notice before frontmatter is a legal and ordinary thing to do. See the [spec](spec/TOC.md) for details.
+And a heading here is not a styled line. It opens a **Section** — a real container in the tree, spanning until the next heading of the same or higher level. The outline you see is the AST you get.
 
 ---
 
-If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. Cutdown's formal grammar and 87-test conformance corpus mean a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation, no post-processing sanitizers.
+If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. The specification is defined by prose rules and an executable conformance corpus; a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation, no post-processing sanitizers.
 
-What Cutdown cannot yet promise: no parser implementation exists, and the spec is pre-1.0. If your workflow needs a production-ready tool today, the honest answer is that Cutdown is not there yet. If you are building a new content pipeline and want to start on a better foundation, the spec, grammar, and conformance corpus are complete enough to build from.
+What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may occur. A reference [TypeScript parser](https://github.com/cuttie-app/cutdown-ts) exists and tracks the spec; production hardening is ongoing. If your workflow needs a settled standard today, the honest answer is that Cutdown is not there yet. If you are building a new content pipeline and want to start on a better foundation, the spec and conformance corpus are complete enough to build from.
 
 ---
 
@@ -93,7 +99,9 @@ What Cutdown cannot yet promise: no parser implementation exists, and the spec i
 
 **No kitchen sink.**
 
-Cutdown has headings, paragraphs, lists, tables, quotes, code, links, images, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools. Extensions exist for application-specific constructs. The core is deliberately narrow.
+Cutdown has headings, paragraphs, lists, tables, quotes, code, links, emphasis, spoilers, images, file references, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools.
+
+The syntax is closed. Application-specific vocabulary lives in named blocks, spans, and attributes — the set of *names* grows with your application; the set of *rules* does not.
 
 ---
 
@@ -126,7 +134,7 @@ Some paragraph with ~~struck~~ text and a [link](https://example.com).
 
 ## Spec status
 
-**Version:** 0.x.x · **Status:** Draft
+**Version:** 0.8.0 · **Status:** Draft
 
 The spec is under active development. Breaking changes may occur before 1.0.0.
 
