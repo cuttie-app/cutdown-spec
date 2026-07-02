@@ -1,0 +1,31 @@
+id: pagination-meta-after-break-ghost
+section: "3"
+description: A Meta block is not the first pagination-relevant item, so it does not fill the Page a preceding PageBreak opened — that Page closes as a Ghost Page and the Meta opens its own Page (§9.5.2)
+
+input: |
+  Para one
+
+  ---
+
+  ~~~yaml
+  title: Two
+  ~~~
+
+  Para two
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Para one
+  - {}
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: Two\n"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Para two

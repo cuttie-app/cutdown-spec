@@ -1,0 +1,12 @@
+id: link-nested-dead-openers
+section: "9.4.1"
+description: "Nested unresolved Class 2 openers collapse into a single verbatim slice from the first dead opener to end of line"
+
+input: |
+  [a [b
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "[a [b"

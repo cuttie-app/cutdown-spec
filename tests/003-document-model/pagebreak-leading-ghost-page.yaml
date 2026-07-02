@@ -1,0 +1,16 @@
+id: pagebreak-leading-ghost-page
+section: "3"
+description: A PageBreak at document start closes the initial empty Page as a leading Ghost Page
+
+input: |
+  ---
+
+  Content
+
+pages:
+  - {}
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Content

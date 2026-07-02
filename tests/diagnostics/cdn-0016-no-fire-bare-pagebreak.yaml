@@ -1,0 +1,24 @@
+id: cdn-0016-no-fire-bare-pagebreak
+section: "4.10"
+description: A bare --- PageBreak line has no tail; no diagnostic is emitted
+
+input: |
+  Before
+
+  ---
+
+  After
+
+diagnostics: []
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Before
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: After

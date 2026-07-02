@@ -1,0 +1,17 @@
+id: cdn-0017-no-fire-glued-hyphens
+section: "4.10"
+description: A --- line glued to a preceding paragraph inside a container is ordinary paragraph content; no diagnostic is emitted
+
+input: |
+  > quoted
+  > ---
+
+diagnostics: []
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "quoted---"

@@ -1,0 +1,33 @@
+id: pagebreak-inside-namedblock
+section: "4.10"
+description: A blank-line-surrounded --- inside a NamedBlock is not a PageBreak; it parses as a literal paragraph and CDN-0017 is emitted
+
+input: |
+  :::note
+  before
+
+  ---
+
+  after
+  :::
+
+diagnostics:
+  - code: CDN-0017
+    level: warning
+
+ast:
+  - type: NamedBlock
+    name: note
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: before
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "---"
+      - type: Paragraph
+        children:
+          - type: Text
+            value: after

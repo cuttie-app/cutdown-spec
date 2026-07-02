@@ -1,0 +1,14 @@
+id: escape-pagebreak-opener
+section: "8.2"
+description: "`\\---` at line start → literal `---`; no page break occurs. Whole sample stays in one Page, joined into one Paragraph (no blank-line separator)."
+
+input: |
+  para before
+  \---
+  para after
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "para before---para after"

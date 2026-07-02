@@ -2,13 +2,13 @@
 
 ### 10.1 Block Boundaries
 
-Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (after normalization).
+Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7).
 
 Multiple consecutive blank lines are treated as a single blank line.
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is a candidate block, then classified by its first line.
 
-**Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a thematic break, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
+**Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a page separator, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
 
 Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) acts as a blank line for block-boundary purposes and stores its payload as a `Reflection` entry on the nearest block. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
 
@@ -68,7 +68,7 @@ When N identical characters appear at an inline position, the following rules ap
 | `"` | literal | `QuoteInline(double)` open/close | `""` + `"` literal | `QuoteInline([])` empty | `QuoteInline([])` + `"` literal |
 | `'` | literal | `QuoteInline(single)` open/close | `''` + `'` literal | `QuoteInline([])` empty | `QuoteInline([])` + `'` literal |
 | \` | literal | `CodeInline` open/close | \`\` + \` literal¹ | `CodeInline("")` empty | `CodeInline("\`")` |
-| `~` | literal | `Strikethrough` open/close | `~~` + `~` literal¹ | `Strikethrough([])` empty | `Strikethrough([])` + `~` literal |
+| `~` | literal | `Highlight` open/close | `~~` + `~` literal¹ | `Highlight([])` empty | `Highlight([])` + `~` literal |
 | `$` | literal | `MathInline` open/close | `$$` + `$` literal¹ | `MathInline("")` empty | `MathInline("$")` |
 | `^` | literal² | `Spoiler` open/close | `^^` + `^` literal¹ | `Spoiler([])` empty | `Spoiler([])` + `^` literal |
 | `#` | literal | `##` line comment → Reflection entry (to EOL, no closer) | `CommentBlock` fence³ | `CommentBlock` fence + `#` literal | `CommentBlock` fence + `##` literal |
@@ -85,7 +85,7 @@ When N identical characters appear at an inline position, the following rules ap
 |--------|---|---|---|-----|
 | `=` | Heading L1 (+space) | Heading L2 | Heading L3 | … up to L9; 10+ = literal |
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
-| `-` | list marker (`- `+space) or literal | literal `--` | ThematicBreak (3+) | ThematicBreak (extra chars silently dropped) |
+| `-` | list marker (`- `+space) or literal | literal `--` | PageBreak (top level; no node — §9.6) | PageBreak (tail dropped, CDN-0016) |
 | `:` | literal | Span prefix `::name` | NamedBlock prefix `:::name` | literal |
 | `+` | Multiline table opener when followed by `-` or `:` (`+-`, `+:`) | — | — | — |
 
@@ -99,14 +99,14 @@ Known collisions:
 
 | Sequence | Parsed as |
 |----------|-----------|
-| `~~~` at inline position | `~~` (Strikethrough opener) + `~` (literal) |
+| `~~~` at inline position | `~~` (Highlight opener) + `~` (literal) |
 | `$$$` at inline position | `$$` (MathInline opener) + `$` (literal) |
 | \`\`\` at inline position | \`\` (CodeInline opener) + \` (literal inside) |
 | `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
 | `^^^` at inline position | `^^` (Spoiler opener) + `^` (literal) |
 | `###` at inline position | `##` (line comment → Reflection entry; trailing `#` is part of the payload text) |
-| `---` non-line-start | literal text (ThematicBreak only classified at line start) |
+| `---` non-line-start | literal text (PageBreak only recognized at top-level line start) |
 
 ### 10.5 List Indentation Model
 

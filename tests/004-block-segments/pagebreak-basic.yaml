@@ -1,0 +1,22 @@
+id: pagebreak-basic
+section: "4.10"
+description: A bare top-level --- line closes the current Page and opens a new one; no node is produced and no diagnostic is emitted
+
+input: |
+  Before
+
+  ---
+
+  After
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Before
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: After

@@ -1,0 +1,13 @@
+id: pagebreak-only-document
+section: "3"
+description: A document consisting only of PageBreak lines yields only Ghost Pages
+
+input: |
+  ---
+
+  ---
+
+pages:
+  - {}
+  - {}
+  - {}

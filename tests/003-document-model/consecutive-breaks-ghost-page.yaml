@@ -1,6 +1,6 @@
 id: consecutive-breaks-ghost-page
 section: "3"
-description: Two consecutive ThematicBreaks produce an intermediate page containing only the first ThematicBreak
+description: Two consecutive PageBreaks produce an intermediate Ghost Page; PageBreaks produce no nodes
 
 input: |
   First
@@ -17,10 +17,8 @@ pages:
         children:
           - type: Text
             value: First
+  - {}
   - children:
-      - type: ThematicBreak
-  - children:
-      - type: ThematicBreak
       - type: Paragraph
         children:
           - type: Text

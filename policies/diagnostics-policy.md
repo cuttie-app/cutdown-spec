@@ -27,7 +27,7 @@ Each diagnostic includes:
 - `code` (stable identifier, for example `CDN-XXXX`)
 - `level` (`error` | `warning` | `info`)
 - `message` (human-readable)
-- `span` (`start_line`, `start_col`, `end_line`, `end_col`)
+- `loc` (`{ file?, start, end }` — raw-file UTF-16 code-unit offsets, end-exclusive, per spec §14 Location Type; line/column presentation is derived by the reporting tool)
 - `recovery` (how parsing proceeded)
 
 ## Severity Rules
@@ -70,7 +70,8 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | Unclosed MetaBlock fence (`~~~`) | CDN-0002 | Content runs to end of document |
 | Unclosed MathBlock fence (`$$$`) | CDN-0003 | Content runs to end of document |
 | Unclosed NamedBlock (`:::name`) | CDN-0004 | Content runs to end of document |
-| ThematicBreak text content dropped | CDN-0010 | Text between `---` and optional `{attrs}` is discarded |
+| PageBreak tail dropped | CDN-0016 | Everything after the leading `---` is discarded; page boundary takes effect |
+| Page separator inside block container | CDN-0017 | `---` line emitted as literal `Paragraph`; no page boundary |
 | Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
 | Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |
 | `:::` not followed by `[ID_LITERAL]` (nameless opener) | CDN-0013 | Block candidate parsed as Paragraph; `:::` and `{attrs}` emitted as literal text |

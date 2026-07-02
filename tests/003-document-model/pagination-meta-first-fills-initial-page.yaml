@@ -1,0 +1,21 @@
+id: pagination-meta-first-fills-initial-page
+section: "3"
+description: A Meta block that is the first pagination-relevant item of the document fills the initial Page's meta; no new Page is created
+
+input: |
+  ~~~yaml
+  title: One
+  ~~~
+
+  Para
+
+pages:
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: One\n"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Para

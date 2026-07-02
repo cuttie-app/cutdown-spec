@@ -1,0 +1,42 @@
+id: section-skipped-levels
+section: "9.5.1"
+description: A skipped heading level (= then ===) nests under the nearest shallower open Section; written level preserved; no intermediate Section synthesized; a following == closes the level-3 Section and nests under level 1
+
+input: |
+  = Top
+
+  === Deep
+
+  Deep content.
+
+  == Mid
+
+  Mid content.
+
+ast:
+  - type: Section
+    level: 1
+    heading:
+      - type: Text
+        value: Top
+    children:
+      - type: Section
+        level: 3
+        heading:
+          - type: Text
+            value: Deep
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: Deep content.
+      - type: Section
+        level: 2
+        heading:
+          - type: Text
+            value: Mid
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: Mid content.

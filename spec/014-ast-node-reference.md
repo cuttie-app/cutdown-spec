@@ -21,12 +21,21 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes`    |
 | `Table`         | `type: "Table", kind: "multiline"\|"gfm", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
 | `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, reflection, attributes`                                                   |
-| `ThematicBreak` | `type: "ThematicBreak", reflection, attributes`                                                                                                     |
 | `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', caption: Inline[]\|null, reflection, attributes`                           |
 | `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], caption: Inline[]\|null, reflection, attributes`        |
 | `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], caption: Inline[]\|null, reflection, attributes`                                              |
 | `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
 | `CommentBlock`  | `type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
+
+### Synthetic Segments
+
+The AST schema admits nodes that are not producible by parsing. **Conforming parsers never emit them; conforming consumers must accept them.**
+
+| Segment    | Fields |
+|------------|--------|
+| `Fragment` | `type: "Fragment", meta: Meta\|null, children: Block[]` |
+
+`Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item. A `Fragment` carries the `loc` of the construct that caused its materialization in the containing file (e.g. a `FileRef` line), or no `loc`.
 
 ### Inline Segments
 
@@ -35,7 +44,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `Text`          | `type: "Text", value: string` |
 | `Emphasis`      | `type: "Emphasis", children: Inline[], attributes` |
 | `Strong`        | `type: "Strong", children: Inline[], attributes` |
-| `Strikethrough` | `type: "Strikethrough", children: Inline[], attributes` |
+| `Highlight`     | `type: "Highlight", children: Inline[], attributes` |
 | `Spoiler`       | `type: "Spoiler", children: Inline[], attributes` |
 | `Link`          | `type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|'', target: string\|'', attributes` |
 | `CodeInline`    | `type: "CodeInline", value: string, attributes` |
@@ -58,14 +67,32 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `Cell`          | `type: "Cell", children: Inline[]\|Block[], row: number, column: number` — `Inline[]` when `Table.kind` is `"gfm"`; `Block[]` when `"multiline"` |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
+### Location Type
+
+Every segment MAY carry a source location:
+
+```typescript
+loc?: {
+  file?: string   // source file identifier, when known
+  start: number   // offset of the segment's first code unit
+  end: number     // offset one past the segment's last code unit (end-exclusive)
+}
+```
+
+- Offsets index **UTF-16 code units of the raw input file** — the text exactly as read, before any interpretation (§7). This mirrors the Language Server Protocol's baseline position encoding and is the native indexing of the reference TypeScript implementation.
+- Line/column positions are derived from offsets by consumers; they are never stored.
+- Conformance AST comparison **ignores `loc`**. Position correctness is verified by a separate, smaller test set.
+- Synthetic segments (`Fragment`) carry the `loc` of the causing construct in the containing file, or no `loc`.
+- Diagnostics (CDN codes) carry a `loc` identifying the triggering source range.
+
 ### Reflection Type
 
 ```
 Reflection[] | null
 
 Reflection =
-  { line: number   // 0-indexed offset from the block's opener line in source
-    text: string   // ## payload with one leading space stripped
+  { loc: Loc      // source range of the ## payload (raw-file UTF-16 offsets, §Location Type)
+    text: string  // ## payload with one leading space stripped
   }
 ```
 

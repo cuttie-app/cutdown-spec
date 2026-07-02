@@ -511,7 +511,7 @@ Mid-table row:
 
 **Row boundaries.** All `|` lines between two consecutive `+` separator rows form one **logical row**. A table with only one `+` separator (the opener, no further `+` rows) produces one logical row from all subsequent `|` lines until the table ends (blank line or container boundary).
 
-**Multi-line cells.** When multiple `|` lines belong to one logical row, each column's content strips are **soft-joined** with a space between lines, mirroring paragraph continuation. `\` at end of a content line produces a `TextBreak` segment in that cell.
+**Multi-line cells.** When multiple `|` lines belong to one logical row, each column's content strips are **joined with a single space** between lines. (Note: this differs from paragraph continuation, where a soft break folds to zero, §12 — cell strips are column slices, so the explicit separator is required.) `\` at end of a content line produces a `TextBreak` segment in that cell.
 
 **Column boundaries.** Defined by `+` positions in the nearest preceding `+` separator row. If the opener is a minimal `+-` with no column boundary markers, boundaries are inferred from `|` positions in the first content row. Column count = max() of cell count across all logical rows. No diagnostic is emitted for row/column count mismatches.
 
@@ -589,31 +589,24 @@ interface ImageBlock {
 
 ---
 
-### 4.10 ThematicBreak
+### 4.10 PageBreak
 
-**Syntax:** `--- {attrs}`
+**Syntax:** `---`
 
-Three or more consecutive `-` at line start. Any characters between the dashes and the optional `{attrs}` are silently dropped.
+A top-level line beginning exactly `---`. A PageBreak is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
 
-**AST type:**
-
-```typescript
-interface ThematicBreak {
-  type: "ThematicBreak"
-  attributes: Attribute[]
-}
-```
-
-- At **Page scope**: creates a page break — a new `Page` segment is opened and the `ThematicBreak` segment becomes its first child.
-- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`): emits a `ThematicBreak` segment but does **not** create a new Page.
-- **Opener escape:** `\---`, `-\--`, or `--\-` at line start → `Paragraph([Text("---")])`. The page-break side effect at Page scope is suppressed along with the break. See §8.2.
+- The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and CDN-0016 is emitted. There is no attributed form.
+- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`): a blank-line-surrounded `---` line is not a PageBreak — it parses as `Paragraph([Text("---")])` and CDN-0017 is emitted. Glued to a preceding paragraph, `---` is ordinary paragraph content (no diagnostic).
+- **Opener escape:** `\---`, `-\--`, or `--\-` at top level → `Paragraph([Text("---")])`; no page break occurs. See §8.2.
+- Cutdown performs no front-matter detection: a document-leading `---` is a PageBreak like any other, yielding a leading Ghost Page.
+- Cutdown defines no thematic-break (horizontal-rule) element.
 
 **Examples:**
 
 ```
----              → ThematicBreak {}
---- {.page-end}  → ThematicBreak { attributes: { class: ["page-end"] } }
---- some text    → ThematicBreak {}  (text dropped)
+---              → page boundary, no node
+--- {.page-end}  → page boundary, no node (tail dropped, CDN-0016)
+--- some text    → page boundary, no node (tail dropped, CDN-0016)
 ```
 
 ---
@@ -761,6 +754,7 @@ interface RefDefinition {
 - Empty content (`[^ref]:`) is valid and produces an empty `children` array.
 - Content is **parsed by inline rules**. Result is `Inline[]`.
 - Cutdown does not validate that every `[^ref]` link has a matching definition.
+- When the same `ref` is defined more than once in a document, resolution uses the last definition in source order (**last wins**). Resolution is the consumer's responsibility (§9.4).
 
 ---
 

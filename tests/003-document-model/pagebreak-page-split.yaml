@@ -1,0 +1,16 @@
+id: pagebreak-page-split
+section: "3"
+description: A PageBreak closes the current Page and opens a new one; it produces no node, so a document-final PageBreak leaves a trailing Ghost Page
+
+input: |
+  Hello
+
+  ---
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Hello
+  - {}

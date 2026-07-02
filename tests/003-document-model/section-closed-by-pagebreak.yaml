@@ -1,0 +1,30 @@
+id: section-closed-by-pagebreak
+section: "9.5.2"
+description: A PageBreak closes all open root-level Sections; content after the break belongs to the new Page, not the old Section
+
+input: |
+  = Chapter
+
+  In chapter.
+
+  ---
+
+  Outside.
+
+pages:
+  - children:
+      - type: Section
+        level: 1
+        heading:
+          - type: Text
+            value: Chapter
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: In chapter.
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Outside.

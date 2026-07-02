@@ -1,0 +1,17 @@
+id: highlight-with-attrs
+section: "5.4"
+description: "Highlight collects trailing {attrs}; class names are opaque to the parser"
+
+input: |
+  ~~crossed~~{.ct}
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Highlight
+        attributes:
+          - key: class
+            value: [ct]
+        children:
+          - type: Text
+            value: crossed

@@ -33,7 +33,7 @@ Applies at **line start only** (after container-indent stripping, before the fir
 | Heading (§4.2) | `=` ... `=========` | `\=`, `\==`, `\===` ... | `Paragraph([Text("= ...")])` |
 | List item (§4.7) | `- ` | `\- item` | `Paragraph([Text("- item")])` |
 | QuoteBlock (§4.6) | `> ` | `\> quoted` | `Paragraph([Text("> quoted")])` |
-| ThematicBreak (§4.10) | `---` | `\---`, `-\--`, `--\-` | `Paragraph([Text("---")])` — **also suppresses the page break at Page scope** |
+| PageBreak (§4.10) | `---` | `\---`, `-\--`, `--\-` | `Paragraph([Text("---")])` — top level only; no page break occurs |
 | FileRef (§4.11) | `/path` | `\/path` | `Paragraph([Text("/path")])` |
 | CodeBlock (§4.4) | `` ``` `` | `` \``` ``, `` `\`` ``, `` ``\` `` | Paragraph; residual backticks still feed inline parsing |
 | Meta (§4.3) | `~~~` | `\~~~`, `~\~~`, `~~\~` | `Paragraph([Text("~~~")])` |

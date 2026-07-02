@@ -1,12 +1,15 @@
 ## 9. Parsing Algorithm
 
-Cutdown uses a **single-pass** parsing strategy. A conforming parser MUST NOT backtrack: once a token or segment has been emitted, it is never re-interpreted. An opener with no valid closer before the end of the inline context is emitted as literal text and parsing continues forward.
+Cutdown's parsing model makes three testable guarantees:
 
-### 9.1 Phase 1 — Normalization
+1. **Single pass.** Every character of input is scanned a bounded number of times; parsing is linear time in input length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed.
+2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
+3. **Deferred attachment.** Structural decisions may be deferred, but deferred decisions only attach or regroup already-built nodes — they never re-parse text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block), multiline table buffering until the table closes, and open-inline buffering until end of line.
+
+### 9.1 Phase 1 — Input Interpretation
 
 1. Validate UTF-8.
-2. Normalize line endings to `\n`.
-3. Normalize tab characters outside fenced blocks to a single space.
+2. Apply the interpretive rules of §7: `\r\n` / `\r` / `\n` all read as line terminators, tabs outside fences read as single spaces, leading BOM skipped. The source text is never rewritten — all offsets index the raw input (§14, Location Type).
 
 ### 9.2 Phase 2 — Block Identification
 
@@ -28,7 +31,7 @@ Each block candidate is classified by its first line:
 | First line matches | Block type |
 |-------------------|------------|
 | `^(={1,9}) ` | Heading → Section |
-| `^---` | ThematicBreak |
+| `^---` | PageBreak (top level only; no node — §9.6) |
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
 | `^:::[ID_LITERAL]` | NamedBlock |
@@ -50,38 +53,86 @@ Inline content is parsed left-to-right within each block that contains inline co
 
 1. Scans for openers (`**`, `__`, `~~`, `^^`, '\`\`', `[`, `![`, `::`, `{{`, `""`, `''`, `$$`).
 2. On finding an opener, scans forward for a valid closer.
-3. If no closer found before paragraph/block end: emits opener as `Text` and advances.
+3. If no valid closer is found, the opener degrades. The degradation rule depends on the opener's class (§9.4.1).
 4. Resolves escape sequences `\x` before delimiter matching.
 5. Collects trailing `{attrs}` after each completed inline element.
 
-`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades to literal text per the unclosed-opener rule above. See §2.2 for examples.
+#### 9.4.1 Degradation classes
+
+Inline openers fall into two classes with different degradation behavior. In both cases no diagnostic is emitted — degradation to visible literal text is silent by design.
+
+**Class 1 — symmetrical doubled delimiters: opener-as-text.**
+
+| Opener | Construct |
+|--------|-----------|
+| `**` | Emphasis |
+| `__` | Strong |
+| `~~` | Highlight |
+| `^^` | Spoiler |
+| `` `` `` | CodeInline |
+| `$$` | MathInline |
+| `""` / `''` | QuoteInline |
+
+If no closer is found before the end of the inline context, the opener alone is emitted as `Text` and parsing continues immediately after it. Constructs following the dead opener are parsed normally: `**a __b__ c` yields `Text("**a ")`, `Strong(b)`, `Text(" c")`.
+
+**Class 2 — asymmetrical bracket-like openers: verbatim slice.**
+
+| Opener | Construct |
+|--------|-----------|
+| `[` / `![` | Link / ImageInline |
+| `{{` | Variable |
+| `{` | attribute scan (§6) |
+
+An unresolved Class 2 opener causes the source from the opener to its terminator — end of line, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Strong` inside the dead slice does not exist.
+
+**Attribute braces.** `{` opens an attribute scan running to the matching `}` or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
+
+**`::` (Span)** belongs to neither class: it has no closer to scan for. If `::` is not immediately followed by a valid `ID_LITERAL` name, it is emitted as `Text("::")` and parsing continues.
+
+`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades per its class (§9.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
 
 Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
 
 Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { kind: "cite" }` in-place. Citation resolution is the consumer's responsibility.
 
-### 9.5 Section Assembly
+### 9.5 Derived Structure
 
-After all blocks are classified, heading blocks are used to assemble `Section` segments. Section Assembly runs **recursively** — it applies to the Page-level block list and independently to the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
+Parsing (Phases 1–4) produces a **flat block sequence** — one for the document root, and one for the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`). `Section` nesting and the `Page[]` division are not parsed; they are **derived** from these flat sequences by two deterministic folds: the sectionization fold (§9.5.1) and the pagination fold (§9.5.2).
 
-For each block list (Page-level or container-level):
+**Implementation neutrality.** The folds define the resulting tree, not an implementation strategy. A parser MAY interleave fold logic with block classification, run the folds as separate post-passes, or use any other strategy — it conforms as long as it produces the same tree.
 
-1. Walk the list left-to-right.
-2. On encountering a heading of level `n`: close all open sections of level ≥ `n` within this list, then open a new `Section(level=n)`.
-3. All subsequent non-heading blocks belong to the innermost open section.
-4. All open sections are closed at the end of the list. Section scope never crosses the container boundary.
+#### 9.5.1 Sectionization fold
 
-### 9.6 Page Assembly
+The sectionization fold applies independently to every flat block sequence (root and each container child list).
 
-Pages are assembled during block classification (Phase 3). Page Assembly applies **only at Page scope** — blocks inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`) never trigger Page Assembly regardless of their type.
+**A `Section` spans from its heading to the next heading of level ≤ its own within the same sequence, or to the sequence's end.** Equivalently, walking the sequence left-to-right:
+
+1. On a heading of level `n`: close all open Sections of level ≥ `n` within this sequence, then open a new `Section(level=n)`.
+2. All subsequent non-heading blocks belong to the innermost open Section.
+3. All open Sections close at the end of the sequence. Section scope never crosses a container boundary.
+
+**Skipped levels.** A heading whose level is deeper than the innermost open Section by more than one (e.g. `=` followed directly by `===`) nests under the nearest shallower open Section. The written level is preserved in the `Section` node; no intermediate Sections are synthesized; no diagnostic is emitted. The written level is the source of truth — tree depth is incidental, and consumers that need a normalized depth derive it themselves.
+
+**Section attributes** are those on the heading line only. Rule B (§6) never assigns a scope-chain slot to a Section.
+
+#### 9.5.2 Pagination fold
+
+The pagination fold applies **only to the root sequence** — blocks inside containers never affect pagination regardless of their type. Two items drive the fold: `Meta` blocks and PageBreaks (§9.6).
 
 1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
-2. On encountering a `Meta` block **at Page scope**:
-   - If the current Page's `meta` is `null`: assign this Meta block to `Page.meta`. No new Page is created.
-   - Otherwise: close the current Page, open a new Page, assign the Meta block to the new Page's `meta`.
-3. On encountering a `ThematicBreak` **at Page scope**: close the current Page, open a new Page, place the `ThematicBreak` as the first child of the new Page.
-4. A `ThematicBreak` inside a block container emits a `ThematicBreak` segment within that container but does not affect Page Assembly.
-5. All other blocks are appended to the current Page's `children`.
-6. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
+2. A **PageBreak** unconditionally closes the current Page — as a Ghost Page if it is empty — and opens a new empty Page. A PageBreak also closes all open root-level Sections. Every PageBreak produces a page boundary: a leading `---` at document start yields a leading Ghost Page; consecutive separators yield Ghost Pages.
+3. A **`Meta` block** closes the current Page and opens a new Page, assigning itself to the new Page's `meta` — **unless** it is the first pagination-relevant item of the document (no block, `Meta`, or PageBreak has been consumed before it), in which case it fills `Page[0].meta` and no new Page is created. In particular, a `Meta` block following a PageBreak does **not** fill the page the PageBreak opened; it closes it as a Ghost Page and opens its own.
+4. All other root blocks are appended to the current Page's `children`.
+5. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
+
+### 9.6 PageBreak
+
+A **PageBreak** is a top-level line beginning exactly `---`. It is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**.
+
+The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and a diagnostic is emitted (CDN-0016). There is no attributed form: the entire line after the leading `---` is discarded.
+
+Inside a block container, a blank-line-surrounded `---` line is not a PageBreak: it parses as `Paragraph(Text("---"))` and a diagnostic is emitted (CDN-0017) noting that page separation is a top-level construct. A `---` line glued to a preceding paragraph remains paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
+
+Cutdown performs no front-matter detection: a document-leading `---` is a PageBreak like any other.
 
 ---

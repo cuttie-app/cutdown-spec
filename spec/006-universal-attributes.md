@@ -55,7 +55,7 @@ A sequence of `{attr}` blocks at the end of an inline context is distributed **r
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
-`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, `{` is emitted as `Text("{")` and parsing continues normally.
+`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.4.1; see §6.3).
 
 **Scope slots by context:**
 
@@ -132,7 +132,7 @@ Orphan behaviour depends on position:
 | After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | silently dropped (no AST output) | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
 
-`{` is always consumed as the start of a potential attribute block. If no matching `}` is found before end of inline context, `{` is emitted as `Text("{")` and parsing resumes from the character after `{`.
+`{` is always consumed as the start of an attribute scan, running to the matching `}` or end of line. If the content violates the attribute grammar or the `}` never arrives, the **entire slice** — braces included, when present — is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §9.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
 Authors who want a literal `{` SHOULD escape it with `\{` to make intent explicit:
 

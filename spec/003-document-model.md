@@ -33,10 +33,11 @@ interface Page {
 }
 ```
 
-**Pages are opened by:**
-- Initial Page: always present at document start, even if empty.
-- `ThematicBreak` (`---`) at top level → closes current Page, opens new Page; `ThematicBreak` becomes first child of the new Page.
-- `Meta` block when `Page.meta` is already set → closes current Page, opens new Page, fills its `meta`.
+Pages are not parsed — they are **derived** from the root block sequence by the pagination fold (§9.5.2). In summary:
+
+- The initial Page is always present at document start, even if empty.
+- A PageBreak (top-level `---`, §9.6) unconditionally closes the current Page — as a Ghost Page if empty — and opens a new one. It produces no node.
+- A `Meta` block closes the current Page and opens a new Page carrying it as `meta`, unless it is the first pagination-relevant item of the document, in which case it fills the initial Page's `meta`.
 
 Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 

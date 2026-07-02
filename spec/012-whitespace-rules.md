@@ -2,13 +2,13 @@
 
 | Situation | Rule |
 |-----------|------|
-| Line endings | Normalized to `\n` before parsing |
+| Line endings | `\r\n`, lone `\r`, and `\n` all read as line terminators (§7); the text is not rewritten |
 | Encoding | UTF-8 required |
 | Trailing spaces | Ignored, **except**: a single trailing space immediately before a soft break is preserved — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator |
 | Leading spaces on block line | Stripped before block classification |
 | Leading spaces on paragraph continuation line | Stripped before inline parsing |
 | Multiple blank lines | Treated as a single blank line |
-| Tabs outside fenced blocks | Normalized to a single space before block classification |
+| Tabs outside fenced blocks | Treated as a single space for classification (§7); the text is not rewritten |
 | Tabs inside code/metadata/math fences | Preserved literally |
 | Blank lines inside code fence | Preserved literally in `content` string |
 | Blank lines inside metadata fence | Passed through in `raw` string |
@@ -18,7 +18,7 @@
 
 ### 12.2 Inline Block Whitespace
 
-Within any inline block (Emphasis, Strong, Strikethrough, Spoiler, MathInline, QuoteInline):
+Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, QuoteInline):
 
 | Situation | Rule |
 |-----------|------|

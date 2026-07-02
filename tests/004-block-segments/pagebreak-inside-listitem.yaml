@@ -1,6 +1,6 @@
-id: thematic-break-inside-listitem
+id: pagebreak-inside-listitem
 section: "4.10"
-description: ThematicBreak inside a list item emits a ThematicBreak node without creating a new Page
+description: A blank-line-surrounded --- inside a list item is not a PageBreak; it parses as a literal paragraph and CDN-0017 is emitted
 
 input: |
   - item
@@ -8,6 +8,10 @@ input: |
     ---
 
     after
+
+diagnostics:
+  - code: CDN-0017
+    level: warning
 
 ast:
   - type: List
@@ -20,7 +24,10 @@ ast:
             children:
               - type: Text
                 value: item
-          - type: ThematicBreak
+          - type: Paragraph
+            children:
+              - type: Text
+                value: "---"
           - type: Paragraph
             children:
               - type: Text

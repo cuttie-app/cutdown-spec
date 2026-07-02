@@ -1,0 +1,22 @@
+id: link-closed-twin-inner-survives
+section: "9.4.1"
+description: "The closed twin of the verbatim-slice case: with the link properly closed, the inner Strong parses normally"
+
+input: |
+  [a __b__ c](url)
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Link
+        kind: external
+        href: url
+        children:
+          - type: Text
+            value: "a "
+          - type: Strong
+            children:
+              - type: Text
+                value: b
+          - type: Text
+            value: " c"

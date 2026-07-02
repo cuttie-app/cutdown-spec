@@ -50,7 +50,6 @@ Block =
     | List
     | Table
     | ImageBlock
-    | ThematicBreak
     | FileRef
     | FileRefGroup
     | NamedBlock
@@ -68,7 +67,7 @@ Inline =
     | Text
     | Emphasis
     | Strong
-    | Strikethrough
+    | Highlight
     | Link
     | CodeInline
     | MathInline

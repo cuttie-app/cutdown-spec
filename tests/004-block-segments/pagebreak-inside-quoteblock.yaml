@@ -1,0 +1,30 @@
+id: pagebreak-inside-quoteblock
+section: "4.10"
+description: A blank-line-surrounded --- inside a QuoteBlock is not a PageBreak; it parses as a literal paragraph and CDN-0017 is emitted
+
+input: |
+  > para
+  >
+  > ---
+  >
+  > after
+
+diagnostics:
+  - code: CDN-0017
+    level: warning
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: para
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "---"
+      - type: Paragraph
+        children:
+          - type: Text
+            value: after

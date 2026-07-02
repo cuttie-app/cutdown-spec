@@ -83,7 +83,7 @@ ast:
         value: Hello
 ```
 
-`pages` matches the full `Document.children` array and is used when the fixture tests page-splitting (ThematicBreak, duplicate Meta block):
+`pages` matches the full `Document.children` array and is used when the fixture tests page-splitting (PageBreak, Meta block pagination). A Ghost Page is written `{}`:
 
 ```yaml
 pages:
@@ -92,8 +92,7 @@ pages:
         children:
           - type: Text
             value: First
-  - children:
-      - type: ThematicBreak
+  - {}
 ```
 
 ## Attribute fixtures

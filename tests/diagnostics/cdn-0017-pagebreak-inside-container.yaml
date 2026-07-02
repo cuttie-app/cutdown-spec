@@ -1,0 +1,36 @@
+id: cdn-0017-pagebreak-inside-container
+section: "4.10"
+description: A blank-line-surrounded --- inside a block container parses as a literal paragraph; CDN-0017 is emitted
+
+input: |
+  > quoted
+
+  - item
+
+    ---
+
+diagnostics:
+  - code: CDN-0017
+    level: warning
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: quoted
+  - type: List
+    kind: "bullet"
+    loose: true
+    children:
+      - type: ListItem
+        children:
+          - type: Paragraph
+            children:
+              - type: Text
+                value: item
+          - type: Paragraph
+            children:
+              - type: Text
+                value: "---"

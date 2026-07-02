@@ -8,7 +8,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `#` | `##` line comment → Reflection entry (anywhere) / CommentBlock (`###`, line start) | Yes |
 | `*` | Emphasis delimiter (`**`) | Yes |
 | `_` | Strong delimiter (`__`) | Yes |
-| `~` | Strikethrough (`~~`) / metadata fence (`~~~`) | Yes |
+| `~` | Highlight (`~~`) / metadata fence (`~~~`) | Yes |
 | \`  | Inline code (\`\`) / code fence (\`\`\`) — escapable inside CodeInline as `` \` `` | Yes |
 | `[` | Link/image opener | Yes |
 | `]` | Link/image closer | Yes |
@@ -18,7 +18,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `{` | Attribute/variable opener | Yes |
 | `}` | Attribute/variable closer | Yes |
 | `:` | Named span prefix (`::`) / named block (`:::`) | Yes |
-| `-` | List marker / thematic break | Yes |
+| `-` | List marker / page break (`---`, top level) | Yes |
 | `>` | QuoteBlock marker | Yes |
 | `/` | File reference (line start) | Yes |
 | `\` | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |

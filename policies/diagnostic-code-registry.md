@@ -150,7 +150,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
-### CDN-0010 — ThematicBreak text content dropped
+### CDN-0010 — ThematicBreak text content dropped (removed)
 
 | Field | Value |
 |---|---|
@@ -160,7 +160,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | trigger | A ThematicBreak line (`---`) contains non-whitespace, non-attribute text (e.g., `--- some text {.x}`) |
 | recovery | Text between the dashes and optional `{attrs}` is silently discarded; ThematicBreak node is emitted normally |
 | introduced_in | 0.1.4 |
-| status | active |
+| status | removed — the `ThematicBreak` node was deleted in 0.8.0; superseded by CDN-0016 (PageBreak tail dropped) |
 | owner | Language |
 
 ---
@@ -280,6 +280,36 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | trigger | A `{{...}}` token contains zero characters (empty key `{{}}`) or one or more characters that are not `[a-zA-Z0-9._-]` (non-`ID_LITERAL`) |
 | recovery | The entire `{{...}}` span is emitted as literal `Text`; no `Variable` node is created |
 | introduced_in | 0.3.4 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0016 — PageBreak tail dropped
+
+| Field | Value |
+|---|---|
+| code | CDN-0016 |
+| title | PageBreak tail dropped |
+| level | warning |
+| trigger | A top-level PageBreak line (`---`) contains anything after the leading three hyphens — surplus hyphens, `{attrs}`, or text (e.g., `----`, `--- {.x}`, `--- some text`) |
+| recovery | The tail is discarded; the PageBreak takes effect normally (page boundary, no node). `loc` spans the dropped tail |
+| introduced_in | 0.8.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0017 — Page separator inside block container
+
+| Field | Value |
+|---|---|
+| code | CDN-0017 |
+| title | Page separator inside block container |
+| level | warning |
+| trigger | A blank-line-surrounded `---` line is encountered inside a block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`) |
+| recovery | The line is emitted as `Paragraph([Text("---")])`; no page boundary is created. Page separation is a top-level construct. `loc` spans the `---` line. A `---` glued to a preceding paragraph is ordinary content and emits no diagnostic |
+| introduced_in | 0.8.0 |
 | status | active |
 | owner | Language |
 

@@ -15,7 +15,7 @@ The `##` opener (§5.14) is special: it has no closer and terminates at end-of-l
 | `alt` slot of `ImageBlock` | §4      |
 | `alt` slot of `ImageInline` | §5      |
 | `RefDefinition` content | §4      |
-| Children of `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline` | §5      |
+| Children of `Emphasis`, `Strong`, `Highlight`, `QuoteInline` | §5      |
 | `[text]` slot of `Link` | §5      |
 
 ---
@@ -91,15 +91,17 @@ interface Strong {
 
 ---
 
-### 5.4 Strikethrough
+### 5.4 Highlight
 
 **Syntax:** `~~inline content~~`
+
+Marks a span of text as highlighted — visually emphasized as important, like a marker pen. Highlight carries no deletion semantics; Cutdown defines no strikethrough element.
 
 **AST type:**
 
 ```typescript
-interface Strikethrough {
-  type: "Strikethrough"
+interface Highlight {
+  type: "Highlight"
   children: Inline[]
   attributes: Attribute[]
 }
@@ -370,7 +372,7 @@ interface Spoiler {
 - `^^` opener and closer. A single `^` is always literal text in inline context. (Inside `[...][^id]` link/definition target slots, `^` retains its reference-marker role per §5.5 / §4.14 — that context is delimited and never reaches the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
 - Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy left-to-right close, unclosed `^^` → `Text("^^")`, no same-type nesting.
-- Cross-nesting with `Emphasis`, `Strong`, `Strikethrough`, `QuoteInline`, and `Link` is allowed.
+- Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, and `Link` is allowed.
 - Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.
 
 **Examples:**

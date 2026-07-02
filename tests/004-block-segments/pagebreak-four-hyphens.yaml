@@ -1,0 +1,26 @@
+id: pagebreak-four-hyphens
+section: "4.10"
+description: "Surplus hyphens after the leading --- are part of the dropped tail; the PageBreak takes effect and CDN-0016 is emitted"
+
+input: |
+  Before
+
+  -----
+
+  After
+
+diagnostics:
+  - code: CDN-0016
+    level: warning
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Before
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: After

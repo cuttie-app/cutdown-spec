@@ -1,0 +1,18 @@
+id: strong-unclosed-inner-survives
+section: "9.4.1"
+description: "An unclosed ** is a Class 1 (symmetric) opener: only the opener degrades to Text; constructs after it parse normally"
+
+input: |
+  **a __b__ c
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "**a "
+      - type: Strong
+        children:
+          - type: Text
+            value: b
+      - type: Text
+        value: " c"

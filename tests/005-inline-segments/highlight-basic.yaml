@@ -1,0 +1,14 @@
+id: highlight-basic
+section: "5.4"
+description: "~~ delimiters produce Highlight (marked text); single ~ is literal text"
+
+input: |
+  ~~marked~~
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Highlight
+        children:
+          - type: Text
+            value: marked
