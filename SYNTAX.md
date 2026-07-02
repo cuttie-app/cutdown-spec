@@ -1,15 +1,16 @@
 # Cutdown Syntax — Quick Reference
 
-Cutdown is a markup language that produces an AST. There is no HTML output. The parser never backtracks.
+Cutdown is a markup language that produces an AST. There is no HTML output. Parsing is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§9).
 
 ---
 
 ## Input
 
-- UTF-8 only. NFC normalization recommended.
-- BOM stripped. Null bytes replaced with U+FFFD.
-- Line endings normalized to `\n`. Tabs → single space (except inside fences).
-- Leading and trailing blank lines (whitespace-only lines) stripped from the document. A document of only blanks → empty AST.
+- UTF-8 only. Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
+- Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
+- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§7), not transforms.
+- Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
+- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§14). Conformance AST comparison ignores `loc`.
 - Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
@@ -39,9 +40,9 @@ foo bar ## tail       → Text("foo bar ") + reflection entry on block
 
 Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades to literal. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
 
-**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ line: 0, text: "note" }])`.
+**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
 
 **Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
 
@@ -51,19 +52,21 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 ## Document Model
 
-Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. ThematicBreaks `---` on top level and Meta fence `~~~` produces Pages' breaks.
+Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. PageBreaks `---` at top level and Meta fences `~~~` produce Page boundaries.
 
 ```
 Document
 └── Page[]
     ├── meta: Meta | null
-    └── children: (ThematicBreak | Section | Block)[]
+    └── children: (Section | Block)[]
 ```
 
 - Every document has ≥ 1 Page.
-- `---` → new Page (ThematicBreak is first child of new Page).
-- `Meta` block → fills current `Page.meta`; if already set, opens new Page first.
+- `---` → always closes the current Page (Ghost Page if empty) and opens a new one. Produces no node.
+- `Meta` block → closes the current Page and opens a new Page carrying it as `meta` — unless it is the first pagination-relevant item of the document, in which case it fills the initial Page's `meta`.
 - Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
+
+The schema also admits **synthetic segments** that no parse produces (currently `Fragment`, §14): parsers never emit them, consumers must accept them.
 
 ---
 
@@ -73,12 +76,12 @@ Blocks are separated by **blank lines**. Block elements cannot interrupt a parag
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. Single newline → space (soft break). `\` at line end → `TextBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; a single trailing space before the break is preserved as the explicit word separator (§12). `\` at line end → `TextBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
 
-Researchers once believed that some shortcuts would dramatically reduce computational cost, but many of those expectations are ~~now considered unrealistic~~ overly optimistic.
+Researchers once believed that some shortcuts would dramatically reduce computational cost, but many of those expectations are ~~overly optimistic~~ — a point worth flagging for the next revision.
 ```
 
 ### Headings → `Section`
@@ -89,7 +92,9 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Must be preceded by a blank line (or start of document). Inline content allowed. Sections are scoped to their containing block context (NamedBlock, QuoteBlock, ListItem).
+Must be preceded by a blank line (or start of document / block container). Inline content allowed. 10+ `=` signs → whole line literal (CDN-0012).
+
+Sections are not parsed — they are derived by a fold (§9.5.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
@@ -97,14 +102,13 @@ Must be preceded by a blank line (or start of document). Inline content allowed.
 ```
 
 
-### Thematic Break → `ThematicBreak` + new Page
+### Page Break → new Page (no node)
 
 ```
 ---
---- {.attrs}
 ```
 
-Three or more `-`. Creates a page break on top level. Exist as ThematicBreak node only if declared inside Block elements. ThematicBreak indide other Blcoks is a normal block-level element (not a page break).
+A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a diagnostic (CDN-0016). Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, CDN-0017). Cutdown defines no thematic-break (horizontal-rule) element.
 
 ### Meta Block (Frontmatter) → `Meta`
 
@@ -160,7 +164,7 @@ Every line must start with `>`. No lazy continuation. Nesting by counting `>` ch
   - [x] nest task item    ← ({ checked: true})
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. 2-space indent per nesting level (aligns with YAML convention). Tight vs loose: blank line between items → `loose: true`. Respects indentation.
+Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the recommended style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
 
 ### Tables → `Table`
 
@@ -182,6 +186,8 @@ Two variants: GFM (`kind: "gfm"`, first line starts with `|`) and Multiline (`ki
 
 **Header separator:** A `+` row with at least one `:` adjacent to `+` or `-` marks the preceding rows as `type: "Header"`. `+----+` (no colon) is ignored in GFM; acts as a body section delimiter in multiline. Alignment taken from the first header separator only. The `|:---|` piped-delimiter syntax is not supported — use `+:---+` instead.
 
+**Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` left (default).
+
 **Multiline cells:** All `|` lines between two consecutive `+` rows form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
 
 Leading/trailing `|` required in GFM rows. `+-` required as first line for multiline.
@@ -193,7 +199,7 @@ Leading/trailing `|` required in GFM rows. `+-` required as first line for multi
 /path/to/image.png
 ```
 
-Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRefGroup`. Fragment: `/page.md#section-id`.
+Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRefGroup`. Fragment: `/page.md#section-id`. Query: `/page.md?key=value`.
 
 ### Image Block → `ImageBlock`
 
@@ -211,7 +217,7 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 :::
 ```
 
-`:::` + name required. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
+`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
 
 ### Spoiler Block → `SpoilerBlock`
 
@@ -221,7 +227,7 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 ^^^
 ```
 
-Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Reference Definition → `RefDefinition`
 
@@ -229,19 +235,25 @@ Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with no
 [^ref-id]: inline content
 ```
 
-Must start at line start. Last definition wins (supports transclusion override).
+Must start at line start. When the same `ref` is defined more than once in a document, resolution uses the last definition (**last wins**).
 
 ---
 
 ## Inline Elements
 
-Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal text.
+Parsed left-to-right. An unclosed opener degrades by its class (§9.4.1):
+
+- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Strong(b)` + `Text(" c")`.
+- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
+- `::` has no closer: without a valid name it emits `Text("::")` and parsing continues.
+
+Degradation to visible literal text is silent — no diagnostics.
 
 | Syntax          | Node | Notes |
 |-----------------|------|-------|
 | `**text**`      | `Emphasis` | Single `*` = literal |
 | `__text__`      | `Strong` | Single `_` = literal |
-| `~~text~~`      | `Strikethrough` | Single `~` = literal |
+| `~~text~~`      | `Highlight` | Single `~` = literal |
 | `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc. |
 | \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`. |
 | `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal. |
@@ -254,7 +266,7 @@ Parsed left-to-right, no backtracking. Unclosed opener → emitted as literal te
 | `[text][@cite]` | `Link(cite)` | resolved by consumer |
 | `![alt](src)`   | `ImageInline` | |
 | `::name {attrs}` | `Span` | Empty. `::` without name = literal. |
-| `{{key}}`       | `Variable` | `{{}}` invalid = literal |
+| `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice. |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
 | `\` at line end | `TextBreak` | |
 
@@ -313,6 +325,8 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 `{{` always matched before `{` (longest opener wins).
 
+**Literal-span idiom.** `{` opens an attribute scan to the matching `}` or end of line. Invalid attr grammar or no `}` → the entire slice (braces included) is one verbatim `Text` run, never inline-parsed: `{a **b**}` → `Text("{a **b**}")`. Note: extending the attribute grammar later is a breaking change for text using this idiom.
+
 ---
 
 ## Escaping
@@ -330,7 +344,7 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 | `=` ... `=========` heading | `\=`, `\==`, ... | literal |
 | `- ` list | `\- item` | literal |
 | `> ` quote | `\> text` | literal |
-| `---` thematic break | `\---`, `-\--`, `--\-` | literal **+ suppresses page break** |
+| `---` page break | `\---`, `-\--`, `--\-` | literal; no page break occurs |
 | `/path` file ref | `\/path` | literal |
 | `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
 | `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
@@ -356,13 +370,17 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 
 ---
 
-## Precedence (inline, highest first)
+## Precedence (highest first, per §11)
 
-1. Code fence \`\`\`, Meta fence `~~~`, Math fence `$$$`, CommentBlock fence `###` — content always literal
-2. Inline code \`\` — content literal except `` \` `` (see §5.6); Inline math `$$` — content literal
-3. Line comment `##` — no closer, runs to EOL, payload stored in block reflection, closes any open inline constructs (they degrade to literal)
-4. Escape `\x`
-5. `{{variable}}` / `{attrs}` — longest opener (`{{` before `{`)
-6. Links `[...](...)`  and images `![...]()`
-7. Emphasis `**`, Strong `__`, Strikethrough `~~`, Spoiler `^^`, QuoteInline `""` `''`
-8. `::span`
+1. Code fence \`\`\` — content always literal
+2. Metadata fence `~~~` — content always literal
+3. MathBlock `$$$` — content always literal
+4. CommentBlock `###` — content always literal (opaque)
+5. Inline code \`\` — content literal except `` \` ``
+6. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; acts as the terminator for open inline constructs, which degrade per their class (§9.4.1)
+7. Escape `\x` — resolved before delimiter matching
+8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
+9. Inline math `$$` — matched before emphasis; content literal
+10. Emphasis `**`, Strong `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — left-to-right greedy
+11. Named span `::name` — matched after emphasis
+12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then left-to-right
