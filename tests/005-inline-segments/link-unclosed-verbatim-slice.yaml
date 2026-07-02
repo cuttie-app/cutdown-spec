@@ -1,6 +1,6 @@
 id: link-unclosed-verbatim-slice
 section: "9.4.1"
-description: "An unclosed [ is a Class 2 opener: the source from [ to end of line is one verbatim Text run; the closed Strong inside the dead slice is lost"
+description: "An unclosed [ is a Class 2 opener: the source from [ to end of line is one verbatim Text run; the closed Emphasis inside the dead slice is lost"
 
 input: |
   [a __b__ c

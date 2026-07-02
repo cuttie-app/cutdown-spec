@@ -34,12 +34,12 @@ Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, Quote
 **Examples:**
 
 ```
-** bb **           → Emphasis([Text("bb")])
-**  text  **       → Emphasis([Text("text")])
-**  **             → Emphasis([])
-aa**bb**cc         → Text("aa") + Emphasis([Text("bb")]) + Text("cc")
-__ ** bb **__      → Strong([Emphasis([Text("bb")])])   (space between __ and ** = zero)
-__ bb __ ** cc **  → Strong([Text("bb")]) + Text(" ") + Emphasis([Text("cc")])
+__ bb __           → Emphasis([Text("bb")])
+__  text  __       → Emphasis([Text("text")])
+__  __             → Emphasis([])
+aa__bb__cc         → Text("aa") + Emphasis([Text("bb")]) + Text("cc")
+** __ bb __**      → Strong([Emphasis([Text("bb")])])   (space between ** and __ = zero)
+** bb ** __ cc __  → Strong([Text("bb")]) + Text(" ") + Emphasis([Text("cc")])
 ```
 
 ---

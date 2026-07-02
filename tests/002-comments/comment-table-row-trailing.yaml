@@ -9,7 +9,7 @@ ast:
   - type: Table
     kind: gfm
     reflection:
-      - line: 0
+      - loc: { start: 15, end: 28 }
         text: "what is this?"
     rows:
       - type: Row

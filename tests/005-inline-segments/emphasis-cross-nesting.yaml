@@ -3,7 +3,7 @@ section: "5.2"
 description: Cross-type nesting is allowed; Strong inside Emphasis and vice versa
 
 input: |
-  **__bold and strong__**
+  __**bold and strong**__
 
 ast:
   - type: Paragraph

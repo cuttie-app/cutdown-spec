@@ -1,9 +1,9 @@
 id: whitespace-empty-delimiter
 section: "12.2"
-description: "** with only whitespace inside produces empty Emphasis after boundary stripping"
+description: "__ with only whitespace inside produces empty Emphasis after boundary stripping"
 
 input: |
-  **  **
+  __  __
 
 ast:
   - type: Paragraph

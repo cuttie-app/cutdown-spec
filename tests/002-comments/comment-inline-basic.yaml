@@ -9,5 +9,5 @@ ast:
   - type: Paragraph
     children: []
     reflection:
-      - line: 0
+      - loc: { start: 3, end: 23 }
         text: "a whole-line comment"

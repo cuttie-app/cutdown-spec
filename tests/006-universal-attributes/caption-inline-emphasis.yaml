@@ -4,7 +4,7 @@ description: "Caption text is parsed by the full inline rule set — emphasis, s
 
 input: |
   ![alt](photo.jpg)
-  ^ Photo by **Jane Doe**, __2025__
+  ^ Photo by __Jane Doe__, **2025**
 
 ast:
   - type: ImageBlock

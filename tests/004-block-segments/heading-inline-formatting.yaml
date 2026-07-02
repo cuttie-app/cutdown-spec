@@ -3,7 +3,7 @@ section: "4.2"
 description: Heading text is full inline content; inline formatting is parsed normally
 
 input: |
-  = Title with **bold** word
+  = Title with __bold__ word
 
 ast:
   - type: Section

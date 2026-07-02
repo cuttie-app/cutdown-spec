@@ -11,5 +11,5 @@ ast:
       - type: Text
         value: "foo bar "
     reflection:
-      - line: 0
+      - loc: { start: 11, end: 27 }
         text: "trailing comment"

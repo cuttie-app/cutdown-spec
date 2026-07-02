@@ -11,5 +11,5 @@ ast:
       - type: Text
         value: "| Head "
     reflection:
-      - line: 0
+      - loc: { start: 10, end: 26 }
         text: "comment | Next |"

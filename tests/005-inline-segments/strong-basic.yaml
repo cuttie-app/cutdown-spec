@@ -1,9 +1,9 @@
 id: strong-basic
 section: "5.3"
-description: "__ delimiters produce Strong; single _ is literal text"
+description: "** delimiters produce Strong; single * is literal text"
 
 input: |
-  __strong__
+  **strong**
 
 ast:
   - type: Paragraph

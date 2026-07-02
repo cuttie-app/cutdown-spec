@@ -2,7 +2,7 @@ id: emphasis-spanning-lines
 section: "5.12"
 description: Soft break inside an inline block is folded to zero; trailing space before NL preserves word boundary inside inline blocks
 
-input: "**bold \ncontinuation** and **nospace\ncontinuation**\n"
+input: "__bold \ncontinuation__ and __nospace\ncontinuation__\n"
 
 ast:
   - type: Paragraph

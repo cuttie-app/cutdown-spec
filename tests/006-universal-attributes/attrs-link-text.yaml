@@ -12,7 +12,7 @@ ast:
         kind: external
         href: url
         children:
-          - type: Emphasis
+          - type: Strong
             children:
               - type: Text
                 value: bold

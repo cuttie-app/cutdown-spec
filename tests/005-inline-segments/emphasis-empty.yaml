@@ -1,9 +1,9 @@
 id: emphasis-empty
 section: "5.2"
-description: "Four * characters produce an empty Emphasis node (N=4 rule from §8.5.4)"
+description: "Four _ characters produce an empty Emphasis node (N=4 rule from §8.5.4)"
 
 input: |
-  ****
+  ____
 
 ast:
   - type: Paragraph

@@ -15,6 +15,6 @@ ast:
       - type: Text
         value: "Heading "
     reflection:
-      - line: 0
+      - loc: { start: 18, end: 22 }
         text: "note"
     children: []

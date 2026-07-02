@@ -11,7 +11,7 @@ ast:
     heading:
       - type: Text
         value: "Heading "
-      - type: Emphasis
+      - type: Strong
         children:
           - type: Text
             value: bold

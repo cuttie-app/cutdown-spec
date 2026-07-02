@@ -41,7 +41,7 @@ Text segments are **literal** — no inline parsing, no escape processing. The o
 
 ### 5.2 Emphasis
 
-**Syntax:** `**inline content**`
+**Syntax:** `__inline content__`
 
 **AST type:**
 
@@ -53,27 +53,29 @@ interface Emphasis {
 }
 ```
 
-- `**` opener and closer. A single `*` is always literal text.
-- Run of 3: `***` = `**` (opener/closer) + `*` (literal).
-- Matching: greedy left-to-right. First valid `**` closer wins.
-- Unclosed `**` → `Text("**")`.
-- Same-type nesting not allowed. Cross-type nesting allowed (e.g. `**__text__**`).
+- `__` opener and closer. A single `_` is always literal text.
+- Run of 3: `___` = `__` (opener/closer) + `_` (literal).
+- Matching: greedy left-to-right. First valid `__` closer wins.
+- Unclosed `__` → `Text("__")`.
+- Same-type nesting not allowed. Cross-type nesting allowed (e.g. `__**text**__`).
 - Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.
 
 **Examples:**
 
 ```
-**bold**     → Emphasis([Text("bold")])
-***text***   → Emphasis([Text("*text")]) + Text("*")
-** text      → Text("**") + Text(" text")   (unclosed)
-* text *     → Text("* text *")             (single asterisk = literal)
+__italic__   → Emphasis([Text("italic")])
+___text___   → Emphasis([Text("_text")]) + Text("_")
+__ text      → Text("__") + Text(" text")   (unclosed)
+_ text _     → Text("_ text _")             (single underscore = literal)
 ```
 
 ---
 
 ### 5.3 Strong
 
-**Syntax:** `__inline content__`
+**Syntax:** `**inline content**`
+
+Strong emphasis. `**` follows the dominant Markdown-family convention (CommonMark, GFM, Pandoc), where `**` marks strong emphasis.
 
 **AST type:**
 
@@ -85,7 +87,7 @@ interface Strong {
 }
 ```
 
-- `__` opener and closer. A single `_` is always literal text.
+- `**` opener and closer. A single `*` is always literal text.
 - Same rules as `Emphasis`: run of 3, greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with `Emphasis` allowed: `**__text__**` and `__**text**__` are both valid.
 
@@ -382,7 +384,7 @@ interface Spoiler {
 ^^^x^^^            → Spoiler([Text("^x")]) + Text("^^")
 ^^ open            → Text("^^") + Text(" open")            (unclosed)
 ^ not spoiler ^    → Text("^ not spoiler ^")               (single caret = literal)
-**^^x^^**          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
+__^^x^^__          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
 ^^a ^^b^^ c^^      → Spoiler([Text("a")]) + Text("b") + Spoiler([Text("c")])   (greedy)
 ```
 

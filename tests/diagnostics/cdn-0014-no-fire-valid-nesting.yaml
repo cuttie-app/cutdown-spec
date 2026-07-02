@@ -3,7 +3,7 @@ section: "5"
 description: "Properly nested cross-type inline elements do not trigger CDN-0014"
 
 input: |
-  ** __ text __ **
+  __ ** text ** __
 
 ast:
   - type: Paragraph

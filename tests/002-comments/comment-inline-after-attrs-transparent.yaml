@@ -14,5 +14,5 @@ ast:
       - type: Text
         value: "some text "
     reflection:
-      - line: 0
+      - loc: { start: 18, end: 30 }
         text: "tail comment"

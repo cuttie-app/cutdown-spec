@@ -3,7 +3,7 @@ section: "12.2"
 description: "Inline elements adjacent to surrounding text with no space — text nodes emit without gaps"
 
 input: |
-  aa**bb**cc
+  aa__bb__cc
 
 ast:
   - type: Paragraph

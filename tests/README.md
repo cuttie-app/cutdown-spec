@@ -27,9 +27,9 @@ Each `.yaml` file is a single fixture:
 ```yaml
 id: emphasis-basic
 section: "5.2"
-description: "** delimiters produce Emphasis; single * is literal text"
+description: "__ delimiters produce Emphasis; single _ is literal text"
 
-input: "**bold**"
+input: "__bold__"
 
 ast:
   - type: Paragraph

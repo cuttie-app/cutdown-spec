@@ -65,15 +65,15 @@ Inline openers fall into two classes with different degradation behavior. In bot
 
 | Opener | Construct |
 |--------|-----------|
-| `**` | Emphasis |
-| `__` | Strong |
+| `**` | Strong |
+| `__` | Emphasis |
 | `~~` | Highlight |
 | `^^` | Spoiler |
 | `` `` `` | CodeInline |
 | `$$` | MathInline |
 | `""` / `''` | QuoteInline |
 
-If no closer is found before the end of the inline context, the opener alone is emitted as `Text` and parsing continues immediately after it. Constructs following the dead opener are parsed normally: `**a __b__ c` yields `Text("**a ")`, `Strong(b)`, `Text(" c")`.
+If no closer is found before the end of the inline context, the opener alone is emitted as `Text` and parsing continues immediately after it. Constructs following the dead opener are parsed normally: `**a __b__ c` yields `Text("**a ")`, `Emphasis(b)`, `Text(" c")`.
 
 **Class 2 — asymmetrical bracket-like openers: verbatim slice.**
 
@@ -83,7 +83,7 @@ If no closer is found before the end of the inline context, the opener alone is 
 | `{{` | Variable |
 | `{` | attribute scan (§6) |
 
-An unresolved Class 2 opener causes the source from the opener to its terminator — end of line, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Strong` inside the dead slice does not exist.
+An unresolved Class 2 opener causes the source from the opener to its terminator — end of line, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Emphasis` inside the dead slice does not exist.
 
 **Attribute braces.** `{` opens an attribute scan running to the matching `}` or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 

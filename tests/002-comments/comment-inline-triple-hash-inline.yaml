@@ -11,5 +11,5 @@ ast:
       - type: Text
         value: "text "
     reflection:
-      - line: 0
+      - loc: { start: 7, end: 22 }
         text: "# inline triple"

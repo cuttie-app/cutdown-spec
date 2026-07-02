@@ -6,8 +6,8 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 |-----------|------|-----------|
 | `=` | Heading marker (line start) | Yes |
 | `#` | `##` line comment → Reflection entry (anywhere) / CommentBlock (`###`, line start) | Yes |
-| `*` | Emphasis delimiter (`**`) | Yes |
-| `_` | Strong delimiter (`__`) | Yes |
+| `*` | Strong delimiter (`**`) | Yes |
+| `_` | Emphasis delimiter (`__`) | Yes |
 | `~` | Highlight (`~~`) / metadata fence (`~~~`) | Yes |
 | \`  | Inline code (\`\`) / code fence (\`\`\`) — escapable inside CodeInline as `` \` `` | Yes |
 | `[` | Link/image opener | Yes |

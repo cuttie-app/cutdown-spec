@@ -63,8 +63,8 @@ When N identical characters appear at an inline position, the following rules ap
 
 | Symbol | 1 | 2 | 3 | 4 | 5 |
 |--------|---|---|---|---|---|
-| `*` | literal | `Emphasis` open/close | `**` + `*` literal | `Emphasis([])` empty | `Emphasis([])` + `*` literal |
-| `_` | literal | `Strong` open/close | `__` + `_` literal | `Strong([])` empty | `Strong([])` + `_` literal |
+| `*` | literal | `Strong` open/close | `**` + `*` literal | `Strong([])` empty | `Strong([])` + `*` literal |
+| `_` | literal | `Emphasis` open/close | `__` + `_` literal | `Emphasis([])` empty | `Emphasis([])` + `_` literal |
 | `"` | literal | `QuoteInline(double)` open/close | `""` + `"` literal | `QuoteInline([])` empty | `QuoteInline([])` + `"` literal |
 | `'` | literal | `QuoteInline(single)` open/close | `''` + `'` literal | `QuoteInline([])` empty | `QuoteInline([])` + `'` literal |
 | \` | literal | `CodeInline` open/close | \`\` + \` literal¹ | `CodeInline("")` empty | `CodeInline("\`")` |

@@ -1,9 +1,9 @@
 id: emphasis-triple
 section: "5.2"
-description: "*** = ** (opener) + * (literal inside); closing *** = ** (closer) + * (literal after)"
+description: "___ = __ (opener) + _ (literal inside); closing ___ = __ (closer) + _ (literal after)"
 
 input: |
-  ***text***
+  ___text___
 
 ast:
   - type: Paragraph
@@ -11,6 +11,6 @@ ast:
       - type: Emphasis
         children:
           - type: Text
-            value: "*text"
+            value: "_text"
       - type: Text
-        value: "*"
+        value: "_"

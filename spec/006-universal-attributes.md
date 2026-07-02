@@ -145,7 +145,7 @@ price is \{high\}  →  Text("price is {high}")
 `{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 
 ```
-[**bold** {.foo}](url)  →  Link { children: [Emphasis({class:"foo"}, "bold")], href: "url" }
+[**bold** {.foo}](url)  →  Link { children: [Strong({class:"foo"}, "bold")], href: "url" }
 [{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
 ```
 
@@ -179,7 +179,7 @@ Standalone `## comment` lines do not break binding either, because they are neve
 
 | col |
 ## editorial note
-^ Caption text   →  Table { caption: [...], reflection: [{ line: 2, text: "editorial note" }] }
+^ Caption text   →  Table { caption: [...], reflection: [{ loc: { start: 11, end: 25 }, text: "editorial note" }] }
 ```
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line (the caption slot is already filled, or the first `^ ` line itself had no captionable predecessor) is treated as an orphaned caption → `Paragraph` + warning CDN-0008.
@@ -245,7 +245,7 @@ AST:
 
 Input:
   > To be, or not to be.
-  ^ William Shakespeare, *Hamlet*, Act 3
+  ^ William Shakespeare, __Hamlet__, Act 3
 
 AST:
   QuoteBlock {

@@ -171,10 +171,10 @@ AST:
 **`##` is transparent to attribute resolution.** Because `##` payloads are stored in `reflection` rather than in the inline stream, no scope-chain slot is consumed and no "orphan-due-to-comment" condition arises. Attributes bind exactly as if the `##` were not present.
 
 ```
-== Heading **em** {.a}{.b} ## trailing comment
+== Heading **bb** {.a}{.b} ## trailing comment
 ```
 
-- `{.a}` adjacent to `**em**` → attaches to Strong.
+- `{.a}` adjacent to `**bb**` → attaches to Strong.
 - `{.b}` is the last `{...}` on the heading line → claims Section.
 - `## trailing comment` → `Section.reflection += { loc, text: "trailing comment" }`.
 
@@ -184,7 +184,7 @@ Result:
 Section({class:"b"}, level=2,
   heading: [
     Text("Heading "),
-    Strong({class:"a"}, [Text("em")])
+    Strong({class:"a"}, [Text("bb")])
   ],
   reflection: [{ loc, text: "trailing comment" }]
 )

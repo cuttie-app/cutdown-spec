@@ -1,9 +1,9 @@
 id: whitespace-boundary-strip
 section: "12.2"
-description: "Leading and trailing whitespace inside ** delimiters is stripped"
+description: "Leading and trailing whitespace inside __ delimiters is stripped"
 
 input: |
-  ** bb **
+  __ bb __
 
 ast:
   - type: Paragraph

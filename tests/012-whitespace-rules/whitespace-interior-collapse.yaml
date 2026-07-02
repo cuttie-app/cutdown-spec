@@ -3,7 +3,7 @@ section: "12.2"
 description: "Multiple interior spaces inside delimiters are collapsed to single space, then boundary-stripped"
 
 input: |
-  **  text  **
+  __  text  __
 
 ast:
   - type: Paragraph

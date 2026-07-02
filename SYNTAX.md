@@ -92,13 +92,13 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Must be preceded by a blank line (or start of document / block container). Inline content allowed. 10+ `=` signs → whole line literal (CDN-0012).
+Must be preceded by a blank line (or start of document / block container). Inline content allowed.
 
 Sections are not parsed — they are derived by a fold (§9.5.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
-== __Why__ Classical Computers Struggle  {id="limits"}
+== **Why** Classical Computers Struggle  {id="limits"}
 ```
 
 
@@ -149,7 +149,7 @@ Content is literal. Unclosed → warning CDN-0003.
 >> nested quote
 ```
 
-Every line must start with `>`. No lazy continuation. Nesting by counting `>` chars.
+Every line must start with `>`. Nesting by counting `>` chars.
 
 ### Lists → `List` / `ListItem` / `TaskItem`
 
@@ -243,7 +243,7 @@ Must start at line start. When the same `ref` is defined more than once in a doc
 
 Parsed left-to-right. An unclosed opener degrades by its class (§9.4.1):
 
-- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Strong(b)` + `Text(" c")`.
+- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
 - **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
 - `::` has no closer: without a valid name it emits `Text("::")` and parsing continues.
 
@@ -251,8 +251,8 @@ Degradation to visible literal text is silent — no diagnostics.
 
 | Syntax          | Node | Notes |
 |-----------------|------|-------|
-| `**text**`      | `Emphasis` | Single `*` = literal |
-| `__text__`      | `Strong` | Single `_` = literal |
+| `__text__`      | `Emphasis` | Single `_` = literal |
+| `**text**`      | `Strong` | Single `*` = literal |
 | `~~text~~`      | `Highlight` | Single `~` = literal |
 | `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc. |
 | \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`. |
@@ -381,6 +381,6 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 7. Escape `\x` — resolved before delimiter matching
 8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 9. Inline math `$$` — matched before emphasis; content literal
-10. Emphasis `**`, Strong `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — left-to-right greedy
+10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — left-to-right greedy
 11. Named span `::name` — matched after emphasis
 12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then left-to-right

@@ -3,7 +3,7 @@ section: "12.2"
 description: "Two separate inline elements separated by a space — space is preserved as Text(\" \") between them"
 
 input: |
-  __ bb __ ** cc **
+  ** bb ** __ cc __
 
 ast:
   - type: Paragraph

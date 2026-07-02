@@ -798,7 +798,7 @@ interface SpoilerBlock {
 ```
 Input:
   ^^^ {.nsfw}
-  Plot twist: **the butler** did it.
+  Plot twist: __the butler__ did it.
 
   - and so did the gardener
   ^^^

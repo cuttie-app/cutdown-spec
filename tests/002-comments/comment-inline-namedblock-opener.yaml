@@ -14,7 +14,7 @@ ast:
       - key: class
         value: [warn]
     reflection:
-      - line: 0
+      - loc: { start: 22, end: 33 }
         text: "opener note"
     children:
       - type: Paragraph

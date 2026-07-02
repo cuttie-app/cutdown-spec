@@ -11,9 +11,9 @@ ast:
   - type: Table
     kind: gfm
     reflection:
-      - line: 0
+      - loc: { start: 23, end: 34 }
         text: "header note"
-      - line: 1
+      - loc: { start: 58, end: 68 }
         text: "delim note"
     rows:
       - type: Header

@@ -1,12 +1,12 @@
 id: emphasis-unclosed
 section: "5.2"
-description: "Unclosed ** is emitted as literal Text(\"**\")"
+description: "Unclosed __ is emitted as literal Text(\"__\")"
 
 input: |
-  ** text
+  __ text
 
 ast:
   - type: Paragraph
     children:
       - type: Text
-        value: "** text"
+        value: "__ text"

@@ -3,7 +3,7 @@ section: "5.12"
 description: "Cross-type nesting is allowed; Spoiler inside Emphasis"
 
 input: |
-  **^^x^^**
+  __^^x^^__
 
 ast:
   - type: Paragraph

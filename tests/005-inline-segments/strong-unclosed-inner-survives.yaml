@@ -10,7 +10,7 @@ ast:
     children:
       - type: Text
         value: "**a "
-      - type: Strong
+      - type: Emphasis
         children:
           - type: Text
             value: b
