@@ -47,7 +47,7 @@ AsciiDoc, Typst uses the same convention: `= Document Title`, `== Section`. It i
 
 ### **Doubled delimiters only. Single characters are text.**
 
-Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~strikethrough~~`, `$$math$$`. Single characters are always literal text — no exceptions, no flanking rules.
+Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. Single characters are always literal text — no exceptions, no flanking rules.
 
 Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
 
