@@ -23,15 +23,21 @@ foo ## trailing comment
 - The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value.
 - **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, table cell `|`, attribute `}`, or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
 - **`##` boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line.
-- `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (relative `line: 0`) and the **closer line** (relative `line: N`) are scanned.
+- `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned.
 - `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values.
 - A literal `##` in normal text is written `\##` or `#\#` (§8).
 
 **`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the nearest enclosing block:
 
 ```typescript
+interface Loc {
+  file?: string
+  start: number
+  end: number
+}
+
 interface Reflection {
-  line: number   // 0-indexed offset from the block's opener line in source
+  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, §14)
   text: string   // payload after ##, one leading space stripped
 }
 ```
@@ -40,7 +46,7 @@ Every block type carries `reflection: Reflection[] | null` (null when no `##` is
 
 #### Trailing inline `##` (on a structural line)
 
-When `##` appears after content on a line that belongs to a block, the payload is recorded at that line's `line:` index within the block.
+When `##` appears after content on a line that belongs to a block, the payload is recorded with the `loc` of that payload's source range.
 
 **Bubbling rule.** When the structural line belongs to a *child* of a container, the payload bubbles to the **outermost container** at that scope level:
 
@@ -54,32 +60,32 @@ When `##` appears after content on a line that belongs to a block, the payload i
 
 A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.2).
 
-- Attaches to the **immediately preceding structural block** in the current scope at `line:` = source offset from that block's opener line. Consecutive standalone comments accumulate as `[N], [N+1], [N+2]…`.
+- Attaches to the **immediately preceding structural block** in the current scope, carrying its own `loc`. Consecutive standalone comments accumulate in source order.
 - **Closes** any active accumulation (continuing Paragraph, open FileRefGroup) before attaching.
-- **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ line: 0, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
+- **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
 - Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) follows the same scope-local rule, attaching to the preceding sibling block within that scope.
 
 **Examples:**
 
 ```
-## foo                      →  no segment; preceding block gains { line: K, text: "foo" }
-foo ## bar                  →  Text("foo ") — block gains { line: K, text: "bar" }
+## foo                      →  no segment; preceding block gains { loc, text: "foo" }
+foo ## bar                  →  Text("foo ") — block gains { loc, text: "bar" }
 ``code ## not``             →  CodeInline { value: "code ## not" }
 \## foo                     →  Text("## foo")
 ### at inline               →  reflection entry; text: "# at inline"
 
 [text ## comment](url)
-  →  Text("[text ")  (the [ has no ] closer before ## swallows it; degrades to literal)
-     Paragraph.reflection += { line: 0, text: "comment](url)" }
+  →  Text("[text ")  (the [ has no ] closer before the ## cut; the verbatim slice runs to the cut, §9.4.1)
+     Paragraph.reflection += { loc, text: "comment](url)" }
 
 | Head ## comment | Next |
   →  pre-## `| Head ` fails row grammar (no closing |).
      Block becomes Paragraph([Text("| Head ")]).
-     Paragraph.reflection += { line: 0, text: "comment | Next |" }
+     Paragraph.reflection += { loc, text: "comment | Next |" }
 
 | AA | BB | ## row comment
   →  pre-## `| AA | BB |` is a valid 2-cell row.
-     Table.reflection += { line: K, text: "row comment" }
+     Table.reflection += { loc, text: "row comment" }
 ```
 
 Orphan:
@@ -92,7 +98,7 @@ AST:
   - type: Paragraph
     children: []
     reflection:
-      - line: 0
+      - loc: { start: 3, end: 31 }
         text: note with no preceding block
 ```
 
@@ -170,7 +176,7 @@ AST:
 
 - `{.a}` adjacent to `**em**` → attaches to Strong.
 - `{.b}` is the last `{...}` on the heading line → claims Section.
-- `## trailing comment` → `Section.reflection += { line: 0, text: "trailing comment" }`.
+- `## trailing comment` → `Section.reflection += { loc, text: "trailing comment" }`.
 
 Result:
 
@@ -180,7 +186,7 @@ Section({class:"b"}, level=2,
     Text("Heading "),
     Strong({class:"a"}, [Text("em")])
   ],
-  reflection: [{ line: 0, text: "trailing comment" }]
+  reflection: [{ loc, text: "trailing comment" }]
 )
 ```
 
