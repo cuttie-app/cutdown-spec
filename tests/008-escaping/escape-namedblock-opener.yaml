@@ -10,6 +10,6 @@ ast:
   - type: Paragraph
     children:
       - type: Text
-        value: ":::callout not a named block"
+        value: ":::calloutnot a named block"
 
 diagnostics: []
