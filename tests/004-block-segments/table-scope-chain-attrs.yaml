@@ -7,7 +7,7 @@ input: |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     rows:
       - type: Row
         children:

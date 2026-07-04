@@ -1,15 +1,15 @@
 id: comment-table-delim-row-trailing
 section: "4.8"
-description: "Trailing `##` on header row and `+:---+` header separator both bubble to Table.reflection at their respective line offsets"
+description: "Trailing `##` on header row and `|:---|` header separator both bubble to Table.reflection at their respective payload locs"
 
 input: |
   | Head A | Head B | ## header note
-  +:-------+--------+ ## delim note
+  |:-------|--------| ## delim note
   | AA     | BB     |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     reflection:
       - loc: { start: 23, end: 34 }
         text: "header note"

@@ -46,7 +46,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 **Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
 
-**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on the delimiter row are dropped → CDN-0007.
+**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on a header separator row claim the Table slot (§4.8).
 
 ---
 
@@ -168,29 +168,29 @@ Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers i
 
 ### Tables → `Table`
 
-Two variants: GFM (`kind: "gfm"`, first line starts with `|`) and Multiline (`kind: "multiline"`, first line starts with `+-`).
+Two variants: Pipe (`kind: "pipe"`, first line starts with `|`) and Multiline (`kind: "multiline"`, first line starts with `+-`). Standard Markdown (GFM) pipe tables parse unchanged.
 
 ```
-| Cell A | Cell B |          ← GFM table (no header, all rows type: "Row")
+| Cell A | Cell B |          ← pipe table (no header, all rows type: "Row")
 
-| Name   | Score |           ← GFM table with header
-+:-------|------:+           ← header separator; also sets alignment
+| Name   | Score |           ← pipe table with header
+|:-------|------:|           ← header separator; also sets alignment
 | Alice  |    42 |           ← type: "Row"
 
 +----------+----------+      ← multiline grid
 | Header A | Header B |
-+:---------+----------+      ← header separator (colon = left align col 0)
+|:---------|----------|      ← header separator (colon = left align col 0)
 | Cell A   | Cell B   |
 +----------+----------+
 ```
 
-**Header separator:** A `+` row with at least one `:` adjacent to `+` or `-` marks the preceding rows as `type: "Header"`. `+----+` (no colon) is ignored in GFM; acts as a body section delimiter in multiline. Alignment taken from the first header separator only. The `|:---|` piped-delimiter syntax is not supported — use `+:---+` instead.
+**Header separator:** A `|` row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `type: "Header"`. Alignment taken from the first header separator only. In multiline it is a full separator row (closes the logical row, defines column boundaries). A `+` row never marks headers — colons in it are inert: in pipe tables `+` rows are ignored entirely; in multiline they delimit logical rows / body sections.
 
 **Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` left (default).
 
-**Multiline cells:** All `|` lines between two consecutive `+` rows form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
+**Multiline cells:** All `|` content lines between two consecutive separator rows (`+` rows or header separators) form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
 
-Leading/trailing `|` required in GFM rows. `+-` required as first line for multiline.
+Leading/trailing `|` required in pipe rows. `+-` required as first line for multiline.
 
 ### File Reference → `FileRef`, `FileRefGroup`
 
@@ -333,7 +333,7 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
+Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | + " '` and \`
 
 ### Block-opener escape (line start)
 
@@ -346,6 +346,8 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 | `> ` quote | `\> text` | literal |
 | `---` page break | `\---`, `-\--`, `--\-` | literal; no page break occurs |
 | `/path` file ref | `\/path` | literal |
+| `\|` pipe row / header separator | `\\| cell \|` | literal |
+| `+-` multiline table opener / separator | `\+-`, `+\-` | literal |
 | `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
 | `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
 | `$$$` math | `\$$$`, `$\$$`, `$$\$` | literal |

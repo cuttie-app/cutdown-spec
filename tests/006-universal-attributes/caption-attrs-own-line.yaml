@@ -9,7 +9,7 @@ input: |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     caption:
       - type: Text
         value: "Results from the first cohort"

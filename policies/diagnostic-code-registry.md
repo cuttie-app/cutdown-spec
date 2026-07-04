@@ -115,7 +115,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | trigger | A `{...}` block appears on a table delimiter row (the alignment row of a GFM table) |
 | recovery | The `{...}` block is dropped. Delimiter rows are structural metadata (alignment markers) and have no AST shape to carry attributes. Trailing CommentInlines on the delimiter row are still attached to the preceding header Row's `comments` array (see §4.8). |
 | introduced_in | 0.5.0 |
-| status | active |
+| status | removed — as of 0.8.0 `{attrs}` on a header separator row claim the Table slot (§4.8) and `+` rows in pipe tables are ignored entirely; no dropped-attr case remains |
 | owner | Language |
 
 ---

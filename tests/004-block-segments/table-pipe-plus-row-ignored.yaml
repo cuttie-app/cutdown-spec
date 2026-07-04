@@ -1,10 +1,11 @@
-id: table-simple
+id: table-pipe-plus-row-ignored
 section: "4.8"
-description: Pipe table with no header separator; all rows are type Row; columns default to left alignment
+description: "A `+` row between pipe rows is ignored entirely — colons included: no Header marking, no alignment, table not interrupted"
 
 input: |
-  | Cell A | Cell B |
-  | Cell C | Cell D |
+  | A | B |
+  +:--+--:+
+  | C | D |
 
 ast:
   - type: Table
@@ -17,13 +18,13 @@ ast:
             column: 0
             children:
               - type: Text
-                value: Cell A
+                value: A
           - type: Cell
             row: 0
             column: 1
             children:
               - type: Text
-                value: Cell B
+                value: B
       - type: Row
         children:
           - type: Cell
@@ -31,13 +32,13 @@ ast:
             column: 0
             children:
               - type: Text
-                value: Cell C
+                value: C
           - type: Cell
             row: 1
             column: 1
             children:
               - type: Text
-                value: Cell D
+                value: D
     columns:
       - type: Column
       - type: Column

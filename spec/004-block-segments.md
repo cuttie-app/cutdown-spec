@@ -391,13 +391,13 @@ AST:
 
 Cutdown supports two table variants, distinguished by the first line.
 
-**GFM table (`kind: "gfm"`):** First line starts with `|`.
+**Pipe table (`kind: "pipe"`):** First line starts with `|`. Standard Markdown (GFM) pipe tables parse unchanged.
 
 ```
 | Cell A | Cell B |                        ← no-header table
 
-| Name   | Score |                         ← GFM table with header
-+:-------|------:+                         ← header separator; left / right align
+| Name   | Score |                         ← pipe table with header
+|:-------|------:|                         ← header separator; left / right align
 | Alice  |    42 |
 | Bob    |    17 |
 ```
@@ -410,7 +410,7 @@ Cutdown supports two table variants, distinguished by the first line.
 
 +----------+----------+                    ← full grid
 | Header A | Header B |
-+:---------+----------+                    ← header separator; left-align col 0
+|:---------|----------|                    ← header separator; left-align col 0
 | Cell A   | Cell B   |
 +----------+----------+
 ```
@@ -420,7 +420,7 @@ Cutdown supports two table variants, distinguished by the first line.
 ```typescript
 interface Table {
   type: "Table"
-  kind: "multiline" | "gfm"
+  kind: "multiline" | "pipe"
   rows: Row[]
   columns: Column[]
   attributes: Attribute[] | null
@@ -436,7 +436,7 @@ interface Row {
 
 interface Cell {
   type: "Cell"
-  children: Inline[] | Block[]   // Inline[] when Table.kind is "gfm"; Block[] when "multiline"
+  children: Inline[] | Block[]   // Inline[] when Table.kind is "pipe"; Block[] when "multiline"
   row: number                    // zero-indexed position in Table.rows[]
   column: number                 // zero-indexed
 }
@@ -453,25 +453,27 @@ interface Column {
 
 #### Header rows
 
-A `+` separator row containing at least one `:` adjacent to a `+` or `-` character is a **header separator**. It marks the group of `|` content rows immediately preceding it (since the previous `+` separator, or the start of the table) as `type: "Header"`. All other `|` content rows are `type: "Row"`.
+A `|` row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It follows the row grammar of its table kind. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `type: "Header"`. All other content rows are `type: "Row"`.
 
 ```
 | A | B |
-+:--+---+    ← header separator → preceding rows become type: "Header"
+|---|---|    ← header separator → preceding rows become type: "Header"
 | C | D |    ← type: "Row"
 ```
 
-Discontiguous header sections are valid — HTML `<table>` supports mixed `<thead>`/`<tbody>` ordering. A `+:` separator anywhere marks only the rows in the immediately preceding section.
+Discontiguous header sections are valid — HTML `<table>` supports mixed `<thead>`/`<tbody>` ordering. A header separator anywhere marks only the rows in the immediately preceding section.
 
-A `+` separator row **without any colon** (`+----+`) behaves differently by kind:
-- **GFM**: ignored — does not affect row types and does not interrupt the table.
-- **Multiline**: marks the preceding section as `type: "Row"` (body section delimiter).
+In a **multiline** table a header separator is a full separator row: it closes the current logical row and defines column boundaries exactly like a `+` separator row, in addition to marking the preceding section as `Header`.
+
+A **`+` separator row never marks headers**. Colons appearing in a `+` row are inert — they have no effect. By kind:
+- **Pipe**: `+` rows are ignored entirely — no structural effect, colons and `{attrs}` included.
+- **Multiline**: `+` rows delimit logical rows and body sections (preceding section stays `type: "Row"`).
 
 ---
 
 #### Column alignment
 
-Alignment is taken from colon positions of the **first header separator** in the table. Subsequent `+:` separator rows do not update alignment.
+Alignment is taken from the cell patterns of the **first header separator** in the table. Subsequent header separators do not update alignment.
 
 | Pattern | Alignment |
 |---------|-----------|
@@ -482,19 +484,20 @@ Alignment is taken from colon positions of the **first header separator** in the
 | `---.` | `"decimal"` |
 | `----` | `"left"` (default) |
 
+Each pattern requires **at least three `-`** (with the optional alignment marks shown). The minimum is a deliberate guard: a content row of single-dash placeholder cells (`| - |`) remains content, not a header separator.
+
 A column with no corresponding position in the header separator defaults to `"left"`.
 
 ---
 
-#### GFM table specifics
+#### Pipe table specifics
 
-- Leading and trailing `|` required on every content row.
-- Each `|` line is one independent logical row.
+- Leading and trailing `|` required on every row (content and header separator).
+- Each `|` content line is one independent logical row.
 - Cells contain `Inline[]` parsed by full inline rules.
-- The piped-delimiter syntax (`|:---|`) is **not supported**. A line like `|:---|` is treated as a regular `type: "Row"` with cells containing literal dash/colon characters.
-- A `+----+` separator row (no colons) between GFM rows is **ignored** — it has no structural effect.
+- A `+` row between pipe rows is **ignored** — no structural effect, colons included.
 
-**Attrs scope chain (GFM).** `{attrs}` on the last content row → scope-chain: last `{}` → Table; preceding `{}` → Row. The Table slot is only available from the last row's chain. `+` separator rows do not participate in GFM scope chain.
+**Attrs scope chain (pipe).** `{attrs}` on the last content row → scope-chain: last `{}` → Table; preceding `{}` → Row. The Table slot is only available from the last row's chain. `{attrs}` on a **header separator** row claim the Table slot directly. `+` rows do not participate in the pipe scope chain (they are ignored entirely).
 
 ```
 | td1 | td2 | {.a}{.b}  →  Table({.b}, Row({.a}, ...))
@@ -509,11 +512,11 @@ Mid-table row:
 
 **Opener.** A line starting with `+-` opens a `kind: "multiline"` table. Content on the opener line after `+-` (including `{attrs}`) is treated as part of the opener row's attrs — see Attrs scope chain below.
 
-**Row boundaries.** All `|` lines between two consecutive `+` separator rows form one **logical row**. A table with only one `+` separator (the opener, no further `+` rows) produces one logical row from all subsequent `|` lines until the table ends (blank line or container boundary).
+**Row boundaries.** All `|` content lines between two consecutive separator rows (`+` rows or header separators) form one **logical row**. A table with only one separator (the opener, no further separator rows) produces one logical row from all subsequent `|` lines until the table ends (blank line or container boundary).
 
 **Multi-line cells.** When multiple `|` lines belong to one logical row, each column's content strips are **joined with a single space** between lines. (Note: this differs from paragraph continuation, where a soft break folds to zero, §12 — cell strips are column slices, so the explicit separator is required.) `\` at end of a content line produces a `TextBreak` segment in that cell.
 
-**Column boundaries.** Defined by `+` positions in the nearest preceding `+` separator row. If the opener is a minimal `+-` with no column boundary markers, boundaries are inferred from `|` positions in the first content row. Column count = max() of cell count across all logical rows. No diagnostic is emitted for row/column count mismatches.
+**Column boundaries.** Defined by boundary positions in the nearest preceding separator row (`+` positions of a `+` row, or `|` positions of a header separator). If the opener is a minimal `+-` with no column boundary markers, boundaries are inferred from `|` positions in the first content row. Column count = max() of cell count across all logical rows. No diagnostic is emitted for row/column count mismatches.
 
 **Trailing `|`.** Optional on content rows. The last column extends to end of line.
 
@@ -523,7 +526,7 @@ Per-column blank-line detection: a cell line is considered blank when its conten
 
 Leading and trailing whitespace is stripped from each line slice within a column before block parsing.
 
-**Attrs scope chain (multiline).** `{attrs}` on a `+` separator row → Table (last `+` row with attrs wins). `{attrs}` on a `|` content row → Row.
+**Attrs scope chain (multiline).** `{attrs}` on a separator row (`+` row or header separator) → Table (last separator row with attrs wins). `{attrs}` on a `|` content row → Row. A header separator is a separator row for attr purposes, never a content row.
 
 ```
 +----------+ {.tbl}      →  Table({.tbl})
@@ -541,9 +544,9 @@ A single `|` or `+-` line with no cell content is a valid empty table:
 
 +- {#id}     →  Table { kind: "multiline", rows: [], columns: [], attributes: [{id:"id"}] }
 
-|            →  Table { kind: "gfm", rows: [], columns: [] }
+|            →  Table { kind: "pipe", rows: [], columns: [] }
 
-| {.tbl}     →  Table { kind: "gfm", rows: [], columns: [], attributes: [{class:["tbl"]}] }
+| {.tbl}     →  Table { kind: "pipe", rows: [], columns: [], attributes: [{class:["tbl"]}] }
 ```
 
 For `| {.tbl}`: no row is present, so `{.tbl}` has no Row slot to claim; it falls through to the Table slot directly.
@@ -552,14 +555,14 @@ For `| {.tbl}`: no row is present, so `{.tbl}` has no Row slot to claim; it fall
 
 #### Reflection
 
-Trailing `## comment` on any table line (`|` content row or `+` separator row) bubbles to `Table.reflection` at the source `line:` offset. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
+Trailing `## comment` on any table line (`|` content row, header separator, or `+` separator row) bubbles to `Table.reflection` carrying the payload's `loc`. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
 
 ---
 
 #### Caption and escaping
 
 - **Supports caption line (§6.5).** A `^ text` line immediately after the table's last line (no blank line) sets `caption: Inline[]`.
-- **Escaping:** `\|` at line start → `Paragraph` (suppresses GFM row); `\+` at line start → `Paragraph` (suppresses multiline opener or separator). See §8.2.
+- **Escaping:** `\|` at line start → `Paragraph` (suppresses a pipe row or header separator); `\+` at line start → `Paragraph` (suppresses multiline opener or separator). See §8.2.
 
 ---
 

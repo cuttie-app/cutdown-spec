@@ -1,10 +1,10 @@
-id: table-simple
+id: table-pipe-dash-placeholder-not-separator
 section: "4.8"
-description: Pipe table with no header separator; all rows are type Row; columns default to left alignment
+description: "The 3-dash minimum guard: a row of single-dash placeholder cells is content, not a header separator; preceding rows stay type Row"
 
 input: |
-  | Cell A | Cell B |
-  | Cell C | Cell D |
+  | A | B |
+  | - | - |
 
 ast:
   - type: Table
@@ -17,13 +17,13 @@ ast:
             column: 0
             children:
               - type: Text
-                value: Cell A
+                value: A
           - type: Cell
             row: 0
             column: 1
             children:
               - type: Text
-                value: Cell B
+                value: B
       - type: Row
         children:
           - type: Cell
@@ -31,13 +31,13 @@ ast:
             column: 0
             children:
               - type: Text
-                value: Cell C
+                value: "-"
           - type: Cell
             row: 1
             column: 1
             children:
               - type: Text
-                value: Cell D
+                value: "-"
     columns:
       - type: Column
       - type: Column

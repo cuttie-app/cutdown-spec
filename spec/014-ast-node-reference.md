@@ -19,7 +19,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `MathBlock`     | `type: "MathBlock", raw: string, caption: Inline[]\|null, reflection, attributes`                                                                   |
 | `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attribution: Inline[]\|null, reflection, attributes`                                                        |
 | `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes`    |
-| `Table`         | `type: "Table", kind: "multiline"\|"gfm", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
+| `Table`         | `type: "Table", kind: "multiline"\|"pipe", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
 | `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, reflection, attributes`                                                   |
 | `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', caption: Inline[]\|null, reflection, attributes`                           |
 | `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], caption: Inline[]\|null, reflection, attributes`        |
@@ -64,7 +64,7 @@ The AST schema admits nodes that are not producible by parsing. **Conforming par
 | `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
 | `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
 | `Row`           | `type: "Row"\|"Header", children: Cell[], attributes`                           |
-| `Cell`          | `type: "Cell", children: Inline[]\|Block[], row: number, column: number` — `Inline[]` when `Table.kind` is `"gfm"`; `Block[]` when `"multiline"` |
+| `Cell`          | `type: "Cell", children: Inline[]\|Block[], row: number, column: number` — `Inline[]` when `Table.kind` is `"pipe"`; `Block[]` when `"multiline"` |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
 ### Location Type

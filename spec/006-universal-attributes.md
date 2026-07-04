@@ -231,13 +231,13 @@ All captionable blocks default these fields to `null` when no caption line is pr
 ```
 Input:
   | Name | Score |
-  +:-----+------:+
+  |:-----|------:|
   | Alice |   42 |
   ^ Results from the first cohort
 
 AST:
   Table {
-    kind: "gfm",
+    kind: "pipe",
     caption: [Text("Results from the first cohort")],
     rows: [Row(type:"Header",...), Row(type:"Row",...)],
     attributes: null

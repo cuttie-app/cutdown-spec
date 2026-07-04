@@ -1,15 +1,15 @@
-id: cdn-0007-delim-row-attrs-dropped
+id: table-header-separator-attrs
 section: "4.8"
-description: "`{attrs}` on a `+:---+` header separator row are valid and go to Table; alignment is also extracted; no diagnostic emitted"
+description: "`{attrs}` on a `|:---|` header separator row claim the Table slot directly; alignment is also extracted; no diagnostic emitted"
 
 input: |
   | Head A | Head B |
-  +:-------+-------:+ {.green}
+  |:-------|-------:| {.green}
   | AA     | BB     |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     attributes:
       - key: class
         value: [green]

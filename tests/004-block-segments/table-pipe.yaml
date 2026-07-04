@@ -1,16 +1,16 @@
-id: table-gfm
+id: table-pipe
 section: "4.8"
-description: GFM table; `+:---+` header separator sets alignment and marks preceding rows as type Header; subsequent rows are type Row
+description: "Pipe table; `|:---|` header separator sets alignment and marks preceding rows as type Header; subsequent rows are type Row"
 
 input: |
   | Name  | Score |
-  +:------+------:+
+  |:------|------:|
   | Alice |    42 |
   | Bob   |    17 |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     rows:
       - type: Header
         children:

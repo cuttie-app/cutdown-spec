@@ -1,11 +1,11 @@
 id: table-multiline-header
 section: "4.8"
-description: "Full-grid multiline table: `+:---+` separator marks preceding rows as type Header and sets column alignment"
+description: "Full-grid multiline table: a `|:---|` header separator acts as a full separator row, marks preceding rows as type Header, and sets column alignment"
 
 input: |
   +----------+----------+
   | Header A | Header B |
-  +:---------+---------:+
+  |:---------|---------:|
   | Cell A   | Cell B   |
   +----------+----------+
 

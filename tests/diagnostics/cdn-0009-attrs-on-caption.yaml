@@ -8,7 +8,7 @@ input: |
 
 ast:
   - type: Table
-    kind: gfm
+    kind: pipe
     caption:
       - type: Text
         value: "Caption text {.highlight}"

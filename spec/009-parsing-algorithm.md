@@ -35,7 +35,8 @@ Each block candidate is classified by its first line:
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
 | `^:::[ID_LITERAL]` | NamedBlock |
-| `^\|` | Table |
+| `^\|` | Table (pipe) |
+| `^\+-` | Table (multiline) |
 | `^> ` | QuoteBlock |
 | `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
 | `^[0-9]+\. ` | List (ordered) |

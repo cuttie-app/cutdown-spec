@@ -1,0 +1,36 @@
+id: table-multiline-plus-colons-inert
+section: "4.8"
+description: "Colons in a `+` separator row are inert: the row delimits logical rows but never marks Header and never sets alignment"
+
+input: |
+  +----------+
+  | Cell A   |
+  +:---------+
+  | Cell B   |
+
+ast:
+  - type: Table
+    kind: multiline
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            row: 0
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Cell A"
+      - type: Row
+        children:
+          - type: Cell
+            row: 1
+            column: 0
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: "Cell B"
+    columns:
+      - type: Column
