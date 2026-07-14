@@ -1,0 +1,15 @@
+id: quote-block-strong-empty-run-of-four
+section: "4.6"
+description: "**** with no word content on either side produces an empty Strong node (N=4 rule, cf. emphasis-empty) followed by literal text, inside a QuoteBlock; the trailing > is plain text, not a new quote"
+
+input: |
+  > **** >
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Strong
+          - type: Text
+            value: " >"

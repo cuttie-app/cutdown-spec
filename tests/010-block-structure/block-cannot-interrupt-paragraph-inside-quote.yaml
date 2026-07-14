@@ -1,0 +1,15 @@
+id: block-cannot-interrupt-paragraph-inside-quote
+section: "10.1"
+description: "Stacked >, -, > markers on a QuoteBlock continuation line cannot interrupt an in-progress paragraph; only the line's own leading > is stripped for the container, and the rest folds into paragraph text literally with soft break collapsed to zero"
+
+input: |
+  > q
+  > - > q li q
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: "q- > q li q"

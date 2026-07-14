@@ -1,0 +1,18 @@
+id: strong-run-of-four-splits
+section: "5.3"
+description: "A **** run flanked by real word content on both sides is a closer immediately followed by an opener: two separate Strong nodes, not one nested/empty span"
+
+input: |
+  **one part text **** other part**
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Strong
+        children:
+          - type: Text
+            value: "one part text"
+      - type: Strong
+        children:
+          - type: Text
+            value: "other part"
