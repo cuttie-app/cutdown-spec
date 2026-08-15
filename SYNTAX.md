@@ -1,12 +1,12 @@
 # Cutdown Syntax — Quick Reference
 
-Cutdown is a markup language that produces an AST. There is no HTML output. Parsing is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§9).
+Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§9). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§16).
 
 ---
 
 ## Input
 
-- UTF-8 only. Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
+- Input is decoded UTF-8 text. Transport bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§16). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
 - Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
 - `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§7), not transforms.
 - Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.

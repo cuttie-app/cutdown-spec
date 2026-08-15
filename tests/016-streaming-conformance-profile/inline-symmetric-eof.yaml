@@ -1,0 +1,34 @@
+id: inline-symmetric-eof
+section: "16"
+description: "An unclosed symmetric delimiter is literal at EOF, then becomes Strong when its closer arrives"
+
+input: "**draft**"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Strong
+        children:
+          - type: Text
+            value: draft
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 0
+      ast: []
+      diagnostics: []
+    - at: 2
+      ast:
+        - type: Paragraph
+          children:
+            - type: Text
+              value: "**"
+      diagnostics: []
+    - at: 7
+      ast:
+        - type: Paragraph
+          children:
+            - type: Text
+              value: "**draft"
+      diagnostics: []

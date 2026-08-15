@@ -1,0 +1,59 @@
+id: page-break-boundary
+section: "16"
+description: "A completing PageBreak line retroactively turns literal paragraph text into a page split"
+
+input: "First\n\n---\n\nSecond"
+
+pages:
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: First
+  - children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Second
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 5
+      pages:
+        - children:
+            - type: Paragraph
+              children:
+                - type: Text
+                  value: First
+      diagnostics: []
+    - at: 9
+      pages:
+        - children:
+            - type: Paragraph
+              children:
+                - type: Text
+                  value: First
+            - type: Paragraph
+              children:
+                - type: Text
+                  value: "--"
+      diagnostics: []
+    - at: 10
+      pages:
+        - children:
+            - type: Paragraph
+              children:
+                - type: Text
+                  value: First
+        - {}
+      diagnostics: []
+    - at: 12
+      pages:
+        - children:
+            - type: Paragraph
+              children:
+                - type: Text
+                  value: First
+        - {}
+      diagnostics: []

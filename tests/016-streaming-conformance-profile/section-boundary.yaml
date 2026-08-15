@@ -1,0 +1,30 @@
+id: section-boundary
+section: "16"
+description: "A later heading may close an earlier Section while every source prefix remains a normal document"
+
+input: "= One\n\n== Two"
+
+ast:
+  - type: Section
+    level: 1
+    heading:
+      - type: Text
+        value: One
+    children:
+      - type: Section
+        level: 2
+        heading:
+          - type: Text
+            value: Two
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 5
+      ast:
+        - type: Section
+          level: 1
+          heading:
+            - type: Text
+              value: One
+      diagnostics: []

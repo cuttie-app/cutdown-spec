@@ -1,0 +1,22 @@
+id: code-fence-eof
+section: "16"
+description: "An open code fence is a valid snapshot with CDN-0001 until its closing fence arrives"
+
+input: "```python\nx = 1\n```"
+
+ast:
+  - type: CodeBlock
+    language: python
+    raw: x = 1
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 16
+      ast:
+        - type: CodeBlock
+          language: python
+          raw: x = 1
+      diagnostics:
+        - code: CDN-0001
+          level: warning

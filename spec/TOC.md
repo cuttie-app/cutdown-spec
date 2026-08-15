@@ -53,5 +53,6 @@ Cutdown is a simple markup language with the bare minimum features to structure 
 13. [Special Character Reference](013-special-character-reference.md)
 14. [AST Node (Segment) Reference](014-ast-node-reference.md)
 15. [Name and Compliance](015-name-and-compliance.md)
+16. [Streaming Conformance Profile](016-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
 
 ---

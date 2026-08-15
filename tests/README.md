@@ -65,6 +65,21 @@ Exactly ONE OF `ast` or `pages` MUST be present.
 
 This means a minimal fixture only needs to assert the fields it cares about — it will not break if the parser adds new optional fields later.
 
+### Streaming-profile assertions
+
+Fixtures under `016-streaming-conformance-profile/` use the ordinary final-input assertions above and MAY add a `streaming` object:
+
+```yaml
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 2
+      ast: []
+      diagnostics: []
+```
+
+`at` is the count of decoded Unicode scalar values from the beginning of `input`. A streaming-profile runner MUST parse **every** scalar prefix of `input`, including the empty prefix and the full input. It MUST verify total, deterministic parsing for every prefix. It additionally verifies the listed checkpoint AST/pages and diagnostics. Each checkpoint is evaluated as an ordinary input snapshot; it is not a separate parser mode.
+
 **Diagnostics matching** is order-independent:
 
 - Every `{ code, level }` entry listed under `diagnostics` MUST appear in the actual output.

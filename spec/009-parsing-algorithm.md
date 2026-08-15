@@ -2,13 +2,13 @@
 
 Cutdown's parsing model makes three testable guarantees:
 
-1. **Single pass.** Every character of input is scanned a bounded number of times; parsing is linear time in input length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed.
+1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§16).
 2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
 3. **Deferred attachment.** Structural decisions may be deferred, but deferred decisions only attach or regroup already-built nodes — they never re-parse text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block), multiline table buffering until the table closes, and open-inline buffering until end of line.
 
 ### 9.1 Phase 1 — Input Interpretation
 
-1. Validate UTF-8.
+1. Receive decoded text from the UTF-8 input boundary (§7).
 2. Apply the interpretive rules of §7: `\r\n` / `\r` / `\n` all read as line terminators, tabs outside fences read as single spaces, leading BOM skipped. The source text is never rewritten — all offsets index the raw input (§14, Location Type).
 
 ### 9.2 Phase 2 — Block Identification
@@ -135,5 +135,9 @@ The rest of the line — surplus hyphens, `{attrs}`, any other content — is dr
 Inside a block container, a blank-line-surrounded `---` line is not a PageBreak: it parses as `Paragraph(Text("---"))` and a diagnostic is emitted (CDN-0017) noting that page separation is a top-level construct. A `---` line glued to a preceding paragraph remains paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
 
 Cutdown performs no front-matter detection: a document-leading `---` is a PageBreak like any other.
+
+### 9.7 Incremental availability
+
+Incremental availability does not create a second parsing mode. At every decoded Unicode-scalar boundary, an implementation MUST produce the same AST and diagnostics as an ordinary parse of the source available at that boundary. Later source MAY reinterpret an unresolved inline suffix, an open block/container, or derived structure that depends on it. Consumers MAY delay semantic rendering until an end of block (§1, §16); Cutdown defines no rendering schedule.
 
 ---

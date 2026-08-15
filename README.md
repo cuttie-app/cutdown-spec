@@ -35,7 +35,7 @@ That single rule is what made Markdown worth learning. No extra syntax. No delim
 
 The parser is a total function. There is no error state, no invalid input, no rejection path. Text that carries no markup is a document of paragraphs; text that carries markup is a document with structure; there is nothing in between and nothing outside.
 
-For a pipeline, this is a load-bearing guarantee: parsing cannot fail, so there is no error-recovery branch to write, no partial-parse state to represent, no malformed-input queue to drain. Every byte sequence in, exactly one tree out — the same tree, from every conforming implementation.
+For a pipeline, this is a load-bearing guarantee: parsing cannot fail, so there is no error-recovery branch to write and no malformed-document queue to drain. Every decoded Unicode text sequence in, exactly one tree out — the same tree, from every conforming implementation. This applies to every character prefix while text is arriving; unfinished ordinary markup follows its normal degradation rule. UTF-8 decoding belongs to the input boundary, not to Cutdown syntax.
 
 ### **Doubled delimiters only. Single characters are plain text.**
 
