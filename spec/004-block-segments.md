@@ -320,7 +320,7 @@ interface List {
 
 - Unordered marker: `-` followed by one space. Only `-` is supported.
 - Ordered marker: `{number}.` followed by one space. Only `.` delimiter; `)` is not supported. Actual numbers are ignored except for `start`.
-- `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]` → `"checklist"`.
+- `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
 - `start` is non-null only for `kind: "numbered"`.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment.
@@ -350,7 +350,7 @@ interface ListItem {
 
 #### 4.7.2 TaskItem
 
-**Syntax:** `- [ ] content` or `- [x] content`
+**Syntax:** `- [ ] content` or `- [x] content` or `- [+] content`
 
 **AST type:**
 
@@ -363,7 +363,7 @@ interface TaskItem {
 }
 ```
 
-- Marker: `- ` followed immediately by `[]`/`[ ]`  (unchecked) or `[x]`/`[X]` (checked), then one space and content.
+- Marker: `- ` followed immediately by `[]`/`[ ]`  (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[+]` is bidi-neutral and MAY be used in place of `[x]`/`[X]` where RTL content would otherwise reorder the Latin letter within the brackets.
 - Only `kind: "bullet"` list items may carry a checkbox. A `kind: "numbered"` list encountering a task marker closes and a new `kind: "checklist"` List segment opens.
 - A `List` with `kind: "checklist"` has `children: TaskItem[]` exclusively; `kind: "bullet"` and `kind: "numbered"` have `children: ListItem[]` exclusively.
 - Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` segment.
@@ -375,12 +375,14 @@ interface TaskItem {
 Input:
   - [ ] Buy milk
   - [x] Write spec
+  - [+] Review draft
   - plain item
 
 AST:
   List { kind: "checklist", loose: false }
   ├── TaskItem { checked: false, children: [Text("Buy milk")] }
-  └── TaskItem { checked: true,  children: [Text("Write spec")] }
+  ├── TaskItem { checked: true,  children: [Text("Write spec")] }
+  └── TaskItem { checked: true,  children: [Text("Review draft")] }
   List { kind: "bullet", loose: false }
   └── ListItem { children: [Text("plain item")] }
 ```

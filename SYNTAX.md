@@ -160,8 +160,9 @@ Every line must start with `>`. Nesting by counting `>` chars.
 1. ordered item           ← (marker: '{n}. ')
 2. second item
 
-- [ ] task item           ← (marker: '- [{x / X / space}] ')
+- [ ] task item           ← (marker: '- [{x / X / + / space}] ')
   - [x] nest task item    ← ({ checked: true})
+  - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
 ```
 
 Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the recommended style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
