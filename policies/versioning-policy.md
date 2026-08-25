@@ -4,7 +4,7 @@ Status: Active
 Owner: Language
 Scope: Cutdown grammar, parser behavior, and AST contract
 Related:
-  - `./change-gate.markdown`
+  - `./changes-gate.md`
   - `./change-publication-policy.md`
 ---
 
