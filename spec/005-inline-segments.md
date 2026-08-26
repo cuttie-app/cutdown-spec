@@ -2,7 +2,7 @@
 
 Inline content is parsed in source order with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
 
-The `##` opener (§5.14) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule. The payload is stored as a `Reflection` entry on the enclosing block — it does not appear in the inline stream.
+The `##` opener (§2.2) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule. The payload is stored as a `Reflection` entry on the enclosing block — it does not appear in the inline stream.
 
 **Inline rules run in:**
 
@@ -22,7 +22,7 @@ The `##` opener (§5.14) is special: it has no closer and terminates at end-of-l
 
 ### 5.1 Text
 
-Any sequence of characters not matched by another inline rule.
+**Syntax:** Any sequence of characters not matched by another inline rule.
 
 **AST type:**
 
@@ -420,9 +420,13 @@ Cutdown emits the AST node `TextBreak`; consumers choose the rendering (a `<br>`
 
 ---
 
-### 5.14 Line Comment (`##`)
+#### Line Comment (`##`) — not an inline segment
 
-`##` is not an inline segment. See §2.2 for the full normative semantics. Summary:
+**Syntax:** `content ## trailing comment`
+
+Line Comment runs till the end of line (EOL). Payload captured as a `Reflection` on the enclosing block, omitted by renderers by default (§2.5).
+
+See §2.2 for the full normative semantics. Summary:
 
 - Recognized at line-start or mid-line; runs to EOL; opaque to all other delimiters.
 - Payload stored as `Reflection` entry on the enclosing block — does not appear in the inline stream.
