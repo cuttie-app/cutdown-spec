@@ -590,6 +590,14 @@ interface ImageBlock {
 - See §5.9 for `ImageInline` syntax and parsing details. The same rules apply to `ImageBlock` alt text and src.
 - Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
 - `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be the only one segment on the line.
+- **Only-segment fallback.** Phase 3 classification (§9.3) is provisional: it matches `^!\[`. If the line carries anything after the image, the only-segment requirement fails and the line falls back to a `Paragraph` containing an `ImageInline` followed by the remaining inline content. No content is dropped.
+
+```
+![a](b)                  → ImageBlock { alt: [Text("a")], src: "b" }
+![a](b) trailing text    → Paragraph([ImageInline(...), Text(" trailing text")])
+```
+
+  **Cascade to watch.** `Paragraph` is not captionable (§6.5), so a `^ ` line after the fallback has no captionable predecessor and becomes a `Paragraph` itself plus CDN-0008. One stray word after an image therefore demotes both the image *and* its caption to prose, with only the diagnostic to show for it.
 - **Supports caption line (§6.5).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. `ImageInline` does not support captions — it is not a block.
 
 ---

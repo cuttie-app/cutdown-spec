@@ -45,7 +45,7 @@ Each block candidate is classified by its first line:
 | `^\^\^\^` | SpoilerBlock |
 | `^###` | CommentBlock |
 | `^/` | FileRef |
-| `^!\[` | ImageBlock |
+| `^!\[` | ImageBlock — provisional; falls back to Paragraph if the image is not the only segment on the line (§4.9) |
 | (anything else) | Paragraph |
 
 ### 9.4 Phase 4 — Inline Parsing

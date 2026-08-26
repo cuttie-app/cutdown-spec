@@ -302,6 +302,8 @@ interface ImageInline {
 - `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
 - `src` is a raw string. No URL validation or sanitization by Cutdown; consumers may choose to validate/sanitize as needed. `src` may be empty.
 - `![]()` is valid and preserved as `ImageInline { alt: [], src: "" }`.
+- **Captions:** `ImageInline` does **not** participate in the caption line (§6.5) — it is not a block. Only `ImageBlock` (§4.9) is captionable.
+- **ImageInline vs ImageBlock (§4.9):** a line at block level beginning with `![` is classified as an `ImageBlock`, and an `ImageBlock` must be the only segment on its line. An image anywhere else — mid-line, or on a line carrying other content — is an `ImageInline`. See §4.9.
 
 ---
 

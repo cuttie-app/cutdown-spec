@@ -1,0 +1,26 @@
+id: cdn-0008-orphaned-caption-after-imageblock-fallback
+section: "6.5"
+description: "CDN-0008: an ImageBlock that fell back to a Paragraph is not captionable, so the following `^ ` line is orphaned and stays literal"
+
+input: |
+  ![a](b) trailing text
+  ^ A caption
+
+ast:
+  - type: Paragraph
+    children:
+      - type: ImageInline
+        alt:
+          - type: Text
+            value: a
+        src: "b"
+      - type: Text
+        value: " trailing text"
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "^ A caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

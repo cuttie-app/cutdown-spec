@@ -1,0 +1,16 @@
+id: imageblock-not-only-segment-falls-back
+section: "4.9"
+description: "An image line carrying trailing content fails the only-segment rule and falls back to a Paragraph with an ImageInline — no content is dropped"
+
+input: "![a](b) trailing text\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: ImageInline
+        src: "b"
+        alt:
+          - type: Text
+            value: "a"
+      - type: Text
+        value: " trailing text"
