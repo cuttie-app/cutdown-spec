@@ -30,12 +30,6 @@ foo ## trailing comment
 **`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the nearest enclosing block:
 
 ```typescript
-interface Loc {
-  file?: string
-  start: number
-  end: number
-}
-
 interface Reflection {
   loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, §14)
   text: string   // payload after ##, one leading space stripped

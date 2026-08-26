@@ -27,16 +27,6 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
 | `CommentBlock`  | `type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
 
-### Synthetic Segments
-
-The AST schema admits nodes that are not producible by parsing. **Conforming parsers never emit them; conforming consumers must accept them.**
-
-| Segment    | Fields |
-|------------|--------|
-| `Fragment` | `type: "Fragment", meta: Meta\|null, children: Block[]` |
-
-`Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item. A `Fragment` carries the `loc` of the construct that caused its materialization in the containing file (e.g. a `FileRef` line), or no `loc`.
-
 ### Inline Segments
 
 | Segment         | Fields |
@@ -67,12 +57,22 @@ The AST schema admits nodes that are not producible by parsing. **Conforming par
 | `Cell`          | `type: "Cell", children: Inline[]\|Block[], row: number, column: number` — `Inline[]` when `Table.kind` is `"pipe"`; `Block[]` when `"multiline"` |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
+### Synthetic Segments
+
+The AST schema admits nodes that are not producible by parsing. **Conforming parsers never emit them; conforming consumers must accept them.**
+
+| Segment    | Fields |
+|------------|--------|
+| `Fragment` | `type: "Fragment", meta: Meta\|null, children: Block[]` |
+
+`Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item.
+
 ### Location Type
 
-Every segment MAY carry a source location:
+Every segment MAY carry a source location, `loc?: Loc`:
 
 ```typescript
-loc?: {
+interface Loc {
   file?: string   // source file identifier, when known
   start: number   // offset of the segment's first code unit
   end: number     // offset one past the segment's last code unit (end-exclusive)
@@ -87,27 +87,25 @@ loc?: {
 
 ### Reflection Type
 
-```
-Reflection[] | null
-
-Reflection =
-  { loc: Loc      // source range of the ## payload (raw-file UTF-16 offsets, §Location Type)
-    text: string  // ## payload with one leading space stripped
-  }
+```typescript
+interface Reflection {
+  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, see Location Type)
+  text: string   // ## payload with one leading space stripped, trailing whitespace preserved
+}
 ```
 
-`reflection` is `null` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
+`reflection` is typed `Reflection[] | null`, and is `null` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
 
 ### Attributes Type
 
-```
-Attribute[] | null
-
-Attribute =
+```typescript
+type Attribute =
   | { key: "id",    value: string }
   | { key: "class", value: string[] }
   | { key: string,  value: string }   // value: "" for bare-key tokens
 ```
+
+`attributes` is typed `Attribute[] | null`.
 
 Ordering: entries appear in **source order**. Deduplication rules (see §6.1) may drop entries before the array is emitted.
 
