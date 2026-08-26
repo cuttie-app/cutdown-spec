@@ -22,9 +22,9 @@ Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, Quote
 
 | Situation | Rule |
 |-----------|------|
-| Whitespace between two adjacent opening delimiters (nesting context) | Collapsed to zero |
-| Whitespace between opening delimiter and first literal | Stripped to zero |
-| Whitespace between last literal and closing delimiter | Stripped to zero |
+| Whitespace between two adjacent opening delimiters (nesting context) | Consumed |
+| Whitespace between opening delimiter and first literal | Consumed |
+| Whitespace between last literal and closing delimiter | Consumed |
 | Whitespace between closing delimiter and next sibling opening delimiter | Preserved as `Text(" ")` |
 | Interior whitespace runs | Collapsed to one space |
 | Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
