@@ -1,5 +1,5 @@
 id: attr-strip-heading
-section: "12"
+section: "12.1"
 description: "Whitespace immediately before a consumed `{attr}` on a heading-opener line is stripped from the heading text — no trailing spaces leak into Text value"
 
 input: "== Start Heading  {.red}\n"

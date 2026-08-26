@@ -76,7 +76,7 @@ Blocks are separated by **blank lines**. Block elements cannot interrupt a parag
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; a single trailing space before the break is preserved as the explicit word separator (§12). `\` at line end → `TextBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). `\` at line end → `TextBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.

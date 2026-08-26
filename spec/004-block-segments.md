@@ -21,7 +21,7 @@ interface Paragraph {
 
 - All lines are **parsed by inline rules** and concatenated. Result is `Inline[]`.
 - A single newline between lines is a **soft break** — folded to zero; lines concatenate directly with no character emitted.
-- A single trailing space before the newline is preserved as `Text(" ")` (explicit word boundary).
+- Trailing spaces before the newline collapse to a single space, preserved as `Text(" ")` (explicit word boundary). At a block boundary the space is dropped. See §12.
 - `\` at line end produces a `TextBreak` segment (explicit line break).
 
 **Example:**

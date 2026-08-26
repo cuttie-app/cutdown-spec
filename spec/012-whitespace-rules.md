@@ -1,10 +1,12 @@
 ## 12. Whitespace Rules
 
+### 12.1 Whitespaces in Block Segments
+
 | Situation | Rule |
 |-----------|------|
 | Line endings | `\r\n`, lone `\r`, and `\n` all read as line terminators (§7); the text is not rewritten |
 | Encoding | UTF-8 required |
-| Trailing spaces | Ignored, **except**: a single trailing space immediately before a soft break is preserved — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator |
+| Trailing spaces | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** (blank line or end of input) |
 | Leading spaces on block line | Stripped before block classification |
 | Leading spaces on paragraph continuation line | Stripped before inline parsing |
 | Multiple blank lines | Treated as a single blank line |
@@ -16,7 +18,7 @@
 | Hard break (`\` at line end) | Produces `TextBreak` segment |
 | Whitespace immediately preceding a `{attr}` block that is **consumed** by an attribute slot (block-opener last-attr, inline attachment, or scope-chain) | Stripped from the preceding text value. Does NOT apply when `{...}` falls through to literal `Text("{...}")` per §6.3 (orphan). |
 
-### 12.2 Inline Block Whitespace
+### 12.2 Whitespaces in Inline Segments
 
 Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, QuoteInline):
 

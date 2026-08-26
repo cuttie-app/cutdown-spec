@@ -14,11 +14,13 @@ Comments (§2) are detected in Phase 2 before block boundary analysis. A line st
 
 ### 10.2 Leading and Trailing Whitespace
 
-Any number of leading spaces (including none) are stripped before block classification. Indentation is never significant for block type detection in Cutdown. Indented code blocks (as in CommonMark) are not supported.
-
-Trailing spaces on any line are ignored.
+Any number of leading spaces (including none) are stripped before block classification. Indentation is never significant for block type detection in Cutdown — but it *is* significant for list nesting; see §10.5 and the List exception below.
 
 **List exception:** For list blocks, the parser records the **original column** of each marker (before stripping) for use in the list nesting stack model (§10.5). Block type detection still uses the stripped line; the column is a separate piece of metadata used only during list parsing.
+
+Indented code blocks (as in CommonMark) are not supported.
+
+Trailing spaces on any line collapse to a single space; that space is preserved before a soft break and dropped at a block boundary (§12).
 
 ### 10.3 Block Classification
 

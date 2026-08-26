@@ -1,0 +1,13 @@
+id: trailing-space-before-comment
+section: "12.1"
+description: "Trailing spaces before a trailing ## collapse to one and are preserved as the word boundary; the payload keeps its own trailing space verbatim"
+
+input: "a   ## comment \nb\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "a b"
+    reflection:
+      - text: "comment "

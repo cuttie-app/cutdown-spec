@@ -1,5 +1,5 @@
 id: attr-strip-paragraph-trailing
-section: "12"
+section: "12.1"
 description: "Whitespace immediately before a consumed trailing `{attr}` on a paragraph end is stripped from the preceding Text — Paragraph attrs claim the slot via scope-chain"
 
 input: "paragraph text  {.p}\n"

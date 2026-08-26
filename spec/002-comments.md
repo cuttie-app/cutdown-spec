@@ -1,10 +1,10 @@
 ## 2. Comments
 
-Cutdown has two comment constructs that share the `#` symbol and follow the doubled/tripled-delimiter rule (§10.4). `##` stores comment payloads as **Reflection entries** on blocks; `###` (`CommentBlock`) produces a separate AST segment. Both are hidden from rendering by default.
+Cutdown has two comment constructs that share the `#` (octothorpe) symbol and follow the doubled/tripled-delimiter rule (§10.4). `##` stores comment payloads as **Reflection entries** on blocks; `###` (`CommentBlock`) produces a separate AST segment. Both are hidden from rendering by default.
 
 ### 2.1 Single `#` is literal
 
-A single `#` is literal text in all positions. There is no whitespace rule, no line-start rule, no special treatment.
+A single `#` (octothorpe) is literal text in all positions. There is no whitespace rule, no line-start rule, no special treatment.
 
 ```
 # foo            →  Paragraph([Text("# foo")])
@@ -13,14 +13,14 @@ foo # bar        →  Paragraph([Text("foo # bar")])
 
 ### 2.2 `##` — Line Comment (Reflection)
 
-`##` opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
+A double `##` (octothorpe) opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
 
 ```
 ## a whole-line comment
 foo ## trailing comment
 ```
 
-- The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value.
+- The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value **verbatim** — trailing whitespace inside the payload is preserved, since the payload is opaque (§12's trailing-space rule does not reach inside it).
 - **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, table cell `|`, attribute `}`, or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
 - **`##` boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line.
 - `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned.

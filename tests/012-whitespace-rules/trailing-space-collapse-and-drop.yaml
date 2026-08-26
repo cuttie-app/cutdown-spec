@@ -1,0 +1,15 @@
+id: trailing-space-collapse-and-drop
+section: "12.1"
+description: "Trailing spaces collapse to one: preserved before a soft break, dropped at a block boundary"
+
+input: "a  \nb  \n\nc\n"
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "a b"
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "c"
