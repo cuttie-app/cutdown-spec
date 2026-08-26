@@ -151,10 +151,10 @@ Input (standard):
     - item 1.2
 
 AST:
-  List { ordered: false, loose: false }
+  List { kind: "bullet", loose: false }
   ├── ListItem { Text("item 0.0") }
   └── ListItem { Text("item 1.0") }
-      └── List { ordered: false, loose: false }
+      └── List { kind: "bullet", loose: false }
           ├── ListItem { Text("item 1.1") }
           └── ListItem { Text("item 1.2") }
 ```
@@ -168,7 +168,7 @@ Input (loose list — absorbed blank line):
     This starts a new paragraph inside item two.
 
 AST:
-  List { ordered: false, loose: true }
+  List { kind: "bullet", loose: true }
   ├── ListItem
   │   └── Text("First item continues here")
   └── ListItem
