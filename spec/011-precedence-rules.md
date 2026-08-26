@@ -13,9 +13,9 @@ When multiple constructs compete for the same input, the following priority appl
 | 7 | Escape `\x` | Resolved before delimiter matching |
 | 8 | Links and images `[...](...)`  | Matched before emphasis runs |
 | 9 | Inline math `$$` | Matched before emphasis; content is literal |
-| 10 | Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` | Left-to-right greedy |
+| 10 | Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` | Source order, greedy |
 | 11 | Named span `::name` | Matched after emphasis |
-| 12 | Variable `{{key}}` / Attributes `{...}` | Longest opener wins (`{{` before `{`), then left-to-right |
+| 12 | Variable `{{key}}` / Attributes `{...}` | Longest opener wins (`{{` before `{`), then source order |
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.
 

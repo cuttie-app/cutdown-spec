@@ -242,7 +242,7 @@ Must start at line start. When the same `ref` is defined more than once in a doc
 
 ## Inline Elements
 
-Parsed left-to-right. An unclosed opener degrades by its class (§9.4.1):
+Parsed in source order. An unclosed opener degrades by its class (§9.4.1):
 
 - **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
 - **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
@@ -384,6 +384,6 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 7. Escape `\x` — resolved before delimiter matching
 8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 9. Inline math `$$` — matched before emphasis; content literal
-10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — left-to-right greedy
+10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
 11. Named span `::name` — matched after emphasis
-12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then left-to-right
+12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then source order

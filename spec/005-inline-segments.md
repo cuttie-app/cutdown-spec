@@ -1,6 +1,6 @@
 ## 5. Inline Segments
 
-Inline content is parsed left-to-right with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
+Inline content is parsed in source order with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
 
 The `##` opener (§5.14) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule. The payload is stored as a `Reflection` entry on the enclosing block — it does not appear in the inline stream.
 
@@ -55,7 +55,7 @@ interface Emphasis {
 
 - `__` opener and closer. A single `_` is always literal text.
 - Run of 3: `___` = `__` (opener/closer) + `_` (literal).
-- Matching: greedy left-to-right. First valid `__` closer wins.
+- Matching: greedy, in source order. First valid `__` closer wins.
 - Unclosed `__` → `Text("__")`.
 - Same-type nesting not allowed. Cross-type nesting allowed (e.g. `__**text**__`).
 - Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.
@@ -373,7 +373,7 @@ interface Spoiler {
 
 - `^^` opener and closer. A single `^` is always literal text in inline context. (Inside `[...][^id]` link/definition target slots, `^` retains its reference-marker role per §5.5 / §4.14 — that context is delimited and never reaches the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
-- Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy left-to-right close, unclosed `^^` → `Text("^^")`, no same-type nesting.
+- Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy close in source order, unclosed `^^` → `Text("^^")`, no same-type nesting.
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, and `Link` is allowed.
 - Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.
 

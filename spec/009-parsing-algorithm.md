@@ -14,7 +14,7 @@ Cutdown's parsing model makes three testable guarantees:
 ### 9.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned, except for the opener line (first line of the fence) and the closer line (the closing fence). On all other lines, scan left-to-right for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
+2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned, except for the opener line (first line of the fence) and the closer line (the closing fence). On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**.
 4. Special blocks that override blank-line boundaries:
    - Code fences: ` ``` ` opens until the next ` ``` ` (or end of document).
@@ -50,7 +50,7 @@ Each block candidate is classified by its first line:
 
 ### 9.4 Phase 4 — Inline Parsing
 
-Inline content is parsed left-to-right within each block that contains inline content. The parser:
+Inline content is parsed in source order within each block that contains inline content. The parser:
 
 1. Scans for openers (`**`, `__`, `~~`, `^^`, '\`\`', `[`, `![`, `::`, `{{`, `""`, `''`, `$$`).
 2. On finding an opener, scans forward for a valid closer.
@@ -106,7 +106,7 @@ Parsing (Phases 1–4) produces a **flat block sequence** — one for the docume
 
 The sectionization fold applies independently to every flat block sequence (root and each container child list).
 
-**A `Section` spans from its heading to the next heading of level ≤ its own within the same sequence, or to the sequence's end.** Equivalently, walking the sequence left-to-right:
+**A `Section` spans from its heading to the next heading of level ≤ its own within the same sequence, or to the sequence's end.** Equivalently, walking the sequence in document order:
 
 1. On a heading of level `n`: close all open Sections of level ≥ `n` within this sequence, then open a new `Section(level=n)`.
 2. All subsequent non-heading blocks belong to the innermost open Section.
