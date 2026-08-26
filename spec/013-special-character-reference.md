@@ -2,31 +2,31 @@
 
 Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block closer escapes).
 
-| Character | Role | Escapable |
-|-----------|------|-----------|
-| `=` | Heading marker (line start) | Yes |
-| `#` | `##` line comment → Reflection entry (anywhere) / CommentBlock (`###`, line start) | Yes |
-| `*` | Strong delimiter (`**`) | Yes |
-| `_` | Emphasis delimiter (`__`) | Yes |
-| `~` | Highlight (`~~`) / metadata fence (`~~~`) | Yes |
-| \`  | Inline code (\`\`) / code fence (\`\`\`) — escapable inside CodeInline as `` \` `` | Yes |
-| `[` | Link/image opener | Yes |
-| `]` | Link/image closer | Yes |
-| `(` | Link URL opener | Yes |
-| `)` | Link URL closer | Yes |
-| `!` | Image prefix | Yes |
-| `{` | Attribute/variable opener | Yes |
-| `}` | Attribute/variable closer | Yes |
-| `:` | Named span prefix (`::`) / named block (`:::`) | Yes |
-| `-` | List marker / page break (`---`, top level) | Yes |
-| `>` | QuoteBlock marker | Yes |
-| `/` | File reference (line start) | Yes |
-| `\` | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |
-| \|  | Table cell separator (pipe row) / header separator row | Yes |
-| `+` | Multiline table opener / row separator (`+-`, `+---+`) | Yes |
-| `^` | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
-| `$` | Inline math (`$$`) / block math (`$$$`) | Yes |
-| `"` | Inline quote delimiter (`""`) | Yes |
-| `'` | Inline quote delimiter (`''`) | Yes |
+| Character | Name | Role | Escapable |
+|-----------|------|------|-----------|
+| `=` | equals | Heading marker (line start) | Yes |
+| `#` | octothorpe | `##` line comment → Reflection entry (anywhere) / CommentBlock (`###`, line start) | Yes |
+| `*` | asterisk | Strong delimiter (`**`) | Yes |
+| `_` | underscore | Emphasis delimiter (`__`) | Yes |
+| `~` | tilde | Highlight (`~~`) / metadata fence (`~~~`) | Yes |
+| \`  | backtick | Inline code (\`\`) / code fence (\`\`\`) — escapable inside CodeInline as `` \` `` | Yes |
+| `[` | left bracket | Link/image opener | Yes |
+| `]` | right bracket | Link/image closer | Yes |
+| `(` | left parenthesis | Link URL opener | Yes |
+| `)` | right parenthesis | Link URL closer | Yes |
+| `!` | exclamation mark | Image prefix | Yes |
+| `{` | left brace | Attribute/variable opener | Yes |
+| `}` | right brace | Attribute/variable closer | Yes |
+| `:` | colon | Named span prefix (`::`) / named block (`:::`) | Yes |
+| `-` | hyphen | List marker / page break (`---`, top level) | Yes |
+| `>` | greater-than sign | QuoteBlock marker | Yes |
+| `/` | slash | File reference (line start) | Yes |
+| `\` | backslash | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |
+| \|  | pipe | Table cell separator (pipe row) / header separator row | Yes |
+| `+` | plus | Multiline table opener / row separator (`+-`, `+---+`) | Yes |
+| `^` | caret | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
+| `$` | dollar sign | Inline math (`$$`) / block math (`$$$`) | Yes |
+| `"` | double quote | Inline quote delimiter (`""`) | Yes |
+| `'` | single quote | Inline quote delimiter (`''`) | Yes |
 
 ---

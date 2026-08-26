@@ -12,7 +12,9 @@ AST:
   <segment representation>
 ```
 
-A `→` symbol means "produces AST node."
+**The arrow symbol (`→`)** separates a construct or condition from what it produces. In examples, the left side is Cutdown source and the right side is the AST notation defined in §14.
+
+**Naming characters.** A character used as a **noun** is named in words on first use in a section — "a single `#` (octothorpe)", "the caret (`^`)" — and thereafter by symbol alone. §13 is the register of names.
 
 ### Streaming terms
 
