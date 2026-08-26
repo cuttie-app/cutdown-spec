@@ -105,6 +105,37 @@ The syntax is closed. Application-specific vocabulary lives in named blocks, spa
 
 ---
 
+## If you know Markdown
+
+Cutdown is not a Markdown dialect. Most of it will feel familiar, but these differ — and they differ **silently**, producing a valid document rather than an error:
+
+| You write | CommonMark/GFM gives you | Cutdown gives you |
+|---|---|---|
+| `# Title` | Heading | **Comment** — headings are `= Title` |
+| `__text__` | Strong | **Emphasis** — `**text**` is Strong |
+| `~~text~~` | Strikethrough | **Highlight** — no deletion semantics |
+| `---` | Thematic break (`<hr>`) | **PageBreak** — a document structure boundary |
+| `*text*`, `_text_` | Emphasis | **Literal text** — single symbols are never delimiters |
+| four-space indent | Code block | **Nothing** — indented code blocks are not supported |
+
+`__text__` is the one to watch: it produces Emphasis where you meant Strong, with no diagnostic and nothing visibly wrong in the source.
+
+Cutdown also has constructs absent from CommonMark and GFM, though several will be familiar from the wider Markdown family — Pandoc and Djot both have fenced divs and attribute syntax, and Djot is credited below as an inspiration:
+
+| Cutdown | Closest prior art |
+|---|---|
+| `{#id .class key=value}` attributes on anything | Pandoc attribute blocks; Djot attributes; kramdown / PHP Markdown Extra attribute lists |
+| `:::name` named blocks | Pandoc and Djot fenced divs |
+| `::name` spans | Pandoc bracketed spans; Djot inline spans |
+| `^ caption` lines | Pandoc image captions (narrower — Cutdown captions bind to any captionable block) |
+| `^^spoilers^^` | no common equivalent |
+
+What is unusual is not the individual constructs but that they are **built into one closed syntax** rather than supplied by extensions that vary per implementation.
+
+The reason single symbols are literal is the doubling rule — see [**Doubled delimiters only**](#doubled-delimiters-only-single-characters-are-plain-text) above. It is why `snake_case`, `2*3`, and apostrophes need no escaping.
+
+---
+
 ## Syntax
 
 [Quick reference → `SYNTAX.md`](SYNTAX.md) · [Full spec → `spec/TOC.md`](spec/TOC.md)
@@ -112,7 +143,7 @@ The syntax is closed. Application-specific vocabulary lives in named blocks, spa
 ```
 = Hello **world**
 
-Some paragraph with ~~struck~~ text and a [link](https://example.com).
+Some paragraph with ~~highlighted~~ text and a [link](https://example.com).
 
 :::callout {.warning}
   Watch out.

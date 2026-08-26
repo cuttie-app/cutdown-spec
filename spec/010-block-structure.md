@@ -30,6 +30,8 @@ Each block candidate is classified by its first line (see §9.3 for the full cla
 
 Cutdown uses two structural patterns for delimiters:
 
+> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. `snake_case`, an apostrophe in "don't", `2*3`, and `a_b` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
+
 #### 10.4.1 Doubled-symbol inline delimiter
 
 Any two identical characters form an inline block delimiter:
@@ -90,8 +92,13 @@ When N identical characters appear at an inline position, the following rules ap
 | `-` | list marker (`- `+space) or literal | literal `--` | PageBreak (top level; no node — §9.6) | PageBreak (tail dropped, CDN-0016) |
 | `:` | literal | Span prefix `::name` | NamedBlock prefix `:::name` | literal |
 | `+` | Multiline table opener when followed by `-` or `:` (`+-`, `+:`) | — | — | — |
+| `^` | Caption line when followed by a space (`^ text`, §6.5) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
+| `\|` | Pipe table row (§4.8) | — | — | — |
+| `/` | FileRef when followed by a path (§4.11) | — | — | — |
 
-Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table.
+Rows in this table are keyed by run length **except** `-`, `^`, `\|`, and `/`, whose meaning at column 1 depends on what **follows** — a space, a cell, a path — rather than on repetition.
+
+Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table; this includes the bracket-initiated block openers `![` (ImageBlock, §4.9) and `[^` (RefDefinition, §4.14).
 
 #### 10.4.5 Delimiter collisions
 
