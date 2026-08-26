@@ -213,7 +213,7 @@ interface CodeInline {
 ````
 ``code``          → CodeInline { value: "code" }
 `not code`        → Text("`") + Text("not code") + Text("`")
-```text```        → CodeInline { value: "`text" }
+```text```        → CodeInline { value: "`text" } + Text("`")
 ``test
 continues``       → CodeInline { value: "testcontinues" }   (soft break → zero)
 ``\`\`\`x``       → CodeInline { value: "```x" }            (escape lets multi-backtick embed)
@@ -381,7 +381,7 @@ interface Spoiler {
 
 ```
 ^^hidden^^         → Spoiler([Text("hidden")])
-^^^x^^^            → Spoiler([Text("^x")]) + Text("^^")
+^^^x^^^            → Spoiler([Text("^x")]) + Text("^")
 ^^ open            → Text("^^") + Text(" open")            (unclosed)
 ^ not spoiler ^    → Text("^ not spoiler ^")               (single caret = literal)
 __^^x^^__          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
