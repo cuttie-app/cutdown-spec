@@ -86,6 +86,18 @@ Required artifacts:
 - Deprecated features remain parseable through the rest of that major line.
 - Removal can occur only in the next `MAJOR` release.
 
+## Changelog Markers
+
+Every entry in `changelogs/<version>.md` carries one marker:
+
+| Marker | Meaning | Minimum bump |
+|---|---|---|
+| `[BREAKING]` | Alters the AST for input that was already valid, or reinterprets existing syntax | `MAJOR` |
+| `[ADDITIVE]` | Previously invalid input becomes valid; no existing parse changes | `MINOR` |
+| `[CLARIFY]` | Wording, structure, or examples only; no conforming parser changes behaviour | `PATCH` |
+
+The release bump is the highest marker present.
+
 ## Change Gate Integration
 
 Every Cutdown proposal must declare:
