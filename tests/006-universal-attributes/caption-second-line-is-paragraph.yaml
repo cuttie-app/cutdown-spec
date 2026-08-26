@@ -1,5 +1,5 @@
 id: caption-second-line-is-paragraph
-section: "6.5"
+section: "6.2"
 description: "The first `^ ` line fills the caption slot; a second consecutive `^ ` line has no captionable predecessor (slot filled) — emitted as Paragraph + CDN-0008"
 
 input: |

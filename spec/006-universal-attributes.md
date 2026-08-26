@@ -1,6 +1,10 @@
-## 6. Universal Attributes and Captions
+## 6. Segment Attribution (Universal Attributes and Caption)
 
-### 6.1 Syntax
+### 6.1 Universal Attributes
+
+**AST type:** `Attribute[] | null` — see §14 *Attributes Type* for the definition.
+
+#### 6.1.1 Syntax
 
 ```
 {#id .class key=value key="value with spaces"}
@@ -15,7 +19,7 @@ Token types inside `{}`:
 
 > **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
 
-### 6.2 Placement
+#### 6.1.2 Placement
 
 Attributes MUST appear **after** their target element on the **same line**.
 
@@ -27,7 +31,7 @@ Attributes MUST appear **after** their target element on the **same line**.
 
 Whitespace between a segment and its attaching `{...}` is consumed by the attachment and does not appear in the AST. See §12 for the full rule.
 
-#### Block Opening Lines — Last-Attr Rule
+##### Block Opening Lines — Last-Attr Rule
 
 On lines that open a block construct (headings, named blocks), the **last `{...}` token on the line is claimed by the block**. All earlier `{...}` tokens on the same line follow inline attachment rules and bind to their immediately preceding inline element.
 
@@ -41,7 +45,7 @@ An empty `{}` as the last token explicitly assigns no attributes to the block, f
 
 This rule applies only in block opening line context. In paragraph context all `{...}` follow inline attachment rules exclusively.
 
-#### Per-segment placement rules
+##### Per-segment placement rules
 
 - `Meta`: no attributes supported.
 - `RefDefinition`: has `attributes`.
@@ -49,13 +53,13 @@ This rule applies only in block opening line context. In paragraph context all `
 - `List / FileRefGroup / ImageGroup / QuoteBlock / Paragraph`: scope-chain rule (Rule B) — see below.
 - `Cell`, `Column`, `Page`, `Document`: no attributes supported.
 
-#### Scope-chain rule (Rule B)
+##### Scope-chain rule (Rule B)
 
 A sequence of `{attr}` blocks at the end of an inline context is distributed **right-to-left** through a scope chain. The **last** `{}` in the sequence is claimed by the **highest segment** in the current hierarchy; each preceding `{}` claims the next lower segment. Any `{}` blocks at the front of the sequence that have no segment to claim are **silently dropped**.
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
-`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.4.1; see §6.3).
+`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.4.1; see §6.1.3).
 
 **Scope slots by context:**
 
@@ -103,7 +107,7 @@ Multiline equivalents (all produce identical AST):
   {.b}
 ```
 
-#### Trailing attr lines and loose-list detection
+##### Trailing attr lines and loose-list detection
 
 A line consisting solely of `{attrs}` immediately after a list item with no preceding blank line is a **trailing attr line**, not a blank line. Loose list detection ignores trailing attr lines.
 
@@ -120,7 +124,7 @@ A line consisting solely of `{attrs}` immediately after a list item with no prec
 
 `{attrs}` may appear at the end of a Paragraph or ListItem either on the same line as the final content line, or on the immediately following line (no blank line between). A line consisting solely of `{attrs}` immediately after a paragraph (no blank line) is consumed as part of the paragraph's scope chain and does not start a new block.
 
-### 6.3 Orphan Attributes
+#### 6.1.3 Orphan Attributes
 
 An `{...}` sequence that cannot be assigned to any segment in the current scope chain is an **orphan**.
 
@@ -140,7 +144,7 @@ Authors who want a literal `{` SHOULD escape it with `\{` to make intent explici
 price is \{high\}  →  Text("price is {high}")
 ```
 
-### 6.4 Attribute Inside Link Text
+#### 6.1.4 Attribute Inside Link Text
 
 `{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 
@@ -149,7 +153,7 @@ price is \{high\}  →  Text("price is {high}")
 [{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
 ```
 
-### 6.5 Caption Line
+### 6.2 Caption
 
 A caption line enriches the immediately preceding captionable block with a `caption` (or `attribution`, special QuoteBlock case) field. It does not produce a separate AST node.
 

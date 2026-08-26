@@ -1,5 +1,5 @@
 id: caption-imageblock-basic
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line immediately after an ImageBlock sets caption; ImageInline on a line with other text does not qualify"
 
 input: |

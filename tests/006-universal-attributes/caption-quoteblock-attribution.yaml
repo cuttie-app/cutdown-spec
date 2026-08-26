@@ -1,5 +1,5 @@
 id: caption-quoteblock-attribution
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line after a QuoteBlock sets the `attribution` field (not `caption`); the field name reflects the semantic distinction"
 
 input: |

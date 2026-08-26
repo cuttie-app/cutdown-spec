@@ -1,5 +1,5 @@
 id: caption-table-basic
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line immediately after a table (no blank line) sets the table's caption field; no separate AST node is produced"
 
 input: |

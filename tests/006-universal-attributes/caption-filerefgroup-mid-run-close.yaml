@@ -1,5 +1,5 @@
 id: caption-filerefgroup-mid-run-close
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line mid-run closes the active FileRefGroup at that point and binds to it; the next FileRef starts a new group"
 
 input: |

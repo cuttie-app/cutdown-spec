@@ -1,5 +1,5 @@
 id: cdn-0008-orphaned-caption-slot-filled
-section: "6.5"
+section: "6.2"
 description: "CDN-0008: after the first `^ ` line fills the caption slot, a second `^ ` line has no captionable predecessor (pointer cleared); emitted as Paragraph"
 
 input: |

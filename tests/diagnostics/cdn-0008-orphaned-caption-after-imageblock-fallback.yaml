@@ -1,5 +1,5 @@
 id: cdn-0008-orphaned-caption-after-imageblock-fallback
-section: "6.5"
+section: "6.2"
 description: "CDN-0008: an ImageBlock that fell back to a Paragraph is not captionable, so the following `^ ` line is orphaned and stays literal"
 
 input: |

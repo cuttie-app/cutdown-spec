@@ -1,5 +1,5 @@
 id: attrs-scope-chain-text
-section: "6.2"
+section: "6.1.2"
 description: "Text list items: two trailing {} distribute right-to-left — last to List, preceding to ListItem"
 
 input: |

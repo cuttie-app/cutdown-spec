@@ -1,5 +1,5 @@
 id: cdn-0008-orphaned-caption-non-captionable
-section: "6.5"
+section: "6.2"
 description: "CDN-0008: `^ ` line after a Paragraph (non-captionable block) is orphaned; emitted as Paragraph with literal text"
 
 input: |

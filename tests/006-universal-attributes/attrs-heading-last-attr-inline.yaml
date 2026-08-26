@@ -1,5 +1,5 @@
 id: attrs-heading-last-attr-inline
-section: "6.2"
+section: "6.1.2"
 description: "Last-attr rule: last {} on heading line goes to Section; earlier {} attaches to preceding inline"
 
 input: |

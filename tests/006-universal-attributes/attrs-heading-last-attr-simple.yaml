@@ -1,5 +1,5 @@
 id: attrs-heading-last-attr-simple
-section: "6.2"
+section: "6.1.2"
 description: "Last-attr rule: single trailing {} on heading line goes to Section; inline element gets no attrs"
 
 input: |

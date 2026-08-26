@@ -1,5 +1,5 @@
 id: caption-comment-own-line-transparent
-section: "6.5"
+section: "6.2"
 description: "A standalone `## comment` line between a captionable block and a `^ ` line does not break caption binding — the payload attaches to the Table's reflection; no sibling node is emitted"
 
 input: |

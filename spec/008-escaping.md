@@ -41,7 +41,7 @@ Applies at **line start only** (after container-indent stripping, before the fir
 | CommentBlock (§4.16) | `###` (line start) | `\###`, `#\##`, `##\#` | `Paragraph([Text("###")])` |
 | NamedBlock (§4.13) | `:::name` | `\:::name`, `:\::name`, `::\:name` | `Paragraph([Text(":::name")])` — **no CDN-0013** |
 | SpoilerBlock (§4.15) | `^^^` | `\^^^`, `^\^^`, `^^\^` | `Paragraph([Text("^^^")])` |
-| Caption (§6.5) | `^ ` | `\^ text` | `Paragraph([Text("^ text")])` |
+| Caption (§6.2) | `^ ` | `\^ text` | `Paragraph([Text("^ text")])` |
 | Pipe table row (§4.8) | `\|` | `\| cell \|` | `Paragraph([Text("\| cell \|")])` |
 | Multiline table opener / separator (§4.8) | `+-` | `\+-`, `+\-` | `Paragraph([Text("+-")])` |
 

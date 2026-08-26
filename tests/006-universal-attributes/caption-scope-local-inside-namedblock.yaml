@@ -1,5 +1,5 @@
 id: caption-scope-local-inside-namedblock
-section: "6.5"
+section: "6.2"
 description: "Caption binding is scope-local: a `^ ` inside a NamedBlock binds to the last captionable child in that scope; a `^ ` after the closing `:::` binds to the NamedBlock itself"
 
 input: |

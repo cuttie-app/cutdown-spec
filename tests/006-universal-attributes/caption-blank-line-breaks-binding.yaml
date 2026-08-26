@@ -1,5 +1,5 @@
 id: caption-blank-line-breaks-binding
-section: "6.5"
+section: "6.2"
 description: "A blank line between a captionable block and a `^ ` line breaks the binding; the `^ ` line is orphaned (CDN-0008) and emitted as a Paragraph"
 
 input: |

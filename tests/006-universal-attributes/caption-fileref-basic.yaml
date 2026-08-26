@@ -1,5 +1,5 @@
 id: caption-fileref-basic
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line immediately after a non-grouped FileRef sets caption on the FileRef node"
 
 input: |

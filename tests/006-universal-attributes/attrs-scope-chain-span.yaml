@@ -1,5 +1,5 @@
 id: attrs-scope-chain-span
-section: "6.2"
+section: "6.1.2"
 description: "Three trailing {} on list item with Span: distribute right-to-left — last to List, middle to ListItem, first to Span"
 
 input: |

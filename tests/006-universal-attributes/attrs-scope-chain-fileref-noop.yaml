@@ -1,5 +1,5 @@
 id: attrs-scope-chain-fileref-noop
-section: "6.2"
+section: "6.1.2"
 description: "Empty {} as last token is no-op on FileRefGroup; preceding {.a} goes to FileRef"
 
 input: |

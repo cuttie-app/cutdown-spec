@@ -1,5 +1,5 @@
 id: attrs-heading-last-attr-empty
-section: "6.2"
+section: "6.1.2"
 description: "Empty {} as last token explicitly assigns no attrs to Section; earlier {} attaches to inline"
 
 input: |

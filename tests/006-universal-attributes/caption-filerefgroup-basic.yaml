@@ -1,5 +1,5 @@
 id: caption-filerefgroup-basic
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line immediately after the last member of a FileRefGroup sets caption on the group, not the last child"
 
 input: |

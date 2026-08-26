@@ -1,5 +1,5 @@
 id: caption-attrs-own-line
-section: "6.5"
+section: "6.2"
 description: "A `{attrs}` trailing line between a captionable block and a `^ ` line is transparent — the caption still binds to the block; both attrs and caption are set"
 
 input: |

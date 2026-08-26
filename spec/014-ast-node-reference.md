@@ -107,6 +107,6 @@ type Attribute =
 
 `attributes` is typed `Attribute[] | null`.
 
-Ordering: entries appear in **source order**. Deduplication rules (see §6.1) may drop entries before the array is emitted.
+Ordering: entries appear in **source order**. Deduplication rules (see §6.1.1) may drop entries before the array is emitted.
 
 ---

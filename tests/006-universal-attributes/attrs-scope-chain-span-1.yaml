@@ -1,5 +1,5 @@
 id: attrs-scope-chain-span-1
-section: "6.2"
+section: "6.1.2"
 description: "Single trailing {} on list item with Span: goes to List (ListItem and Span get nothing)"
 
 input: |

@@ -1,5 +1,5 @@
 id: caption-inline-variable
-section: "6.5"
+section: "6.2"
 description: "{{variable}} nodes are valid caption content — parsed as Variable, resolved by consumer"
 
 input: |

@@ -1,5 +1,5 @@
 id: attrs-link-text-orphan
-section: "6.4"
+section: "6.1.4"
 description: "Leading {attrs} inside link brackets with no preceding element is orphan — emitted as literal text"
 
 input: |

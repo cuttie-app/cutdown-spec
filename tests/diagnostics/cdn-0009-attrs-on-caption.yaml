@@ -1,5 +1,5 @@
 id: cdn-0009-attrs-on-caption
-section: "6.5"
+section: "6.2"
 description: "CDN-0009: a trailing `{attrs}` sequence on a caption line has no scope-chain slot; emitted as literal Text; the parent block's attributes are unaffected"
 
 input: |

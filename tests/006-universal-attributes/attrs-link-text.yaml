@@ -1,5 +1,5 @@
 id: attrs-link-text
-section: "6.4"
+section: "6.1.4"
 description: "{attrs} inside link brackets attaches to preceding inline; leading {attrs} with no preceding element is orphan (literal)"
 
 input: |

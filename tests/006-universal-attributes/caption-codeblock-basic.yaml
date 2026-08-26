@@ -1,5 +1,5 @@
 id: caption-codeblock-basic
-section: "6.5"
+section: "6.2"
 description: "A `^ ` line immediately after a CodeBlock closing fence sets caption on the CodeBlock node"
 
 input: |

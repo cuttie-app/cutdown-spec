@@ -1,5 +1,5 @@
 id: attrs-scope-chain-fileref-1
-section: "6.2"
+section: "6.1.2"
 description: "Single {} on FileRef goes to FileRefGroup"
 
 input: |

@@ -1,5 +1,5 @@
 id: attrs-orphan-quoteblock
-section: "6.3"
+section: "6.1.3"
 description: "Leading {attrs} in QuoteBlock content has no preceding element — orphan, emitted as literal text; trailing {attrs} attaches to QuoteBlock"
 
 input: |

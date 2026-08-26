@@ -1,5 +1,5 @@
 id: caption-inline-emphasis
-section: "6.5"
+section: "6.2"
 description: "Caption text is parsed by the full inline rule set — emphasis, strong, and other inline constructs are valid"
 
 input: |
