@@ -402,6 +402,10 @@ interface TextBreak {
 }
 ```
 
+A `TextBreak` asserts an author-intended line break **within** a paragraph — the surrounding text stays one block. It is not a paragraph boundary: a blank line ends the block and starts a new `Paragraph`, whereas a `TextBreak` breaks the line and keeps the block.
+
+Cutdown emits the AST node `TextBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §16 — Cutdown has no canonical rendering.
+
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
   - The `\` must be the last non-whitespace character on the line, unless rest of the line is whitespaces followed by `##` (which consumes the rest of the line as a reflection entry). See §2.2.
 
@@ -411,7 +415,8 @@ interface TextBreak {
 |-------------|--------------------------------------------------------------------|
 | `word\n`    | Soft break — folded to zero; lines concatenate directly            |
 | `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
-| `word\\n`   | `TextBreak` segment — explicit rendered line break                 |
+| `word\\n`   | `TextBreak` segment — explicit line break inside the paragraph     |
+| `word\n\n`  | Blank line — ends the block; the next line starts a new `Paragraph` |
 
 ---
 

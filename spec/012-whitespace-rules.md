@@ -15,7 +15,7 @@
 | Blank lines inside code fence | Preserved literally in `content` string |
 | Blank lines inside metadata fence | Passed through in `raw` string |
 | Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
-| Hard break (`\` at line end) | Produces `TextBreak` segment |
+| `TextBreak` (`\` at line end) | Produces a `TextBreak` segment — a line break inside the paragraph, not a block boundary (§5.13) |
 | Whitespace immediately preceding a `{attr}` block that is **consumed** by an attribute slot (block-opener last-attr, inline attachment, or scope-chain) | Stripped from the preceding text value. Does NOT apply when `{...}` falls through to literal `Text("{...}")` per §6.3 (orphan). |
 
 ### 12.2 Whitespaces in Inline Segments

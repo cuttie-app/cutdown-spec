@@ -21,7 +21,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `-` | hyphen | List marker / page break (`---`, top level) | Yes |
 | `>` | greater-than sign | QuoteBlock marker | Yes |
 | `/` | slash | File reference (line start) | Yes |
-| `\` | backslash | Escape character / hard break — also processes `` \` `` inside CodeInline | Yes |
+| `\` | backslash | Escape character / `TextBreak` at line end (§5.13) — also processes `` \` `` inside CodeInline | Yes |
 | \|  | pipe | Table cell separator (pipe row) / header separator row | Yes |
 | `+` | plus | Multiline table opener / row separator (`+-`, `+---+`) | Yes |
 | `^` | caret | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`) | Yes |
