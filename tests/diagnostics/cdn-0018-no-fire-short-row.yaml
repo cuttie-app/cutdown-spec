@@ -1,0 +1,45 @@
+id: cdn-0018-no-fire-short-row
+section: "4.8"
+description: "CDN-0018 does not fire on a short row: padding loses nothing, so it is normalisation rather than a dropped-content event"
+
+input: |
+  | A | B | C |
+  | D |
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+          - type: Cell
+            children:
+              - type: Text
+                value: C
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: D
+          - type: Cell
+            children: []
+          - type: Cell
+            children: []
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left
+      - type: Column
+        align: left

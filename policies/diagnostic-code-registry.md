@@ -173,7 +173,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | title | Orphaned scope-chain attributes |
 | level | warning |
 | trigger | One or more `{...}` blocks at the front of a trailing attribute chain have no slot to claim (chain has fewer slots than `{...}` blocks) |
-| recovery | Excess `{...}` blocks at the front of the chain are discarded; no AST output for them |
+| recovery | Excess `{...}` blocks at the front of the chain are discarded; no AST output for them. One diagnostic per chain, however many blocks are orphaned |
 | introduced_in | 0.1.4 |
 | status | active |
 | owner | Language |
@@ -310,6 +310,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | trigger | A blank-line-surrounded `---` line is encountered inside a block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`) |
 | recovery | The line is emitted as `Paragraph([Text("---")])`; no page boundary is created. Page separation is a top-level construct. `loc` spans the `---` line. A `---` glued to a preceding paragraph is ordinary content and emits no diagnostic |
 | introduced_in | 0.8.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0018 — Table row cell count exceeds column count
+
+| Field | Value |
+|---|---|
+| code | CDN-0018 |
+| title | Table row cell count exceeds column count |
+| level | warning |
+| trigger | A table content row or header separator has more cells than the column count fixed by the first content row (§4.8, *Table shape*) |
+| recovery | The surplus cells are dropped; the row parses normally with exactly the column count of cells. Short rows are padded instead and emit nothing; a mismatched `+` decoration row is inert and emits nothing. `loc` spans the dropped cells |
+| introduced_in | next |
 | status | active |
 | owner | Language |
 

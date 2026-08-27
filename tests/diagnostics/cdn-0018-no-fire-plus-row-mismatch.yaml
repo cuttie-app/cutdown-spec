@@ -1,0 +1,33 @@
+id: cdn-0018-no-fire-plus-row-mismatch
+section: "4.8"
+description: "CDN-0018 does not fire on a + row wider than the first content row: + rows are decoration for column purposes, and decoration is not diagnosable"
+
+input: |
+  +------+------+------+
+  | A    | B    |
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: multiline
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: A
+          - type: Cell
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: B
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left

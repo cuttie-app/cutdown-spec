@@ -1,0 +1,34 @@
+id: table-scope-chain-inline-open-cell
+section: "4.8"
+description: "With the closer omitted the last cell's inline context is open, so the chain walks past Cell to the last attr-bearing inline"
+
+input: |
+  | AA | **BB** {.a}{.b}{.c}
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: AA
+          - type: Cell
+            children:
+              - type: Strong
+                children:
+                  - type: Text
+                    value: BB
+                attributes:
+                  - key: class
+                    value: [a]
+        attributes:
+          - key: class
+            value: [b]
+    attributes:
+      - key: class
+        value: [c]

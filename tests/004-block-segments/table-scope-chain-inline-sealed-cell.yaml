@@ -1,0 +1,33 @@
+id: table-scope-chain-inline-sealed-cell
+section: "4.8"
+description: "Writing the closer seals the last cell's inline context before the chain begins, so the chain stops at Row and the leading {} is orphaned"
+
+input: |
+  | AA | **BB** | {.a}{.b}{.c}
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: AA
+          - type: Cell
+            children:
+              - type: Strong
+                children:
+                  - type: Text
+                    value: BB
+        attributes:
+          - key: class
+            value: [b]
+    attributes:
+      - key: class
+        value: [c]

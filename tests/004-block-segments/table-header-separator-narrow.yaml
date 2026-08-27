@@ -1,0 +1,35 @@
+id: table-header-separator-narrow
+section: "4.8"
+description: "A header separator narrower than the column count is not an error; uncovered columns default to left"
+
+input: |
+  | A | B | C |
+  |---:|
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Header
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+          - type: Cell
+            children:
+              - type: Text
+                value: C
+    columns:
+      - type: Column
+        align: right
+      - type: Column
+        align: left
+      - type: Column
+        align: left

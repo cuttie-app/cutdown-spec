@@ -1,0 +1,92 @@
+id: table-column-count-monotonic
+section: "16"
+description: "Table.columns is settled when the first content row closes and is never revised; a later wider row drops its surplus with CDN-0018 rather than growing the count"
+
+input: "| A | B |\n| C | D | E |"
+
+diagnostics:
+  - code: CDN-0018
+    level: warning
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: C
+          - type: Cell
+            children:
+              - type: Text
+                value: D
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    # Prefix "| A | " — a one-column table in its own right. A prefix is an
+    # ordinary document, not a partial one (§16.1).
+    - at: 6
+      ast:
+        - type: Table
+          kind: pipe
+          columns:
+            - type: Column
+              align: left
+      diagnostics: []
+    # Prefix "| A | B |" — the first content row has closed. columns is now
+    # fixed at 2 and every later checkpoint must agree.
+    - at: 9
+      ast:
+        - type: Table
+          kind: pipe
+          columns:
+            - type: Column
+              align: left
+            - type: Column
+              align: left
+      diagnostics: []
+    # Prefix cutting mid-row-2, "| A | B |\n| C |" — row 2 is short and pads.
+    # No diagnostic: padding loses nothing.
+    - at: 15
+      ast:
+        - type: Table
+          kind: pipe
+          columns:
+            - type: Column
+              align: left
+            - type: Column
+              align: left
+      diagnostics: []
+    # Prefix "| A | B |\n| C | D | E" — the surplus cell is now present and
+    # dropped. Under a max() rule columns would have grown to 3 here, and this
+    # checkpoint would have contradicted the one at 9.
+    - at: 22
+      ast:
+        - type: Table
+          kind: pipe
+          columns:
+            - type: Column
+              align: left
+            - type: Column
+              align: left
+      diagnostics:
+        - code: CDN-0018
+          level: warning

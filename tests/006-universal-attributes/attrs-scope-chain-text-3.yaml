@@ -1,9 +1,13 @@
 id: attrs-scope-chain-text-3
 section: "6.1.2"
-description: "Three trailing {} on text list item: last to List, middle to ListItem, first dropped (Text has no attrs)"
+description: "Three trailing {} on text list item: last to List, middle to ListItem, first dropped with CDN-0011 (Text has no attrs)"
 
 input: |
   - text {.a}{.b}{.c}
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
 
 ast:
   - type: List

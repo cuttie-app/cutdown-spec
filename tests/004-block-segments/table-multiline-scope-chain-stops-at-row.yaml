@@ -1,0 +1,35 @@
+id: table-multiline-scope-chain-stops-at-row
+section: "4.8"
+description: "A multiline cell holds Block[], so there is no inline context for a slot; the chain stops at Row and the leading {} is orphaned"
+
+input: |
+  +------+------+
+  | **AA** | BB {.a}{.b}
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
+
+ast:
+  - type: Table
+    kind: multiline
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Paragraph
+                children:
+                  - type: Strong
+                    children:
+                      - type: Text
+                        value: AA
+          - type: Cell
+            children:
+              - type: Paragraph
+                children:
+                  - type: Text
+                    value: BB
+        attributes:
+          - key: class
+            value: [b]

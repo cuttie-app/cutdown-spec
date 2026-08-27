@@ -1,0 +1,37 @@
+id: table-row-short-padded
+section: "4.8"
+description: "A row with fewer cells than the column count is padded with empty cells; no diagnostic, nothing is lost"
+
+input: |
+  | A | B |
+  | C |
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: C
+          - type: Cell
+            children: []
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left

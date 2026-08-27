@@ -80,7 +80,18 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 - **Cell open** — the row omits the trailing `|`, so the chain sits inside the last cell's inline context and the inline slot is available.
 - **Cell sealed** — the row writes the trailing `|`, closing the last cell's inline context before the chain begins. There is no open inline context, so the inline slot does not exist and the chain stops at `Row`.
 
-The slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped (CDN-0011) — the chain never scans sideways into an earlier cell, exactly as `- text {.a}{.b}{.c}` drops `.a` rather than hunting leftward.
+**A chain written before the closer belongs to the cell, not the row.** Every cell is its own inline context, so Rule B applies inside it with the cell's own slots — and since `Cell` bears no attributes, the only slot is that cell's last attr-bearing inline. This holds for any cell, not just the last.
+
+```
+| AA | **BB** {.a}         →  Table({.a}, Row(...))          ← open: row chain, slot 1 = Table
+| AA | **BB** | {.a}       →  Table({.a}, Row(...))          ← after the closer: row chain
+| AA | **BB** {.a} |       →  Row(Cell(...), Cell(Strong({.a}, "BB")))   ← before the closer: cell chain
+| **AA** {.x} | BB |       →  Row(Cell(Strong({.x}, "AA")), Cell("BB"))  ← non-final cell
+```
+
+So the closer sets how deep the row chain reaches, and the chain's position relative to the closer selects which chain applies. A cell chain has exactly one slot; a second group orphans (CDN-0011).
+
+The slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped with CDN-0011 (§6.1.3) — the chain never scans sideways into an earlier cell, exactly as `- text {.a}{.b}{.c}` drops `.a` rather than hunting leftward.
 
 ```
 | AA | **BB** {.a}{.b}{.c}       →  Table({.c}, Row({.b}, Cell(...), Cell(Strong({.a}, "BB"))))
@@ -152,7 +163,7 @@ Orphan behaviour depends on position:
 |---|---|---|
 | Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is ")` + `Text("{high}")` |
 | After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
-| End of scope chain, all slots filled, excess `{}` at the front | silently dropped (no AST output) | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
+| End of scope chain, all slots filled, excess `{}` at the front | dropped (no AST output), **CDN-0011** emitted | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
 
 `{` is always consumed as the start of an attribute scan, running to the matching `}` or end of line. If the content violates the attribute grammar or the `}` never arrives, the **entire slice** — braces included, when present — is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §9.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 

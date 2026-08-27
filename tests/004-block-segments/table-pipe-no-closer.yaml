@@ -1,0 +1,26 @@
+id: table-pipe-no-closer
+section: "4.8"
+description: "The trailing | is optional; a row without a closer has the same cell count as one with it"
+
+input: |
+  | A | B
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left

@@ -1,9 +1,13 @@
 id: cdn-0011-orphaned-scope-chain
 section: "6.1.2"
-description: "Three {} tokens on a 2-slot list context; front token has no slot and is discarded; no warning (CDN-0011 should not emitted)"
+description: "Three {} tokens on a 2-slot list context; the front token has no slot to claim, is discarded, and emits CDN-0011"
 
 input: |
   - text {.a}{.b}{.c}
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
 
 ast:
   - type: List

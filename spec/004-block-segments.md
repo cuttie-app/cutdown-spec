@@ -514,7 +514,7 @@ The closer also determines how deep a trailing `{attrs}` chain reaches — see *
 - A later row with **more** cells has the surplus cells **dropped** and emits **CDN-0018**.
 - A header separator **wider** than the column count likewise drops its surplus and emits **CDN-0018** — losing alignment silently is the failure the diagnostic exists to prevent.
 - A header separator **narrower** than the column count is not an error; the uncovered columns default to `"left"` per *Column alignment* above.
-- A table whose only rows are header separators has `columns: []`, consistent with `|` alone yielding an empty table.
+- A table whose only rows are header separators has `columns: []` and emits **no** diagnostic — with no content row, no column count was ever established for the separator to exceed. This is consistent with `|` alone yielding an empty table.
 
 #### Pipe table specifics
 
@@ -525,7 +525,9 @@ The closer also determines how deep a trailing `{attrs}` chain reaches — see *
 
 **Attrs scope chain (pipe).** Rule B (§6) applies. The Table slot is only available from the last content row's chain; mid-table rows start at Row. Because `Cell` bears no attributes, the chain walks **past** the last cell to the last attr-bearing inline inside it — but only if that cell is still open. Writing the closing `|` seals the cell's inline context before the chain begins, removing the inline slot.
 
-The inline slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped (CDN-0011).
+A chain written **before** the closer is inside the cell's inline context and distributes through the *cell's* slots instead — the cell's last attr-bearing inline, one slot only. This applies to any cell, not just the last. See §6.
+
+The inline slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped with CDN-0011 (§6.1.3).
 
 `{attrs}` on a **header separator** row claim the Table slot directly. `+` rows do not participate in the pipe scope chain (they are ignored entirely).
 
@@ -536,6 +538,10 @@ Last content row:
 | AA | **BB** {.a}{.b}{.c}   →  Table({.c}, Row({.b}, Cell(...), Cell(Strong({.a}, "BB"))))
 | AA | **BB** | {.a}{.b}{.c} →  Table({.c}, Row({.b}, ...))     ← sealed; {.a} dropped (CDN-0011)
 | AA | CC {.a}{.b}{.c}       →  Table({.c}, Row({.b}, ...))     ← last cell is Text; {.a} dropped
+
+Chain before the closer — cell chain, 1 slot:
+| AA | **BB** {.a} |         →  Row(Cell(...), Cell(Strong({.a}, "BB")))
+| **AA** {.x} | BB |         →  Row(Cell(Strong({.x}, "AA")), Cell("BB"))
 
 Mid-table row:
 | td1 | td2 | {.a}           →  Row({.a}, ...)                  ← sealed: 1 slot only

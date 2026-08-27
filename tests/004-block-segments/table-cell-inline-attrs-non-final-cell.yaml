@@ -1,0 +1,30 @@
+id: table-cell-inline-attrs-non-final-cell
+section: "4.8"
+description: "Every cell is its own inline context, so a chain at the end of a non-final cell binds inside that cell"
+
+input: |
+  | **AA** {.x} | BB |
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Strong
+                children:
+                  - type: Text
+                    value: AA
+                attributes:
+                  - key: class
+                    value: [x]
+          - type: Cell
+            children:
+              - type: Text
+                value: BB
+        attributes: []
+    attributes: []

@@ -1,0 +1,33 @@
+id: table-scope-chain-inline-last-cell-only
+section: "4.8"
+description: "The inline slot searches the last cell only; it never scans sideways into an earlier cell, so a plain-Text last cell orphans the leading {}"
+
+input: |
+  | **AA** | CC {.a}{.b}{.c}
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Strong
+                children:
+                  - type: Text
+                    value: AA
+          - type: Cell
+            children:
+              - type: Text
+                value: CC
+        attributes:
+          - key: class
+            value: [b]
+    attributes:
+      - key: class
+        value: [c]

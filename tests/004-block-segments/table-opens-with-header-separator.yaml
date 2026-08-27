@@ -1,0 +1,14 @@
+id: table-opens-with-header-separator
+section: "4.8"
+description: "A table whose only row is a header separator has no content row to fix the column count, so columns is empty"
+
+input: |
+  |:---|----|
+
+diagnostics: []
+
+ast:
+  - type: Table
+    kind: pipe
+    rows: []
+    columns: []

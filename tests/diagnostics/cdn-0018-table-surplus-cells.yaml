@@ -1,0 +1,41 @@
+id: cdn-0018-table-surplus-cells
+section: "4.8"
+description: "A content row with more cells than the column count fixed by the first content row has the surplus dropped and emits CDN-0018"
+
+input: |
+  | A | B |
+  | C | D | E | F |
+
+diagnostics:
+  - code: CDN-0018
+    level: warning
+
+ast:
+  - type: Table
+    kind: pipe
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: A
+          - type: Cell
+            children:
+              - type: Text
+                value: B
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: C
+          - type: Cell
+            children:
+              - type: Text
+                value: D
+    columns:
+      - type: Column
+        align: left
+      - type: Column
+        align: left
