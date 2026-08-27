@@ -82,7 +82,7 @@ interface Loc {
 - Offsets index **UTF-16 code units of the raw input file** — the text exactly as read, before any interpretation (§7). This mirrors the Language Server Protocol's baseline position encoding and is the native indexing of the reference TypeScript implementation.
 - Line/column positions are derived from offsets by consumers; they are never stored.
 - Conformance AST comparison **ignores `loc`**. Position correctness is verified by a separate, smaller test set.
-- Synthetic segments (`Fragment`) carry the `loc` of the causing construct in the containing file, or no `loc`.
+- Segments the parser synthesises rather than reads carry the `loc` of the causing construct in the containing file, or no `loc` at all. A `Fragment` has a causing construct — its `FileRef` line — and takes that `loc`. A padded table `Cell` (§4.8) has no source range and no causing construct at a position, so it carries no `loc`. A padded `Cell` is an ordinary empty `Cell`, not a distinct node type; it is not listed under Synthetic Segments.
 - Diagnostics (CDN codes) carry a `loc` identifying the triggering source range.
 
 ### Reflection Type

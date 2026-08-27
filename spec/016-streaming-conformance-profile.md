@@ -20,7 +20,7 @@ At end of input, existing rules apply without repair:
 
 - unresolved inline openers degrade according to §9.4.1;
 - an unclosed fence or container consumes its current body and emits its existing diagnostic;
-- no closer, marker, whitespace, normalization, or other source is synthesized.
+- no closer, marker, whitespace, normalization, or other **source** is synthesized. This constrains source text only; synthesising AST nodes where the rules require them — a padded table `Cell` (§4.8) — is not source synthesis and is unaffected.
 
 A later scalar may complete an unresolved construct and therefore reinterpret its unresolved suffix. It may also close an open block/container or alter derived section, page, and reference-resolution structure. This is ordinary reparsing of a later snapshot, not a mutation encoded in Cutdown source.
 
@@ -29,6 +29,8 @@ A later scalar may complete an unresolved construct and therefore reinterpret it
 Cutdown has no canonical rendering. A consumer that has the complete source snapshot MAY render it immediately. A streaming consumer MAY defer semantic rendering of incomplete content until an **end of block** inferred from ordinary syntax: a completed block boundary, a closing fence, or end of input.
 
 An end of block is not a source token, a chunk boundary, or an external stream event. Deferred rendering MUST NOT change the AST or diagnostics required for any input snapshot.
+
+A table is a worked example. Its column count is fixed by the first content row (§4.8, *Table shape*), so `Table.columns` is settled the moment that row closes and is never revised as later rows arrive — it is **monotonic**. A consumer may therefore commit to a column count early. Under a `max()` rule it could not: a later wider row would retroactively change `columns`, so consecutive snapshots could legitimately disagree.
 
 ### 16.5 Exclusions
 
