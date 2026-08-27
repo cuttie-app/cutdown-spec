@@ -67,10 +67,28 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 |---|---|---|---|
 | Standalone Paragraph | Paragraph | last attr-bearing inline | — |
 | List item | List | ListItem | last attr-bearing inline |
-| Table row — mid-table | Row | — | — |
-| Table row — last row | Table | Row | — |
+| Pipe table row — mid-table, cell open | Row | last attr-bearing inline | — |
+| Pipe table row — mid-table, cell sealed | Row | — | — |
+| Pipe table row — last row, cell open | Table | Row | last attr-bearing inline |
+| Pipe table row — last row, cell sealed | Table | Row | — |
+| Multiline table row | Row | — | — |
 | FileRef / ImageBlock in group | FileRefGroup | FileRef / ImageBlock | last attr-bearing inline |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
+
+**Table rows.** `Cell` bears no attributes (see *Per-segment placement rules* above), so the chain walks **past** the cell to the last attr-bearing inline inside it. Whether that slot exists depends on the trailing `|`:
+
+- **Cell open** — the row omits the trailing `|`, so the chain sits inside the last cell's inline context and the inline slot is available.
+- **Cell sealed** — the row writes the trailing `|`, closing the last cell's inline context before the chain begins. There is no open inline context, so the inline slot does not exist and the chain stops at `Row`.
+
+The slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped (CDN-0011) — the chain never scans sideways into an earlier cell, exactly as `- text {.a}{.b}{.c}` drops `.a` rather than hunting leftward.
+
+```
+| AA | **BB** {.a}{.b}{.c}       →  Table({.c}, Row({.b}, Cell(...), Cell(Strong({.a}, "BB"))))
+| AA | **BB** | {.a}{.b}{.c}     →  Table({.c}, Row({.b}, ...))              ← sealed; {.a} dropped
+| AA | **BB** | CC {.a}{.b}{.c}  →  Table({.c}, Row({.b}, ...))              ← last cell is Text; {.a} dropped
+```
+
+**Multiline table rows stop at `Row`** and never gain an inline slot. This is a consequence of the cell content model, not an oversight: a multiline cell holds `Block[]`, not `Inline[]` (§4.8), so there is no inline context for a slot to bind to. Do not "align" this with the pipe chain.
 
 Single NL does not break the attr chain. A sequence of `{}` blocks may span multiple lines (one per line) as long as no blank line appears between them.
 
