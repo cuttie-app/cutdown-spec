@@ -1,11 +1,10 @@
 ---
 title: Cutdown Compliance Failure Response Policy
 Status: Active
-Owner: Language
 Scope: Required status transitions when published compliance claims fail
 Related:
-  - `./compliance-levels-policy.md`
-  - `./compliance-evidence-freshness-policy.md`
+  - ./compliance-levels-policy.md
+  - ./compliance-evidence-freshness-policy.md
 ---
 
 # Cutdown Compliance Failure Response Policy

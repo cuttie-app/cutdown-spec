@@ -1,11 +1,10 @@
 ---
 title: Cutdown Compatibility Fallback Policy
 Status: Active
-Owner: Language
 Scope: Contract behavior for unknown/unsupported syntax under active profile/version
 Related:
-  - `./parser-profile-policy.md`
-  - `./diagnostics-policy.md`
+  - ./parser-profile-policy.md
+  - ./diagnostics-policy.md
 ---
 
 # Cutdown Compatibility Fallback Policy

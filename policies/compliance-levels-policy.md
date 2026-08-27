@@ -1,13 +1,12 @@
 ---
 title: Cutdown Compliance Levels Policy
 Status: Active
-Owner: Language
 Scope: Rules for implementation compliance claims
 Related:
-  - `./conformance-policy.md`
-  - `./parser-profile-policy.md`
-  - `./compliance-evidence-freshness-policy.md`
-  - `./compliance-failure-response-policy.md`
+  - ./conformance-policy.md
+  - ./parser-profile-policy.md
+  - ./compliance-evidence-freshness-policy.md
+  - ./compliance-failure-response-policy.md
 ---
 
 # Cutdown Compliance Levels Policy

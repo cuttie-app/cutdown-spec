@@ -1,11 +1,10 @@
 ---
 title: Cutdown Reference Parser Status Policy
 Status: Active
-Owner: Language
 Scope: Governance role of the reference parser relative to spec and conformance
 Related:
-  - `./conformance-policy.md`
-  - `./cross-implementation-validation-policy.md`
+  - ./conformance-policy.md
+  - ./cross-implementation-validation-policy.md
 ---
 
 # Cutdown Reference Parser Status Policy

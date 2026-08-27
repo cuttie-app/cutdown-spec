@@ -1,12 +1,11 @@
 ---
 title: Cutdown Diagnostics Policy
 Status: Active
-Owner: Language
 Scope: Parser diagnostics contract for deterministic tooling and author-safe recovery
 Related:
-  - `./conformance-policy.md`
-  - `./parser-profile-policy.md`
-  - `./diagnostic-code-registry-policy.md`
+  - ./conformance-policy.md
+  - ./parser-profile-policy.md
+  - ./diagnostic-code-registry-policy.md
 ---
 
 # Cutdown Diagnostics Policy

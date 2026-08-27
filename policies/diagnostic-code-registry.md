@@ -1,12 +1,11 @@
 ---
 title: Cutdown Diagnostic Code Registry
 Status: Active
-Owner: Language
 Scope: Canonical list of all stable diagnostic codes emitted by conforming Cutdown parsers
 Related:
-  - `./diagnostics-policy.md`
-  - `./diagnostic-code-registry-policy.md`
-  - `./versioning-policy.md`
+  - ./diagnostics-policy.md
+  - ./diagnostic-code-registry-policy.md
+  - ./versioning-policy.md
 ---
 
 ## Cutdown Diagnostic Code Registry

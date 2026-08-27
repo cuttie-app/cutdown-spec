@@ -1,11 +1,10 @@
 ---
 title: Cutdown Compliance Evidence Freshness Policy
 Status: Active
-Owner: Language
 Scope: Validity window rules for published compliance claims
 Related:
-  - `./compliance-levels-policy.md`
-  - `./conformance-corpus-governance.md`
+  - ./compliance-levels-policy.md
+  - ./conformance-corpus-governance.md
 ---
 
 # Cutdown Compliance Evidence Freshness Policy

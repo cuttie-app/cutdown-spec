@@ -1,11 +1,10 @@
 ---
 title: Cutdown Change Publication Policy
 Status: Active
-Owner: Language
 Scope: Process for publishing and activating language changes
 Related:
-- `./versioning-policy.md`
-- `./governance-review-policy.md`
+  - ./versioning-policy.md
+  - ./governance-review-policy.md
 ---
 
 # Cutdown Change Publication Policy

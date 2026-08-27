@@ -1,11 +1,10 @@
 ---
 title: Cutdown Conformance Corpus Governance
 Status: Active
-Owner: Language
 Scope: Evolution policy for normative conformance corpus
 Related:
-  - `./conformance-policy.md`
-  - `./versioning-policy.md`
+  - ./conformance-policy.md
+  - ./versioning-policy.md
 ---
 
 # Cutdown Conformance Corpus Governance

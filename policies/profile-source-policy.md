@@ -1,11 +1,10 @@
 ---
 title: Cutdown Profile Source Policy
 Status: Active
-Owner: Language
 Scope: Source of truth for parser profile and experimental flag activation
 Related:
-  - `./parser-profile-policy.md`
-  - `./compatibility-fallback-policy.md`
+  - ./parser-profile-policy.md
+  - ./compatibility-fallback-policy.md
 ---
 
 # Cutdown Profile Source Policy

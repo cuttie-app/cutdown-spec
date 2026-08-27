@@ -1,26 +1,26 @@
 ---
 title: Cutdown Change Gate
-status: Active
-scope: Mandatory gate for every proposed change to Cutdown
-related:
-- `./versioning-policy.md`
-- `./conformance-policy.md`
-- `./parser-profile-policy.md`
-- `./diagnostics-policy.md`
-- `./capability-policy.md`
-- `./canonical-serialization-policy.md`
-- `./compatibility-fallback-policy.md`
-- `./conformance-corpus-governance.md`
-- `./decision-authority-policy.md`
-- `./profile-source-policy.md`
-- `./compliance-levels-policy.md`
-- `./compliance-evidence-freshness-policy.md`
-- `./compliance-failure-response-policy.md`
-- `./diagnostic-code-registry-policy.md`
-- `./change-publication-policy.md`
-- `./cross-implementation-validation-policy.md`
-- `./reference-parser-status-policy.md`
-- `./governance-review-policy.md`
+Status: Active
+Scope: Mandatory gate for every proposed change to Cutdown
+Related:
+  - ./versioning-policy.md
+  - ./conformance-policy.md
+  - ./parser-profile-policy.md
+  - ./diagnostics-policy.md
+  - ./capability-policy.md
+  - ./canonical-serialization-policy.md
+  - ./compatibility-fallback-policy.md
+  - ./conformance-corpus-governance.md
+  - ./decision-authority-policy.md
+  - ./profile-source-policy.md
+  - ./compliance-levels-policy.md
+  - ./compliance-evidence-freshness-policy.md
+  - ./compliance-failure-response-policy.md
+  - ./diagnostic-code-registry-policy.md
+  - ./change-publication-policy.md
+  - ./cross-implementation-validation-policy.md
+  - ./reference-parser-status-policy.md
+  - ./governance-review-policy.md
 ---
 
 # Cutdown Change Gate
@@ -57,7 +57,7 @@ Every Cutdown proposal MUST include all of the following:
    - How existing consumers behave if they ignore new data.
    - Migration path and compatibility mode expectations.
 4. Ambiguity coverage
-   - Update `./ambiguity-matrix.md` for every inline token change.
+   - Add conformance fixtures (`tests/`) for every inline token change.
    - Include canonical conflict, escape, malformed, and neighboring-precedence cases.
 5. Version impact classification
    - Declare intended version bump (`patch`, `minor`, or `major`) per `./versioning-policy.md`.

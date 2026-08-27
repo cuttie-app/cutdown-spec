@@ -1,11 +1,10 @@
 ---
 title: Cutdown Canonical Serialization Policy
 Status: Active
-Owner: Language
 Scope: Byte-stable canonical representation of parse results
 Related:
-  - `./conformance-policy.md`
-  - `./diagnostics-policy.md`
+  - ./conformance-policy.md
+  - ./diagnostics-policy.md
 ---
 
 # Cutdown Canonical Serialization Policy

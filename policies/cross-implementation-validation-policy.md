@@ -1,12 +1,11 @@
 ---
 title: Cutdown Cross-Implementation Validation Policy
 Status: Active
-Owner: Language
 Scope: Validation requirements across parser implementations for language changes
 Related:
-  - `./conformance-policy.md`
-  - `./change-publication-policy.md`
-  - `./reference-parser-status-policy.md`
+  - ./conformance-policy.md
+  - ./change-publication-policy.md
+  - ./reference-parser-status-policy.md
 ---
 
 # Cutdown Cross-Implementation Validation Policy

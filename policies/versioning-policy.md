@@ -1,11 +1,10 @@
 ---
 title: Cutdown Versioning Policy
 Status: Active
-Owner: Language
 Scope: Cutdown grammar, parser behavior, and AST contract
 Related:
-  - `./changes-gate.md`
-  - `./change-publication-policy.md`
+  - ./changes-gate.md
+  - ./change-publication-policy.md
 ---
 
 # Cutdown Versioning Policy

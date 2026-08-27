@@ -1,10 +1,9 @@
 ---
 title: Cutdown Parser Profile Policy
 Status: Active
-Owner: Language
 Scope: Deterministic parse configuration
 Related:
-  - `./conformance-policy.md`
+  - ./conformance-policy.md
 ---
 
 # Cutdown Parser Profile Policy

@@ -1,11 +1,10 @@
 ---
 title: Cutdown Governance Review Policy
 Status: Active
-Owner: Language
 Scope: Update process for governance policies
 Related:
-  - `./change-publication-policy.md`
-  - `./decision-authority-policy.md`
+  - ./change-publication-policy.md
+  - ./decision-authority-policy.md
 ---
 
 # Cutdown Governance Review Policy

@@ -1,10 +1,9 @@
 ---
 title: Cutdown Decision Authority Policy
 Status: Active
-Owner: Language
 Scope: Final decision authority and dispute resolution for language governance
 Related:
-  - `./changes-gate.md`
+  - ./changes-gate.md
 ---
 
 # Cutdown Decision Authority Policy

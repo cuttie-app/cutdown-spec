@@ -1,10 +1,9 @@
 ---
 title: Cutdown Capability Policy
 Status: Active
-Owner: Language
 Scope: Capability governance for constructs that may touch external systems
 Related:
-  - `./parser-profile-policy.md`
+  - ./parser-profile-policy.md
 ---
 
 # Cutdown Capability Policy

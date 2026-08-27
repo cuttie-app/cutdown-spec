@@ -1,20 +1,18 @@
 ---
 title: Cutdown Conformance Policy
 Status: Active
-Owner: Language
 Scope: Defines normative sources and release conformance requirements
 Related:
-- `./ambiguity-matrix.md`
-- `./diagnostics-policy.md`
-- `./diagnostic-code-registry-policy.md`
-- `./canonical-serialization-policy.md`
-- `./compatibility-fallback-policy.md`
-- `./conformance-corpus-governance.md`
-- `./compliance-levels-policy.md`
-- `./compliance-evidence-freshness-policy.md`
-- `./compliance-failure-response-policy.md`
-- `./cross-implementation-validation-policy.md`
-- `./reference-parser-status-policy.md`
+  - ./diagnostics-policy.md
+  - ./diagnostic-code-registry-policy.md
+  - ./canonical-serialization-policy.md
+  - ./compatibility-fallback-policy.md
+  - ./conformance-corpus-governance.md
+  - ./compliance-levels-policy.md
+  - ./compliance-evidence-freshness-policy.md
+  - ./compliance-failure-response-policy.md
+  - ./cross-implementation-validation-policy.md
+  - ./reference-parser-status-policy.md
 ---
 
 ## Normative Sources
@@ -51,7 +49,7 @@ The conformance corpus must include:
 - Precedence and escape interaction cases.
 - Cross-feature interaction cases for neighboring precedence tiers.
 
-For every new inline token or precedence change, the ambiguity matrix cases must be represented in conformance tests.
+For every new inline token or precedence change, these cases must be represented in the conformance corpus (`tests/`). The corpus is the sole record — there is no separate prose matrix.
 
 ## Release Gate
 
