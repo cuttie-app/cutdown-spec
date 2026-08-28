@@ -224,7 +224,7 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 
 ```
 ^^^ {attrs}
-  content (any blocks, including nested :::)
+  content (any blocks, including nested :::, but not nested ^^^)
 ^^^
 ```
 
@@ -250,26 +250,26 @@ Parsed in source order. An unclosed opener degrades by its class (§9.4.1):
 
 Degradation to visible literal text is silent — no diagnostics.
 
-| Syntax          | Node | Notes |
-|-----------------|------|-------|
-| `__text__`      | `Emphasis` | Single `_` = literal |
-| `**text**`      | `Strong` | Single `*` = literal |
-| `~~text~~`      | `Highlight` | Single `~` = literal |
-| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc. |
-| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`. |
-| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal. |
-| `""text""`      | `QuoteInline(double)` | Single `"` = literal |
-| `''text''`      | `QuoteInline(single)` | Single `'` = literal |
-| `[text](url)`   | `Link(external)` | |
-| `[text][page]`  | `Link(page)` | target has no prefix |
-| `[text][#tag]`  | `Link(tag)` | resolved by consumer |
-| `[text][^ref]`  | `Link(ref)` | resolved by consumer |
-| `[text][@cite]` | `Link(cite)` | resolved by consumer |
-| `![alt](src)`   | `ImageInline` | |
-| `::name {attrs}` | `Span` | Empty. `::` without name = literal. |
-| `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice. |
+| Syntax          | Node | Notes                                                                                                          |
+|-----------------|------|----------------------------------------------------------------------------------------------------------------|
+| `__text__`      | `Emphasis` | Single `_` = literal                                                                                           |
+| `**text**`      | `Strong` | Single `*` = literal                                                                                           |
+| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                           |
+| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                              |
+| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                     |
+| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                         |
+| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                           |
+| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                           |
+| `[text](url)`   | `Link(external)` |                                                                                                                |
+| `[text][page]`  | `Link(page)` | target is a page, Wiki-like syntax                                                                             |
+| `[text][#tag]`  | `Link(tag)` | resolved by consumer in Tag's namespace                                                                        |
+| `[text][^ref]`  | `Link(ref)` | resolved by consumer on page in Ref's / ID's namespace                                                         |
+| `[text][@cite]` | `Link(cite)` | resolved by consumer in outer Ref vocabulary                                                                   |
+| `![alt](src)`   | `ImageInline` |                                                                                                                |
+| `::name {attrs}` | `Span` | Empty. `::` without name = literal.                                                                            |
+| `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice.              |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
-| `\` at line end | `TextBreak` | |
+| `\` at line end | `TextBreak` |                                                                                                                |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting not allowed (greedy close).
 
@@ -279,7 +279,14 @@ Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""
 
 ## Caption / Attribution
 
-A `^ ` line immediately after a captionable block (no blank line) enriches that block with a `caption` field. No separate AST node is produced.
+**Syntax**:
+
+```
+| Captionalb | col B |
+^ Table caption text
+```
+
+A line starting with (`^ `) immediately after a captionable block (no blank line) enriches that block with a `caption` field. No separate AST node is produced.
 
 ````
 | col A | col B |
@@ -320,7 +327,9 @@ Attach **after** their target on the same line (or next line, no blank line betw
 
 ```
 - item {.a}{.b}   →  List({.b}, ListItem({.a}, Text("item")))
+
 | td | {.a}{.b}   →  Table({.b}, Row({.a}, ...))     ← last row only
+
 | td | {.a}       →  Table({.a}, Row(...))           ← mid-table: 1 slot (Row only)
 ```
 
@@ -375,8 +384,8 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 
 ## Precedence (highest first, per §11)
 
-1. Code fence \`\`\` — content always literal
-2. Metadata fence `~~~` — content always literal
+1. CodeBlock fence \`\`\` — content always literal
+2. MetaBlock fence `~~~` — content always literal
 3. MathBlock `$$$` — content always literal
 4. CommentBlock `###` — content always literal (opaque)
 5. Inline code \`\` — content literal except `` \` ``

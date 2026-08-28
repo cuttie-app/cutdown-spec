@@ -1,10 +1,15 @@
 ## 4. Block Segments
 
----
-
 ### 4.1 Paragraph
 
 **Syntax:** Any non-blank lines that do not match another block construct.
+
+```
+First paragraph line 1
+
+Second paragraph line 1.
+Second paragraph line 2.
+```
 
 A contiguous run of non-blank lines not matched by any other block type. Once a paragraph begins, no block element can interrupt it — it continues until a blank line.
 
@@ -43,7 +48,11 @@ AST:
 
 ### 4.2 Section (Heading)
 
-**Syntax:** `={n} inline-content {attrs}`
+**Syntax:**
+
+```
+={n} inline-content {attrs}
+```
 
 A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A section contains all subsequent blocks until a heading of equal or lesser level, end of the current block container, or end of document.
 
@@ -123,7 +132,7 @@ interface Meta {
 **Example:**
 
 ```
-~~~yaml
+~~~
 title: My Document
 ~~~
 
@@ -332,6 +341,14 @@ interface List {
 
 **Syntax:** A list marker followed by content, with optional indented continuation lines.
 
+```
+- unordered item
+  continuation line
+
+1. ordered item
+   continuation line
+```
+
 **AST type:**
 
 ```typescript
@@ -350,7 +367,19 @@ interface ListItem {
 
 #### 4.7.2 TaskItem
 
-**Syntax:** `- [ ] content` or `- [x] content` or `- [+] content`
+**Syntax:**
+
+```
+- [ ] content
+
+or
+
+- [x] content
+
+or
+
+- [+] content
+```
 
 **AST type:**
 
@@ -614,7 +643,11 @@ Trailing `## comment` on any table line (`|` content row, header separator, or `
 
 ### 4.9 ImageBlock
 
-**Syntax:** `![alt text](src) {attrs}`
+**Syntax:**
+
+```
+![alt text](src) {attrs}
+```
 
 A line at block level beginning with `![` is classified as an `ImageBlock`.
 
@@ -648,7 +681,11 @@ interface ImageBlock {
 
 ### 4.10 PageBreak
 
-**Syntax:** `---`
+**Syntax:**
+
+```
+---
+```
 
 A top-level line beginning exactly `---`. A PageBreak is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
 
@@ -662,6 +699,8 @@ A top-level line beginning exactly `---`. A PageBreak is a pagination signal, no
 
 ```
 ---              → page boundary, no node
+
+Illegal:
 --- {.page-end}  → page boundary, no node (tail dropped, CDN-0016)
 --- some text    → page boundary, no node (tail dropped, CDN-0016)
 ```
@@ -670,7 +709,11 @@ A top-level line beginning exactly `---`. A PageBreak is a pagination signal, no
 
 ### 4.11 FileRef
 
-**Syntax:** `/path {attrs}`
+**Syntax:**
+
+```
+/path/to.file {attrs}
+```
 
 Any line beginning with `/` is a file reference block.
 
@@ -790,7 +833,11 @@ interface NamedBlock {
 
 ### 4.14 RefDefinition
 
-**Syntax:** `[^ref]: inline content`
+**Syntax:**
+
+```
+[^ref]: content
+```
 
 MUST start at the beginning of a line.
 
@@ -839,13 +886,13 @@ interface SpoilerBlock {
 
 - Opening: `^^^` at line start, optionally followed by `{attrs}`. The opening line carries no other content.
 - Closing: `^^^` on its own line.
-- Content is **parsed as blocks** — paragraphs, lists, images, and `:::` NamedBlocks are all permitted. This is the **only** XXX-fence in Cutdown whose body is parsed (code/meta/math fences hold literal content); the contrast is intentional, because a Spoiler hides *meaning*, not *structure*.
+- Content is **parsed as blocks** — paragraphs, lists, images, and `:::` NamedBlocks are all permitted. The contrast is intentional, because a Spoiler hides *meaning*, not *structure*.
 - **No nested SpoilerBlocks.** The first `^^^` line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
-- Fixed 3-caret fence. Variable-length fences not supported.
+- Fixed 3-caret fence `^^^`. Variable-length fences not supported.
 - **Indentation collapsing:** the first content line establishes the base indentation; that many leading spaces are stripped from all content lines before parsing — same rule as `NamedBlock` (§4.13).
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 - Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
-- Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, and other `SpoilerBlock`s. Container indentation is stripped from content lines.
+- Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
 - Semantic variants (NSFW, redacted, entertainment-spoiler) are carried in `attributes`; `SpoilerBlock` has no `kind` field.
 - **Escape:** SpoilerBlock body is **not opaque** — children are parsed as blocks. Use §8.2 block-opener escape (`\^^^`, `^\^^`, `^^\^`) on a content line to prevent it from closing the fence.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing `^^^` (no blank line) sets `caption: Inline[]` on this node.

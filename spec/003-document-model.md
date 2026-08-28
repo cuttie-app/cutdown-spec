@@ -1,10 +1,12 @@
 ## 3. Document Model
 
-A Cutdown document is a tree rooted at a `Document` segment. Every file produces at least one `Page`, even if empty.
+Cutdown introduces `Document`, `Page`, `Section`, and `Block` segments to represent the logical structure of a document. The parser produces a tree of these segments, which is then consumed by renderers or other tools.
+
+A Cutdown document is a tree rooted at a `Document` segment. Every file produces at least one `Page`, even if empty. Every file produce exactly one `Document` segment, even if multiple pages or multiple transclusions are present.
 
 ---
 
-### Document
+### 3.1 Document
 
 The root node of every Cutdown file. Produced automatically — there is no explicit document syntax.
 
@@ -19,7 +21,7 @@ interface Document {
 
 ---
 
-### Page
+### 3.2 Page
 
 A logical division within a document. Every document has at least one Page.
 

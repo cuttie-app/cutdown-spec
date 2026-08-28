@@ -2,20 +2,20 @@
 
 ### 12.1 Whitespaces in Block Segments
 
-| Situation | Rule |
-|-----------|------|
-| Line endings | `\r\n`, lone `\r`, and `\n` all read as line terminators (§7); the text is not rewritten |
-| Encoding | UTF-8 required |
-| Trailing spaces | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** (blank line or end of input) |
-| Leading spaces on block line | Stripped before block classification |
-| Leading spaces on paragraph continuation line | Stripped before inline parsing |
-| Multiple blank lines | Treated as a single blank line |
-| Tabs outside fenced blocks | Treated as a single space for classification (§7); the text is not rewritten |
-| Tabs inside code/metadata/math fences | Preserved literally |
-| Blank lines inside code fence | Preserved literally in `content` string |
-| Blank lines inside metadata fence | Passed through in `raw` string |
-| Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
-| `TextBreak` (`\` at line end) | Produces a `TextBreak` segment — a line break inside the paragraph, not a block boundary (§5.13) |
+| Situation                                                                                                                                               | Rule |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------|------|
+| Line endings                                                                                                                                            | `\r\n`, lone `\r`, and `\n` all read as line terminators (§7); the text is not rewritten |
+| Encoding                                                                                                                                                | UTF-8 required |
+| Trailing spaces                                                                                                                                         | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** (blank line or end of input) |
+| Leading spaces on block line                                                                                                                            | Stripped before block classification |
+| Leading spaces on paragraph continuation line                                                                                                           | Stripped before inline parsing |
+| Multiple blank lines                                                                                                                                    | Treated as a single blank line |
+| Tabs outside fenced blocks                                                                                                                              | Treated as a single space for classification (§7); the text is not rewritten |
+| Tabs inside code/meta/math fences                                                                                                                       | Preserved literally |
+| Blank lines inside code/math fence                                                                                                                      | Preserved literally in `content` string |
+| Blank lines inside meta fence                                                                                                                           | Passed through in `raw` string |
+| Soft break (single newline in paragraph)                                                                                                                | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
+| `TextBreak` (`\` at line end)                                                                                                                           | Produces a `TextBreak` segment — a line break inside the paragraph, not a block boundary (§5.13) |
 | Whitespace immediately preceding a `{attr}` block that is **consumed** by an attribute slot (block-opener last-attr, inline attachment, or scope-chain) | Stripped from the preceding text value. Does NOT apply when `{...}` falls through to literal `Text("{...}")` per §6.1.3 (orphan). |
 
 ### 12.2 Whitespaces in Inline Segments

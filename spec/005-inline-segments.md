@@ -109,7 +109,7 @@ interface Highlight {
 }
 ```
 
-- `~~` opener and closer. A single `~` is always literal text (not a metadata fence in inline context).
+- `~~` opener and closer. A single `~` is always literal text (not a meta fence in inline context).
 - Same rules as `Emphasis`: greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with `Emphasis` and `Strong` allowed.
 
