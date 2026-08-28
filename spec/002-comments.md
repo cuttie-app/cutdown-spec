@@ -11,7 +11,7 @@ A single `#` (octothorpe) is literal text in all positions. There is no whitespa
 foo # bar        →  Paragraph([Text("foo # bar")])
 ```
 
-### 2.2 `##` — Line Comment (Reflection)
+### 2.2 Double octothorpe `##` — Line Comment (Reflection)
 
 A double `##` (octothorpe) opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
 
@@ -96,7 +96,7 @@ AST:
         text: note with no preceding block
 ```
 
-### 2.3 `###` — CommentBlock (block comment)
+### 2.3 Triple octothorpe `###` — CommentBlock (block comment)
 
 `###` opens a block comment that runs until the next bare `###` at the same column, or end of document.
 

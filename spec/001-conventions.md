@@ -16,7 +16,7 @@ AST:
 
 **Naming characters.** A character used as a **noun** is named in words on first use in a section — "a single `#` (octothorpe)", "the caret (`^`)" — and thereafter by symbol alone. §13 is the register of names.
 
-### Streaming terms
+### 1.1 Streaming terms
 
 A **Unicode scalar value** is a Unicode code point other than a surrogate code point. It is the character unit used by the streaming conformance profile (§16). This does not change source locations: `loc` offsets remain UTF-16 code-unit offsets.
 
@@ -24,7 +24,7 @@ An **input snapshot** is the complete decoded Cutdown source available to a pars
 
 An **end of block** is a boundary inferred by the ordinary Cutdown grammar: a completed block boundary, a closing fence, or end of input. It is not a token or event in Cutdown source.
 
-### Identifier Character Set
+### 1.2 Identifier Character Set
 
 Throughout this spec, `ID_LITERAL` refers to the following ASCII character class:
 
@@ -42,11 +42,11 @@ PATH_LITERAL = [a-zA-Z0-9._/-]
 
 `PATH_LITERAL` is used for path-like values: page link targets, tag link targets, and file reference paths.
 
-### Segment
+### 1.3 Segment
 
 A **segment** is any node in the Cutdown AST — Block or Inline. This term is used throughout the spec when no distinction between block and inline is needed.
 
-### Block Type
+### 1.4 Block Type
 
 A **Block** segment is any node that occupies a full line-level slot in the document.
 
@@ -68,7 +68,7 @@ Block =
 
 Container blocks carry `children: (Block | Inline)[]`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
 
-### Inline Type
+### 1.5 Inline Type
 
 An **Inline** segment is any node parsed within inline content.
 

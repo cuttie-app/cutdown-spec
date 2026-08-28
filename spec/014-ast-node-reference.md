@@ -1,13 +1,13 @@
 ## 14. AST Node (Segment) Reference
 
-### Root Segments
+### 14.1 Root Segments
 
 | Segment    | Fields |
 |------------|--------|
 | `Document` | `type: "Document", children: Page[]` |
 | `Page`     | `type: "Page", meta: Meta\|null, children: Block[]` |
 
-### Block Segments
+### 14.2 Block Segments
 
 All block segments carry `reflection: Reflection[] | null` (null when no `##` comment is present). See §2.2 for attachment rules.
 
@@ -27,7 +27,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
 | `CommentBlock`  | `type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
 
-### Inline Segments
+### 14.3 Inline Segments
 
 | Segment         | Fields |
 |-----------------|--------|
@@ -43,8 +43,9 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `ImageInline`   | `type: "ImageInline", alt: Inline[], src: string, attributes` |
 | `Span`          | `type: "Span", name: string, children: [], attributes` |
 | `TextBreak`     | `type: "TextBreak"` |
+| `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
-### Special Nodes
+### 14.4 Special Nodes
 
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
@@ -55,9 +56,8 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
 | `Row`           | `type: "Row"\|"Header", children: Cell[], attributes`                           |
 | `Cell`          | `type: "Cell", children: Inline[]\|Block[], row: number, column: number` — `Inline[]` when `Table.kind` is `"pipe"`; `Block[]` when `"multiline"` |
-| `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
-### Synthetic Segments
+### 14.5 Synthetic Segments
 
 The AST schema admits nodes that are not producible by parsing. **Conforming parsers never emit them; conforming consumers must accept them.**
 
@@ -67,7 +67,7 @@ The AST schema admits nodes that are not producible by parsing. **Conforming par
 
 `Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item.
 
-### Location Type
+### 14.6 Location Type
 
 Every segment MAY carry a source location, `loc?: Loc`:
 
@@ -85,7 +85,7 @@ interface Loc {
 - Segments the parser synthesises rather than reads carry the `loc` of the causing construct in the containing file, or no `loc` at all. A `Fragment` has a causing construct — its `FileRef` line — and takes that `loc`. A padded table `Cell` (§4.8) has no source range and no causing construct at a position, so it carries no `loc`. A padded `Cell` is an ordinary empty `Cell`, not a distinct node type; it is not listed under Synthetic Segments.
 - Diagnostics (CDN codes) carry a `loc` identifying the triggering source range.
 
-### Reflection Type
+### 14.7 Reflection Type
 
 ```typescript
 interface Reflection {
@@ -96,7 +96,7 @@ interface Reflection {
 
 `reflection` is typed `Reflection[] | null`, and is `null` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
 
-### Attributes Type
+### 14.8 Attributes Type
 
 ```typescript
 type Attribute =

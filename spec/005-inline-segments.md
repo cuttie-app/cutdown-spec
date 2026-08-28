@@ -165,7 +165,7 @@ interface Link {
 
 All cases above are valid and preserved. Consumers may choose to warn about empty targets or hrefs.
 
-### Link types and meaning
+#### Link types and meaning
 
 Ordinary links `[text](url)` are for external URLs. At least `(url)` part should be treated as HTML DOM `<a>` `href` attribute value and validated/sanitized accordingly. Consumers may choose to also validate the `url` against a whitelist of allowed URL schemas (e.g. `http:`, `https:`, `mailto:`) and/or emit a warning for suspicious URLs (e.g. `javascript:`).
 
@@ -307,7 +307,7 @@ interface ImageInline {
 
 ---
 
-### 5.10 Span (NamedInline segment)
+### 5.10 NamedInline (Span segment)
 
 **Syntax:** `::name {attrs}`
 
