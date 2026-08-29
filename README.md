@@ -2,7 +2,9 @@
 
 You write structure. You write content.
 
-*Cutdown* derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — pages, sections, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
+**Cutdown** is a lightweight markup language with a closed, finite syntax, parsed in a single forward pass so a document renders as it arrives rather than after it ends. Two identical characters wrap inline text; three open a block. Thus, the parser resolves every construct when it is first encountered.
+
+Cutdown derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — pages, sections, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
 
 ---
 
@@ -63,7 +65,7 @@ This makes line wrapping safe in every script. `よう\nこそ` renders as `よ�
 
 ### **Angle brackets are plain text.**
 
-`<em>` in a Cutdown document is exactly five characters of content — not a tag, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
+`<em>` in a Cutdown document is exactly four characters of content — not a tag, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
 
 The consequence for anyone rendering user-written content: there is nothing to sanitize, because there is no channel through which markup can smuggle executable output. The injection surface does not exist — not narrowed, not filtered: absent by construction.
 
