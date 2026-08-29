@@ -2,53 +2,47 @@
 
 Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§9). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§16).
 
----
+```
+~~~               MetaBlock (Frontmatter) format=yaml
+  ...
+~~~
 
-## Input
+== ...            Heading (Section) Level 2
 
-- Input is decoded UTF-8 text. Transport bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§16). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
-- Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
-- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§7), not transforms.
-- Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
-- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§14). Conformance AST comparison ignores `loc`.
-- Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
-- HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
+- ...             ListItem (unordered)
 
-`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
+1. ...            ListItem (ordered)
 
----
+- [+] ...         TaskItem (checklist) checked=true
 
-## Comments
+/path             FileRefBlock
 
-Cutdown has two comment constructs. Both are hidden by renderers by default.
+![](...)          ImageBlock
 
-| Form | Result | Notes |
-|------|--------|-------|
-| `#` | literal text | Single `#` does nothing — written exactly as typed. |
-| `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer at same column. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
+> ...             QuoteBlock
+
+$$$               MathBlock
+  ...
+$$$
+
+:::div            NamedBlock name=div
+  ...
+:::
+
+^^^               SpoilerBlock
+  ...
+^^^
+
+| AA | BB |       Table
+^ ...             Caption / Attribution (no node)
+
+[^...]: ...       RefDefinition
+
+###               CommentBlock (hidden by default)
+  ...
+###
 
 ```
-# literal hash, not a comment
-## line comment       → stored as reflection on nearest block
-foo bar ## tail       → Text("foo bar ") + reflection entry on block
-
-###
-  opaque block — any content captured raw
-###
-```
-
-Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
-
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
-
-**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
-
-**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
-
-**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on a header separator row claim the Table slot (§4.8).
-
----
 
 ## Document Model
 
@@ -101,15 +95,6 @@ Sections are not parsed — they are derived by a fold (§9.5.1): a Section span
 == **Why** Classical Computers Struggle  {id="limits"}
 ```
 
-
-### Page Break → new Page (no node)
-
-```
----
-```
-
-A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a diagnostic (CDN-0016). Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, CDN-0017). Cutdown defines no thematic-break (horizontal-rule) element.
-
 ### Meta Block (Frontmatter) → `Meta`
 
 ```
@@ -120,36 +105,13 @@ key: value
 
 Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
-### Code Block → `CodeBlock`
-
-````
-```language {attrs}
-literal content — no inline parsing
-```
-````
-
-Language defaults to `"text"`. Fixed 3-backtick fence. No nesting. Unclosed → warning CDN-0001.
-
-
-### Math Block → `MathBlock`
+### Page Break → new Page (no node)
 
 ```
-$$$ {attrs}
-\LaTeX formula
-$$$
+---
 ```
 
-Content is literal. Unclosed → warning CDN-0003.
-
-### Quote Block → `QuoteBlock`
-
-```
-> content
-> more content
->> nested quote
-```
-
-Every line must start with `>`. Nesting by counting `>` chars.
+A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a diagnostic (CDN-0016). Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, CDN-0017). Cutdown defines no thematic-break (horizontal-rule) element.
 
 ### Lists → `List` / `ListItem` / `TaskItem`
 
@@ -166,6 +128,73 @@ Every line must start with `>`. Nesting by counting `>` chars.
 ```
 
 Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the recommended style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
+
+### File Reference → `FileRef`, `FileRefGroup`
+
+```
+/path/to/file.ext {attrs}
+/path/to/image.png
+```
+
+Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRefGroup`. Fragment: `/page.md#section-id`. Query: `/page.md?key=value`.
+
+### Image Block → `ImageBlock`
+
+```
+![alt text](src) {attrs}
+```
+
+Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRefGroup`. Image can be declared inside Inline context as well (as `ImageInline`).
+
+### Quote Block → `QuoteBlock`
+
+```
+> content
+> more content
+>> nested quote
+```
+
+Every line must start with `>`. Nesting by counting `>` chars.
+
+### Code Block → `CodeBlock`
+
+````
+```language {attrs}
+literal content — no inline parsing
+```
+````
+
+Language defaults to `"text"`. Fixed 3-backtick fence. No nesting. Unclosed → warning CDN-0001.
+
+### Math Block → `MathBlock`
+
+```
+$$$ {attrs}
+\LaTeX formula
+$$$
+```
+
+Content is literal. Unclosed → warning CDN-0003.
+
+### Named Block → `NamedBlock`
+
+```
+:::block-name {attrs}
+  content (any blocks, including nested :::)
+:::
+```
+
+`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
+
+### Spoiler Block → `SpoilerBlock`
+
+```
+^^^ {attrs}
+  content (any blocks, including nested :::, but not nested ^^^)
+^^^
+```
+
+Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Tables → `Table`
 
@@ -192,43 +221,6 @@ Two variants: Pipe (`kind: "pipe"`, first line starts with `|`) and Multiline (`
 **Multiline cells:** All `|` content lines between two consecutive separator rows (`+` rows or header separators) form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
 
 Leading/trailing `|` required in pipe rows. `+-` required as first line for multiline.
-
-### File Reference → `FileRef`, `FileRefGroup`
-
-```
-/path/to/file.ext {attrs}
-/path/to/image.png
-```
-
-Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRefGroup`. Fragment: `/page.md#section-id`. Query: `/page.md?key=value`.
-
-### Image Block → `ImageBlock`
-
-```
-![alt text](src) {attrs}
-```
-
-Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRefGroup`. Image can be declared inside Inline context as well (as `ImageInline`).
-
-### Named Block → `NamedBlock`
-
-```
-:::block-name {attrs}
-  content (any blocks, including nested :::)
-:::
-```
-
-`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
-
-### Spoiler Block → `SpoilerBlock`
-
-```
-^^^ {attrs}
-  content (any blocks, including nested :::, but not nested ^^^)
-^^^
-```
-
-Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Reference Definition → `RefDefinition`
 
@@ -336,6 +328,52 @@ Attach **after** their target on the same line (or next line, no blank line betw
 `{{` always matched before `{` (longest opener wins).
 
 **Literal-span idiom.** `{` opens an attribute scan to the matching `}` or end of line. Invalid attr grammar or no `}` → the entire slice (braces included) is one verbatim `Text` run, never inline-parsed: `{a **b**}` → `Text("{a **b**}")`. Note: extending the attribute grammar later is a breaking change for text using this idiom.
+
+---
+
+## Comments
+
+Cutdown has two comment constructs. Both are hidden by renderers by default.
+
+| Form | Result | Notes |
+|------|--------|-------|
+| `#` | literal text | Single `#` does nothing — written exactly as typed. |
+| `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
+| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer at same column. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
+
+```
+# literal hash, not a comment
+## line comment       → stored as reflection on nearest block
+foo bar ## tail       → Text("foo bar ") + reflection entry on block
+
+###
+  opaque block — any content captured raw
+###
+```
+
+Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
+
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
+
+**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
+
+**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
+
+**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on a header separator row claim the Table slot (§4.8).
+
+---
+
+## Input
+
+- Input is decoded UTF-8 text. Transport bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§16). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
+- Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
+- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§7), not transforms.
+- Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
+- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§14). Conformance AST comparison ignores `loc`.
+- Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
+- HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
+
+`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
 
 ---
 
