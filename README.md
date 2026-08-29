@@ -189,7 +189,7 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 
 ## MIME type
 
-There is no official MIME type. `text/x-cutdown` may be used informally.
+The media type is `text/cutdown`. It is not yet registered with IANA; registration is intended. 
 
 ---
 
