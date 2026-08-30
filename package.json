@@ -8,7 +8,8 @@
     "url": "https://github.com/cuttie-app/cutdown-spec"
   },
   "scripts": {
-    "check:version": "node scripts/before-new-version-tag.mjs"
+    "check:version": "node scripts/before-new-version-tag.mjs",
+    "version": "node scripts/before-new-version-tag.mjs"
   },
   "files": [
     "spec/",

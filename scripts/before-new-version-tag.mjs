@@ -11,7 +11,28 @@
  *
  * Zero dependencies on purpose: this repo has no node_modules and no build.
  *
- *   node scripts/before-new-version-tag.mjs
+ * WIRED AS THE `version` LIFECYCLE HOOK, which is the only moment that makes
+ * this gate meaningful. `npm version patch` bumps package.json, commits, and
+ * creates the tag as one step, so a check run by hand afterwards can only ever
+ * report a tag that already exists. npm runs three hooks around that step:
+ *
+ *   preversion   before the bump   — package.json still holds the OLD version
+ *   version      after the bump    — NEW version in package.json, NO TAG YET
+ *   postversion  after commit+tag  — too late to refuse
+ *
+ * `version` is the one. A non-zero exit there aborts the whole operation and
+ * no tag is written. Note that npm leaves the bumped package.json behind when
+ * it aborts; `git checkout package.json` puts it back.
+ *
+ * Run standalone against the version in package.json:
+ *
+ *   pnpm run check:version
+ *
+ * Or ask whether the tree is ready for a version that has not been bumped to
+ * yet, which is the useful order — write the changelog and prose FIRST, then
+ * let `npm version` create the tag:
+ *
+ *   pnpm run check:version 0.10.0
  *
  * Exits 0 when the tree is ready to tag, 1 with a list of what to fix.
  */
@@ -28,12 +49,18 @@ const fail = (what, detail) => failures.push({ what, detail });
 const pass = what => console.log(`  ok   ${what}`);
 const check = (ok, what, detail) => (ok ? pass(what) : fail(what, detail));
 
-const VERSION = JSON.parse(read('package.json')).version;
+// An explicit argument beats package.json so the gate can be asked about a
+// release BEFORE the bump — the order that actually works, since the changelog
+// for 0.10.0 cannot be written by a hook that only learns the number once
+// `npm version` has already decided it.
+const [, , argv] = process.argv;
+const SOURCE = argv ? 'the command line' : 'package.json';
+const VERSION = argv ?? JSON.parse(read('package.json')).version;
 if (!/^\d+\.\d+\.\d+$/.test(VERSION)) {
-  console.error(`package.json version "${VERSION}" is not X.Y.Z — nothing else can be checked.`);
+  console.error(`Version "${VERSION}" from ${SOURCE} is not X.Y.Z — nothing else can be checked.`);
   process.exit(1);
 }
-console.log(`\nabout to tag v${VERSION}\n`);
+console.log(`\nabout to tag v${VERSION}  (from ${SOURCE})\n`);
 
 // ---------------------------------------------------------------------------
 // 1. The prose sites that restate the version.
@@ -61,7 +88,7 @@ for (const [file, pattern, where] of PROSE) {
     fail(`${file} states the version once`, `${where} matched ${hits.length} times; the gate cannot tell which one is authoritative`);
   } else {
     check(hits[0][1] === VERSION, `${file} says ${VERSION}`,
-      `${where} says ${hits[0][1]}, package.json says ${VERSION}`);
+      `${where} says ${hits[0][1]}, but the release is ${VERSION} (from ${SOURCE})`);
   }
 }
 
