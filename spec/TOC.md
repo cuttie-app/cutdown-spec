@@ -28,11 +28,11 @@
 
 ## Abstract
 
-Cutdown is a lightweight markup language designed to produce a structured AST (Abstract Syntax Tree). It has no canonical HTML output — consuming applications interpret and render the AST. The reference consumer is the Cuttie application.
+**Cutdown** is a lightweight markup language with a closed, finite syntax, parsed in a single forward pass so a document renders as it arrives rather than after it ends. Two identical characters wrap inline text; three open a block. Thus, the parser resolves every construct when it is first encountered.
 
 Cutdown prioritizes **unambiguous parsing**, **consistency**, and **implementability**. Every syntactic construct is locally deterministic. The parser never backtracks.
 
-Cutdown is a simple markup language with the bare minimum features to structure content. It does not have a goal to satisfy all varieties of representing content in ASCII.
+It has no canonical HTML output — consuming applications interpret and render the AST.
 
 ---
 
