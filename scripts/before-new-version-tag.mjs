@@ -96,27 +96,52 @@ for (const [file, pattern, where] of PROSE) {
 // 2. The changelog entry for this release.
 // ---------------------------------------------------------------------------
 console.log('\nchangelog');
-const entry = `changelogs/${VERSION}.md`;
+// CHANGELOG.md states the convention this block enforces:
+//
+//   "Notes are written per minor line; patch releases are folded into the
+//    minor release above them."
+//
+// So a patch does NOT get its own file. 0.9.1's notes live inside
+// changelogs/0.9.0.md under a `## 0.9.1` heading, and CHANGELOG.md keeps one
+// index line per minor. An earlier version of this gate demanded
+// `changelogs/<VERSION>.md` unconditionally, which made every patch release
+// unshippable: the only way to satisfy it was to break the repo's own
+// documented convention.
+const [MAJOR, MINOR, PATCH] = VERSION.split('.').map(Number);
+const LINE = `${MAJOR}.${MINOR}.0`;
+const entry = `changelogs/${LINE}.md`;
+const folded = PATCH > 0;
+
 if (!existsSync(join(ROOT, entry))) {
-  fail(`${entry} exists`, `write the release notes for ${VERSION} before tagging it`);
+  fail(`${entry} exists`, `write the release notes for the ${MAJOR}.${MINOR} line before tagging ${VERSION}`);
 } else {
   pass(`${entry} exists`);
-  const first = read(entry).split('\n')[0].trim();
-  // Every published entry opens with exactly `# X.Y.Z`. A suffix — the usual
+  const text = read(entry);
+  const first = text.split('\n')[0].trim();
+  // Every published entry opens with exactly `# X.Y.0`. A suffix — the usual
   // one being "— Unreleased" carried over from drafting — means the file was
   // never finished, and it is about to become the permanent notes for a tag.
-  check(first === `# ${VERSION}`, `${entry} opens with "# ${VERSION}"`,
+  check(first === `# ${LINE}`, `${entry} opens with "# ${LINE}"`,
     `its first line is "${first}". A trailing "— Unreleased" or similar must be removed before the tag exists.`);
+
+  // A patch must actually say something. Without this the gate would wave
+  // through a tag whose notes never mention it — which is indistinguishable,
+  // to a reader, from the release not existing.
+  if (folded) {
+    check(new RegExp(`^## ${VERSION.replace(/\./g, '\\.')}\\s*$`, 'm').test(text),
+      `${entry} carries a "## ${VERSION}" section`,
+      `patch notes are folded into the minor line's file (see CHANGELOG.md), so ${VERSION} needs a "## ${VERSION}" heading inside ${entry}`);
+  }
 
   const changelog = read('CHANGELOG.md');
   // The index links entries as `- 0.9.0  [`changelogs/0.9.0.md`](changelogs/0.9.0.md)`.
   // Assert the LINK, not just the version string: an entry file nobody links to
   // is unreachable from the repo root and from the published site.
   check(changelog.includes(`(${entry})`), `CHANGELOG.md links ${entry}`,
-    `add a line for ${VERSION} to CHANGELOG.md pointing at ${entry}`);
-  check(new RegExp(`^- ${VERSION.replace(/\./g, '\\.')}\\s`, 'm').test(changelog),
-    `CHANGELOG.md lists ${VERSION} in its index`,
-    `the index line must start "- ${VERSION}" so the ordering stays machine-readable`);
+    `add a line for ${LINE} to CHANGELOG.md pointing at ${entry}`);
+  check(new RegExp(`^- ${LINE.replace(/\./g, '\\.')}\\s`, 'm').test(changelog),
+    `CHANGELOG.md lists ${LINE} in its index`,
+    `the index line must start "- ${LINE}" so the ordering stays machine-readable`);
 }
 
 // ---------------------------------------------------------------------------
