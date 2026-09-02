@@ -1,0 +1,5 @@
+*.cutdown linguist-language=Cutdown
+*.md linguist-language=Markdown
+fixtures/** linguist-generated=true
+tests/** linguist-generated=true
+scripts/** linguist-generated=true
