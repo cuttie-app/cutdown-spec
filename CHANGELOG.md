@@ -6,6 +6,7 @@ defined in [`policies/versioning-policy.md`](policies/versioning-policy.md).
 Notes are written per minor line; patch releases are folded into the minor
 release above them.
 
+- 0.10.0  [`changelogs/0.10.0.md`](changelogs/0.10.0.md)
 - 0.9.0  [`changelogs/0.9.0.md`](changelogs/0.9.0.md)
 - 0.8.0  [`changelogs/0.8.0.md`](changelogs/0.8.0.md)
 - 0.7.0  [`changelogs/0.7.0.md`](changelogs/0.7.0.md)
