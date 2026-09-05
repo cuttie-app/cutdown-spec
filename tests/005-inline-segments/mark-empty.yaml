@@ -1,0 +1,17 @@
+id: mark-empty
+section: "5.10"
+description: "::name:: produces an empty Mark, preserving the placeholder form"
+
+input: |
+  Hello ::a:: world
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "Hello "
+      - type: Mark
+        name: a
+        children: []
+      - type: Text
+        value: " world"

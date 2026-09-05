@@ -1,0 +1,20 @@
+id: named-block-not-mark-no-fire
+section: "4.13"
+description: "A ::: line at block position is still a NamedBlock and never reaches the inline Mark parser, even when its content holds Mark syntax (§5.10, §10)"
+
+input: |
+  :::callout
+  ::a b::
+  :::
+
+ast:
+  - type: NamedBlock
+    name: callout
+    children:
+      - type: Paragraph
+        children:
+          - type: Mark
+            name: a
+            children:
+              - type: Text
+                value: "b"

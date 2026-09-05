@@ -1,0 +1,16 @@
+id: mark-unclosed
+section: "5.10"
+description: "An unclosed Mark opener degrades per Class 1 — the opener alone becomes Text and following constructs parse normally"
+
+input: |
+  ::a b __c__
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "::a b "
+      - type: Emphasis
+        children:
+          - type: Text
+            value: "c"

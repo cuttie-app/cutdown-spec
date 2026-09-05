@@ -258,7 +258,7 @@ Degradation to visible literal text is silent — no diagnostics.
 | `[text][^ref]`  | `Link(ref)` | resolved by consumer on page in Ref's / ID's namespace                                                         |
 | `[text][@cite]` | `Link(cite)` | resolved by consumer in outer Ref vocabulary                                                                   |
 | `![alt](src)`   | `ImageInline` |                                                                                                                |
-| `::name {attrs}` | `Span` | Empty. `::` without name = literal.                                                                            |
+| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.        |
 | `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice.              |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
 | `\` at line end | `TextBreak` |                                                                                                                |
@@ -373,7 +373,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 - Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
-`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, span names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
+`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, mark names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
 
 ---
 
@@ -432,5 +432,5 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 9. Inline math `$$` — matched before emphasis; content literal
 10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
-11. Named span `::name` — matched after emphasis
+11. Named mark `::name … ::` — matched after emphasis; name run is lexical
 12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then source order

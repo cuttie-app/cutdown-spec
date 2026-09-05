@@ -1,0 +1,16 @@
+id: mark-nested-empty
+section: "5.10"
+description: "::a ::c:::: nests an empty Mark inside a Mark; the trailing :::: is inner closer + outer closer"
+
+input: |
+  ::a ::c::::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Mark
+            name: c
+            children: []

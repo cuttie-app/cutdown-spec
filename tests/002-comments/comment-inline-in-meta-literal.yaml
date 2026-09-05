@@ -8,7 +8,6 @@ input: |
   ## yaml comment, not Cutdown
   ~~~
 
-ast: []
 pages:
   - meta:
       type: Meta

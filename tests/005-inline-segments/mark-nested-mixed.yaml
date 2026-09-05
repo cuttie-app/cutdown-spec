@@ -1,0 +1,22 @@
+id: mark-nested-mixed
+section: "5.10"
+description: "A nested Mark surrounded by text on both sides; inner whitespace is preserved"
+
+input: |
+  ::a b ::c d:: e::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Text
+            value: "b "
+          - type: Mark
+            name: c
+            children:
+              - type: Text
+                value: "d"
+          - type: Text
+            value: " e"

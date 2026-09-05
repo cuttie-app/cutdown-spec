@@ -1,0 +1,15 @@
+id: mark-closer-then-text
+section: "5.10"
+description: "::a::b — the empty form closes immediately; following text is not part of the Mark"
+
+input: |
+  ::a::b
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children: []
+      - type: Text
+        value: "b"

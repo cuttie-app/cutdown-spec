@@ -32,7 +32,7 @@ Throughout this spec, `ID_LITERAL` refers to the following ASCII character class
 ID_LITERAL = [a-zA-Z0-9._-]
 ```
 
-This charset is used for all identifier-like tokens: block names, span names, code language tags, reference definition IDs, and variable keys. It is ASCII-only and case-sensitive. Matching against `ID_LITERAL` is always case-sensitive unless explicitly stated otherwise.
+This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only and case-sensitive. Matching against `ID_LITERAL` is always case-sensitive unless explicitly stated otherwise.
 
 `PATH_LITERAL` extends `ID_LITERAL` with the forward-slash character:
 
@@ -78,13 +78,15 @@ Inline =
     | Emphasis
     | Strong
     | Highlight
+    | Spoiler
     | Link
     | CodeInline
     | MathInline
     | QuoteInline
     | ImageInline
-    | Span
+    | Mark
     | TextBreak
+    | Variable
 ```
 
 Container inlines carry `children: Inline[]`. Leaf inlines carry no children. Most inline nodes carry `attributes: Attribute[]`.

@@ -1,0 +1,16 @@
+id: attrs-scope-chain-mark-empty
+section: "6.1.2"
+description: "Empty {} on list item with Mark: claims List slot but assigns nothing (no-op)"
+
+input: |
+  - ::sp:: {}
+
+ast:
+  - type: List
+    kind: "bullet"
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Mark
+            name: sp

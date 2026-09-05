@@ -1,9 +1,9 @@
-id: attrs-scope-chain-span
+id: attrs-scope-chain-mark
 section: "6.1.2"
-description: "Three trailing {} on list item with Span: distribute right-to-left — last to List, middle to ListItem, first to Span"
+description: "Three trailing {} on list item with Mark: distribute right-to-left — last to List, middle to ListItem, first to Mark"
 
 input: |
-  - ::sp {.a}{.b}{.c}
+  - ::sp:: {.a}{.b}{.c}
 
 ast:
   - type: List
@@ -12,7 +12,7 @@ ast:
     children:
       - type: ListItem
         children:
-          - type: Span
+          - type: Mark
             name: sp
             attributes:
               - key: class

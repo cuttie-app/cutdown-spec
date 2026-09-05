@@ -1,0 +1,19 @@
+id: mark-nested-same-name
+section: "5.10"
+description: "Mark permits same-type nesting, including the same name — the opener ::name is distinct from the bare :: closer, so matching is by counting"
+
+input: |
+  ::a ::a ::a ::::::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Mark
+            name: a
+            children:
+              - type: Mark
+                name: a
+                children: []

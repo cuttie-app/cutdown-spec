@@ -20,7 +20,7 @@
 
 ### 12.2 Whitespaces in Inline Segments
 
-Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, QuoteInline):
+Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, QuoteInline, Mark):
 
 | Situation | Rule |
 |-----------|------|

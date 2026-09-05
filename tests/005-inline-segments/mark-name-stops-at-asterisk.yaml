@@ -1,0 +1,18 @@
+id: mark-name-stops-at-asterisk
+section: "5.10"
+description: "* is not an ID_LITERAL character, so the name scan stops at a; the opener is invalid and degrades to Text, Strong parses, and the trailing :: is an unmatched closer"
+
+input: |
+  ::a**b**::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "::a"
+      - type: Strong
+        children:
+          - type: Text
+            value: "b"
+      - type: Text
+        value: "::"

@@ -1,0 +1,15 @@
+id: mark-unmatched-closer-run
+section: "5.10"
+description: "A run of unmatched colons after a closed Mark is literal text"
+
+input: |
+  ::a::b ::::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children: []
+      - type: Text
+        value: "b ::::"

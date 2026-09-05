@@ -1,4 +1,4 @@
-id: document-empty
+id: empty-document
 section: "3"
 description: Empty document produces exactly one Ghost Page (null meta, empty children)
 

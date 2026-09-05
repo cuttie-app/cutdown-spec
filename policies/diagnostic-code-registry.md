@@ -341,3 +341,18 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | introduced_in | 0.2.1 |
 | status | active |
 | owner | Language |
+
+---
+
+### CDN-0031 — Mark nesting depth exceeded
+
+| Field | Value |
+|---|---|
+| code | CDN-0031 |
+| title | Mark nesting depth exceeded |
+| level | warning |
+| trigger | A `::name` `Mark` opener (§5.10) is encountered at nesting depth 9 or deeper; the maximum depth is 8 |
+| recovery | The over-deep opener does not open a `Mark`. It degrades to literal `Text("::" + name)` and parsing continues immediately after it; enclosing `Mark` nodes are unaffected and still close normally. `loc` spans the rejected opener |
+| introduced_in | 0.10.0 |
+| status | active |
+| owner | Language |

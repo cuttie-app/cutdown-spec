@@ -103,7 +103,7 @@ What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may oc
 
 Cutdown has headings, paragraphs, lists, tables, quotes, code, links, emphasis, spoilers, images, file references, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools.
 
-The syntax is closed. Application-specific vocabulary lives in named blocks, spans, and attributes — the set of *names* grows with your application; the set of *rules* does not.
+The syntax is closed. Application-specific vocabulary lives in named blocks, marks, and attributes — the set of *names* grows with your application; the set of *rules* does not.
 
 ---
 
@@ -128,7 +128,7 @@ Cutdown also has constructs absent from CommonMark and GFM, though several will 
 |---|---|
 | `{#id .class key=value}` attributes on anything | Pandoc attribute blocks; Djot attributes; kramdown / PHP Markdown Extra attribute lists |
 | `:::name` named blocks | Pandoc and Djot fenced divs |
-| `::name` spans | Pandoc bracketed spans; Djot inline spans |
+| `::name … ::` marks | Pandoc bracketed spans; Djot inline spans |
 | `^ caption` lines | Pandoc image captions (narrower — Cutdown captions bind to any captionable block) |
 | `^^spoilers^^` | no common equivalent |
 

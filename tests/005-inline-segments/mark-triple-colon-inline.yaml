@@ -1,0 +1,17 @@
+id: mark-triple-colon-inline
+section: "5.10"
+description: "A run of three colons in inline position is the :: closer plus a literal :"
+
+input: |
+  ::a b:::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Text
+            value: "b"
+      - type: Text
+        value: ":"

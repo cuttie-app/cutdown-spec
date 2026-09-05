@@ -1,0 +1,40 @@
+id: cdn-0031-mark-depth-exceeded
+section: "5.10"
+description: "A Mark opener at depth 9 exceeds the maximum of 8: it does not open, degrades to literal Text, and emits CDN-0031. The eight enclosing Marks are unaffected and close normally; the now-unmatched closer is literal too"
+
+input: |
+  ::a ::a ::a ::a ::a ::a ::a ::a ::a ::::::::::::::::::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Mark
+            name: a
+            children:
+              - type: Mark
+                name: a
+                children:
+                  - type: Mark
+                    name: a
+                    children:
+                      - type: Mark
+                        name: a
+                        children:
+                          - type: Mark
+                            name: a
+                            children:
+                              - type: Mark
+                                name: a
+                                children:
+                                  - type: Mark
+                                    name: a
+                                    children:
+                                      - type: Text
+                                        value: "::a ::"
+
+diagnostics:
+  - code: CDN-0031
+    level: warning

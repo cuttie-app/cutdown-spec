@@ -1,0 +1,12 @@
+id: escape-mark-closer
+section: "8.2"
+description: "\\: inside Mark content suppresses the closer, so the opener finds no match and degrades per Class 1"
+
+input: |
+  ::a b\:: c
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "::a b:: c"

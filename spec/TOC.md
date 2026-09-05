@@ -42,7 +42,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 2. [Comments](002-comments.md) — `##` line comment (Block.Reflection), CommentBlock (`###`)
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, ImageBlock, PageBreak, FileRef, FileRefGroup, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
-5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Highlight, Spoiler, CodeInline, TextBreak, Link, ImageInline, Span, MathInline, Variable, QuoteInline
+5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Highlight, Spoiler, CodeInline, TextBreak, Link, ImageInline, Mark, MathInline, Variable, QuoteInline
 6. [Universal Attributes](006-universal-attributes.md)
 7. [Input Interpretation](007-input-interpretation.md)
 8. [Escaping](008-escaping.md)

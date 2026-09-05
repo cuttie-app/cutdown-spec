@@ -14,8 +14,10 @@ The `##` opener (§2.2) is special: it has no closer and terminates at end-of-li
 | Table cell content | §4      |
 | `alt` slot of `ImageBlock` | §4      |
 | `alt` slot of `ImageInline` | §5      |
+| `Caption` content | §6      |
 | `RefDefinition` content | §4      |
-| Children of `Emphasis`, `Strong`, `Highlight`, `QuoteInline` | §5      |
+| Children of `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, `Spoiler` | §5      |
+| Children of `Mark` | §5      |
 | `[text]` slot of `Link` | §5      |
 
 ---
@@ -307,32 +309,67 @@ interface ImageInline {
 
 ---
 
-### 5.10 NamedInline (Span segment)
+### 5.10 Mark
 
-**Syntax:** `::name {attrs}`
+**Syntax:** `::name <content>::` or `::name::`
 
-An empty inline placeholder/hook for consumer post-processing.
+A named inline container that wraps a range of content as a hook for consumer post-processing. Supports nesting.
 
 **AST type:**
 
 ```typescript
-interface Span {
-  type: "Span"
-  name: string  // non-empty string
-  children: []  // always empty
+interface Mark {
+  type: "Mark"
+  name: string        // non-empty ID_LITERAL run
+  children: Inline[]  // empty for the `::name::` form
   attributes: Attribute[]
 }
 ```
 
-- `::` followed immediately by a span name (`[ID_LITERAL]+`), then optional attributes.
-- Always empty — no children.
-- `::` without a valid name is emitted as literal `Text("::")`.
+**Opener.** `::` followed immediately by a name — a **maximal `ID_LITERAL+` run** (§1.2). The character after the name decides what happens:
 
-**Example:**
+| Next character | Result |
+|----------------|--------|
+| `::` | empty `Mark`; the construct ends there |
+| space | container opener; content runs to the matching closer |
+| anything else | not a `Mark` — emit `Text("::" + name)` and continue parsing |
+
+The name is **required**. `::` not followed by at least one `ID_LITERAL` character is emitted as literal `Text("::")`. The space after the name is a delimiter and is not part of the content.
+
+**Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by `ID_LITERAL+` and then a space or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
+
+- Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.4.1, Class 3).
+- Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
+- Children are **parsed by inline rules** (see the context table at the head of §5).
+- **Maximum nesting depth is 8.** A `Mark` opener at depth 9 or deeper does not open; it degrades to literal `Text("::" + name)` and emits warning CDN-0031.
+- An unclosed opener degrades per Class 1 (§9.4.1): the opener alone is emitted as `Text` and parsing continues immediately after it. No diagnostic.
+- Attributes trail the closer, glued to it as for every other inline node: `::a b::{#x .y}`.
+- Whitespace inside the delimiters follows §12, as for any container inline.
+
+**Name lexing.** The name is a maximal `ID_LITERAL+` run and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_LITERAL` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` `` and space are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§11):
 
 ```
-Hello ::marker {#here .highlight} world
-→ Text("Hello ") + Span { name: "marker", attributes: {id:"here", class:["highlight"]} } + Text(" world")
+::a__b__::   → Mark { name: "a__b__" }              `_` is ID_LITERAL — the name swallows it, no Emphasis forms
+::a**b**::   → Text("::a") + Strong([Text("b")]) + Text("::")   `*` is not — the name ends at `a`, the opener fails
+```
+
+**Colon runs.** A run of three colons in inline position is the `::` closer plus a literal `:`. At block position `:::name` is still a `NamedBlock` (§10) — that classification happens first and never reaches the inline parser.
+
+**Examples:**
+
+```
+::a::               → Mark { name: "a", children: [] }
+::a b::             → Mark { name: "a", children: [Text("b")] }
+::a ::c::::         → Mark { name: "a", children: [Mark { name: "c", children: [] }] }
+::a b ::c d:: e::   → Mark { name: "a", children: [Text("b "), Mark { name: "c", children: [Text("d")] }, Text(" e")] }
+::a ::a ::a ::::::  → Mark(a, [Mark(a, [Mark(a, [])])])         same-name nesting is legal
+
+::a::b              → Mark { name: "a" } + Text("b")
+::a::b ::           → Mark { name: "a" } + Text("b ::")         closer with nothing open is literal
+::a::b ::::         → Mark { name: "a" } + Text("b ::::")
+:: ::               → Text(":: ::")                             no name
+::a b __c__         → Text("::a b ") + Emphasis([Text("c")])    unclosed opener, Class 1
+::a b::{#x .y}      → Mark { name: "a", children: [Text("b")], attributes: {id:"x", class:["y"]} }
 ```
 
 ---

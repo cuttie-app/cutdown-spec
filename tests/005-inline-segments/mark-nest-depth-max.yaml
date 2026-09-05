@@ -1,0 +1,34 @@
+id: mark-nest-depth-max
+section: "5.10"
+description: "Nesting depth 8 is the maximum and parses normally; no diagnostic"
+
+input: |
+  ::a ::a ::a ::a ::a ::a ::a ::a ::::::::::::::::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a
+        children:
+          - type: Mark
+            name: a
+            children:
+              - type: Mark
+                name: a
+                children:
+                  - type: Mark
+                    name: a
+                    children:
+                      - type: Mark
+                        name: a
+                        children:
+                          - type: Mark
+                            name: a
+                            children:
+                              - type: Mark
+                                name: a
+                                children:
+                                  - type: Mark
+                                    name: a
+                                    children: []

@@ -88,7 +88,13 @@ An unresolved Class 2 opener causes the source from the opener to its terminator
 
 **Attribute braces.** `{` opens an attribute scan running to the matching `}` or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
-**`::` (Span)** belongs to neither class: it has no closer to scan for. If `::` is not immediately followed by a valid `ID_LITERAL` name, it is emitted as `Text("::")` and parsing continues.
+**Class 3 — bracket-matched, counted: `Mark`.**
+
+`::name … ::` (§5.10) is the only construct whose opener and closer are textually distinct, so the parser can tell them apart and match by counting rather than by taking the first closer. While scanning content, a `::` is a nested opener if followed by `ID_LITERAL+` and then a space or `::`; otherwise it closes the innermost open `Mark`. A `::` with nothing open is literal text.
+
+This is why `Mark` — alone among inline constructs — permits same-type nesting, including of the same name. Depth is capped at 8; an opener beyond that degrades to literal text and emits CDN-0031 (§5.10).
+
+An opener that never matches degrades per **Class 1**: the opener alone (`::` plus the name) is emitted as `Text` and parsing continues immediately after it, so following constructs parse normally. If `::` is not immediately followed by a valid `ID_LITERAL` name, or the name is not followed by a space or `::`, it is likewise emitted as literal `Text` and parsing continues.
 
 `##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades per its class (§9.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
 

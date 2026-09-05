@@ -41,7 +41,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `MathInline`    | `type: "MathInline", formula: string, attributes` |
 | `QuoteInline`   | `type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
 | `ImageInline`   | `type: "ImageInline", alt: Inline[], src: string, attributes` |
-| `Span`          | `type: "Span", name: string, children: [], attributes` |
+| `Mark`          | `type: "Mark", name: string, children: Inline[], attributes` |
 | `TextBreak`     | `type: "TextBreak"` |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 

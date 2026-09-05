@@ -1,9 +1,9 @@
-id: attrs-scope-chain-span-noop
+id: attrs-scope-chain-mark-noop
 section: "6.1.2"
 description: "Empty {} as last token is no-op on List; preceding {.a} goes to ListItem"
 
 input: |
-  - ::sp {.a}{}
+  - ::sp:: {.a}{}
 
 ast:
   - type: List
@@ -12,7 +12,7 @@ ast:
     children:
       - type: ListItem
         children:
-          - type: Span
+          - type: Mark
             name: sp
         attributes:
           - key: class

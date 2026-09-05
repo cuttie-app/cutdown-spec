@@ -1,0 +1,19 @@
+id: mark-basic
+section: "5.10"
+description: "::name <content>:: produces a Mark wrapping the parsed inline content"
+
+input: |
+  Hello ::marker world:: end
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "Hello "
+      - type: Mark
+        name: marker
+        children:
+          - type: Text
+            value: "world"
+      - type: Text
+        value: " end"

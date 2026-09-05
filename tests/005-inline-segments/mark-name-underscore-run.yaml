@@ -1,0 +1,13 @@
+id: mark-name-underscore-run
+section: "5.10"
+description: "The name is a maximal ID_LITERAL+ run; _ is an ID_LITERAL character, so a__b__ is absorbed whole into the name and no Emphasis forms"
+
+input: |
+  ::a__b__::
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Mark
+        name: a__b__
+        children: []

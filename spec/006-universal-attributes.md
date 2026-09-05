@@ -104,13 +104,20 @@ The slot searches the **last cell only**. If that cell holds no attr-bearing inl
 Single NL does not break the attr chain. A sequence of `{}` blocks may span multiple lines (one per line) as long as no blank line appears between them.
 
 ```
-- ::sp {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Span({.a})))
-- ::sp {.a}{.b}      →  List({.b}, ListItem({.a}, Span()))
-- ::sp {.a}          →  List({.a}, ListItem(Span()))
-- ::sp {}            →  List({},   ListItem(Span()))     ← {} no-op on List
-- ::sp {.a}{}        →  List({},   ListItem({.a}, Span())) ← {} no-op on List; {.a} to ListItem
+- ::sp:: {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Mark({.a})))
+
+- ::sp:: {.a}{.b}      →  List({.b}, ListItem({.a}, Mark()))
+
+- ::sp:: {.a}          →  List({.a}, ListItem(Mark()))
+
+- ::sp:: {}            →  List({},   ListItem(Mark()))     ← {} no-op on List
+
+- ::sp:: {.a}{}        →  List({},   ListItem({.a}, Mark())) ← {} no-op on List; {.a} to ListItem
+
 - text {.a}{.b}      →  List({.b}, ListItem({.a}, Text("text")))
+
 - text {.a}          →  List({.a}, ListItem(Text("text")))
+
 - text {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Text("text")))   ← {.a} dropped (Text has no attrs)
 ```
 

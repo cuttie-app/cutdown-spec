@@ -79,5 +79,6 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | Duplicate custom attribute key | CDN-0022 | Duplicate dropped; first value kept |
 | `~~~` fence inside a block container | CDN-0030 | Raw span (including fence lines) emitted as literal `Paragraph`; no `Meta` node created |
 | Crossed inline boundaries (`** __ … ** … __`) | CDN-0014 | Greedy parse unchanged; diagnostic only — span on the crossing closer |
+| `Mark` opener beyond nesting depth 8 | CDN-0031 | Opener degrades to literal `Text("::" + name)`; enclosing `Mark` nodes unaffected |
 
 Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.

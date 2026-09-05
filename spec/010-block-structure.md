@@ -90,7 +90,7 @@ When N identical characters appear at an inline position, the following rules ap
 | `=` | Heading L1 (+space) | Heading L2 | Heading L3 | … up to L9; 10+ = literal |
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
 | `-` | list marker (`- `+space) or literal | literal `--` | PageBreak (top level; no node — §9.6) | PageBreak (tail dropped, CDN-0016) |
-| `:` | literal | Span prefix `::name` | NamedBlock prefix `:::name` | literal |
+| `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
 | `+` | Multiline table opener when followed by `-` or `:` (`+-`, `+:`) | — | — | — |
 | `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
 | `\|` | Pipe table row (§4.8) | — | — | — |
