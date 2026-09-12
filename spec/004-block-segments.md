@@ -47,7 +47,7 @@ interface Paragraph {
 - All lines are **parsed by inline rules** and concatenated. Result is `Inline[]`.
 - A single newline between lines is a **soft break** — folded to zero; lines concatenate directly with no character emitted.
 - Trailing spaces before the newline collapse to a single space, preserved as `Text(" ")` (explicit word boundary). At a block boundary the space is dropped. See §12.
-- A `\` (backslash) at line end produces a `TextBreak` segment (explicit line break).
+- A `\` (backslash) at line end produces a `LineBreak` segment (explicit line break).
 
 **Example:**
 
@@ -60,7 +60,7 @@ Input:
 AST:
   Paragraph
   ├── Text("First linesecond line")
-  ├── TextBreak
+  ├── LineBreak
   └── Text("third line")
 ```
 
@@ -102,6 +102,7 @@ interface Section {
 | `========= Heading` | 9     |
 
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
+- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` (§2.2), or a `^ ` caption line (§6.5). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
 - A heading MUST be preceded by a blank line (or be the first line of the document or block container).
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
@@ -285,7 +286,7 @@ Input:
 
 AST:
     QuoteBlock
-    └── Paragraph { children: [Text("Line 1 Line 2 Line 3")] }
+    └── Paragraph { children: [Text("Line 1Line 2Line 3")] }
 ```
 
 ```
@@ -313,7 +314,7 @@ Input:
 
 AST:
     QuoteBlock
-    └─── Paragraph { children: [Text("Line 1 Line 2 Line 3")] }
+    └─── Paragraph { children: [Text("Line 1Line 2Line 3")] }
     Paragraph { children: [Text("Line 4")] }
 ```
 
@@ -325,7 +326,7 @@ Input:
 AST:
     QuoteBlock
     └─── List { kind: "bullet", loose: false }
-         └── ListItem { children: [Text("item one still item one")] }
+         └── ListItem { children: [Text("item onestill item one")] }
 ```
 ---
 

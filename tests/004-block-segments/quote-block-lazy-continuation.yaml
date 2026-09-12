@@ -14,7 +14,7 @@ ast:
       - type: Paragraph
         children:
           - type: Text
-            value: First line Continued
+            value: First lineContinued
   - type: Paragraph
     children:
       - type: Text

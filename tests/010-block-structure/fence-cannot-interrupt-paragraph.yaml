@@ -14,6 +14,6 @@ ast:
       - type: Text
         value: "Some text"
       - type: CodeInline
-        raw: "`jsconst x = 1"
+        value: "`jsconst x = 1"
       - type: Text
         value: "`"
