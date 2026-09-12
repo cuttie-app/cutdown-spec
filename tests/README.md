@@ -98,7 +98,7 @@ ast:
         value: Hello
 ```
 
-`pages` matches the full `Document.children` array and is used when the fixture tests page-splitting (PageBreak, Meta block pagination). A Ghost Page is written `{}`:
+`pages` matches the full `Document.children` array and is used when the fixture tests page-splitting (PageBreaker, Meta block pagination). A Ghost Page is written `{}`:
 
 ```yaml
 pages:

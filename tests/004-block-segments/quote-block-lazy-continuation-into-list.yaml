@@ -1,0 +1,19 @@
+id: quote-block-lazy-continuation-into-list
+section: "4.6"
+description: "A lazy continuation line is handed to the quote's current child block and follows that block's continuation rules — here a list item absorbs it"
+
+input: |
+  > - item one
+  still item one
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: List
+        kind: bullet
+        loose: false
+        children:
+          - type: ListItem
+            children:
+              - type: Text
+                value: item one still item one

@@ -1,4 +1,4 @@
-id: pagebreak-glued-to-paragraph
+id: pagebreaker-glued-to-paragraph
 section: "4.10"
 description: A --- line glued to a preceding paragraph (no blank line) is paragraph content per the no-interrupt rule; no page boundary, no diagnostic
 

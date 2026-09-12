@@ -1,4 +1,4 @@
-id: escape-pagebreak-opener
+id: escape-pagebreaker-opener
 section: "8.2"
 description: "`\\---` at line start → literal `---`; no page break occurs. Whole sample stays in one Page, joined into one Paragraph (no blank-line separator)."
 

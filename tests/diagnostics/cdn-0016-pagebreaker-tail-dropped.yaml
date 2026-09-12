@@ -1,11 +1,11 @@
-id: pagebreak-four-hyphens
+id: cdn-0016-pagebreaker-tail-dropped
 section: "4.10"
-description: "Surplus hyphens after the leading --- are part of the dropped tail; the PageBreak takes effect and CDN-0016 is emitted"
+description: "Anything after the leading --- on a PageBreaker line is dropped; the page boundary takes effect, no node is produced, and CDN-0016 is emitted"
 
 input: |
   Before
 
-  -----
+  --- some text {.x}
 
   After
 

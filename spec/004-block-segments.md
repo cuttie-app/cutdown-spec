@@ -246,13 +246,14 @@ interface QuoteBlock {
 }
 ```
 
-- Every line MUST begin with `>`. No lazy continuation — a line without `>` ends the quote.
-- In same time QuoteBlock supports trailing lines without `>` in same way as Paragraph.
+- The `>` (greater-than sign) prefix opens the quote. It is required on the quote's first line.
+- **Lazy continuation.** A following line without `>` continues the quote. The line is handed to the quote's current child block and follows that block's own continuation rules — a `Paragraph` absorbs it as a continuation line (§4.1), a list item absorbs it per §10.5, a `Section` keeps it in the section body. This is the same continuation behaviour the line would have outside the quote.
+- The quote ends at a blank line, at the end of the enclosing block container, or at the end of the document. A `>` line after a blank line opens a new `QuoteBlock`.
 - The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
-- Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters.
+- Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters. A lazy continuation line carries no `>`, so it does not change the current depth — it continues the innermost open quote.
 - **Body edge-blank trim:** After `>` stripping, leading and trailing blank lines inside the quoted body are stripped before children are parsed. See §10.6.
 - **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
-- **Supports attribution line (§6.2).** A `^ text` line immediately after the closing line (no blank line) sets `attribution: Inline[]` on this node.
+- **Supports caption line (§6.2).** A `^ text` line immediately after the closing line (no blank line) sets `caption: Inline[]` on this node.
 
 **Examples:**
 
@@ -295,6 +296,17 @@ AST:
     └─── Paragraph { children: [Text("Line 1 Line 2 Line 3")] }
     Paragraph { children: [Text("Line 4")] }
 ```
+
+```
+Input:
+  > - item one
+  still item one
+
+AST:
+    QuoteBlock
+    └─── List { kind: "bullet", loose: false }
+         └── ListItem { children: [Text("item one still item one")] }
+```
 ---
 
 ### 4.7 List
@@ -322,7 +334,6 @@ interface List {
   loose: boolean
   children: (ListItem | TaskItem)[]
   attributes: Attribute[]
-  caption: Inline[] | null
   reflection: Reflection[] | null
 }
 ```
@@ -629,7 +640,7 @@ interface ImageBlock {
 
 ---
 
-### 4.10 PageBreak
+### 4.10 PageBreaker
 
 **Syntax:**
 
@@ -637,12 +648,12 @@ interface ImageBlock {
 ---
 ```
 
-A top-level line beginning exactly `---`. A PageBreak is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
+A top-level line beginning exactly `---`. A PageBreaker is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
 
 - The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and CDN-0016 is emitted. There is no attributed form.
-- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`): a blank-line-surrounded `---` line is not a PageBreak — it parses as `Paragraph([Text("---")])` and CDN-0017 is emitted. Glued to a preceding paragraph, `---` is ordinary paragraph content (no diagnostic).
-- **Opener escape:** `\---`, `-\--`, or `--\-` at top level → `Paragraph([Text("---")])`; no page break occurs. See §8.2.
-- Cutdown performs no front-matter detection: a document-leading `---` is a PageBreak like any other, yielding a leading Ghost Page.
+- Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`): a blank-line-surrounded `---` line is not a PageBreaker — it parses as `Paragraph([Text("---")])` and CDN-0017 is emitted. Glued to a preceding paragraph, `---` is ordinary paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
+- **Opener escape:** `\---`, `-\--`, or `--\-` at top level → `Paragraph([Text("---")])`; no Page boundary occurs. See §8.2.
+- Cutdown performs no front-matter detection: a document-leading `---` is a PageBreaker like any other, yielding a leading Ghost Page.
 - Cutdown defines no thematic-break (horizontal-rule) element.
 
 **Examples:**

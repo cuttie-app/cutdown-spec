@@ -1,0 +1,26 @@
+id: table-cell-inline-attrs-plain-text-cell
+section: "4.8"
+description: "A chain before the closer is a cell chain whose only slot is the cell's last attr-bearing inline; a plain-Text cell has none, so the {} is dropped with CDN-0011 and neither Row nor Table receives it"
+
+input: |
+  | AA | CC {.a} |
+
+diagnostics:
+  - code: CDN-0011
+    level: warning
+
+ast:
+  - type: Table
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: AA
+          - type: Cell
+            children:
+              - type: Text
+                value: CC
+        attributes: []
+    attributes: []

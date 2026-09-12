@@ -1,6 +1,6 @@
-id: pagination-meta-after-break-ghost
+id: pagination-meta-fills-page-after-break
 section: "3"
-description: A Meta block is not the first pagination-relevant item, so it does not fill the Page a preceding PageBreak opened — that Page closes as a Ghost Page and the Meta opens its own Page (§9.5.2)
+description: "A Meta block fills the meta slot of the Page a preceding PageBreaker opened — the PageBreaker makes the boundary, the Meta adds none of its own, so no Ghost Page appears (§9.5.2)"
 
 input: |
   Para one
@@ -19,7 +19,6 @@ pages:
         children:
           - type: Text
             value: Para one
-  - {}
   - meta:
       type: Meta
       format: yaml

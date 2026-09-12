@@ -1,6 +1,6 @@
-id: section-closed-by-pagebreak
+id: section-closed-by-pagebreaker
 section: "9.5.2"
-description: A PageBreak closes all open root-level Sections; content after the break belongs to the new Page, not the old Section
+description: A PageBreaker closes all open root-level Sections; content after the break belongs to the new Page, not the old Section
 
 input: |
   = Chapter

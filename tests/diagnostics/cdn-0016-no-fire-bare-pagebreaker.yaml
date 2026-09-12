@@ -1,6 +1,6 @@
-id: pagebreak-basic
+id: cdn-0016-no-fire-bare-pagebreaker
 section: "4.10"
-description: A bare top-level --- line closes the current Page and opens a new one; no node is produced and no diagnostic is emitted
+description: A bare --- PageBreaker line has no tail; no diagnostic is emitted
 
 input: |
   Before
@@ -8,6 +8,8 @@ input: |
   ---
 
   After
+
+diagnostics: []
 
 pages:
   - children:

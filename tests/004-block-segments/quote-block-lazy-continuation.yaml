@@ -1,0 +1,21 @@
+id: quote-block-lazy-continuation
+section: "4.6"
+description: "A line without a leading > continues the QuoteBlock; the quote ends at a blank line, not at the first unprefixed line"
+
+input: |
+  > First line
+  Continued
+
+  After the quote
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: First line Continued
+  - type: Paragraph
+    children:
+      - type: Text
+        value: After the quote

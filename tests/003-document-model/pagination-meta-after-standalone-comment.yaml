@@ -1,0 +1,25 @@
+id: pagination-meta-after-standalone-comment
+section: "3"
+description: "A standalone ## comment above frontmatter produces an orphan empty Paragraph, which does not prevent the Meta from filling the Page's meta slot"
+
+input: |
+  ## SPDX-License-Identifier: CC-BY-4.0
+
+  ~~~yaml
+  title: One
+  ~~~
+
+  Body
+
+pages:
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: One\n"
+    children:
+      - type: Paragraph
+        children: []
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Body

@@ -1,0 +1,18 @@
+id: caption-quoteblock
+section: "6.2"
+description: "A `^ ` line after a QuoteBlock sets the `caption` field, as for every other captionable block"
+
+input: |
+  > To be, or not to be.
+  ^ William Shakespeare
+
+ast:
+  - type: QuoteBlock
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: To be, or not to be.
+    caption:
+      - type: Text
+        value: William Shakespeare

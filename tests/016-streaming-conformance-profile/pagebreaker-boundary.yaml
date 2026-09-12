@@ -1,6 +1,6 @@
-id: page-break-boundary
+id: pagebreaker-boundary
 section: "16"
-description: "A completing PageBreak line retroactively turns literal paragraph text into a page split"
+description: "A completing PageBreaker line retroactively turns literal paragraph text into a page split"
 
 input: "First\n\n---\n\nSecond"
 

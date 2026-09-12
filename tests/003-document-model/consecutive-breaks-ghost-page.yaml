@@ -1,6 +1,6 @@
 id: consecutive-breaks-ghost-page
 section: "3"
-description: Two consecutive PageBreaks produce an intermediate Ghost Page; PageBreaks produce no nodes
+description: Two consecutive PageBreakers produce an intermediate Ghost Page; PageBreakers produce no nodes
 
 input: |
   First

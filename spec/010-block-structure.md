@@ -2,9 +2,7 @@
 
 ### 10.1 Block Boundaries
 
-Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7).
-
-Multiple consecutive blank lines are treated as a single blank line.
+Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7); consecutive blank lines act as one (§12.1).
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is a candidate block, then classified by its first line.
 
@@ -90,7 +88,7 @@ When N identical characters appear at an inline position, the following rules ap
 |--------|---|---|---|-----|
 | `=` | Heading L1 (+space) | Heading L2 | Heading L3 | … up to L9; 10+ = literal |
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
-| `-` | list marker (`- `+space) or literal | literal `--` | PageBreak (top level; no node — §9.6) | PageBreak (tail dropped, CDN-0016) |
+| `-` | list marker (`- `+space) or literal | literal `--` | PageBreaker (top level; no node — §9.6) | PageBreaker (tail dropped, CDN-0016) |
 | `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
 | `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
 | `\|` | Table row (§4.8) | — | — | — |
@@ -115,7 +113,7 @@ Known collisions:
 | `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
 | `^^^` at inline position | `^^` (Spoiler opener) + `^` (literal) |
 | `###` at inline position | `##` (line comment → Reflection entry; trailing `#` is part of the payload text) |
-| `---` non-line-start | literal text (PageBreak only recognized at top-level line start) |
+| `---` non-line-start | literal text (PageBreaker only recognized at top-level line start) |
 
 ### 10.5 List Indentation Model
 

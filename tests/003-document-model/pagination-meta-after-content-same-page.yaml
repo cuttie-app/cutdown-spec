@@ -1,0 +1,27 @@
+id: pagination-meta-after-content-same-page
+section: "3"
+description: "Content before a Meta block does not create a Page: the Meta fills the meta slot of the Page the content is already on"
+
+input: |
+  Para one
+
+  ~~~yaml
+  title: One
+  ~~~
+
+  Para two
+
+pages:
+  - meta:
+      type: Meta
+      format: yaml
+      raw: "title: One\n"
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Para one
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Para two

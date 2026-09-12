@@ -25,12 +25,12 @@ Each block candidate is classified by its first line:
 | First line matches | Block type |
 |-------------------|------------|
 | `^(={1,9}) ` | Heading → Section |
-| `^---` | PageBreak (top level only; no node — §9.6) |
+| `^---` | PageBreaker (top level only; no node — §9.6) |
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
 | `^:::[ID_LITERAL]` | NamedBlock |
 | `^\|` | Table |
-| `^> ` | QuoteBlock |
+| `^>` | QuoteBlock |
 | `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
 | `^[0-9]+\. ` | List (ordered) |
 | `^\[^[ID_LITERAL]` | RefDefinition |
@@ -115,23 +115,21 @@ The sectionization fold applies independently to every flat block sequence (root
 
 #### 9.5.2 Pagination fold
 
-The pagination fold applies **only to the root sequence** — blocks inside containers never affect pagination regardless of their type. Two items drive the fold: `Meta` blocks and PageBreaks (§9.6).
+The pagination fold applies **only to the root sequence** — blocks inside containers never affect pagination regardless of their type. Two items drive the fold: `Meta` blocks and PageBreakers (§9.6).
 
 1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
-2. A **PageBreak** unconditionally closes the current Page — as a Ghost Page if it is empty — and opens a new empty Page. A PageBreak also closes all open root-level Sections. Every PageBreak produces a page boundary: a leading `---` at document start yields a leading Ghost Page; consecutive separators yield Ghost Pages.
-3. A **`Meta` block** closes the current Page and opens a new Page, assigning itself to the new Page's `meta` — **unless** it is the first pagination-relevant item of the document (no block, `Meta`, or PageBreak has been consumed before it), in which case it fills `Page[0].meta` and no new Page is created. In particular, a `Meta` block following a PageBreak does **not** fill the page the PageBreak opened; it closes it as a Ghost Page and opens its own.
+2. A **PageBreaker** unconditionally closes the current Page — as a Ghost Page if it is empty — and opens a new empty Page. A PageBreaker also closes all open root-level Sections. Every PageBreaker produces a page boundary: a leading `---` at document start yields a leading Ghost Page; consecutive separators yield Ghost Pages.
+3. A **`Meta` block** is handled by the current Page's `meta` slot, not by its position in the document.
+   - Slot empty → the `Meta` fills it. No new Page is created, whatever content the Page already holds.
+   - Slot already set → the `Meta` closes the current Page and opens a new Page carrying itself as `meta`.
+
+   Content before a `Meta` therefore never creates a Page: a `Meta` after paragraphs, comments, or any other block still fills the Page those blocks are on. A `Meta` after a PageBreaker fills the Page the PageBreaker opened — the boundary is the PageBreaker's doing, and the `Meta` adds none of its own.
 4. All other root blocks are appended to the current Page's `children`.
 5. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 
-### 9.6 PageBreak
+### 9.6 PageBreaker
 
-A **PageBreak** is a top-level line beginning exactly `---`. It is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**.
-
-The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and a diagnostic is emitted (CDN-0016). There is no attributed form: the entire line after the leading `---` is discarded.
-
-Inside a block container, a blank-line-surrounded `---` line is not a PageBreak: it parses as `Paragraph(Text("---"))` and a diagnostic is emitted (CDN-0017) noting that page separation is a top-level construct. A `---` line glued to a preceding paragraph remains paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
-
-Cutdown performs no front-matter detection: a document-leading `---` is a PageBreak like any other.
+A **PageBreaker** is the pagination signal consumed by the fold in §9.5.2. It produces no AST node. The construct — its syntax, its diagnostics, and its behaviour inside block containers — is defined in §4.10.
 
 ### 9.7 Incremental availability
 

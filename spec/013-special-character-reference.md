@@ -18,7 +18,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `{` | left brace | Attribute/variable opener                                                                      | Yes |
 | `}` | right brace | Attribute/variable closer                                                                      | Yes |
 | `:` | colon | Mark delimiter (`::`) / NamedBlock (`:::`)                                                     | Yes |
-| `-` | hyphen | List marker / PageBreak (`---`, top level)                                                     | Yes |
+| `-` | hyphen | List marker / PageBreaker (`---`, top level)                                                     | Yes |
 | `>` | greater-than sign | QuoteBlock marker                                                                              | Yes |
 | `/` | slash | File reference (line start)                                                                    | Yes |
 | `\` | backslash | Escape character / `TextBreak` at line end (§5.13) — also processes `` \` `` inside CodeInline | Yes |

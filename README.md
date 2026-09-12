@@ -116,7 +116,7 @@ Cutdown is not a Markdown dialect. Most of it will feel familiar, but these diff
 | `# Title` | Heading | **Comment** — headings are `= Title` |
 | `__text__` | Strong | **Emphasis** — `**text**` is Strong |
 | `~~text~~` | Strikethrough | **Highlight** — no deletion semantics |
-| `---` | Thematic break (`<hr>`) | **PageBreak** — a document structure boundary |
+| `---` | Thematic break (`<hr>`) | **PageBreaker** — a document structure boundary |
 | `*text*`, `_text_` | Emphasis | **Literal text** — single symbols are never delimiters |
 | four-space indent | Code block | **Nothing** — indented code blocks are not supported |
 

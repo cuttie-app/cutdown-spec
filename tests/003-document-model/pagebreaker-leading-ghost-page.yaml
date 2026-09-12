@@ -1,6 +1,6 @@
-id: pagebreak-leading-ghost-page
+id: pagebreaker-leading-ghost-page
 section: "3"
-description: A PageBreak at document start closes the initial empty Page as a leading Ghost Page
+description: A PageBreaker at document start closes the initial empty Page as a leading Ghost Page
 
 input: |
   ---

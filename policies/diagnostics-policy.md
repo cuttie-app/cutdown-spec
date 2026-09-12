@@ -69,7 +69,7 @@ The following spec-defined recovery behaviors MUST emit a `warning`-level diagno
 | Unclosed MetaBlock fence (`~~~`) | CDN-0002 | Content runs to end of document |
 | Unclosed MathBlock fence (`$$$`) | CDN-0003 | Content runs to end of document |
 | Unclosed NamedBlock (`:::name`) | CDN-0004 | Content runs to end of document |
-| PageBreak tail dropped | CDN-0016 | Everything after the leading `---` is discarded; page boundary takes effect |
+| PageBreaker tail dropped | CDN-0016 | Everything after the leading `---` is discarded; page boundary takes effect |
 | Page separator inside block container | CDN-0017 | `---` line emitted as literal `Paragraph`; no page boundary |
 | Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
 | Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |

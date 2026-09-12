@@ -89,7 +89,7 @@ interface Strong {
 }
 ```
 
-- `**` opener and closer. A single `*` is always literal text.
+- `**` opener and closer. A single `*` (asterisk) is always literal text.
 - Same rules as `Emphasis`: run of 3, greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with `Emphasis` allowed: `**__text__**` and `__**text**__` are both valid.
 

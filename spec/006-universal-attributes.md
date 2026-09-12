@@ -188,7 +188,7 @@ price is \{high\}  →  Text("price is {high}")
 
 ### 6.2 Caption
 
-A caption line enriches the immediately preceding captionable block with a `caption` (or `attribution`, special QuoteBlock case) field. It does not produce a separate AST node.
+A caption line enriches the immediately preceding captionable block with a `caption` field. It does not produce a separate AST node.
 
 **Syntax:**
 
@@ -196,7 +196,7 @@ A caption line enriches the immediately preceding captionable block with a `capt
 ^ inline-content
 ```
 
-A line at block start consisting of `^` followed by a single space and then any inline content. The `^` and space are consumed; the remainder is parsed as `Inline[]`.
+A line at block start consisting of `^` (caret) followed by a single space and then any inline content. The `^` and space are consumed; the remainder is parsed as `Inline[]`.
 
 **Binding rule:** A caption line binds to the immediately preceding block in the current block scope if and only if:
 
@@ -241,7 +241,7 @@ The "preceding block" is always resolved within the current block scope (§1.6).
 | `FileRefGroup` | `caption: Inline[] \| null` |
 | `NamedBlock` | `caption: Inline[] \| null` |
 | `SpoilerBlock` | `caption: Inline[] \| null` |
-| `QuoteBlock` | `attribution: Inline[] \| null` |
+| `QuoteBlock` | `caption: Inline[] \| null` |
 
 All captionable blocks default these fields to `null` when no caption line is present.
 
@@ -285,7 +285,7 @@ Input:
 
 AST:
   QuoteBlock {
-    attribution: [Text("William Shakespeare, "), Emphasis([Text("Hamlet")]), Text(", Act 3")],
+    caption: [Text("William Shakespeare, "), Emphasis([Text("Hamlet")]), Text(", Act 3")],
     children: [Paragraph([Text("To be, or not to be.")])],
     attributes: []
   }

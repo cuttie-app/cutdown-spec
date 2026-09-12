@@ -34,7 +34,7 @@ $$$
 ^^^
 
 | AA | BB |       Table
-^ ...             Caption / Attribution (no node)
+^ ...             Caption (no node)
 
 [^...]: ...       RefDefinition
 
@@ -46,7 +46,7 @@ $$$
 
 ## Document Model
 
-Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. PageBreaks `---` at top level and Meta fences `~~~` produce Page boundaries.
+Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. PageBreakers `---` at top level and Meta fences `~~~` produce Page boundaries.
 
 ```
 Document
@@ -105,7 +105,7 @@ key: value
 
 Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
-### Page Break → new Page (no node)
+### PageBreaker → new Page (no node)
 
 ```
 ---
@@ -262,7 +262,7 @@ Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""
 
 ---
 
-## Caption / Attribution
+## Caption
 
 **Syntax**:
 
@@ -286,10 +286,10 @@ code here
 ^ Listing caption                      →  CodeBlock { caption: [...] }
 
 > Quoted text here.
-^ Source attribution                   →  QuoteBlock { attribution: [...] }
+^ Source attribution                   →  QuoteBlock { caption: [...] }
 ````
 
-Captionable blocks: `Table`, `ImageBlock`, `CodeBlock`, `MathBlock`, `FileRef`, `FileRefGroup`, `NamedBlock`, `SpoilerBlock`. `QuoteBlock` uses `attribution` instead of `caption`.
+Captionable blocks: `Table`, `ImageBlock`, `CodeBlock`, `MathBlock`, `FileRef`, `FileRefGroup`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`.
 
 - Blank line between block and `^ ` → no binding; `^ ` becomes a `Paragraph` (CDN-0008).
 - Second `^ ` line (slot already filled) → `Paragraph` (CDN-0008).
@@ -385,9 +385,10 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 | `=` ... `=========` heading | `\=`, `\==`, ... | literal |
 | `- ` list | `\- item` | literal |
 | `> ` quote | `\> text` | literal |
-| `---` page break | `\---`, `-\--`, `--\-` | literal; no page break occurs |
+| `---` PageBreaker | `\---`, `-\--`, `--\-` | literal; no Page boundary occurs |
 | `/path` file ref | `\/path` | literal |
 | `\|` pipe row / header separator | `\\| cell \|` | literal |
+| `^ ` caption | `\^ text` | literal |
 | `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
 | `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
 | `$$$` math | `\$$$`, `$\$$`, `$$\$` | literal |

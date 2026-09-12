@@ -17,7 +17,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `Section`       | `type: "Section", level: 1..9, heading: Inline[], children: Block[], reflection, attributes`                                                        |
 | `CodeBlock`     | `type: "CodeBlock", language: string = "text", raw: string, caption: Inline[]\|null, reflection, attributes`                                        |
 | `MathBlock`     | `type: "MathBlock", raw: string, caption: Inline[]\|null, reflection, attributes`                                                                   |
-| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], attribution: Inline[]\|null, reflection, attributes`                                                        |
+| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                        |
 | `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes`    |
 | `Table`         | `type: "Table", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
 | `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, reflection, attributes`                                                   |

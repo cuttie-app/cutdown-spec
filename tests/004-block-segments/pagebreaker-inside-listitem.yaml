@@ -1,25 +1,19 @@
-id: cdn-0017-pagebreak-inside-container
+id: pagebreaker-inside-listitem
 section: "4.10"
-description: A blank-line-surrounded --- inside a block container parses as a literal paragraph; CDN-0017 is emitted
+description: A blank-line-surrounded --- inside a list item is not a PageBreaker; it parses as a literal paragraph and CDN-0017 is emitted
 
 input: |
-  > quoted
-
   - item
 
     ---
+
+    after
 
 diagnostics:
   - code: CDN-0017
     level: warning
 
 ast:
-  - type: QuoteBlock
-    children:
-      - type: Paragraph
-        children:
-          - type: Text
-            value: quoted
   - type: List
     kind: "bullet"
     loose: true
@@ -34,3 +28,7 @@ ast:
             children:
               - type: Text
                 value: "---"
+          - type: Paragraph
+            children:
+              - type: Text
+                value: after

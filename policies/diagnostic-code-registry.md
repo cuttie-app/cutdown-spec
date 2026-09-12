@@ -159,7 +159,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | trigger | A ThematicBreak line (`---`) contains non-whitespace, non-attribute text (e.g., `--- some text {.x}`) |
 | recovery | Text between the dashes and optional `{attrs}` is silently discarded; ThematicBreak node is emitted normally |
 | introduced_in | 0.1.4 |
-| status | removed — the `ThematicBreak` node was deleted in 0.8.0; superseded by CDN-0016 (PageBreak tail dropped) |
+| status | removed — the `ThematicBreak` node was deleted in 0.8.0; superseded by CDN-0016 (PageBreaker tail dropped) |
 | owner | Language |
 
 ---
@@ -284,15 +284,15 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
-### CDN-0016 — PageBreak tail dropped
+### CDN-0016 — PageBreaker tail dropped
 
 | Field | Value |
 |---|---|
 | code | CDN-0016 |
-| title | PageBreak tail dropped |
+| title | PageBreaker tail dropped |
 | level | warning |
-| trigger | A top-level PageBreak line (`---`) contains anything after the leading three hyphens — surplus hyphens, `{attrs}`, or text (e.g., `----`, `--- {.x}`, `--- some text`) |
-| recovery | The tail is discarded; the PageBreak takes effect normally (page boundary, no node). `loc` spans the dropped tail |
+| trigger | A top-level PageBreaker line (`---`) contains anything after the leading three hyphens — surplus hyphens, `{attrs}`, or text (e.g., `----`, `--- {.x}`, `--- some text`) |
+| recovery | The tail is discarded; the PageBreaker takes effect normally (page boundary, no node). `loc` spans the dropped tail |
 | introduced_in | 0.8.0 |
 | status | active |
 | owner | Language |
