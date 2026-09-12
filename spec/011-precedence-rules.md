@@ -14,7 +14,7 @@ When multiple constructs compete for the same input, the following priority appl
 | 8 | Links and images `[...](...)`                                                   | Matched before emphasis runs |
 | 9 | Inline math `$$`                                                                | Matched before emphasis; content is literal |
 | 10 | Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` | Source order, greedy |
-| 11 | Mark `::name … ::`                                                              | Matched after emphasis. The name run is lexical (maximal `ID_LITERAL+`) and is independent of this table: `::a__b__::` is a `Mark` named `a__b__`, while `::a**b**::` is not a `Mark` at all. See §5.10 |
+| 11 | Mark `::name … ::`                                                              | Matched after emphasis. The name run is lexed before delimiter matching and is independent of this table — see *Name lexing* in §5.10 |
 | 12 | Variable `{{key}}` / Attributes `{...}`                                         | Longest opener wins (`{{` before `{`), then source order |
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.

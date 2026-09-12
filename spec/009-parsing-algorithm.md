@@ -4,7 +4,7 @@ Cutdown's parsing model makes three testable guarantees:
 
 1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§16).
 2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
-3. **Deferred attachment.** Structural decisions may be deferred, but deferred decisions only attach or regroup already-built nodes — they never re-parse text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until end of line.
+3. **Deferred attachment.** A deferred structural decision attaches or regroups already-built nodes only; it never re-parses text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until end of line.
 
 ### 9.1 Phase 1 — Input Interpretation
 
@@ -14,15 +14,9 @@ Cutdown's parsing model makes three testable guarantees:
 ### 9.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Lines inside an opaque context are NOT scanned, except for the opener line (first line of the fence) and the closer line (the closing fence). On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
+2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**.
-4. Special blocks that override blank-line boundaries:
-   - Code fences: ` ``` ` opens until the next ` ``` ` (or end of document).
-   - Meta blocks: `~~~` opens until the next `~~~` (or end of document).
-   - Named blocks `:::` open until a closing `:::` (or end of document).
-   - Math blocks: `$$$` opens until the next `$$$` (or end of document).
-   - Spoiler blocks: `^^^` opens until the next `^^^` (or end of document, or end of the enclosing block container). SpoilerBlocks do not nest — see §4.15.
-   - Comment blocks: `###` opens until the next bare `###` at the same column (or end of document). Content is opaque — see §2.3.
+4. Apply the fenced constructs that override blank-line boundaries — `` ``` ``, `~~~`, `:::`, `$$$`, `^^^` and `###`. Each opens until its closer or end of document; see §10.4.2 for the shared fence pattern and §4.3–§4.16 for each construct.
 
 ### 9.3 Phase 3 — Block Classification
 
@@ -85,17 +79,15 @@ If no closer is found before the end of the inline context, the opener alone is 
 
 An unresolved Class 2 opener causes the source from the opener to its terminator — end of line, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Emphasis` inside the dead slice does not exist.
 
-**Attribute braces.** `{` opens an attribute scan running to the matching `}` or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
+**Attribute braces.** `{` (left brace) opens an attribute scan running to the matching `}` (right brace) or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
 **Class 3 — bracket-matched, counted: `Mark`.**
 
-`::name … ::` (§5.10) is the only construct whose opener and closer are textually distinct, so the parser can tell them apart and match by counting rather than by taking the first closer. While scanning content, a `::` is a nested opener if followed by `ID_LITERAL+` and then a space or `::`; otherwise it closes the innermost open `Mark`. A `::` with nothing open is literal text.
+`::name … ::` (§5.10) is the only construct whose opener and closer are textually distinct, so the parser matches them by counting rather than by taking the first closer. The matching rule, the depth cap and CDN-0031 are defined in §5.10.
 
-This is why `Mark` — alone among inline constructs — permits same-type nesting, including of the same name. Depth is capped at 8; an opener beyond that degrades to literal text and emits CDN-0031 (§5.10).
+An opener that never matches degrades per **Class 1**: the opener alone (`::` plus the name) is emitted as `Text` and parsing continues immediately after it, so following constructs parse normally.
 
-An opener that never matches degrades per **Class 1**: the opener alone (`::` plus the name) is emitted as `Text` and parsing continues immediately after it, so following constructs parse normally. If `::` is not immediately followed by a valid `ID_LITERAL` name, or the name is not followed by a space or `::`, it is likewise emitted as literal `Text` and parsing continues.
-
-`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` because `##` swallowed it), the opener degrades per its class (§9.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
+`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` (right bracket) because `##` swallowed it), the opener degrades per its class (§9.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
 
 Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
 

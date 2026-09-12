@@ -1,6 +1,6 @@
 ## 8. Escaping
 
-**Rule:** A backslash `\` before a special character emits the literal character. The `\` is consumed.
+**Rule:** A `\` (backslash) before a special character emits the literal character. The `\` is consumed.
 
 A backslash before a **non-special** character emits both the backslash and the character literally. The `\` is NOT consumed silently.
 
@@ -70,7 +70,7 @@ Opaque containers (whose content is captured verbatim) admit a single **narrow e
 
 - The escape applies **uniformly throughout opaque content** — line-start or mid-line. `\fence` anywhere produces `fence`. A closer line `\~~~`, `~\~~`, or `~~\~` keeps the Meta block open and emits a literal `~~~` content line. (Mid-line uniformity is a simplification — closers are only detected at line start, so mid-line escape has no closer-suppression effect; it just affects the captured raw character.)
 - `\\` inside an opaque (non-Math) block emits two literal characters `\\`. Backslash is "active" only directly before its fence character.
-- `\#` in a CommentBlock always escapes to `#`, regardless of how many `#` characters neighbor it. The rule does not look at run length.
+- `\#` in a CommentBlock always escapes to `#` (octothorpe), regardless of how many `#` characters neighbor it. The rule does not look at run length.
 - **MathBlock carve-out:** no escape is processed because LaTeX assigns its own meaning to backslash. The trade-off is that a literal `$$$` line inside a MathBlock body is unsupported — wrap such content in a `CodeBlock` or split the math.
 - **NamedBlock** (`:::`) and **SpoilerBlock** (`^^^`) are not opaque — their children are parsed as blocks. To prevent a content line from being read as the container's closer, use the same escape mechanic as §8.2: a `\` before any one of the three fence chars at line start (e.g., `\:::`, `:\::`, `::\:` for NamedBlock; `\^^^`, `^\^^`, `^^\^` for SpoilerBlock). The line becomes a Paragraph containing the literal fence chars.
 - No diagnostic is emitted for closer escapes.

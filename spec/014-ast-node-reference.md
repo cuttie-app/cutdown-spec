@@ -26,6 +26,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], caption: Inline[]\|null, reflection, attributes`                                              |
 | `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
 | `CommentBlock`  | `type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
+| `RefDefinition` | `type: "RefDefinition", ref: string, children: Inline[], reflection, attributes`                                                                     |
 
 ### 14.3 Inline Segments
 
@@ -50,7 +51,6 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
 | `Meta`          | `type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string`            |
-| `RefDefinition` | `type: "RefDefinition", ref: string, children: Inline[], attributes`            |
 | `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes`                     |
 | `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
 | `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
@@ -105,7 +105,7 @@ type Attribute =
   | { key: string,  value: string }   // value: "" for bare-key tokens
 ```
 
-`attributes` is typed `Attribute[] | null`.
+`attributes` is typed `Attribute[]`. A block or inline node with no attributes carries an empty array, never `null`. Nodes that admit no attributes at all (`CommentBlock`, `Meta`, `Column`, `Cell`) omit the field entirely.
 
 Ordering: entries appear in **source order**. Deduplication rules (see §6.1.1) may drop entries before the array is emitted.
 

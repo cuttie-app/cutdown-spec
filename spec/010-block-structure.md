@@ -14,13 +14,14 @@ Comments (§2) are detected in Phase 2 before block boundary analysis. A line st
 
 ### 10.2 Leading and Trailing Whitespace
 
-Any number of leading spaces (including none) are stripped before block classification. Indentation is never significant for block type detection in Cutdown — but it *is* significant for list nesting; see §10.5 and the List exception below.
+Any number of leading spaces (including none) are stripped before block classification. Indentation has exactly two uses in Cutdown:
 
-**List exception:** For list blocks, the parser records the **original column** of each marker (before stripping) for use in the list nesting stack model (§10.5). Block type detection still uses the stripped line; the column is a separate piece of metadata used only during list parsing.
+1. **Block classification ignores it.** The stripped line determines the block type.
+2. **List nesting uses it.** For a list marker, the parser records the marker's **original column** (before stripping) as separate metadata and feeds it to the nesting stack model (§10.5). The column is used during list parsing only.
 
 Indented code blocks (as in CommonMark) are not supported.
 
-Trailing spaces on any line collapse to a single space; that space is preserved before a soft break and dropped at a block boundary (§12).
+Trailing-space handling is defined in §12.1.
 
 ### 10.3 Block Classification
 
@@ -79,9 +80,9 @@ When N identical characters appear at an inline position, the following rules ap
 
 ¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$`, `^^^` are block fences (CodeBlock, Meta, MathBlock, SpoilerBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
 
-² A single `^` is literal in inline context. Inside a `[...][^id]` link/definition target slot it retains its reference-marker role (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
+² A single `^` (caret) is literal in inline context. Inside a `[...][^id]` link/definition target slot it retains its reference-marker role (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
 
-³ `###` is a block fence only when it begins a block candidate (line-start at the container's effective column, per §9.2.4 / §10.5). In inline position, `###` parses as `##` (line comment opener — runs to EOL) + `#` (collapsed into the payload text).
+³ `###` is a block fence only when it begins a block candidate — that is, when it is the first non-whitespace content of a line after container-indent stripping (§10.2, §10.6). In inline position, `###` parses as `##` (line comment opener — runs to EOL) + `#` (collapsed into the payload text).
 
 **Block/structural symbols**:
 
@@ -95,7 +96,7 @@ When N identical characters appear at an inline position, the following rules ap
 | `\|` | Table row (§4.8) | — | — | — |
 | `/` | FileRef when followed by a path (§4.11) | — | — | — |
 
-Rows in this table are keyed by run length **except** `-`, `^`, `\|`, and `/`, whose meaning at column 1 depends on what **follows** — a space, a cell, a path — rather than on repetition.
+The two halves of this table use different keys. Rows for `=`, `>`, `:` and `#` are keyed by run length. Rows for `-`, `^`, `\|` and `/` are keyed by the character that **follows** the symbol at column 1 — a space, a cell, or a path — not by repetition.
 
 Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table; this includes the bracket-initiated block openers `![` (ImageBlock, §4.9) and `[^` (RefDefinition, §4.14).
 

@@ -15,7 +15,7 @@ Cutdown is a markup language that produces an AST. There is no HTML output. Pars
 
 - [+] ...         TaskItem (checklist) checked=true
 
-/path             FileRefBlock
+/path             FileRef
 
 ![](...)          ImageBlock
 
@@ -52,12 +52,12 @@ Each Cutdown file produces a `Document` with `Pages`. So it has at least one Pag
 Document
 └── Page[]
     ├── meta: Meta | null
-    └── children: (Section | Block)[]
+    └── children: Block[]
 ```
 
 - Every document has ≥ 1 Page.
 - `---` → always closes the current Page (Ghost Page if empty) and opens a new one. Produces no node.
-- `Meta` block → closes the current Page and opens a new Page carrying it as `meta` — unless it is the first pagination-relevant item of the document, in which case it fills the initial Page's `meta`.
+- `Meta` block → fills the current Page's `meta` slot; if that slot is already set, closes the Page and opens a new one carrying it as `meta`. Content before a `Meta` never creates a Page.
 - Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
 
 The schema also admits **synthetic segments** that no parse produces (currently `Fragment`, §14): parsers never emit them, consumers must accept them.
@@ -86,7 +86,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Must be preceded by a blank line (or start of document / block container). Inline content allowed.
+Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§10.1). Inline content allowed.
 
 Sections are not parsed — they are derived by a fold (§9.5.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
@@ -154,7 +154,7 @@ Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRe
 >> nested quote
 ```
 
-Every line must start with `>`. Nesting by counting `>` chars.
+The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `>` chars.
 
 ### Code Block → `CodeBlock`
 
@@ -198,7 +198,7 @@ Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with no
 
 ### Tables → `Table`
 
-A table opens with a line starting with `|`. Standard Markdown (GFM) pipe tables parse unchanged.
+A table opens with a line starting with `|`. The shape is close to GFM pipe tables, with three differences: the leading `|` is required, an alignment cell needs at least three dashes, and `---,` / `---.` add comma and decimal alignment.
 
 ```
 | Cell A | Cell B |          ← no header, all rows type: "Row"
@@ -231,7 +231,7 @@ Parsed in source order. An unclosed opener degrades by its class (§9.4.1):
 
 - **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
 - **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
-- `::` has no closer: without a valid name it emits `Text("::")` and parsing continues.
+- `::name … ::` (`Mark`) matches by counting, not by first closer. An unclosed opener emits the opener alone as `Text` and parsing continues; `::` without a valid name is literal text.
 
 Degradation to visible literal text is silent — no diagnostics.
 
@@ -256,7 +256,7 @@ Degradation to visible literal text is silent — no diagnostics.
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
 | `\` at line end | `TextBreak` |                                                                                                                |
 
-Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting not allowed (greedy close).
+Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
 
 Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (line comment, runs to EOL) + the trailing `#` becomes the first character of the payload text.
 
@@ -374,7 +374,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | + " '` and \`
+Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 
 ### Block-opener escape (line start)
 

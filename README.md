@@ -41,15 +41,15 @@ For a pipeline, this is a load-bearing guarantee: parsing cannot fail, so there 
 
 ### **Doubled delimiters only. Single characters are plain text.**
 
-Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. A single character is always plain text — no exceptions, no flanking rules.
+Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. Within a line, a single character is always plain text.
 
-Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span. A single one is text. The rule is the same everywhere, with no context sensitivity and nothing to escape in normal writing.
+Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span; a single one is text, with no flanking rules to learn. Block markers are the one place a single character carries meaning, and only as the first thing on a line — `= heading`, `- item`, `> quote`, `/path`. Inside a line, there is nothing to escape in normal writing.
 
 ### **Markup that doesn't resolve becomes plain text.**
 
-An opener with no closer does not poison the line, does not reach backward, does not get repaired by guesswork. The span from the failed opener to the end of the line is emitted as plain text — exactly the characters that were typed, in the order they were typed.
+An opener with no closer does not poison the line, does not reach backward, does not get repaired by guesswork. It degrades to exactly the characters that were typed, in the order they were typed. Which characters depends on the opener: a doubled delimiter like `**` emits the opener alone and keeps parsing, so later constructs on the line still work; a bracket-like opener such as `[` emits everything from the opener to the end of the line as one literal run.
 
-One rule covers every construct. A writer can predict the output of any line by reading it once, left to right, the same way the parser does. A developer gets determinism where markup languages are traditionally at their most creative: the handling of imperfect input.
+Both rules are stated up front and neither guesses. A writer can predict the output of any line by reading it once, the same way the parser does. A developer gets determinism where markup languages are traditionally at their most creative: the handling of imperfect input.
 
 ### **What you type is what is stored.**
 
@@ -75,7 +75,7 @@ A `---` line cuts a page. A Meta block fills the current page or opens the next 
 
 Slide decks, paginated articles, per-page metadata — structures that other formats reconstruct downstream with heuristics are first-class nodes here. If your application doesn't need pages, a document is simply one page; the model costs nothing when unused.
 
-A Meta block is legal anywhere, and multiple Meta blocks are valid in one document — a comment or a license notice above frontmatter is ordinary content, not a violation.
+Multiple Meta blocks are valid in one document — a comment or a license notice above frontmatter is ordinary content, not a violation. Meta blocks belong at page scope; inside a block container the span is ordinary text and a diagnostic is emitted.
 
 ### **`##` for author comments, `###` for block comments.**
 

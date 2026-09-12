@@ -2,7 +2,7 @@
 
 ### 6.1 Universal Attributes
 
-**AST type:** `Attribute[] | null` — see §14 *Attributes Type* for the definition.
+**AST type:** `Attribute[]` — see §14 *Attributes Type* for the definition.
 
 #### 6.1.1 Syntax
 
@@ -11,10 +11,10 @@
 ```
 
 Token types inside `{}`:
-- `#identifier` — sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
+- `#identifier` — the `#` (octothorpe) sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
 - `.classname` — appends to the `class` entry. All `.classname` tokens in a block are collected into a single `{ key: "class", value: string[] }` entry. `.class` syntax has priority: if `class=` also appears, `class=` is dropped and CDN-0021 is emitted.
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
-- `key` (bare, no `=`) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
+- `key` (bare, with no `=` (equals sign)) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
 - Token order inside `{}` is preserved in the emitted `Attribute[]`.
 
 > **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
@@ -59,7 +59,7 @@ A sequence of `{attr}` blocks at the end of an inline context is distributed **r
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
-`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` has no matching `}` before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.4.1; see §6.1.3).
+`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` (left brace) has no matching `}` (right brace) before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.4.1; see §6.1.3).
 
 **Scope slots by context:**
 
@@ -74,7 +74,7 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 | FileRef / ImageBlock in group | FileRefGroup | FileRef / ImageBlock | last attr-bearing inline |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
 
-**Table rows.** `Cell` bears no attributes (see *Per-segment placement rules* above), so the chain walks **past** the cell to the last attr-bearing inline inside it. Whether that slot exists depends on the trailing `|`:
+**Table rows.** `Cell` bears no attributes (see *Per-segment placement rules* above), so the chain walks **past** the cell to the last attr-bearing inline inside it. Whether that slot exists depends on the trailing `|` (pipe):
 
 - **Cell open** — the row omits the trailing `|`, so the chain sits inside the last cell's inline context and the inline slot is available.
 - **Cell sealed** — the row writes the trailing `|`, closing the last cell's inline context before the chain begins. There is no open inline context, so the inline slot does not exist and the chain stops at `Row`.
@@ -227,7 +227,7 @@ Standalone `## comment` lines do not break binding either, because they are neve
 - The immediately preceding captionable block already has a caption (slot filled).
 - A blank line separates `^ ` from the preceding block.
 
-**Scope-local.** The "preceding block" is always resolved within the current block scope. A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
+The "preceding block" is always resolved within the current block scope (§1.6). A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
 
 **Captionable blocks and their AST fields:**
 
@@ -276,7 +276,7 @@ AST:
   Table {
     caption: [Text("Results from the first cohort")],
     rows: [Row(type:"Header",...), Row(type:"Row",...)],
-    attributes: null
+    attributes: []
   }
 
 Input:
@@ -287,7 +287,7 @@ AST:
   QuoteBlock {
     attribution: [Text("William Shakespeare, "), Emphasis([Text("Hamlet")]), Text(", Act 3")],
     children: [Paragraph([Text("To be, or not to be.")])],
-    attributes: null
+    attributes: []
   }
 ```
 

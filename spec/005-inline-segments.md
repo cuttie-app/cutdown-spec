@@ -37,7 +37,7 @@ interface Text {
 
 Consecutive text tokens MUST be merged into a single `Text` segment by the parser.
 
-Text segments are **literal** — no inline parsing, no escape processing. The only exception is that a `\` at the end of a line (before `\n`) produces a `TextBreak` segment (§5.13) instead of literal text.
+Text segments are **literal** — no inline parsing, no escape processing. A `\` (backslash) at the end of a line, before the line terminator, produces a `TextBreak` segment (§5.13); every other character in a `Text` segment is literal.
 
 ---
 
@@ -55,7 +55,7 @@ interface Emphasis {
 }
 ```
 
-- `__` opener and closer. A single `_` is always literal text.
+- `__` opener and closer. A single `_` (underscore) is always literal text.
 - Run of 3: `___` = `__` (opener/closer) + `_` (literal).
 - Matching: greedy, in source order. First valid `__` closer wins.
 - Unclosed `__` → `Text("__")`.
@@ -111,7 +111,7 @@ interface Highlight {
 }
 ```
 
-- `~~` opener and closer. A single `~` is always literal text (not a meta fence in inline context).
+- `~~` opener and closer. A single `~` (tilde) is always literal text (not a meta fence in inline context).
 - Same rules as `Emphasis`: greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with `Emphasis` and `Strong` allowed.
 
@@ -152,7 +152,7 @@ interface Link {
 
 - `text` is **parsed by inline rules**. May be empty.
 - `href` / `target` may be empty strings — both are valid and preserved.
-- Page target uses `PATH_LITERAL` characters. Tag target: `#` + `PATH_LITERAL`. Ref target: `^` + `ID_LITERAL`. Cite target: `@` + any non-`]` characters.
+- Page target uses `PATH_LITERAL` characters. Tag target: `#` (octothorpe) + `PATH_LITERAL`. Ref target: `^` (caret) + `ID_LITERAL`. Cite target: `@` + any characters other than `]` (right bracket).
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
 - Cutdown does not validate link resolution. That is the consumer's responsibility.
 - Cutdown does NOT validate URL syntax and URL schema. Consumers may choose to validate or sanitize `href` values.
@@ -353,7 +353,7 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 ::a**b**::   → Text("::a") + Strong([Text("b")]) + Text("::")   `*` is not — the name ends at `a`, the opener fails
 ```
 
-**Colon runs.** A run of three colons in inline position is the `::` closer plus a literal `:`. At block position `:::name` is still a `NamedBlock` (§10) — that classification happens first and never reaches the inline parser.
+**Colon runs.** A run of three colons in inline position is the `::` closer plus a literal `:`. At block position `:::name` is still a `NamedBlock` (§4.13) — that classification happens first and never reaches the inline parser.
 
 **Examples:**
 
@@ -446,7 +446,7 @@ A `TextBreak` asserts an author-intended line break **within** a paragraph — t
 Cutdown emits the AST node `TextBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §16 — Cutdown has no canonical rendering.
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
-  - The `\` must be the last non-whitespace character on the line, unless rest of the line is whitespaces followed by `##` (which consumes the rest of the line as a reflection entry). See §2.2.
+  - The `\` must be the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.
 
 **Line-ending summary:**
 

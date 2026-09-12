@@ -27,7 +27,7 @@ interface Paragraph {
 - All lines are **parsed by inline rules** and concatenated. Result is `Inline[]`.
 - A single newline between lines is a **soft break** — folded to zero; lines concatenate directly with no character emitted.
 - Trailing spaces before the newline collapse to a single space, preserved as `Text(" ")` (explicit word boundary). At a block boundary the space is dropped. See §12.
-- `\` at line end produces a `TextBreak` segment (explicit line break).
+- A `\` (backslash) at line end produces a `TextBreak` segment (explicit line break).
 
 **Example:**
 
@@ -54,7 +54,7 @@ AST:
 ={n} inline-content {attrs}
 ```
 
-A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A section contains all subsequent blocks until a heading of equal or lesser level, end of the current block container, or end of document.
+A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A `Section`'s extent is not parsed; it is derived by the sectionization fold defined in §9.5.1.
 
 **AST type:**
 
@@ -85,7 +85,7 @@ interface Section {
 - A heading MUST be preceded by a blank line (or be the first line of the document or block container).
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
-- Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). Scoping follows the same level logic but is **bounded by the container** — never crosses container boundaries.
+- Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). The fold runs independently inside each container, so a `Section` never crosses a container boundary (§9.5.1).
 - **Opener escape:** `\=` at line start suppresses heading formation at **any** level — `\=`, `\==`, `\===` ... all become `Paragraph([Text("= ...")])`. See §8.2.
 
 **Examples:**
@@ -123,11 +123,11 @@ interface Meta {
 
 - Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
-- Always fills `Page.meta`. If `Page.meta` is already set, opens a new Page first. Never appears in `Page.children`.
+- Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§9.5.2). Never appears in `Page.children`.
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.
 - No `attributes` field.
-- **Closer escape:** `\~` inside the body emits a literal `~` (consumes the `\`). A line `\~~~`, `~\~~`, or `~~\~` therefore does NOT close the fence. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
+- **Closer escape:** `\~` inside the body emits a literal `~` (tilde) and consumes the `\`. A line `\~~~`, `~\~~`, or `~~\~` therefore does NOT close the fence. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 
 **Example:**
 
@@ -173,7 +173,7 @@ interface CodeBlock {
 - Fixed 3-backtick fence. Variable-length fences not supported. No nesting.
 - Unclosed fence: content runs to end of document → warning CDN-0001.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
-- **Closer escape:** `` \` `` inside the body emits a literal `` ` `` (consumes the `\`). A line `` \``` ``, `` `\`` ``, or `` ``\` `` therefore does NOT close the fence. All other `\X` sequences are literal (including `\\` → two chars). See §8.3. Opener escape: see §8.2.
+- **Closer escape:** `` \` `` inside the body emits a literal `` ` `` (backtick) and consumes the `\`. A line `` \``` ``, `` `\`` ``, or `` ``\` `` therefore does NOT close the fence. All other `\X` sequences are literal (including `\\` → two chars). See §8.3. Opener escape: see §8.2.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing fence (no blank line) sets `caption: Inline[]` on this node.
 
 ---
@@ -327,8 +327,8 @@ interface List {
 }
 ```
 
-- Unordered marker: `-` followed by one space. Only `-` is supported.
-- Ordered marker: `{number}.` followed by one space. Only `.` delimiter; `)` is not supported. Actual numbers are ignored except for `start`.
+- Unordered marker: `-` (hyphen) followed by one space. Only `-` is supported.
+- Ordered marker: `{number}.` followed by one space. The first item's number sets `List.start`; every other item's number is ignored.
 - `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
 - `start` is non-null only for `kind: "numbered"`.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
@@ -420,7 +420,7 @@ AST:
 
 ### 4.8 Table
 
-A table opens with a line starting with `|`. Standard Markdown (GFM) pipe tables parse unchanged.
+A table opens with a line starting with `|` (pipe). Standard Markdown (GFM) pipe tables parse unchanged.
 
 ```
 | Cell A | Cell B |                        ← no-header table
@@ -438,7 +438,7 @@ interface Table {
   type: "Table"
   rows: Row[]
   columns: Column[]
-  attributes: Attribute[] | null
+  attributes: Attribute[]
   caption: Inline[] | null
   reflection: Reflection[] | null
 }
@@ -446,7 +446,7 @@ interface Table {
 interface Row {
   type: "Row" | "Header"
   children: Cell[]
-  attributes: Attribute[] | null
+  attributes: Attribute[]
 }
 
 interface Cell {
@@ -527,9 +527,18 @@ The closer also determines how deep a trailing `{attrs}` chain reaches — see *
 - Cells contain `Inline[]` parsed by full inline rules.
 - The table ends at the first line that is neither a content row nor a header separator — including a blank line, a container boundary, or any other block opener. That line is classified on its own (§9.3); a later `|` line opens a **new** table.
 
-**Attrs scope chain.** Rule B (§6) applies. The Table slot is only available from the last content row's chain; mid-table rows start at Row. Because `Cell` bears no attributes, the chain walks **past** the last cell to the last attr-bearing inline inside it — but only if that cell is still open. Writing the closing `|` seals the cell's inline context before the chain begins, removing the inline slot.
+**Attrs scope chain.** Rule B (§6) applies. The slots available to a row's trailing `{attrs}` sequence depend on two things — which row it is, and whether the last cell was closed:
 
-A chain written **before** the closer is inside the cell's inline context and distributes through the *cell's* slots instead — the cell's last attr-bearing inline, one slot only. This applies to any cell, not just the last. See §6.
+| Row | Last cell | Slots, outermost first |
+|---|---|---|
+| last content row | left open (no trailing `\|`) | `Table`, `Row`, last attr-bearing inline in the cell |
+| last content row | closed by a trailing `\|` | `Table`, `Row` |
+| any earlier row | left open | `Row`, last attr-bearing inline in the cell |
+| any earlier row | closed by a trailing `\|` | `Row` |
+
+`Cell` bears no attributes, so the chain never stops at a cell — it walks past it to the inline inside. Writing the closing `\|` seals that cell's inline context before the chain begins, which removes the inline slot.
+
+A chain written **before** the closer is inside the cell's inline context and distributes through the *cell's* slots instead — the cell's last attr-bearing inline, one slot only. This applies to any cell, not just the last. A cell whose content is plain text has no such inline, so the `{}` is dropped with CDN-0011; neither `Row` nor `Table` receives it. See §6.
 
 The inline slot searches the **last cell only**. If that cell holds no attr-bearing inline, the slot goes unclaimed and the `{}` is dropped with CDN-0011 (§6.1.3).
 
@@ -546,6 +555,7 @@ Last content row:
 Chain before the closer — cell chain, 1 slot:
 | AA | **BB** {.a} |         →  Row(Cell(...), Cell(Strong({.a}, "BB")))
 | **AA** {.x} | BB |         →  Row(Cell(Strong({.x}, "AA")), Cell("BB"))
+| AA | CC {.a} |             →  Row(Cell("AA"), Cell("CC"))   ← plain text: {.a} dropped (CDN-0011)
 
 Mid-table row:
 | td1 | td2 | {.a}           →  Row({.a}, ...)                  ← sealed: 1 slot only
@@ -666,15 +676,16 @@ interface FileRef {
   fragment: string | ''
   query: string | ''
   attributes: Attribute[]
+  caption: Inline[] | null
   reflection: Reflection[] | null
 }
 ```
 
-- `path` starts with `/` and uses wide range of characters, except `<` `>` `:` `"` `\` `|` `*` `{` `}` and whitespace. The first space (if any) separates the path from `{attrs}`.
-- Fragment (`#`): everything from the first `#` to the next space (or end of line, before `{attrs}`) is extracted as `fragment`. `src` stores the portion before `#`.
+- `path` starts with `/` (slash) and is a run of `PATH_LITERAL` characters (§1.2) extended with any other character that is not one of `<` `>` `:` `"` `\` `|` `*` `{` `}` or whitespace. The first space, when present, separates the path from `{attrs}`.
+- Fragment: everything from the first `#` (octothorpe) to the next space (or end of line, before `{attrs}`) is extracted as `fragment`. `src` stores the portion before `#`.
 - Query (`?`): if path contains `?`, the parser extracts the query string as `query`. `src` stores the portion before `?`.
 - `fragment` and `query` are mutually independent — either, both, or neither may be present. If absent, they are set to empty string `''` (not null).
-- Empty path (line with only `/`) is invalid state and produces string literal for whole line.
+- A line containing only `/` is not a `FileRef`. The whole line is emitted as a `Paragraph` of literal text.
 - `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
 - **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
 - **Supports caption line (§6.2).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. If the `FileRef` is part of an active `FileRefGroup`, the `^ ` line closes the group and binds to it instead (see §4.12).
@@ -875,6 +886,7 @@ opaque content
 interface CommentBlock {
   type: "CommentBlock"
   text: string
+  reflection: Reflection[] | null
 }
 ```
 

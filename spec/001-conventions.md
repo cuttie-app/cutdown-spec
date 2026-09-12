@@ -14,7 +14,7 @@ AST:
 
 **The arrow symbol (`→`)** separates a construct or condition from what it produces. In examples, the left side is Cutdown source and the right side is the AST notation defined in §14.
 
-**Naming characters.** A character used as a **noun** is named in words on first use in a section — "a single `#` (octothorpe)", "the caret (`^`)" — and thereafter by symbol alone. §13 is the register of names.
+**Naming characters.** A character used as a **noun** is named on first use in a numbered section, symbol first and name in parentheses — "a single `#` (octothorpe)", "the `^` (caret)" — and thereafter by symbol alone. One naming per section per character; do not repeat it. Multi-character markers (`##`, `~~~`, `:::`) are constructs, not characters, and are named by construct name. §13 is the register of names. This convention applies to the numbered sections only; `SYNTAX.md` and `README.md` are exempt.
 
 ### 1.1 Streaming terms
 
@@ -32,7 +32,7 @@ Throughout this spec, `ID_LITERAL` refers to the following ASCII character class
 ID_LITERAL = [a-zA-Z0-9._-]
 ```
 
-This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only and case-sensitive. Matching against `ID_LITERAL` is always case-sensitive unless explicitly stated otherwise.
+This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only. Matching against `ID_LITERAL` is case-sensitive everywhere in this specification.
 
 `PATH_LITERAL` extends `ID_LITERAL` with the forward-slash character:
 
@@ -63,10 +63,12 @@ Block =
     | FileRef
     | FileRefGroup
     | NamedBlock
+    | SpoilerBlock
+    | CommentBlock
     | RefDefinition
 ```
 
-Container blocks carry `children: (Block | Inline)[]`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
+Container blocks carry a `children` array — `Block[]` for block containers (`Section`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), `Inline[]` for blocks whose content is inline (`Paragraph`, `RefDefinition`). Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
 
 ### 1.5 Inline Type
 
@@ -92,5 +94,11 @@ Inline =
 Container inlines carry `children: Inline[]`. Leaf inlines carry no children. Most inline nodes carry `attributes: Attribute[]`.
 
 Wherever an AST node carries `Inline[]`, the content was produced by the inline parsing rules (§5). All inline contexts are explicitly marked "parsed by inline rules."
+
+### 1.6 Block Scope
+
+A **block scope** is one flat sequence of sibling blocks. A document has one block scope at its root, and one inside the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
+
+A rule described as resolved *within the current block scope* looks only at that sequence and never past its container boundary. This applies to reflection attachment (§2.2), caption binding (§6.2), and the sectionization fold (§9.5.1).
 
 ---

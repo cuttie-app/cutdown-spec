@@ -4,7 +4,7 @@ Cutdown has two comment constructs that share the `#` (octothorpe) symbol and fo
 
 ### 2.1 Single `#` is literal
 
-A single `#` (octothorpe) is literal text in all positions. There is no whitespace rule, no line-start rule, no special treatment.
+A single `#` is literal text in all positions. There is no whitespace rule, no line-start rule, no special treatment.
 
 ```
 # foo            →  Paragraph([Text("# foo")])
@@ -13,7 +13,7 @@ foo # bar        →  Paragraph([Text("foo # bar")])
 
 ### 2.2 Double octothorpe `##` — Line Comment (Reflection)
 
-A double `##` (octothorpe) opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
+A double `##` opens a line comment that runs to the end of the line. It is recognized at line-start AND mid-line.
 
 ```
 ## a whole-line comment
@@ -21,7 +21,7 @@ foo ## trailing comment
 ```
 
 - The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value **verbatim** — trailing whitespace inside the payload is preserved, since the payload is opaque (§12's trailing-space rule does not reach inside it).
-- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]`, table cell `|`, attribute `}`, or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
+- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
 - **`##` boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line.
 - `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned.
 - `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values.
@@ -57,7 +57,7 @@ A line whose pre-`##` content is empty or whitespace is a **standalone comment l
 - Attaches to the **immediately preceding structural block** in the current scope, carrying its own `loc`. Consecutive standalone comments accumulate in source order.
 - **Closes** any active accumulation (continuing Paragraph, open FileRefGroup) before attaching.
 - **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
-- Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) follows the same scope-local rule, attaching to the preceding sibling block within that scope.
+- Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) the same rule applies within that block scope (§1.6): it attaches to the preceding sibling block in that scope.
 
 **Examples:**
 
@@ -111,7 +111,7 @@ all captured as a single opaque string
 - The opener line MUST be exactly `###` with no name and no attributes (no `[name]`, no `{attrs}` are recognized).
 - The closer is the next line whose stripped content is exactly `###` at the same column as the opener.
 - Content between opener and closer is **opaque** — captured as a raw string with no inline or block parsing. The `\n` between content lines is preserved; a single trailing `\n` is appended.
-- `###` is recognized at Page scope AND inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), following the same column rules as other tripled-fence blocks (§9.2.4, §10.5).
+- `###` is recognized at Page scope AND inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), following the same column rules as other tripled-fence blocks (§10.4.2, §10.5).
 - Unclosed `###` consumes to end-of-document and emits a `CommentBlock` with the captured content → warning CDN-0006. The opaque content gives the parser no way to observe container boundaries from inside the comment — the same rule applies to all opaque fences (CodeBlock, Meta, MathBlock).
 - `###` inside an open `CodeBlock`, `MathBlock`, or `Meta` body is literal content (opaque siblings win).
 - **Closer escape:** `\#` inside the body emits a literal `#`. A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. All other `\X` is literal (including `\\` → two chars). See §8.3.
@@ -154,7 +154,7 @@ AST:
 
 ### 2.4 Page assembly
 
-`CommentBlock` is a pass-through node for Page Assembly (§9.6). It never triggers a new Page and never consumes a Meta slot. A `CommentBlock` appearing before any other block on a Page does not prevent a later `Meta` from being assigned to that Page's `meta`.
+Only a `Meta` and a PageBreaker create Page boundaries.
 
 ### 2.5 Render policy
 
