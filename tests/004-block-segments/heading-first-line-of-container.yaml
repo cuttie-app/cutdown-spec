@@ -4,7 +4,7 @@ description: A heading as the first line of a block container needs no preceding
 
 input: |
   :::note
-  = Title  
+  = Title
   content
   :::
 
@@ -16,9 +16,4 @@ ast:
         level: 1
         heading:
           - type: Text
-            value: "Title  "
-        children:
-          - type: Paragraph
-            children:
-              - type: Text
-                value: content
+            value: "Title content"

@@ -1,0 +1,19 @@
+id: fence-cannot-interrupt-paragraph
+section: "4.1"
+description: "A fence opener inside a paragraph run is paragraph content, not a CodeBlock — the no-interrupt rule covers every block opener including fences"
+
+input: |
+  Some text
+  ```js
+  const x = 1
+  ```
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "Some text"
+      - type: CodeInline
+        raw: "`jsconst x = 1"
+      - type: Text
+        value: "`"

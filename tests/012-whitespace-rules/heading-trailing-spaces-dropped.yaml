@@ -1,0 +1,20 @@
+id: heading-trailing-spaces-dropped
+section: "12.1"
+description: "Trailing spaces on a heading line are dropped: the end of a single-line block's inline context is a block boundary, not a soft break"
+
+input: |
+  = Title  
+
+  Body
+
+ast:
+  - type: Section
+    level: 1
+    heading:
+      - type: Text
+        value: Title
+    children:
+      - type: Paragraph
+        children:
+          - type: Text
+            value: Body
