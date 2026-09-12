@@ -198,16 +198,18 @@ A caption line enriches the immediately preceding captionable block with a `capt
 
 A line at block start consisting of `^` (caret) followed by a single space and then any inline content. The `^` and space are consumed; the remainder is parsed as `Inline[]`.
 
-**Binding rule:** A caption line binds to the immediately preceding block in the current block scope if and only if:
+**Binding rule:** A caption line binds to the immediately preceding block in the current block scope when all three hold:
 
-1. That block is captionable (see table below), and
-2. No blank line appears between the block's last line and the `^ ` line.
+1. That block is captionable (see table below);
+2. That block's caption slot is empty;
+3. No blank line separates the block's last line from the `^ ` line.
 
-One construct between the block and the caption line is **transparent** — it does not break binding:
+**Otherwise the caption line is orphaned:** it becomes a `Paragraph` containing the line verbatim, and warning CDN-0008 is emitted.
 
-- A trailing `{attrs}` line (sets the block's attributes; does not emit a node).
+Lines that emit no block are **transparent** — they are not "the immediately preceding block" and do not break binding. Any number of them may intervene:
 
-Standalone `## comment` lines do not break binding either, because they are never emitted as sibling nodes — they attach to the preceding block's `reflection` (§2.2) and leave the block stream uninterrupted.
+- a trailing `{attrs}` line (sets the block's attributes; emits no node);
+- a standalone `## comment` line (attaches to the preceding block's `reflection`, §2.2).
 
 ```
 | col |
@@ -219,13 +221,7 @@ Standalone `## comment` lines do not break binding either, because they are neve
 ^ Caption text   →  Table { caption: [...], reflection: [{ loc: { start: 11, end: 25 }, text: "editorial note" }] }
 ```
 
-**Single-line only.** A caption is exactly one line. A second consecutive `^ ` line (the caption slot is already filled, or the first `^ ` line itself had no captionable predecessor) is treated as an orphaned caption → `Paragraph` + warning CDN-0008.
-
-**Orphan conditions** (both emit CDN-0008, line becomes `Paragraph`):
-
-- No captionable block precedes `^ ` in the current scope (including `^ ` as first line in a scope).
-- The immediately preceding captionable block already has a caption (slot filled).
-- A blank line separates `^ ` from the preceding block.
+**Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2 — the slot it would claim is already filled — so it orphans.
 
 The "preceding block" is always resolved within the current block scope (§1.6). A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
 

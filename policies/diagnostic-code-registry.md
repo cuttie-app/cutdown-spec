@@ -126,7 +126,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0008 |
 | title | Orphaned caption line |
 | level | warning |
-| trigger | A `^ ` line has no captionable predecessor in the current block scope: (a) no block precedes it in scope, (b) the immediately preceding block is not captionable, (c) the preceding captionable block already has a caption (slot filled), or (d) a blank line separates the `^ ` line from the preceding block |
+| trigger | A `^ ` line that fails any binding condition: the immediately preceding block in the current block scope is absent or not captionable, its caption slot is already filled, or a blank line separates it from the `^ ` line |
 | recovery | The `^ ` line is emitted as a `Paragraph` containing the literal text (including the `^ ` prefix) |
 | introduced_in | next |
 | status | active |

@@ -13,7 +13,12 @@ Second paragraph line 2.
 
 A contiguous run of non-blank lines not matched by any other block type.
 
-**Nothing interrupts a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`) alike. There is no exception and no diagnostic: to open a block, put a blank line before it.
+**No block opens inside a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`) alike. No block opener is an exception, and none emits a diagnostic: to open a block, put a blank line before it.
+
+Two line forms are **not** block openers and are unaffected by this rule — they attach to the preceding block instead of starting one, and may follow a paragraph line directly:
+
+- a caption line (`^ `, §6.2);
+- an attribute-continuation line (`{…}`, §6.1).
 
 ````
 Input:
