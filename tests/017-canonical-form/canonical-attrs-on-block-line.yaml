@@ -1,0 +1,11 @@
+id: canonical-attrs-on-block-line
+section: "17.1"
+description: "Attribute-continuation lines are folded onto the block's own line"
+
+input: |
+  - li item
+    {.a}
+    {.b}
+
+canonical: |
+  - li item {.a}{.b}

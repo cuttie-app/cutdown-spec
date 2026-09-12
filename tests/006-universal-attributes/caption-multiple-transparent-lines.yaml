@@ -1,0 +1,25 @@
+id: caption-multiple-transparent-lines
+section: "6.2"
+description: "Any number of block-emitting-nothing lines may intervene: an {attrs} line and a standalone ## comment line together are both transparent, and the caption still binds"
+
+input: |
+  | col |
+  {#tbl-one}
+  ## editorial note
+  ^ Caption text
+
+ast:
+  - type: Table
+    caption:
+      - type: Text
+        value: "Caption text"
+    rows:
+      - type: Row
+        children:
+          - type: Cell
+            children:
+              - type: Text
+                value: col
+    attributes:
+      - key: id
+        value: "tbl-one"

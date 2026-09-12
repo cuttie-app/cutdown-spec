@@ -210,7 +210,7 @@ A table opens with a line starting with `|`. The shape is close to GFM pipe tabl
 
 **Header separator:** A row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `type: "Header"`. Alignment taken from the first header separator only.
 
-**Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` left (default).
+**Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` start (default — follows text direction; not the same as left).
 
 **Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped (CDN-0018).
 

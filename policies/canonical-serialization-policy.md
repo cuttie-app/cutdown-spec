@@ -3,6 +3,7 @@ title: Cutdown Canonical Serialization Policy
 Status: Active
 Scope: Byte-stable canonical representation of parse results
 Related:
+  - ../spec/017-canonical-form.md
   - ./conformance-policy.md
   - ./diagnostics-policy.md
 ---

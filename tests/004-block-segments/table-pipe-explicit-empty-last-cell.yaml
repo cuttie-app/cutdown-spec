@@ -22,8 +22,8 @@ ast:
             children: []
     columns:
       - type: Column
-        align: left
+        align: start
       - type: Column
-        align: left
+        align: start
       - type: Column
-        align: left
+        align: start

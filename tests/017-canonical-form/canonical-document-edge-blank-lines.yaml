@@ -1,0 +1,7 @@
+id: canonical-document-edge-blank-lines
+section: "17.1"
+description: "A document carries no leading or trailing blank lines"
+
+input: "\n\n   \n\nHello world\n\n   \n\n"
+
+canonical: "Hello world\n"

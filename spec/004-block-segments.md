@@ -423,7 +423,7 @@ interface TaskItem {
 }
 ```
 
-- Marker: `- ` followed immediately by `[]`/`[ ]`  (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[+]` is bidi-neutral and MAY be used in place of `[x]`/`[X]` where RTL content would otherwise reorder the Latin letter within the brackets.
+- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[]` with no space is not a task marker — the item is an ordinary `ListItem` whose content begins `[]`. `[+]` is bidi-neutral; see §17 for which spelling a writer emits.
 - Only `kind: "bullet"` list items may carry a checkbox. A `kind: "numbered"` list encountering a task marker closes and a new `kind: "checklist"` List segment opens.
 - A `List` with `kind: "checklist"` has `children: TaskItem[]` exclusively; `kind: "bullet"` and `kind: "numbered"` have `children: ListItem[]` exclusively.
 - Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` segment.
@@ -489,7 +489,7 @@ interface Cell {
 
 interface Column {
   type: "Column"
-  align: "left" | "right" | "center" | "comma" | "decimal"  // default: "left"
+  align: "start" | "left" | "right" | "center" | "comma" | "decimal"  // default: "start"
 }
 ```
 
@@ -522,11 +522,13 @@ Alignment is taken from the cell patterns of the **first header separator** in t
 | `:---:` | `"center"` |
 | `---,` | `"comma"` |
 | `---.` | `"decimal"` |
-| `----` | `"left"` (default) |
+| `----` | `"start"` (default) |
 
 Each pattern requires **at least three `-`** (with the optional alignment marks shown). The minimum is a deliberate guard: a content row of single-dash placeholder cells (`| - |`) remains content, not a header separator.
 
-A column with no corresponding position in the header separator defaults to `"left"`.
+A column with no corresponding position in the header separator, and every column of a table with no header separator, takes `"start"`.
+
+`"start"` is not a synonym for `"left"`. `"start"` follows the text direction of the content — the left edge in a left-to-right script, the right edge in a right-to-left one. `:---` is an explicit request for the left edge in either. A consumer that renders to CSS maps `"start"` to `text-align: start` and `"left"` to `text-align: left`.
 
 ---
 
@@ -549,7 +551,7 @@ The closer also determines how deep a trailing `{attrs}` chain reaches — see *
 - A later row with **fewer** cells is padded with empty `Cell` nodes to the column count. No diagnostic — nothing is lost, this is normalisation. Padded cells carry no `loc` (§14).
 - A later row with **more** cells has the surplus cells **dropped** and emits **CDN-0018**.
 - A header separator **wider** than the column count likewise drops its surplus and emits **CDN-0018** — losing alignment silently is the failure the diagnostic exists to prevent.
-- A header separator **narrower** than the column count is not an error; the uncovered columns default to `"left"` per *Column alignment* above.
+- A header separator **narrower** than the column count is not an error; the uncovered columns take `"start"` per *Column alignment* above.
 - A table whose only rows are header separators has `columns: []` and emits **no** diagnostic — with no content row, no column count was ever established for the separator to exceed. This is consistent with `|` alone yielding an empty table.
 
 #### Row content

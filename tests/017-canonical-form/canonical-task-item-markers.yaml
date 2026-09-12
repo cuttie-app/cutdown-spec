@@ -1,0 +1,15 @@
+id: canonical-task-item-markers
+section: "17.1"
+description: "Checked task markers canonicalize to [+]; unchecked stays [ ]"
+
+input: |
+  - [ ] one
+  - [x] two
+  - [X] three
+  - [+] four
+
+canonical: |
+  - [ ] one
+  - [+] two
+  - [+] three
+  - [+] four

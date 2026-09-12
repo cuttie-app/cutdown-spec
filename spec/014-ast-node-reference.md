@@ -53,7 +53,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `Meta`          | `type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string`            |
 | `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes`                     |
 | `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
-| `Column`        | `type: "Column", align: "left"\|"right"\|"center"\|"comma"\|"decimal" = "left"` |
+| `Column`        | `type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
 | `Row`           | `type: "Row"\|"Header", children: Cell[], attributes`                           |
 | `Cell`          | `type: "Cell", children: Inline[], row: number, column: number` |
 

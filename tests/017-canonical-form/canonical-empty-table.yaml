@@ -1,0 +1,9 @@
+id: canonical-empty-table
+section: "17.1"
+description: "An empty table is written as a lone pipe, not as a header separator"
+
+input: |
+  |:---|----|
+
+canonical: |
+  |

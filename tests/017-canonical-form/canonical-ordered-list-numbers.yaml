@@ -1,0 +1,13 @@
+id: canonical-ordered-list-numbers
+section: "17.1"
+description: "Ordered item numbers run consecutively upward from List.start"
+
+input: |
+  3. one
+  9. two
+  1. three
+
+canonical: |
+  3. one
+  4. two
+  5. three

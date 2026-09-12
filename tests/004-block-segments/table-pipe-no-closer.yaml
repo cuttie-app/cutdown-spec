@@ -20,6 +20,6 @@ ast:
                 value: B
     columns:
       - type: Column
-        align: left
+        align: start
       - type: Column
-        align: left
+        align: start

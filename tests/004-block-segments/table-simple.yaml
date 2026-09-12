@@ -1,6 +1,6 @@
 id: table-simple
 section: "4.8"
-description: Pipe table with no header separator; all rows are type Row; columns default to left alignment
+description: Pipe table with no header separator; all rows are type Row; columns default to start alignment
 
 input: |
   | Cell A | Cell B |

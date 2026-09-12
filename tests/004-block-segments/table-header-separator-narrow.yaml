@@ -29,6 +29,6 @@ ast:
       - type: Column
         align: right
       - type: Column
-        align: left
+        align: start
       - type: Column
-        align: left
+        align: start

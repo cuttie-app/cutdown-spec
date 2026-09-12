@@ -33,9 +33,9 @@ ast:
                 value: D
     columns:
       - type: Column
-        align: left
+        align: start
       - type: Column
-        align: left
+        align: start
 
 streaming:
   unit: unicode-scalar
@@ -47,7 +47,7 @@ streaming:
         - type: Table
           columns:
             - type: Column
-              align: left
+              align: start
       diagnostics: []
     # Prefix "| A | B |" — the first content row has closed. columns is now
     # fixed at 2 and every later checkpoint must agree.
@@ -56,9 +56,9 @@ streaming:
         - type: Table
           columns:
             - type: Column
-              align: left
+              align: start
             - type: Column
-              align: left
+              align: start
       diagnostics: []
     # Prefix cutting mid-row-2, "| A | B |\n| C |" — row 2 is short and pads.
     # No diagnostic: padding loses nothing.
@@ -67,9 +67,9 @@ streaming:
         - type: Table
           columns:
             - type: Column
-              align: left
+              align: start
             - type: Column
-              align: left
+              align: start
       diagnostics: []
     # Prefix "| A | B |\n| C | D | E" — the surplus cell is now present and
     # dropped. Under a max() rule columns would have grown to 3 here, and this
@@ -79,9 +79,9 @@ streaming:
         - type: Table
           columns:
             - type: Column
-              align: left
+              align: start
             - type: Column
-              align: left
+              align: start
       diagnostics:
         - code: CDN-0018
           level: warning

@@ -39,4 +39,4 @@ ast:
       - type: Column
         align: left
       - type: Column
-        align: left
+        align: start

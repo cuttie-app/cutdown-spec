@@ -1,0 +1,9 @@
+id: canonical-inline-delimiter-padding
+section: "17.1"
+description: "Inline delimiters carry no padding spaces"
+
+input: |
+  ** bb ** and __  cc  __
+
+canonical: |
+  **bb** and __cc__

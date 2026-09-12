@@ -144,7 +144,7 @@ The reason single symbols are literal is the doubling rule — see [**Doubled de
 
 | Path | Contents |
 |---|---|
-| [`spec/`](spec/) | Language specification §1–§16 |
+| [`spec/`](spec/) | Language specification §1–§17 |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`policies/`](policies/) | Governance and conformance policies |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference for tooling and AI agents |
@@ -173,7 +173,7 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 
 ## For implementors
 
-Start with the specification ([`spec/`](spec/), §1–§16) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
+Start with the specification ([`spec/`](spec/), §1–§17) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
 
 ---
 

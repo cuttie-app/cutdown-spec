@@ -1,0 +1,17 @@
+id: task-item-empty-brackets-not-a-marker
+section: "4.7.2"
+description: "`- [] content` is not a task marker; the item is an ordinary ListItem"
+
+input: |
+  - [] content
+
+ast:
+  - type: List
+    kind: "bullet"
+    start: null
+    loose: false
+    children:
+      - type: ListItem
+        children:
+          - type: Text
+            value: "[] content"

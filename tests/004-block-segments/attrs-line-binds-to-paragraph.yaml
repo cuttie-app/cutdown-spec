@@ -1,0 +1,16 @@
+id: attrs-line-binds-to-paragraph
+section: "4.1"
+description: "An attribute-continuation line is not a block opener, so the no-block-opens-inside-a-paragraph rule does not apply: the {attrs} line binds to the paragraph instead of being swallowed as text"
+
+input: |
+  Some text
+  {.note}
+
+ast:
+  - type: Paragraph
+    children:
+      - type: Text
+        value: "Some text"
+    attributes:
+      - key: class
+        value: [note]

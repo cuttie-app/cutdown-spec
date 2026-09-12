@@ -1,0 +1,11 @@
+id: canonical-nested-quote-marker
+section: "17.1"
+description: "A nested quote marker is written with a space between each >"
+
+input: |
+  > outer
+  >> inner
+
+canonical: |
+  > outer
+  > > inner

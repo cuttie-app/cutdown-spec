@@ -1,0 +1,9 @@
+id: canonical-block-opener-escape
+section: "17.1"
+description: "A block-opener escape is written with the backslash before the marker"
+
+input: |
+  `\`` not a fence
+
+canonical: |
+  \``` not a fence
