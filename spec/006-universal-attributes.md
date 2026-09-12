@@ -67,11 +67,10 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 |---|---|---|---|
 | Standalone Paragraph | Paragraph | last attr-bearing inline | — |
 | List item | List | ListItem | last attr-bearing inline |
-| Pipe table row — mid-table, cell open | Row | last attr-bearing inline | — |
-| Pipe table row — mid-table, cell sealed | Row | — | — |
-| Pipe table row — last row, cell open | Table | Row | last attr-bearing inline |
-| Pipe table row — last row, cell sealed | Table | Row | — |
-| Multiline table row | Row | — | — |
+| Table row — mid-table, cell open | Row | last attr-bearing inline | — |
+| Table row — mid-table, cell sealed | Row | — | — |
+| Table row — last row, cell open | Table | Row | last attr-bearing inline |
+| Table row — last row, cell sealed | Table | Row | — |
 | FileRef / ImageBlock in group | FileRefGroup | FileRef / ImageBlock | last attr-bearing inline |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
 
@@ -98,8 +97,6 @@ The slot searches the **last cell only**. If that cell holds no attr-bearing inl
 | AA | **BB** | {.a}{.b}{.c}     →  Table({.c}, Row({.b}, ...))              ← sealed; {.a} dropped
 | AA | **BB** | CC {.a}{.b}{.c}  →  Table({.c}, Row({.b}, ...))              ← last cell is Text; {.a} dropped
 ```
-
-**Multiline table rows stop at `Row`** and never gain an inline slot. This is a consequence of the cell content model, not an oversight: a multiline cell holds `Block[]`, not `Inline[]` (§4.8), so there is no inline context for a slot to bind to. Do not "align" this with the pipe chain.
 
 Single NL does not break the attr chain. A sequence of `{}` blocks may span multiple lines (one per line) as long as no blank line appears between them.
 
@@ -277,7 +274,6 @@ Input:
 
 AST:
   Table {
-    kind: "pipe",
     caption: [Text("Results from the first cohort")],
     rows: [Row(type:"Header",...), Row(type:"Row",...)],
     attributes: null

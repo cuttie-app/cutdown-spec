@@ -7,7 +7,6 @@ input: |
 
 ast:
   - type: Table
-    kind: pipe
     reflection:
       - loc: { start: 15, end: 28 }
         text: "what is this?"

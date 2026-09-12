@@ -9,6 +9,5 @@ diagnostics: []
 
 ast:
   - type: Table
-    kind: pipe
     rows: []
     columns: []

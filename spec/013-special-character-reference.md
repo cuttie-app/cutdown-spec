@@ -23,7 +23,6 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `/` | slash | File reference (line start)                                                                    | Yes |
 | `\` | backslash | Escape character / `TextBreak` at line end (§5.13) — also processes `` \` `` inside CodeInline | Yes |
 | \|  | pipe | Table cell separator (pipe row) / header separator row                                         | Yes |
-| `+` | plus | Multiline table opener / row separator (`+-`, `+---+`)                                         | Yes |
 | `^` | caret | Reference link/definition marker / Spoiler delimiter (`^^`, `^^^`)                             | Yes |
 | `$` | dollar sign | Inline math (`$$`) / block math (`$$$`)                                                        | Yes |
 | `"` | double quote | Inline quote delimiter (`""`)                                                                  | Yes |

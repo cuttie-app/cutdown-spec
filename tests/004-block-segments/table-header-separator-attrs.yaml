@@ -9,7 +9,6 @@ input: |
 
 ast:
   - type: Table
-    kind: pipe
     attributes:
       - key: class
         value: [green]

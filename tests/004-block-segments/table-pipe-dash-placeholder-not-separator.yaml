@@ -8,7 +8,6 @@ input: |
 
 ast:
   - type: Table
-    kind: pipe
     rows:
       - type: Row
         children:

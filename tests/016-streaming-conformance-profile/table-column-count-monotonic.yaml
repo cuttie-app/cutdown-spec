@@ -10,7 +10,6 @@ diagnostics:
 
 ast:
   - type: Table
-    kind: pipe
     rows:
       - type: Row
         children:
@@ -46,7 +45,6 @@ streaming:
     - at: 6
       ast:
         - type: Table
-          kind: pipe
           columns:
             - type: Column
               align: left
@@ -56,7 +54,6 @@ streaming:
     - at: 9
       ast:
         - type: Table
-          kind: pipe
           columns:
             - type: Column
               align: left
@@ -68,7 +65,6 @@ streaming:
     - at: 15
       ast:
         - type: Table
-          kind: pipe
           columns:
             - type: Column
               align: left
@@ -81,7 +77,6 @@ streaming:
     - at: 22
       ast:
         - type: Table
-          kind: pipe
           columns:
             - type: Column
               align: left

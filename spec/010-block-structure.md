@@ -91,9 +91,8 @@ When N identical characters appear at an inline position, the following rules ap
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
 | `-` | list marker (`- `+space) or literal | literal `--` | PageBreak (top level; no node — §9.6) | PageBreak (tail dropped, CDN-0016) |
 | `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
-| `+` | Multiline table opener when followed by `-` or `:` (`+-`, `+:`) | — | — | — |
 | `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
-| `\|` | Pipe table row (§4.8) | — | — | — |
+| `\|` | Table row (§4.8) | — | — | — |
 | `/` | FileRef when followed by a path (§4.11) | — | — | — |
 
 Rows in this table are keyed by run length **except** `-`, `^`, `\|`, and `/`, whose meaning at column 1 depends on what **follows** — a space, a cell, a path — rather than on repetition.
@@ -185,7 +184,6 @@ Leading and trailing **blank lines** (lines containing only whitespace per §10.
 - `SpoilerBlock` (§4.15)
 - `QuoteBlock` (§4.6)
 - `ListItem` / `TaskItem` (§4.7)
-- Multiline table `Cell` (§4.8) — per-column blank-line detection; each column's edge strips independently
 
 **Does NOT apply to opaque containers** — their bodies are captured verbatim:
 - `CodeBlock` (§4.4)

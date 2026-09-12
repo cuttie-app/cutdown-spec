@@ -4,7 +4,7 @@ Cutdown's parsing model makes three testable guarantees:
 
 1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§16).
 2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
-3. **Deferred attachment.** Structural decisions may be deferred, but deferred decisions only attach or regroup already-built nodes — they never re-parse text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block), multiline table buffering until the table closes, and open-inline buffering until end of line.
+3. **Deferred attachment.** Structural decisions may be deferred, but deferred decisions only attach or regroup already-built nodes — they never re-parse text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until end of line.
 
 ### 9.1 Phase 1 — Input Interpretation
 
@@ -35,8 +35,7 @@ Each block candidate is classified by its first line:
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
 | `^:::[ID_LITERAL]` | NamedBlock |
-| `^\|` | Table (pipe) |
-| `^\+-` | Table (multiline) |
+| `^\|` | Table |
 | `^> ` | QuoteBlock |
 | `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
 | `^[0-9]+\. ` | List (ordered) |

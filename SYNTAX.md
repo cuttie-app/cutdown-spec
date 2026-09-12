@@ -198,29 +198,22 @@ Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with no
 
 ### Tables → `Table`
 
-Two variants: Pipe (`kind: "pipe"`, first line starts with `|`) and Multiline (`kind: "multiline"`, first line starts with `+-`). Standard Markdown (GFM) pipe tables parse unchanged.
+A table opens with a line starting with `|`. Standard Markdown (GFM) pipe tables parse unchanged.
 
 ```
-| Cell A | Cell B |          ← pipe table (no header, all rows type: "Row")
+| Cell A | Cell B |          ← no header, all rows type: "Row"
 
-| Name   | Score |           ← pipe table with header
+| Name   | Score |           ← table with header
 |:-------|------:|           ← header separator; also sets alignment
 | Alice  |    42 |           ← type: "Row"
-
-+----------+----------+      ← multiline grid
-| Header A | Header B |
-|:---------|----------|      ← header separator (colon = left align col 0)
-| Cell A   | Cell B   |
-+----------+----------+
 ```
 
-**Header separator:** A `|` row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `type: "Header"`. Alignment taken from the first header separator only. In multiline it is a full separator row (closes the logical row, defines column boundaries). A `+` row never marks headers — colons in it are inert: in pipe tables `+` rows are ignored entirely; in multiline they delimit logical rows / body sections.
+**Header separator:** A row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `type: "Header"`. Alignment taken from the first header separator only.
 
 **Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` left (default).
 
-**Multiline cells:** All `|` content lines between two consecutive separator rows (`+` rows or header separators) form one logical row. Cell content is `Block[]` (full block context, like `ListItem`). Cells soft-join multi-line content (space between lines). Trailing `|` optional. Column count = max() across rows.
+**Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped (CDN-0018).
 
-Leading/trailing `|` required in pipe rows. `+-` required as first line for multiline.
 
 ### Reference Definition → `RefDefinition`
 
@@ -395,7 +388,6 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | + " '` and \`
 | `---` page break | `\---`, `-\--`, `--\-` | literal; no page break occurs |
 | `/path` file ref | `\/path` | literal |
 | `\|` pipe row / header separator | `\\| cell \|` | literal |
-| `+-` multiline table opener / separator | `\+-`, `+\-` | literal |
 | `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
 | `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
 | `$$$` math | `\$$$`, `$\$$`, `$$\$` | literal |

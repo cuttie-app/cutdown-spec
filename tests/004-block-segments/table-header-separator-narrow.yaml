@@ -10,7 +10,6 @@ diagnostics: []
 
 ast:
   - type: Table
-    kind: pipe
     rows:
       - type: Header
         children:
