@@ -1,6 +1,6 @@
 id: comment-block-in-list-item
 section: "2.3"
-description: "CommentBlock is recognized inside a ListItem at the item's effective column"
+description: "CommentBlock is recognized inside a ListItem, where container indentation is stripped before classification"
 
 input: |
   - item one

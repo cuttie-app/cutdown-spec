@@ -98,7 +98,7 @@ AST:
 
 ### 2.3 Triple octothorpe `###` — CommentBlock (block comment)
 
-`###` opens a block comment that runs until the next bare `###` at the same column, or end of document.
+`###` opens a block comment that runs until the next bare `###`, or end of document.
 
 ```
 ###
@@ -109,9 +109,9 @@ all captured as a single opaque string
 ```
 
 - The opener line MUST be exactly `###` with no name and no attributes (no `[name]`, no `{attrs}` are recognized).
-- The closer is the next line whose stripped content is exactly `###` at the same column as the opener.
+- The closer is the next line whose stripped content is exactly `###`. Indentation is not compared — the rule is the same as for every other fence (§10.4.2). To keep a `###` line inside the body, escape it (§8.3).
 - Content between opener and closer is **opaque** — captured as a raw string with no inline or block parsing. The `\n` between content lines is preserved; a single trailing `\n` is appended.
-- `###` is recognized at Page scope AND inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), following the same column rules as other tripled-fence blocks (§10.4.2, §10.5).
+- `###` is recognized at Page scope AND inside containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`). Container indentation is stripped before classification (§10.2), so the fence is recognized wherever the container's content begins.
 - Unclosed `###` consumes to end-of-document and emits a `CommentBlock` with the captured content → warning CDN-0006. The opaque content gives the parser no way to observe container boundaries from inside the comment — the same rule applies to all opaque fences (CodeBlock, Meta, MathBlock).
 - `###` inside an open `CodeBlock`, `MathBlock`, or `Meta` body is literal content (opaque siblings win).
 - **Closer escape:** `\#` inside the body emits a literal `#`. A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. All other `\X` is literal (including `\\` → two chars). See §8.3.

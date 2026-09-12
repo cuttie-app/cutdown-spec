@@ -332,7 +332,7 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 |------|--------|-------|
 | `#` | literal text | Single `#` does nothing — written exactly as typed. |
 | `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer at same column. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
+| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
 
 ```
 # literal hash, not a comment

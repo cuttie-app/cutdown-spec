@@ -96,7 +96,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0006 |
 | title | Unclosed CommentBlock fence |
 | level | warning |
-| trigger | A `###` opening fence has no matching closing `###` (at the same column) before end of document |
+| trigger | A `###` opening fence has no matching closing `###` before end of document |
 | recovery | Content from the opening fence to end of document is treated as `CommentBlock` text (opaque raw string). The same rule applies as for other opaque fences (CDN-0001, CDN-0002, CDN-0003) — container boundaries are not observable from inside an opaque block. |
 | introduced_in | 0.5.0 |
 | status | active |

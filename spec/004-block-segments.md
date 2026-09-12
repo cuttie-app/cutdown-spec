@@ -916,12 +916,12 @@ interface CommentBlock {
 }
 ```
 
-- Opening: bare `###` at the container's effective column. **No** `[name]` and **no** `{attrs}` are recognized on the opener line. Any trailing characters on the opener line are part of the opener (ignored).
-- Closing: a line whose stripped content is exactly `###` at the same column as the opener.
+- Opening: a line whose stripped content begins `###`. **No** `[name]` and **no** `{attrs}` are recognized on the opener line. Any trailing characters on the opener line are part of the opener (ignored).
+- Closing: the next line whose stripped content is exactly `###`, as for every other fence. Indentation is not compared. To place a literal `###` line inside the body, escape it (§8.3).
 - Content is **opaque** — captured verbatim with no inline or block parsing. Lines joined with `\n`; a single trailing `\n` is appended.
 - Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
-- `CommentBlock` is a pass-through node for Page Assembly (§9.6). It never splits Pages, and never consumes a Meta slot.
+- `CommentBlock` takes no part in pagination (§9.5.2): only a `Meta` and a PageBreaker create Page boundaries.
 - Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
 - No `attributes` field.
 - **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
