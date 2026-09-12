@@ -8,7 +8,7 @@ Cutdown derives from Markdown. The name is literal: *cut* from the wide variety 
 
 ---
 
-## Quick example
+## Markup example
 
 ```
 == Hello **world**
@@ -24,6 +24,8 @@ Cutdown derives from Markdown. The name is literal: *cut* from the wide variety 
   ]
 }
 ```
+
+[Quick reference → `SYNTAX.md`](SYNTAX.md) · [Full spec → `spec/TOC.md`](spec/TOC.md)
 
 ---
 
@@ -138,22 +140,6 @@ The reason single symbols are literal is the doubling rule — see [**Doubled de
 
 ---
 
-## Syntax
-
-[Quick reference → `SYNTAX.md`](SYNTAX.md) · [Full spec → `spec/TOC.md`](spec/TOC.md)
-
-```
-= Hello **world**
-
-Some paragraph with ~~highlighted~~ text and a [link](https://example.com).
-
-:::callout {.warning}
-  Watch out.
-:::
-```
-
----
-
 ## Repository layout
 
 | Path | Contents |
@@ -185,6 +171,12 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 
 ---
 
+## For implementors
+
+Start with the specification ([`spec/`](spec/), §1–§16) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
+
+---
+
 ## File extension
 
 `.cutdown` is the recommended extension for Cutdown documents.
@@ -192,16 +184,6 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 ## MIME type
 
 The media type is `text/cutdown`. It is not yet registered with IANA; registration is intended. 
-
----
-
-## For implementors
-
-| Resource | Description |
-|---|---|
-| [`spec/`](spec/) | Language specification §1–§16 |
-| [`tests/`](tests/) | Conformance tests (golden YAML, all CDN codes) |
-| [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference |
 
 ---
 
