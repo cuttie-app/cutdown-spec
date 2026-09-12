@@ -37,7 +37,7 @@ interface Text {
 
 Consecutive text tokens MUST be merged into a single `Text` segment by the parser.
 
-Text segments are **literal** — no inline parsing, no escape processing. A `\` (backslash) at the end of a line, before the line terminator, produces a `TextBreak` segment (§5.13); every other character in a `Text` segment is literal.
+Text segments are **literal** — no inline parsing, no escape processing. A `\` (backslash) at the end of a line, before the line terminator, produces a `LineBreak` segment (§5.13); every other character in a `Text` segment is literal.
 
 ---
 
@@ -429,21 +429,21 @@ __^^x^^__          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
 
 ---
 
-### 5.13 TextBreak
+### 5.13 LineBreak
 
-**Syntax:** `\<EOL>`, backslash as the last character of a line (before `\n`).
+**Syntax:** `\<EOL>`, backslash as the last character of a line (before `\n`). The construct is the **LineBreaker**; it produces the `LineBreak` node, as `PageBreaker` (§4.10) produces a page boundary.
 
 **AST type:**
 
 ```typescript
-interface TextBreak {
-  type: "TextBreak"
+interface LineBreak {
+  type: "LineBreak"
 }
 ```
 
-A `TextBreak` asserts an author-intended line break **within** a paragraph — the surrounding text stays one block. It is not a paragraph boundary: a blank line ends the block and starts a new `Paragraph`, whereas a `TextBreak` breaks the line and keeps the block.
+A `LineBreak` asserts an author-intended line break **within** a paragraph — the surrounding text stays one block. It is not a paragraph boundary: a blank line ends the block and starts a new `Paragraph`, whereas a `LineBreak` breaks the line and keeps the block.
 
-Cutdown emits the AST node `TextBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §16 — Cutdown has no canonical rendering.
+Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §16 — Cutdown has no canonical rendering.
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
   - The `\` must be the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.
@@ -454,7 +454,7 @@ Cutdown emits the AST node `TextBreak`; consumers choose the rendering (a `<br>`
 |-------------|--------------------------------------------------------------------|
 | `word\n`    | Soft break — folded to zero; lines concatenate directly            |
 | `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
-| `word\\n`   | `TextBreak` segment — explicit line break inside the paragraph     |
+| `word\\n`   | `LineBreak` segment — explicit line break inside the paragraph     |
 | `word\n\n`  | Blank line — ends the block; the next line starts a new `Paragraph` |
 
 ---

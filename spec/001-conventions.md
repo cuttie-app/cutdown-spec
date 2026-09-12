@@ -87,7 +87,7 @@ Inline =
     | QuoteInline
     | ImageInline
     | Mark
-    | TextBreak
+    | LineBreak
     | Variable
 ```
 

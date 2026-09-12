@@ -7,7 +7,7 @@ input: |
 
 ast:
   - type: RefDefinition
-    id: note
+    ref: note
     children:
       - type: Text
         value: See chapter 3 for details.

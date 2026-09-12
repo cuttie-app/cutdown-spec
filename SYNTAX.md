@@ -70,7 +70,7 @@ Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). `\` at line end → `TextBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). `\` at line end → `LineBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -254,7 +254,7 @@ Degradation to visible literal text is silent — no diagnostics.
 | `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.        |
 | `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice.              |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
-| `\` at line end | `TextBreak` |                                                                                                                |
+| `\` at line end | `LineBreak` |                                                                                                                |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
 

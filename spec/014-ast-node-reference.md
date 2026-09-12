@@ -43,7 +43,7 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 | `QuoteInline`   | `type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
 | `ImageInline`   | `type: "ImageInline", alt: Inline[], src: string, attributes` |
 | `Mark`          | `type: "Mark", name: string, children: Inline[], attributes` |
-| `TextBreak`     | `type: "TextBreak"` |
+| `LineBreak`     | `type: "LineBreak"` |
 | `Variable`      | `type: "Variable", key: string, attributes`                                     |
 
 ### 14.4 Special Nodes

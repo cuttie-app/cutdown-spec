@@ -1,6 +1,6 @@
-id: text-break
+id: line-break
 section: "5.12"
-description: Backslash as last character of a line produces a TextBreak node
+description: Backslash as last character of a line produces a LineBreak node
 
 input: "line one\\\nline two\n"
 
@@ -9,6 +9,6 @@ ast:
     children:
       - type: Text
         value: line one
-      - type: TextBreak
+      - type: LineBreak
       - type: Text
         value: line two

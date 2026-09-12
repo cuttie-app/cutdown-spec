@@ -1,6 +1,6 @@
-id: paragraph-textbreak
+id: paragraph-linebreak
 section: "4.1"
-description: Backslash at end of line produces a TextBreak node; parsing continues on the next line
+description: Backslash at end of line produces a LineBreak node; parsing continues on the next line
 
 input: |
   First line\
@@ -11,6 +11,6 @@ ast:
     children:
       - type: Text
         value: First line
-      - type: TextBreak
+      - type: LineBreak
       - type: Text
         value: second line
