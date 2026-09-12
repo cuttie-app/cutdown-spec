@@ -66,7 +66,7 @@ The schema also admits **synthetic segments** that no parse produces (currently 
 
 ## Block Elements
 
-Blocks are separated by **blank lines**. Block elements cannot interrupt a paragraph.
+Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1).
 
 ### Paragraph → `Paragraph`
 
@@ -86,7 +86,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§10.1). Inline content allowed.
+Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed.
 
 Sections are not parsed — they are derived by a fold (§9.5.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 

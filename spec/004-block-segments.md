@@ -11,7 +11,22 @@ Second paragraph line 1.
 Second paragraph line 2.
 ```
 
-A contiguous run of non-blank lines not matched by any other block type. Once a paragraph begins, no block element can interrupt it — it continues until a blank line.
+A contiguous run of non-blank lines not matched by any other block type.
+
+**Nothing interrupts a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`) alike. There is no exception and no diagnostic: to open a block, put a blank line before it.
+
+````
+Input:
+  Some text
+  ```js
+  const x = 1
+  ```
+
+AST:
+    Paragraph { children: [Text("Some text```jsconst x = 1```")] }
+````
+
+The fence opener is ordinary text, so no `CodeBlock` forms. Soft breaks fold to zero (§12.1), which is why the lines concatenate with no separator inserted.
 
 **AST type:**
 

@@ -4,9 +4,13 @@
 
 Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7); consecutive blank lines act as one (§12.1).
 
-A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is a candidate block, then classified by its first line.
+A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.3). A run does not always produce one block:
 
-**Block elements cannot interrupt a paragraph.** A new block construct can only begin after a blank line. A line that would otherwise open a block element (a heading, a list marker, a page separator, etc.) is paragraph content if it appears within a run of non-blank lines that began as a paragraph.
+- A **single-line block** — `Section`, `FileRef`, `ImageBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification, so `= Title` followed directly by `content` yields a `Section` and a `Paragraph`.
+- A **`Paragraph`** consumes the whole run: it ends at the blank line, never before.
+- A **fenced block** consumes from its opener to its closer, which may lie past a blank line (§10.4.2).
+
+**Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
 
 Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) acts as a blank line for block-boundary purposes and stores its payload as a `Reflection` entry on the nearest block. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
 
