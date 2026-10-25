@@ -153,7 +153,7 @@ The reason single symbols are literal is the doubling rule — see [**Doubled de
 
 ## Spec status
 
-**Version:** 0.10.0 · **Status:** Draft
+**Version:** 0.11.0 · **Status:** Draft
 
 The spec is under active development. Breaking changes may occur before 1.0.0.
 
