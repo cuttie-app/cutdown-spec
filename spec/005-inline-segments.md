@@ -443,7 +443,7 @@ interface LineBreak {
 
 A `LineBreak` asserts an author-intended line break **within** a paragraph — the surrounding text stays one block. It is not a paragraph boundary: a blank line ends the block and starts a new `Paragraph`, whereas a `LineBreak` breaks the line and keeps the block.
 
-Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §16 — Cutdown has no canonical rendering.
+Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §15 — Cutdown has no canonical rendering.
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
   - The `\` must be the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.

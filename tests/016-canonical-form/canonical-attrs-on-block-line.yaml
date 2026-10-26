@@ -1,5 +1,5 @@
 id: canonical-attrs-on-block-line
-section: "17.1"
+section: "16.1"
 description: "Attribute-continuation lines are folded onto the block's own line"
 
 input: |

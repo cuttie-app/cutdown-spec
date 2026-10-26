@@ -1,14 +1,14 @@
-## 17. Canonical Form
+## 16. Canonical Form
 
 The grammar accepts more than one spelling for the same meaning at a small number of points. Canonical Cutdown is the subset that uses exactly one of them.
 
 This section binds tools that **write** source — formatters, round-trip editors, generators. Two conforming writers given the same AST produce byte-identical source. It places no obligation on a parser: every non-canonical spelling in the table below remains valid input and MUST continue to parse to the same AST.
 
-Canonical form is not a compliance level (§15) and carries no diagnostic. A tool MAY report a non-canonical spelling as a lint; a parser MUST NOT.
+Canonical form is not a compliance level (§18) and carries no diagnostic. A tool MAY report a non-canonical spelling as a lint; a parser MUST NOT.
 
 The serialization of a parse *result* is a different subject, governed by [`policies/canonical-serialization-policy.md`](../policies/canonical-serialization-policy.md).
 
-### 17.1 Registry
+### 16.1 Registry
 
 The table is closed. Every point at which two distinct inputs produce the same AST appears here. A spelling that carries a different AST value is not an alias and does not appear — `:---` and `----` differ (`"left"` versus `"start"`, §4.8), so neither is canonical for the other.
 
@@ -26,7 +26,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 | 10 | Blank lines at the start and end of a document | none | any number | §12.1 |
 | 11 | Padding inside inline delimiters | none — `**bb**` | `** bb **`, `**  bb  **` | §12.2 |
 
-### 17.2 Notes on individual rows
+### 16.2 Notes on individual rows
 
 **Row 2 — why the spaced form.** One space after each `>` keeps the marker run readable at depth and matches the single space that separates the innermost `>` from the content: depth three is `> > > text`, not `>>> text`. Both spellings carry the same depth (§4.6).
 

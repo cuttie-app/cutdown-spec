@@ -1,5 +1,5 @@
 id: canonical-task-item-markers
-section: "17.1"
+section: "16.1"
 description: "Checked task markers canonicalize to [+]; unchecked stays [ ]"
 
 input: |

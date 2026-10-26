@@ -1,5 +1,5 @@
 id: canonical-ordered-list-numbers
-section: "17.1"
+section: "16.1"
 description: "Ordered item numbers run consecutively upward from List.start"
 
 input: |

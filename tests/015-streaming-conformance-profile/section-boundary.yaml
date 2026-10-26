@@ -1,5 +1,5 @@
 id: section-boundary
-section: "16"
+section: "15"
 description: "A later heading may close an earlier Section while every source prefix remains a normal document"
 
 input: "= One\n\n== Two"

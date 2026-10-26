@@ -1,5 +1,5 @@
 id: table-column-count-monotonic
-section: "16"
+section: "15"
 description: "Table.columns is settled when the first content row closes and is never revised; a later wider row drops its surplus with CDN-0018 rather than growing the count"
 
 input: "| A | B |\n| C | D | E |"
@@ -41,7 +41,7 @@ streaming:
   unit: unicode-scalar
   checkpoints:
     # Prefix "| A | " — a one-column table in its own right. A prefix is an
-    # ordinary document, not a partial one (§16.1).
+    # ordinary document, not a partial one (§15.1).
     - at: 6
       ast:
         - type: Table

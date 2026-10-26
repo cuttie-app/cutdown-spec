@@ -18,7 +18,7 @@ AST:
 
 ### 1.1 Streaming terms
 
-A **Unicode scalar value** is a Unicode code point other than a surrogate code point. It is the character unit used by the streaming conformance profile (§16). This does not change source locations: `loc` offsets remain UTF-16 code-unit offsets.
+A **Unicode scalar value** is a Unicode code point other than a surrogate code point. It is the character unit used by the streaming conformance profile (§15). This does not change source locations: `loc` offsets remain UTF-16 code-unit offsets.
 
 An **input snapshot** is the complete decoded Cutdown source available to a parser at one instant. A parser MUST treat every input snapshot as an ordinary Cutdown document, including a snapshot that ends within unfinished markup.
 

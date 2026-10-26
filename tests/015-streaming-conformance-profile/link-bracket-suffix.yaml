@@ -1,5 +1,5 @@
 id: link-bracket-suffix
-section: "16"
+section: "15"
 description: "An unresolved bracket opener keeps its current line suffix literal until a complete link arrives"
 
 input: "[draft](url)"

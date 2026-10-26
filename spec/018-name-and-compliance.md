@@ -1,4 +1,4 @@
-## 15. Name and Compliance
+## 18. Name and Compliance
 
 The name "Cutdown" is reserved for implementations that fully comply with the official specification.
 

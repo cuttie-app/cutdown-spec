@@ -2,7 +2,7 @@
 
 Cutdown's parsing model makes three testable guarantees:
 
-1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§16).
+1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§15).
 2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
 3. **Deferred attachment.** A deferred structural decision attaches or regroups already-built nodes only; it never re-parses text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until end of line.
 
@@ -133,6 +133,6 @@ A **PageBreaker** is the pagination signal consumed by the fold in §9.5.2. It p
 
 ### 9.7 Incremental availability
 
-Incremental availability does not create a second parsing mode. At every decoded Unicode-scalar boundary, an implementation MUST produce the same AST and diagnostics as an ordinary parse of the source available at that boundary. Later source MAY reinterpret an unresolved inline suffix, an open block/container, or derived structure that depends on it. Consumers MAY delay semantic rendering until an end of block (§1, §16); Cutdown defines no rendering schedule.
+Incremental availability does not create a second parsing mode. At every decoded Unicode-scalar boundary, an implementation MUST produce the same AST and diagnostics as an ordinary parse of the source available at that boundary. Later source MAY reinterpret an unresolved inline suffix, an open block/container, or derived structure that depends on it. Consumers MAY delay semantic rendering until an end of block (§1, §15); Cutdown defines no rendering schedule.
 
 ---

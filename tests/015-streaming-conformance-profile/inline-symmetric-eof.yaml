@@ -1,5 +1,5 @@
 id: inline-symmetric-eof
-section: "16"
+section: "15"
 description: "An unclosed symmetric delimiter is literal at EOF, then becomes Strong when its closer arrives"
 
 input: "**draft**"

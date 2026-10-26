@@ -52,8 +52,9 @@ It has no canonical HTML output — consuming applications interpret and render 
 12. [Whitespace Rules](012-whitespace-rules.md)
 13. [Special Character Reference](013-special-character-reference.md)
 14. [AST Node (Segment) Reference](014-ast-node-reference.md)
-15. [Name and Compliance](015-name-and-compliance.md)
-16. [Streaming Conformance Profile](016-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
-17. [Canonical Form](017-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
+15. [Streaming Conformance Profile](015-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
+16. [Canonical Form](016-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
+17. [Injection](017-injection.md) — what an InjectBlock means once a consumer resolves it
+18. [Name and Compliance](018-name-and-compliance.md)
 
 ---

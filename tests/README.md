@@ -15,8 +15,9 @@ tests/
   008-escaping/
   010-block-structure/
   012-whitespace-rules/
-  017-canonical-form/    ← writer fixtures; assert `canonical`, not `ast`
-  diagnostics/          ← one fixture per CDN-xxxx diagnostic code
+  015-streaming-conformance-profile/   ← may add `streaming` checkpoints
+  016-canonical-form/                  ← writer fixtures; assert `canonical`, not `ast`
+  diagnostics/                         ← one fixture per CDN-xxxx diagnostic code
 ```
 
 A test runner must walk all `*.yaml` files recursively — loading only the top level will silently pass zero tests.
@@ -52,9 +53,9 @@ ast:
 | `ast` | — | Expected children of the first page (see [Assertions](#assertions)) |
 | `pages` | — | Expected full `Document.children` array; use when the fixture spans multiple pages. Overrides `ast` when present |
 | `diagnostics` | — | Expected diagnostics (see [Assertions](#assertions)); if omitted, the parser must emit zero diagnostics |
-| `canonical` | — | Expected canonical source (§17). Used only by fixtures under `017-canonical-form/` |
+| `canonical` | — | Expected canonical source (§16). Used only by fixtures under `016-canonical-form/` |
 
-Exactly ONE OF `ast` or `pages` MUST be present, except under `017-canonical-form/`, where `canonical` is present instead.
+Exactly ONE OF `ast` or `pages` MUST be present, except under `016-canonical-form/`, where `canonical` is present instead.
 
 ### Assertions
 
@@ -69,7 +70,7 @@ This means a minimal fixture only needs to assert the fields it cares about — 
 
 ### Streaming-profile assertions
 
-Fixtures under `016-streaming-conformance-profile/` use the ordinary final-input assertions above and MAY add a `streaming` object:
+Fixtures under `015-streaming-conformance-profile/` use the ordinary final-input assertions above and MAY add a `streaming` object:
 
 ```yaml
 streaming:
@@ -114,7 +115,7 @@ pages:
 
 ## Canonical-form fixtures
 
-Fixtures under `017-canonical-form/` test a **writer**, not a parser. `input` is valid source in some spelling; `canonical` is the source a conforming writer emits for the same AST (§17). A runner parses `input`, writes the result back out, and compares to `canonical` byte for byte. Parsing `canonical` MUST yield the same AST as parsing `input` — that equality is what makes the pair an alias.
+Fixtures under `016-canonical-form/` test a **writer**, not a parser. `input` is valid source in some spelling; `canonical` is the source a conforming writer emits for the same AST (§16). A runner parses `input`, writes the result back out, and compares to `canonical` byte for byte. Parsing `canonical` MUST yield the same AST as parsing `input` — that equality is what makes the pair an alias.
 
 A parser-only implementation skips this directory. Nothing here is a parser obligation.
 

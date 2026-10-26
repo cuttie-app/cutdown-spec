@@ -1,5 +1,5 @@
 id: canonical-inline-delimiter-padding
-section: "17.1"
+section: "16.1"
 description: "Inline delimiters carry no padding spaces"
 
 input: |

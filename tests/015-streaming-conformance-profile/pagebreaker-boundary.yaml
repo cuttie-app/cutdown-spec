@@ -1,5 +1,5 @@
 id: pagebreaker-boundary
-section: "16"
+section: "15"
 description: "A completing PageBreaker line retroactively turns literal paragraph text into a page split"
 
 input: "First\n\n---\n\nSecond"

@@ -1,5 +1,5 @@
 id: code-fence-eof
-section: "16"
+section: "15"
 description: "An open code fence is a valid snapshot with CDN-0001 until its closing fence arrives"
 
 input: "```python\nx = 1\n```"

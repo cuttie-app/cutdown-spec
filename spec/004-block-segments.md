@@ -424,7 +424,7 @@ interface TaskItem {
 }
 ```
 
-- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[]` with no space is not a task marker — the item is an ordinary `ListItem` whose content begins `[]`. `[+]` is bidi-neutral; see §17 for which spelling a writer emits.
+- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[]` with no space is not a task marker — the item is an ordinary `ListItem` whose content begins `[]`. `[+]` is bidi-neutral; see §16 for which spelling a writer emits.
 - Only `kind: "bullet"` list items may carry a checkbox. A `kind: "numbered"` list encountering a task marker closes and a new `kind: "checklist"` List segment opens.
 - A `List` with `kind: "checklist"` has `children: TaskItem[]` exclusively; `kind: "bullet"` and `kind: "numbered"` have `children: ListItem[]` exclusively.
 - Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` segment.

@@ -1,0 +1,7 @@
+id: canonical-document-edge-blank-lines
+section: "16.1"
+description: "A canonical document has no leading blank lines and ends with exactly one line terminator"
+
+input: "\n\n   \n\nHello world\n\n   \n\n"
+
+canonical: "Hello world\n"

@@ -1,5 +1,5 @@
 id: canonical-block-opener-escape
-section: "17.1"
+section: "16.1"
 description: "A block-opener escape is written with the backslash before the marker"
 
 input: |
