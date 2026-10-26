@@ -1,0 +1,17 @@
+id: caption-image-fileblock
+section: "6.2"
+description: "A captioned image is written as a FileBlock; the `^ ` line binds to it"
+
+input: |
+  /photo.jpg
+  ^ Photo from the event
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/photo.jpg"
+        caption:
+          - _type: Text
+            value: "Photo from the event"

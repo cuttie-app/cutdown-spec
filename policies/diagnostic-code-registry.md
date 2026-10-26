@@ -356,3 +356,33 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | introduced_in | 0.10.0 |
 | status | active |
 | owner | Language |
+
+---
+
+### CDN-0032 — Invalid path
+
+| Field | Value |
+|---|---|
+| code | CDN-0032 |
+| title | Invalid path |
+| level | warning |
+| trigger | A `PathResourceLocator` (§1.7) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §1.7.5: a control character, more than 1024 Unicode scalar values, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. Never emitted for a URL (`https://…`) |
+| recovery | The owning node is emitted as usual. Its locator keeps `raw` as written and has `path: ''`, `query: []`, `fragment: ''`. `loc` spans the path |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0033 — Invalid tag
+
+| Field | Value |
+|---|---|
+| code | CDN-0033 |
+| title | Invalid tag |
+| level | warning |
+| trigger | A tag link target (§5.5) has an empty level: `[x][#]`, `[x][#a//b]`, `[x][#a/]` |
+| recovery | The `Link` is emitted with `kind: "tag"` and `target` as written. `loc` spans the target |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |

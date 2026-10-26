@@ -1,0 +1,16 @@
+id: imageinline-balanced-parens
+section: "1.7.1"
+description: "Balanced parentheses stay in the path; the first unbalanced ) ends it"
+
+input: |
+  ![shot](/shots/run (2).png) done
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        src:
+          raw: "/shots/run (2).png"
+          path: "/shots/run (2).png"
+      - _type: Text
+        value: " done"

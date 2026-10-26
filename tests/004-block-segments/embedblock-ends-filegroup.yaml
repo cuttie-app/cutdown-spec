@@ -1,0 +1,22 @@
+id: embedblock-ends-filegroup
+section: "4.12"
+description: "An EmbedBlock line ends an open FileGroup and never joins one; the next FileBlock starts a new group"
+
+input: |
+  /a.png
+  https://example.com/clip
+  /b.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /a.png
+  - _type: EmbedBlock
+    url: "https://example.com/clip"
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /b.png

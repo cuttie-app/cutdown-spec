@@ -1,0 +1,25 @@
+id: filegroup-mixed-kinds
+section: "4.12"
+description: Consecutive FileBlock lines form one FileGroup whatever their extensions
+
+input: |
+  /a.png
+  /a.jpg
+  /b.mp4
+  /c.pdf
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /a.png
+      - _type: FileBlock
+        src:
+          path: /a.jpg
+      - _type: FileBlock
+        src:
+          path: /b.mp4
+      - _type: FileBlock
+        src:
+          path: /c.pdf

@@ -1,0 +1,12 @@
+id: escape-embedblock-opener
+section: "8.2"
+description: "\\https:// at line start suppresses the EmbedBlock; the line becomes a Paragraph"
+
+input: |
+  \https://example.com
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "https://example.com"

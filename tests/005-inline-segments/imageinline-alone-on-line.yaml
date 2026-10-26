@@ -1,0 +1,19 @@
+id: imageinline-alone-on-line
+section: "5.9"
+description: An image alone on a line is inline content — a Paragraph holding one ImageInline; there is no block image
+
+input: |
+  ![A sunset](photos/sunset.jpg)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        alt:
+          - _type: Text
+            value: A sunset
+        src:
+          raw: photos/sunset.jpg
+          path: photos/sunset.jpg
+          query: []
+          fragment: ''

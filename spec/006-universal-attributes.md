@@ -50,7 +50,8 @@ This rule applies only in block opening line context. In paragraph context all `
 - `Meta`: no attributes supported.
 - `RefDefinition`: has `attributes`.
 - `Table`: see §4 for row and table attr placement.
-- `List / FileRefGroup / ImageGroup / QuoteBlock / Paragraph`: scope-chain rule (Rule B) — see below.
+- `List / FileGroup / QuoteBlock / Paragraph`: scope-chain rule (Rule B) — see below.
+- `EmbedBlock`, `InjectBlock`: the last `{...}` on the line is claimed by the block; earlier groups have no slot and are dropped with CDN-0011.
 - `Cell`, `Column`, `Page`, `Document`: no attributes supported.
 
 ##### Scope-chain rule (Rule B)
@@ -71,7 +72,7 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 | Table row — mid-table, cell sealed | Row | — | — |
 | Table row — last row, cell open | Table | Row | last attr-bearing inline |
 | Table row — last row, cell sealed | Table | Row | — |
-| FileRef / ImageBlock in group | FileRefGroup | FileRef / ImageBlock | last attr-bearing inline |
+| FileBlock line | FileGroup | FileBlock | — |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
 
 **Table rows.** `Cell` bears no attributes (see *Per-segment placement rules* above), so the chain walks **past** the cell to the last attr-bearing inline inside it. Whether that slot exists depends on the trailing `|` (pipe):
@@ -118,13 +119,13 @@ Single NL does not break the attr chain. A sequence of `{}` blocks may span mult
 - text {.a}{.b}{.c}  →  List({.c}, ListItem({.b}, Text("text")))   ← {.a} dropped (Text has no attrs)
 ```
 
-Same rule applies to `FileRefGroup` and `ImageGroup`:
+Same rule applies to `FileGroup`. Each `FileBlock` line has two slots: its `FileGroup` and itself.
 
 ```
-/img.png {.a}{.b}   →  FileRefGroup({.b}, FileRef({.a}, ...))
-/img.png {.a}       →  FileRefGroup({.a}, FileRef(...))
-/img.png {}         →  FileRefGroup({},   FileRef(...))    ← {} no-op on group
-/img.png {.a}{}     →  FileRefGroup({},   FileRef({.a}, ...))
+/img.png {.a}{.b}   →  FileGroup({.b}, FileBlock({.a}, ...))
+/img.png {.a}       →  FileGroup({.a}, FileBlock(...))
+/img.png {}         →  FileGroup({},   FileBlock(...))    ← {} no-op on group
+/img.png {.a}{}     →  FileGroup({},   FileBlock({.a}, ...))
 ```
 
 Multiline equivalents (all produce identical AST):
@@ -201,8 +202,12 @@ A line at block start consisting of `^` (caret) followed by a single space and t
 **Binding rule:** A caption line binds to the immediately preceding block in the current block scope when all three hold:
 
 1. That block is captionable (see table below);
-2. That block's caption slot is empty;
+2. No caption line has bound to that block yet;
 3. No blank line separates the block's last line from the `^ ` line.
+
+Inside a `FileGroup`, the immediately preceding block is the `FileBlock` on the line above. The caption binds to that `FileBlock` and the group continues.
+
+Condition 2 is a fact about the parse, not about the AST: a bare `^ ` line binds and yields `caption: []`, which looks the same as no caption, yet it still fills the slot.
 
 **Otherwise the caption line is orphaned:** it becomes a `Paragraph` containing the line verbatim, and warning CDN-0008 is emitted.
 
@@ -221,7 +226,7 @@ Lines that emit no block are **transparent** — they are not "the immediately p
 ^ Caption text   →  Table { caption: [...], reflection: [{ loc: { start: 11, end: 25 }, text: "editorial note" }] }
 ```
 
-**Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2 — the slot it would claim is already filled — so it orphans.
+**Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2, so it orphans.
 
 The "preceding block" is always resolved within the current block scope (§1.6). A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
 
@@ -229,26 +234,24 @@ The "preceding block" is always resolved within the current block scope (§1.6).
 
 | Block | Field added |
 |---|---|
-| `Table` | `caption: Inline[] \| null` |
-| `ImageBlock` | `caption: Inline[] \| null` |
-| `CodeBlock` | `caption: Inline[] \| null` |
-| `MathBlock` | `caption: Inline[] \| null` |
-| `FileRef` | `caption: Inline[] \| null` |
-| `FileRefGroup` | `caption: Inline[] \| null` |
-| `NamedBlock` | `caption: Inline[] \| null` |
-| `SpoilerBlock` | `caption: Inline[] \| null` |
-| `QuoteBlock` | `caption: Inline[] \| null` |
+| `Table` | `caption: Inline[]` |
+| `CodeBlock` | `caption: Inline[]` |
+| `MathBlock` | `caption: Inline[]` |
+| `FileBlock` | `caption: Inline[]` |
+| `EmbedBlock` | `caption: Inline[]` |
+| `NamedBlock` | `caption: Inline[]` |
+| `SpoilerBlock` | `caption: Inline[]` |
+| `QuoteBlock` | `caption: Inline[]` |
 
-All captionable blocks default these fields to `null` when no caption line is present.
+All captionable blocks carry `caption: []` when no caption line binds. `FileGroup` and `InjectBlock` are not captionable.
 
-**`FileRefGroup` mid-run close.** A `^ ` line immediately after a `FileRef` or `ImageBlock` that is part of an active group closes the group at that point and binds to it. The next `FileRef`/`ImageBlock` starts a new group:
+**`FileBlock` captions do not split the group.** A `^ ` line binds to the `FileBlock` above it, and the next `FileBlock` line stays in the same `FileGroup`:
 
 ```
 /a.png
+^ First image
 /b.png
-^ Two-image group caption
-/c.png
-^ Single-image group caption
+^ Second image     →  FileGroup(FileBlock(caption: "First image"), FileBlock(caption: "Second image"))
 ```
 
 **Inline content.** The caption text is parsed by the full inline rule set:

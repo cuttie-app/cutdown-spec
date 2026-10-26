@@ -1,0 +1,19 @@
+id: attrs-scope-chain-fileblock
+section: "6.1.2"
+description: "Two trailing {} on a FileBlock line: last to FileGroup, preceding to FileBlock"
+
+input: |
+  /img.png {.a}{.b}
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /img.png
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]

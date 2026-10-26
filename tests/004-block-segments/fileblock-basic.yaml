@@ -1,0 +1,20 @@
+id: fileblock-basic
+section: "4.11"
+description: A line beginning with / is a FileBlock, always wrapped in a FileGroup; no media type or group is assigned
+
+input: |
+  /docs/report.pdf
+
+ast:
+  - _type: FileGroup
+    attributes: []
+    reflection: []
+    children:
+      - _type: FileBlock
+        src:
+          raw: /docs/report.pdf
+          path: /docs/report.pdf
+          query: []
+          fragment: ''
+        attributes: []
+        caption: []

@@ -3,16 +3,17 @@ section: "6.2"
 description: "CDN-0008: a blank line between a captionable block and a `^ ` line breaks binding; the `^ ` is orphaned"
 
 input: |
-  ![alt](photo.jpg)
+  /photo.jpg
 
   ^ Orphaned caption
 
 ast:
-  - _type: ImageBlock
-    alt:
-      - _type: Text
-        value: alt
-    src: "photo.jpg"
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/photo.jpg"
+        caption: []
   - _type: Paragraph
     children:
       - _type: Text

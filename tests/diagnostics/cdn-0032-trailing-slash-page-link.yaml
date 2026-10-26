@@ -1,0 +1,19 @@
+id: cdn-0032-trailing-slash-page-link
+section: "1.7.5"
+description: "CDN-0032: a trailing / is invalid outside an InjectBlock; a page link has no folder index"
+
+input: |
+  [x][guide/]
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        path:
+          raw: guide/
+          path: ''
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

@@ -1,0 +1,17 @@
+id: attrs-scope-chain-fileblock-noop
+section: "6.1.2"
+description: "Empty {} as last token is a no-op on the FileGroup; the preceding {.a} goes to the FileBlock"
+
+input: |
+  /img.png {.a}{}
+
+ast:
+  - _type: FileGroup
+    attributes: []
+    children:
+      - _type: FileBlock
+        src:
+          path: /img.png
+        attributes:
+          - key: class
+            value: [a]

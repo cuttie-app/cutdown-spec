@@ -6,8 +6,8 @@ Blocks are separated by one or more **blank lines**. A blank line is a line cont
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.3). A run does not always produce one block:
 
-- A **single-line block** — `Section`, `FileRef`, `ImageBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification, so `= Title` followed directly by `content` yields a `Section` and a `Paragraph`.
-- A **`Paragraph`** consumes the whole run: it ends at the blank line, never before.
+- A **single-line block** — `Section`, `FileBlock`, `EmbedBlock`, `InjectBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification, so `= Title` followed directly by `content` yields a `Section` and a `Paragraph`.
+- A **`Paragraph`** consumes the whole run: it ends at the blank line that closes the run, and at no earlier line — not even one that would open a block if it began a run (see the no-interrupt rule below).
 - A **fenced block** consumes from its opener to its closer, which may lie past a blank line (§10.4.2).
 
 **Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
@@ -100,7 +100,9 @@ When N identical characters appear at an inline position, the following rules ap
 
 The two halves of this table use different keys. Rows for `=`, `>`, `:` and `#` are keyed by run length. Rows for `-`, `^`, `\|` and `/` are keyed by the character that **follows** the symbol at column 1 — a space, a cell, or a path — not by repetition.
 
-Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table; this includes the bracket-initiated block openers `![` (ImageBlock, §4.9) and `[^` (RefDefinition, §4.14).
+`https://` at the start of a block line opens an `EmbedBlock` (§4.9). It is a fixed eight-character prefix, not a repeated symbol.
+
+Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table; this includes the bracket-initiated block opener `[^` (RefDefinition, §4.14). `![` opens no block: an image is always an `ImageInline` (§5.9).
 
 #### 10.4.5 Delimiter collisions
 

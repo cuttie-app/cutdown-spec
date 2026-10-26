@@ -48,14 +48,15 @@ When `##` appears after content on a line that belongs to a block, the payload i
 |---|---|
 | Table row line | `Table` (not `Row`) |
 | List item line | `List` (not `ListItem`) |
-| NamedBlock / QuoteBlock / FileRefGroup opener | that container |
+| NamedBlock / QuoteBlock opener | that container |
+| FileBlock line | `FileGroup` (not `FileBlock`) |
 
 #### Standalone `## comment` line
 
 A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.2).
 
 - Attaches to the **immediately preceding structural block** in the current scope, carrying its own `loc`. Consecutive standalone comments accumulate in source order.
-- **Closes** any active accumulation (continuing Paragraph, open FileRefGroup) before attaching.
+- **Closes** any active accumulation (continuing Paragraph, open FileGroup) before attaching.
 - **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
 - Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) the same rule applies within that block scope (§1.6): it attaches to the preceding sibling block in that scope.
 

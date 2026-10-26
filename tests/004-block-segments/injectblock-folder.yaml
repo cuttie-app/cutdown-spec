@@ -1,0 +1,15 @@
+id: injectblock-folder
+section: "4.17"
+description: "A / line whose path ends with / names a folder and is an InjectBlock; the trailing slash is valid here"
+
+input: |
+  /chapters/
+
+ast:
+  - _type: InjectBlock
+    src:
+      raw: /chapters/
+      path: /chapters/
+      query: []
+      fragment: ''
+    children: []

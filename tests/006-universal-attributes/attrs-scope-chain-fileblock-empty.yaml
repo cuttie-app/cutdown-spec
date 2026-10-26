@@ -1,0 +1,15 @@
+id: attrs-scope-chain-fileblock-empty
+section: "6.1.2"
+description: "Empty {} on a FileBlock line claims the FileGroup slot but assigns nothing"
+
+input: |
+  /img.png {}
+
+ast:
+  - _type: FileGroup
+    attributes: []
+    children:
+      - _type: FileBlock
+        src:
+          path: /img.png
+        attributes: []

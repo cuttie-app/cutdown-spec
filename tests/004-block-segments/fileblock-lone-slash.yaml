@@ -1,0 +1,16 @@
+id: fileblock-lone-slash
+section: "4.11"
+description: "A line holding only / is a valid FileBlock (not a folder injection); what it refers to is the consumer's decision"
+
+input: |
+  /
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          raw: /
+          path: /
+          query: []
+          fragment: ''

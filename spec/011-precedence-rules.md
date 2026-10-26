@@ -19,4 +19,6 @@ When multiple constructs compete for the same input, the following priority appl
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.
 
+Note: inside a path (§1.7.1) brackets nest by the path's own counting, and inside a JSON attribute value (§6.1.1) braces and brackets within JSON strings are not counted. Neither is ordered by this table.
+
 ---

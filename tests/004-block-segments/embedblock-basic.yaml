@@ -1,0 +1,18 @@
+id: embedblock-basic
+section: "4.9"
+description: "A line beginning with https:// is an EmbedBlock; url is raw; it is captionable and takes the line's attributes"
+
+input: |
+  https://youtu.be/dQw4w9WgXcQ?t=42 {.wide}
+  ^ The talk
+
+ast:
+  - _type: EmbedBlock
+    url: "https://youtu.be/dQw4w9WgXcQ?t=42"
+    attributes:
+      - key: class
+        value: [wide]
+    caption:
+      - _type: Text
+        value: The talk
+    reflection: []

@@ -3,25 +3,25 @@ section: "6.2"
 description: "Caption text is parsed by the full inline rule set — emphasis, strong, and other inline constructs are valid"
 
 input: |
-  ![alt](photo.jpg)
+  /photo.jpg
   ^ Photo by __Jane Doe__, **2025**
 
 ast:
-  - _type: ImageBlock
-    alt:
-      - _type: Text
-        value: alt
-    src: "photo.jpg"
-    caption:
-      - _type: Text
-        value: "Photo by "
-      - _type: Emphasis
-        children:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/photo.jpg"
+        caption:
           - _type: Text
-            value: "Jane Doe"
-      - _type: Text
-        value: ", "
-      - _type: Strong
-        children:
+            value: "Photo by "
+          - _type: Emphasis
+            children:
+              - _type: Text
+                value: "Jane Doe"
           - _type: Text
-            value: "2025"
+            value: ", "
+          - _type: Strong
+            children:
+              - _type: Text
+                value: "2025"

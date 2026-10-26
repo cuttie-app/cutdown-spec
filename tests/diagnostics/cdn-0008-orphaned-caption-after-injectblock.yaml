@@ -1,0 +1,21 @@
+id: cdn-0008-orphaned-caption-after-injectblock
+section: "6.2"
+description: "CDN-0008: an InjectBlock is not captionable, so a following `^ ` line is orphaned"
+
+input: |
+  /part.cutdown
+  ^ A caption
+
+ast:
+  - _type: InjectBlock
+    src:
+      path: /part.cutdown
+    children: []
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "^ A caption"
+
+diagnostics:
+  - code: CDN-0008
+    level: warning

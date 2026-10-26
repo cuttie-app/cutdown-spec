@@ -1,0 +1,13 @@
+id: cdn-0032-no-fire-url
+section: "1.7.4"
+description: "CDN-0032 does not fire for a URL: the validity rules do not apply to an https:// path"
+
+input: |
+  ![x](https://example.com//a.png)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        src:
+          path: "https://example.com//a.png"

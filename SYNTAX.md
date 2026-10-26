@@ -15,9 +15,11 @@ Cutdown is a markup language that produces an AST. There is no HTML output. Pars
 
 - [+] ...         TaskItem (checklist) checked=true
 
-/path             FileRef
+/path             FileBlock (in a FileGroup)
 
-![](...)          ImageBlock
+/doc.cutdown      InjectBlock (also /folder/)
+
+https://...       EmbedBlock
 
 > ...             QuoteBlock
 
@@ -129,22 +131,36 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
 
 Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the recommended style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
 
-### File Reference → `FileRef`, `FileRefGroup`
+### Files → `FileBlock`, `FileGroup`
 
 ```
-/path/to/file.ext {attrs}
-/path/to/image.png
+/My Docs/report.pdf {attrs}
+/photos/a.png
+^ Caption for a.png
 ```
 
-Line starting with `/`. Known groups (image/video/audio) auto-wrapped in `FileRefGroup`. Fragment: `/page.md#section-id`. Query: `/page.md?key=value`.
+Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), parsed as a `PathResourceLocator` (§1.7): `raw`, `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`). Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A lone `/` is a valid `FileBlock`.
 
-### Image Block → `ImageBlock`
+### Injection → `InjectBlock`
 
 ```
-![alt text](src) {attrs}
+/chapters/intro.cutdown
+/parts/card.cutdown?name=Ann#pricing
+/chapters/
 ```
 
-Line starting with `![`. Block-level. Consecutive image lines wrapped in `FileRefGroup`. Image can be declared inside Inline context as well (as `ImageInline`).
+A file line whose `path` ends with `.cutdown` or `/` (folder). The parser emits `children: []`; the consumer fills it (§17): blocks of all injected Pages, `meta` dropped, Sections never cross the edge, ids/refs stay local, `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable.
+
+### Embed → `EmbedBlock`
+
+```
+https://youtu.be/dQw4w9WgXcQ {attrs}
+^ Caption
+```
+
+Line starting with literal `https://`. `url` is raw; the consumer decides what to show (e.g. oEmbed). Captionable; never in a `FileGroup`.
+
+Images have no block form: `![alt](src)` is always `ImageInline`, even alone on a line. Use a `FileBlock` for a captioned or grouped image.
 
 ### Quote Block → `QuoteBlock`
 
@@ -277,8 +293,8 @@ A line starting with (`^ `) immediately after a captionable block (no blank line
 | col A | col B |
 ^ Table caption text                   →  Table { caption: [...] }
 
-![alt](image.png)
-^ Figure caption text                  →  ImageBlock { caption: [...] }
+/image.png
+^ Figure caption text                  →  FileGroup(FileBlock { caption: [...] })
 
 ```javascript
 code here
@@ -289,7 +305,7 @@ code here
 ^ Source attribution                   →  QuoteBlock { caption: [...] }
 ````
 
-Captionable blocks: `Table`, `ImageBlock`, `CodeBlock`, `MathBlock`, `FileRef`, `FileRefGroup`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`.
+Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`. No caption → `caption: []`.
 
 - Blank line between block and `^ ` → no binding; `^ ` becomes a `Paragraph` (CDN-0008).
 - Second `^ ` line (slot already filled) → `Paragraph` (CDN-0008).
@@ -350,7 +366,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 **Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
 
-**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileRefGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
+**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
 
 **Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on a header separator row claim the Table slot (§4.8).
 
@@ -386,7 +402,8 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 | `- ` list | `\- item` | literal |
 | `> ` quote | `\> text` | literal |
 | `---` PageBreaker | `\---`, `-\--`, `--\-` | literal; no Page boundary occurs |
-| `/path` file ref | `\/path` | literal |
+| `/path` file / injection | `\/path` | literal |
+| `https://` embed | `\https://…` | literal |
 | `\|` pipe row / header separator | `\\| cell \|` | literal |
 | `^ ` caption | `\^ text` | literal |
 | `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |

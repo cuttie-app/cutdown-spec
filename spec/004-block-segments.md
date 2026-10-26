@@ -625,41 +625,41 @@ Trailing `## comment` on any table line (content row or header separator) bubble
 
 ---
 
-### 4.9 ImageBlock
+### 4.9 EmbedBlock
 
 **Syntax:**
 
 ```
-![alt text](src) {attrs}
+https://example.com/watch?v=abc {attrs}
 ```
 
-A line at block level beginning with `![` is classified as an `ImageBlock`.
+A line at block level beginning with `https://` is an `EmbedBlock`. The match is literal and case-sensitive: `http://`, `HTTPS://`, and every other scheme leave the line a `Paragraph`.
 
 **AST type:**
 
 ```typescript
-interface ImageBlock {
-  _type: "ImageBlock"
-  alt: Inline[]
-  src: string
+interface EmbedBlock {
+  _type: "EmbedBlock"
+  url: string
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
-- See §5.9 for `ImageInline` syntax and parsing details. The same rules apply to `ImageBlock` alt text and src.
-- Consecutive `ImageBlock` lines with no blank line between them are wrapped in a `FileRefGroup { group: "image" }`.
-- `ImageBlock` is the block-level counterpart of `ImageInline` (§5). The difference is that `ImageBlock` must be the only one segment on the line.
-- **Only-segment fallback.** Phase 3 classification (§9.3) is provisional: it matches `^!\[`. If the line carries anything after the image, the only-segment requirement fails and the line falls back to a `Paragraph` containing an `ImageInline` followed by the remaining inline content. No content is dropped.
+- `url` runs from the `h` of `https://` to the end of the line, after removing one trailing attribute sequence (whitespace followed by one or more `{…}` groups that close the line) and then trailing whitespace. It is a raw string: Cutdown does not parse, validate, or fetch it. `{{key}}` interpolation tokens stay in it verbatim (§5.11).
+- A `url` longer than 1024 Unicode scalar values does not open an `EmbedBlock`; the line is a `Paragraph`.
+- What an embed shows is the consumer's decision — for example, resolving an oEmbed snippet at render time and placing it in the page.
+- An `EmbedBlock` never joins a `FileGroup` (§4.12), and an `EmbedBlock` line ends an open `FileGroup`. Consecutive `EmbedBlock` lines are separate blocks.
+- Like every block opener, `https://` cannot interrupt a paragraph (§10.1): a URL line glued to paragraph text is paragraph content.
+- **Opener escape:** `\https://…` at line start → `Paragraph([Text("https://…")])`. See §8.2.
+- **Supports caption line (§6.2).** A `^ text` line immediately after this line (no blank line) sets `caption` on this node.
 
 ```
-![a](b)                  → ImageBlock { alt: [Text("a")], src: "b" }
-![a](b) trailing text    → Paragraph([ImageInline(...), Text(" trailing text")])
+https://youtu.be/dQw4w9WgXcQ {.wide}
+^ The talk
+  → EmbedBlock { url: "https://youtu.be/dQw4w9WgXcQ", attributes: [{ key: "class", value: ["wide"] }], caption: [Text("The talk")] }
 ```
-
-  **Cascade to watch.** `Paragraph` is not captionable (§6.2), so a `^ ` line after the fallback has no captionable predecessor and becomes a `Paragraph` itself plus CDN-0008. One stray word after an image therefore demotes both the image *and* its caption to prose, with only the diagnostic to show for it.
-- **Supports caption line (§6.2).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. `ImageInline` does not support captions — it is not a block.
 
 ---
 
@@ -691,7 +691,7 @@ Illegal:
 
 ---
 
-### 4.11 FileRef
+### 4.11 FileBlock
 
 **Syntax:**
 
@@ -699,76 +699,67 @@ Illegal:
 /path/to.file {attrs}
 ```
 
-Any line beginning with `/` is a file reference block.
+A line at block level beginning with `/` is a `FileBlock`, unless it is an `InjectBlock` (§4.17).
 
 **AST type:**
 
 ```typescript
-interface FileRef {
-  _type: "FileRef"
-  path: string
-  fragment: string | ''
-  query: string | ''
+interface FileBlock {
+  _type: "FileBlock"
+  src: PathResourceLocator
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
 }
 ```
 
-- `path` starts with `/` (slash) and is a run of `PATH_LITERAL` characters (§1.2) extended with any other character that is not one of `<` `>` `:` `"` `\` `|` `*` `{` `}` or whitespace. The first space, when present, separates the path from `{attrs}`.
-- Fragment: everything from the first `#` (octothorpe) to the next space (or end of line, before `{attrs}`) is extracted as `fragment`. `src` stores the portion before `#`.
-- Query (`?`): if path contains `?`, the parser extracts the query string as `query`. `src` stores the portion before `?`.
-- `fragment` and `query` are mutually independent — either, both, or neither may be present. If absent, they are set to empty string `''` (not null).
-- A line containing only `/` is not a `FileRef`. The whole line is emitted as a `Paragraph` of literal text.
-- `group` is set automatically by file extension (see Known Groups below). Consumers may configure the extension lists.
+- `src` is a `PathResourceLocator` (§1.7). Its extent is the whole line from the leading `/`, after removing one trailing attribute sequence and then trailing whitespace (§1.7.1). Spaces inside the path are path content: `/My Docs/Q3 report.pdf` is one path.
+- A line holding only `/` is a `FileBlock` whose `src.raw` is `"/"`. What it refers to is the consumer's decision.
+- Cutdown assigns no media type and no group. A consumer that needs one inspects `src.path`.
+- A `FileBlock` never stands alone: it is always a child of a `FileGroup` (§4.12).
 - **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
-- **Supports caption line (§6.2).** A `^ text` line immediately after this line (no blank line) sets `caption: Inline[]` on this node. If the `FileRef` is part of an active `FileRefGroup`, the `^ ` line closes the group and binds to it instead (see §4.12).
-
-**Known Groups (defaults):**
-
-| Group   | Extensions |
-|---------|-----------|
-| `image` | `.png` `.jpg` `.jpeg` `.gif` `.webp` `.svg` |
-| `video` | `.mp4` `.avi` `.mov` |
-| `audio` | `.mp3` `.wav` `.aac` `.ogg` |
+- **Supports caption line (§6.2).** A `^ text` line immediately after this line (no blank line) sets `caption` on this `FileBlock`. The caption does not end the `FileGroup`.
 
 ---
 
-### 4.12 FileRefGroup
+### 4.12 FileGroup
 
-Consecutive `FileRef` or `ImageBlock` lines of the **same known group** with no blank line between them are automatically wrapped in a `FileRefGroup`. Not produced by explicit syntax — assembled during parsing.
+Consecutive `FileBlock` lines with no blank line between them form one `FileGroup`. It is not written explicitly; the parser assembles it, the way consecutive list items form a `List`.
 
 **AST type:**
 
 ```typescript
-interface FileRefGroup {
-  _type: "FileRefGroup"
-  group: "image" | "video" | "audio"
-  children: (FileRef | ImageBlock)[]
+interface FileGroup {
+  _type: "FileGroup"
+  children: FileBlock[]
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 
-- A blank line breaks any active group.
-- Different groups do not merge — two consecutive lines of different groups produce two separate `FileRefGroup` segments.
-- Unknown-extension files are never grouped.
-- **Supports caption line (§6.2).** A `^ text` line immediately after the last member of the group (no blank line) sets `caption: Inline[]` on the `FileRefGroup`. A `^ ` line mid-run closes the group at that point; the next `FileRef`/`ImageBlock` starts a new group.
+- Every `FileBlock` is inside a `FileGroup`. A single `FileBlock` line forms a `FileGroup` with one child.
+- A blank line ends the group. The next `FileBlock` line starts a new `FileGroup`.
+- Any line that is not a `FileBlock` line also ends the group — an `EmbedBlock` or `InjectBlock` line included — except a caption line and a trailing `{attrs}` line, which emit no block (§6.2). A standalone `## comment` line acts as a blank line and ends the group (§2.2).
+- A `## comment` on a `FileBlock` line goes to the `FileGroup`'s `reflection`, as a comment on a list item line goes to the `List` (§2.2). `FileBlock` has no `reflection` of its own.
+- The members need not be of one kind: `/a.png` and `/b.pdf` on consecutive lines share a group.
+- `FileGroup` takes no caption. Each member carries its own.
+- Attribute placement follows the scope-chain rule (§6.1.2).
 
 **Example:**
 
 ```
 Input:
   /photos/a.png
-  /photos/b.jpg
+  ^ First
   /docs/report.pdf
 
+  /photos/b.jpg
+
 AST:
-  FileRefGroup { group: "image" }
-  ├── FileRef { src: "/photos/a.png", group: "image" }
-  └── FileRef { src: "/photos/b.jpg", group: "image" }
-  FileRef { src: "/docs/report.pdf", group: null }
+  FileGroup
+  ├── FileBlock { src: { raw: "/photos/a.png", … }, caption: [Text("First")] }
+  └── FileBlock { src: { raw: "/docs/report.pdf", … } }
+  FileGroup
+  └── FileBlock { src: { raw: "/photos/b.jpg", … } }
 ```
 
 ---
@@ -950,6 +941,54 @@ AST:
   Paragraph([Text("intro paragraph")])
   CommentBlock { text: "draft note — revise before publish\n" }
   Paragraph([Text("next paragraph")])
+```
+
+---
+
+### 4.17 InjectBlock
+
+**Syntax:**
+
+```
+/chapters/intro.cutdown {attrs}
+/chapters/
+```
+
+A `FileBlock`-shaped line (a line at block level beginning with `/`) is an `InjectBlock` when the `path` of its locator ends with `.cutdown` or with `/`.
+
+**AST type:**
+
+```typescript
+interface InjectBlock {
+  _type: "InjectBlock"
+  src: PathResourceLocator
+  children: Block[]
+  attributes: Attribute[]
+  reflection: Reflection[]
+}
+```
+
+- `src` is parsed exactly as for `FileBlock` (§4.11, §1.7). The test looks at `src.path`, so a query or fragment does not hide it: `/card.cutdown?name=Ann` and `/intro.cutdown#setup` are `InjectBlock`s. The suffix `.cutdown` is matched case-sensitively.
+- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§1.7.5).
+- A line holding only `/` is a `FileBlock`, not an injection of the root folder.
+- The parser always emits `children: []`. Cutdown's parser does no I/O; a consumer that resolves the injection fills `children` as §17 defines. An `InjectBlock` that no consumer resolves stays in the AST unchanged.
+- `children` is a block scope (§1.6), and Sections never cross its edge (§17).
+- An `InjectBlock` never joins a `FileGroup`, and an `InjectBlock` line ends an open `FileGroup`.
+- `InjectBlock` is not captionable: a `^ ` line after it is orphaned (§6.2).
+- Legal wherever a `FileBlock` is: at Page scope and inside every block container.
+- **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`, as for `FileBlock`. See §8.2.
+
+**Example:**
+
+```
+Input:
+  == Setup
+  /parts/install.cutdown?arch=arm64#linux
+
+AST:
+  Section { level: 2, heading: [Text("Setup")], children: [
+    InjectBlock { src: { raw: "/parts/install.cutdown?arch=arm64#linux", path: "/parts/install.cutdown", query: [{ key: "arch", value: "arm64" }], fragment: "linux" }, children: [] }
+  ] }
 ```
 
 ---

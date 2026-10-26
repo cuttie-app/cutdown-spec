@@ -1,0 +1,19 @@
+id: injectblock-query
+section: "4.17"
+description: "The .cutdown test looks at path, so a query does not hide an injection; pairs are split for variable binding"
+
+input: |
+  /card.cutdown?name=Ann&plan=pro
+
+ast:
+  - _type: InjectBlock
+    src:
+      raw: /card.cutdown?name=Ann&plan=pro
+      path: /card.cutdown
+      query:
+        - key: name
+          value: Ann
+        - key: plan
+          value: pro
+      fragment: ''
+    children: []

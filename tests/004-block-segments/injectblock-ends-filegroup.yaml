@@ -1,0 +1,24 @@
+id: injectblock-ends-filegroup
+section: "4.17"
+description: "An InjectBlock line ends an open FileGroup and never joins one"
+
+input: |
+  /a.png
+  /part.cutdown
+  /b.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /a.png
+  - _type: InjectBlock
+    src:
+      path: /part.cutdown
+    children: []
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /b.png

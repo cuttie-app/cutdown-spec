@@ -1,0 +1,22 @@
+id: caption-fileblock-last-member
+section: "6.2"
+description: "A `^ ` line after the last member of a FileGroup sets caption on that FileBlock; FileGroup takes no caption"
+
+input: |
+  /photos/a.png
+  /photos/b.jpg
+  ^ The second photo
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/photos/a.png"
+        caption: []
+      - _type: FileBlock
+        src:
+          path: "/photos/b.jpg"
+        caption:
+          - _type: Text
+            value: "The second photo"

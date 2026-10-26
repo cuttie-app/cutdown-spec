@@ -1,0 +1,23 @@
+id: imageinline-alone-on-line-alt
+section: "5.9"
+description: ImageInline alt is parsed by inline rules, also when the image is alone on its line
+
+input: |
+  ![A __bold__ caption](photos/shot.jpg)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        alt:
+          - _type: Text
+            value: "A "
+          - _type: Emphasis
+            children:
+              - _type: Text
+                value: bold
+          - _type: Text
+            value: " caption"
+        src:
+          raw: photos/shot.jpg
+          path: photos/shot.jpg

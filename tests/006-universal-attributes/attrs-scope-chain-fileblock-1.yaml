@@ -1,0 +1,17 @@
+id: attrs-scope-chain-fileblock-1
+section: "6.1.2"
+description: "Single {} on a FileBlock line goes to its FileGroup"
+
+input: |
+  /img.png {.a}
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /img.png
+        attributes: []
+    attributes:
+      - key: class
+        value: [a]

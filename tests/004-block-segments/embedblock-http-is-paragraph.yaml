@@ -1,0 +1,12 @@
+id: embedblock-http-is-paragraph
+section: "4.9"
+description: "Only the literal https:// prefix opens an EmbedBlock; an http:// line stays a Paragraph"
+
+input: |
+  http://example.com/video
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "http://example.com/video"

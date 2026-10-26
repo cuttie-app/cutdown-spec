@@ -1,0 +1,30 @@
+id: caption-fileblock-does-not-split-group
+section: "6.2"
+description: "A `^ ` line between FileBlock lines binds to the FileBlock above it; the FileGroup continues"
+
+input: |
+  /photos/a.png
+  /photos/b.jpg
+  ^ Caption for b
+  /photos/c.png
+  ^ Caption for c
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/photos/a.png"
+        caption: []
+      - _type: FileBlock
+        src:
+          path: "/photos/b.jpg"
+        caption:
+          - _type: Text
+            value: "Caption for b"
+      - _type: FileBlock
+        src:
+          path: "/photos/c.png"
+        caption:
+          - _type: Text
+            value: "Caption for c"

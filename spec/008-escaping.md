@@ -34,7 +34,8 @@ Applies at **line start only** (after container-indent stripping, before the fir
 | List item (§4.7) | `- ` | `\- item` | `Paragraph([Text("- item")])` |
 | QuoteBlock (§4.6) | `> ` | `\> quoted` | `Paragraph([Text("> quoted")])` |
 | PageBreaker (§4.10) | `---` | `\---`, `-\--`, `--\-` | `Paragraph([Text("---")])` — top level only; no Page boundary occurs |
-| FileRef (§4.11) | `/path` | `\/path` | `Paragraph([Text("/path")])` |
+| FileBlock / InjectBlock (§4.11, §4.17) | `/path` | `\/path` | `Paragraph([Text("/path")])` |
+| EmbedBlock (§4.9) | `https://` | `\https://…` | `Paragraph([Text("https://…")])` |
 | CodeBlock (§4.4) | `` ``` `` | `` \``` ``, `` `\`` ``, `` ``\` `` | Paragraph; residual backticks still feed inline parsing |
 | Meta (§4.3) | `~~~` | `\~~~`, `~\~~`, `~~\~` | `Paragraph([Text("~~~")])` |
 | MathBlock (§4.5) | `$$$` | `\$$$`, `$\$$`, `$$\$` | `Paragraph([Text("$$$")])` |
@@ -74,5 +75,11 @@ Opaque containers (whose content is captured verbatim) admit a single **narrow e
 - **MathBlock carve-out:** no escape is processed because LaTeX assigns its own meaning to backslash. The trade-off is that a literal `$$$` line inside a MathBlock body is unsupported — wrap such content in a `CodeBlock` or split the math.
 - **NamedBlock** (`:::`) and **SpoilerBlock** (`^^^`) are not opaque — their children are parsed as blocks. To prevent a content line from being read as the container's closer, use the same escape mechanic as §8.2: a `\` before any one of the three fence chars at line start (e.g., `\:::`, `:\::`, `::\:` for NamedBlock; `\^^^`, `^\^^`, `^^\^` for SpoilerBlock). The line becomes a Paragraph containing the literal fence chars.
 - No diagnostic is emitted for closer escapes.
+
+---
+
+### 8.4 Escapes in Paths and String Properties
+
+A `PathResourceLocator` (§1.7) has its own escape table, defined once in §1.7.2: `\\`, the brackets, and `\?` `\#` `\&` `\=` resolve to the literal character, so a path can hold a `)` or a `?` without ending or splitting.
 
 ---

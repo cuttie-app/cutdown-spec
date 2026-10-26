@@ -1,0 +1,24 @@
+id: filegroup-blank-line-splits
+section: "4.12"
+description: "A blank line ends a FileGroup; the next FileBlock line starts a new one"
+
+input: |
+  /a.png
+  /b.png
+
+  /c.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /a.png
+      - _type: FileBlock
+        src:
+          path: /b.png
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: /c.png

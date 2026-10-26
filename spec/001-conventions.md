@@ -34,13 +34,15 @@ ID_LITERAL = [a-zA-Z0-9._-]
 
 This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only. Matching against `ID_LITERAL` is case-sensitive everywhere in this specification.
 
-`PATH_LITERAL` extends `ID_LITERAL` with the forward-slash character:
+`TAG_LITERAL` is the character class of one tag level in a tag link target (§5.5):
 
 ```
-PATH_LITERAL = [a-zA-Z0-9._/-]
+TAG_LITERAL = any Unicode scalar value except # (octothorpe), / (slash), ] (right bracket), and the line terminator
 ```
 
-`PATH_LITERAL` is used for path-like values: page link targets, tag link targets, and file reference paths.
+A tag target is `#` followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters.
+
+Paths are not identifiers. They are parsed as a `PathResourceLocator` (§1.7).
 
 ### 1.3 Segment
 
@@ -61,16 +63,16 @@ Block =
     | QuoteBlock
     | List
     | Table
-    | ImageBlock
-    | FileRef
-    | FileRefGroup
+    | FileGroup
+    | EmbedBlock
+    | InjectBlock
     | NamedBlock
     | SpoilerBlock
     | CommentBlock
     | RefDefinition
 ```
 
-Container blocks carry a `children` array — `Block[]` for block containers (`Section`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`), `Inline[]` for blocks whose content is inline (`Paragraph`, `RefDefinition`). Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
+Container blocks carry a `children` array — `Block[]` for block containers (`Section`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `InjectBlock`), `Inline[]` for blocks whose content is inline (`Paragraph`, `RefDefinition`), and `FileBlock[]` for `FileGroup`. A `FileBlock` is not a member of `Block`: it only ever appears inside a `FileGroup`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
 
 ### 1.5 Inline Type
 
@@ -102,5 +104,89 @@ Wherever an AST node carries `Inline[]`, the content was produced by the inline 
 A **block scope** is one flat sequence of sibling blocks. A document has one block scope at its root, and one inside the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
 
 A rule described as resolved *within the current block scope* looks only at that sequence and never past its container boundary. This applies to reflection attachment (§2.2), caption binding (§6.2), and the sectionization fold (§9.5.1).
+
+`InjectBlock.children` is a block scope as well, though the parser always emits it empty: a consumer fills it (§17).
+
+### 1.7 PathResourceLocator
+
+A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). This section is the only definition of how a path is parsed; those sections state only where their path ends.
+
+```typescript
+interface PathResourceLocator {
+  raw: string                // the path as written, escapes resolved (§1.7.2)
+  path: string               // raw up to the first unescaped ? or #
+  query: QueryParam[]        // pairs after ?, up to the first unescaped #
+  fragment: string           // everything after the first unescaped #
+}
+
+interface QueryParam {
+  key: string
+  value: string
+}
+```
+
+Cutdown reads three characters as structure inside a path: `/` (slash) separates folders, `?` (question mark) opens the query, and `#` (octothorpe) opens the fragment. Within the query, `&` (ampersand) separates pairs and the first `=` (equals sign) of a pair separates key from value.
+
+#### 1.7.1 Extent
+
+The construct that owns the path decides where it ends:
+
+| Owner | The path runs from | to |
+|---|---|---|
+| `FileBlock`, `InjectBlock` (a line beginning `/`) | the leading `/` | the end of the line, after removing one trailing attribute sequence — whitespace followed by one or more `{…}` groups that close the line — and then trailing whitespace |
+| `ImageInline` `(…)` | the character after `(` | the first unbalanced `)` |
+| `Link` page target `[…]` | the character after `[` | the first unbalanced `]` |
+
+Brackets nest inside every path. A `(` or `[` opens a pair, and the closer that matches it is path content, not the end of the path: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. Parentheses and square brackets are counted separately. Escaped brackets are not counted.
+
+A `{…}` group belongs to the attribute sequence only when the sequence is preceded by whitespace and closes the line. `/a {draft}.png` and `/a/{draft}` are paths without attributes.
+
+#### 1.7.2 Characters and escapes
+
+A path may contain any Unicode scalar value, the space included. A backslash escapes the next character:
+
+| Written | `raw` holds | Effect |
+|---|---|---|
+| `\\` | `\` | a literal backslash |
+| `\(` `\)` `\[` `\]` | the bracket | not counted for nesting, never ends the path |
+| `\?` `\#` `\&` `\=` | the character | no query, fragment, or pair boundary |
+| `\{{` | `\{{`, unchanged | an escaped interpolation token, resolved by the consumer (§5.11) |
+| `\` before any other character | both characters | none |
+
+#### 1.7.3 Decomposition
+
+1. `raw` is the extent with escapes resolved. In a `FileBlock` or `InjectBlock` line, leading and trailing whitespace is removed first.
+2. `path` is `raw` up to the first unescaped `?` or `#`, or all of `raw` if neither occurs.
+3. If an unescaped `?` comes first, the query text runs from after it to the first unescaped `#` or the end. It is split on `&`; each part is split at its first `=` into `key` and `value`. A part with no `=` has `value: ''`. Empty parts (`a&&b`) produce no pair. Pairs keep source order, and repeated keys are all kept. Nothing is percent-decoded: `%20` stays `%20`. At most 32 pairs are kept; any further pairs are dropped without a diagnostic.
+4. `fragment` is everything after the first unescaped `#`. A `?` after the `#` is fragment content.
+
+Absent parts are empty: `query: []`, `fragment: ''`.
+
+```
+/My Docs/Q3 report.pdf         → { raw: "/My Docs/Q3 report.pdf", path: "/My Docs/Q3 report.pdf", query: [], fragment: "" }
+/data.csv?sheet=2&range=A1:D9  → { path: "/data.csv", query: [{key:"sheet",value:"2"}, {key:"range",value:"A1:D9"}], fragment: "" }
+/video.mp4#t=30,45             → { path: "/video.mp4", query: [], fragment: "t=30,45" }
+/card.cutdown?name=Ann&flag    → { path: "/card.cutdown", query: [{key:"name",value:"Ann"}, {key:"flag",value:""}], fragment: "" }
+```
+
+#### 1.7.4 Base
+
+A path whose `raw` begins with `/` is **root-relative**: the root is supplied by the consumer. Any other path is relative to the document that contains it. Cutdown resolves no path; it only fixes how a path is read.
+
+A path whose `raw` begins with `https://` is a **URL**. It is decomposed by the same steps, but the base rule above and the validity rules below do not apply to it.
+
+#### 1.7.5 Validity
+
+A path is **invalid** when any of these holds:
+
+- `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
+- `raw` is longer than 1024 Unicode scalar values;
+- `path` contains an empty segment (`a//b`);
+- `path` is root-relative and a `..` segment climbs above the root (`/../x`);
+- `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17).
+
+An invalid path does not change the parse. The owning node is emitted as usual, its locator keeps `raw` and has `path: ''`, `query: []`, `fragment: ''`, and warning CDN-0032 is emitted.
+
+An empty path is valid. `[text][]` produces `{ raw: "", path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
 
 ---

@@ -1,0 +1,15 @@
+id: injectblock-fragment
+section: "4.17"
+description: A .cutdown path is an InjectBlock even with a fragment; the fragment is split off and children are empty
+
+input: |
+  /path/to/page.cutdown#section-id
+
+ast:
+  - _type: InjectBlock
+    src:
+      raw: /path/to/page.cutdown#section-id
+      path: /path/to/page.cutdown
+      query: []
+      fragment: section-id
+    children: []

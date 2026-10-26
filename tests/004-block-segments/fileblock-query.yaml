@@ -1,0 +1,22 @@
+id: fileblock-query
+section: "1.7.3"
+description: A query is split into key/value pairs in source order; a part without = has an empty value; nothing is decoded
+
+input: |
+  /path/to/file.ext?q=value&flag&q=a%20b
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          raw: /path/to/file.ext?q=value&flag&q=a%20b
+          path: /path/to/file.ext
+          query:
+            - key: q
+              value: value
+            - key: flag
+              value: ''
+            - key: q
+              value: a%20b
+          fragment: ''

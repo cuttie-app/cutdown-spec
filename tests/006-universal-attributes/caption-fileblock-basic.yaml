@@ -1,0 +1,17 @@
+id: caption-fileblock-basic
+section: "6.2"
+description: "A `^ ` line immediately after a FileBlock sets caption on that FileBlock, inside its one-member FileGroup"
+
+input: |
+  /docs/report.pdf
+  ^ Annual report, 2025
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          path: "/docs/report.pdf"
+        caption:
+          - _type: Text
+            value: "Annual report, 2025"

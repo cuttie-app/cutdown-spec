@@ -37,8 +37,8 @@ Each block candidate is classified by its first line:
 | `^\$\$\$` | MathBlock |
 | `^\^\^\^` | SpoilerBlock |
 | `^###` | CommentBlock |
-| `^/` | FileRef |
-| `^!\[` | ImageBlock — provisional; falls back to Paragraph if the image is not the only segment on the line (§4.9) |
+| `^/` | InjectBlock when the locator's `path` ends with `.cutdown` or `/` (§4.17); otherwise FileBlock, grouped into a FileGroup (§4.11, §4.12) |
+| `^https://` | EmbedBlock (§4.9) |
 | (anything else) | Paragraph |
 
 ### 9.4 Phase 4 — Inline Parsing

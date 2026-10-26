@@ -1,0 +1,14 @@
+id: link-page-balanced-brackets
+section: "1.7.1"
+description: "Balanced square brackets stay in a page path; the first unbalanced ] ends it"
+
+input: |
+  [x][notes [draft]]
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        path:
+          raw: "notes [draft]"

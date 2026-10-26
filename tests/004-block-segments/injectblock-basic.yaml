@@ -1,0 +1,17 @@
+id: injectblock-basic
+section: "4.17"
+description: "A / line whose path ends with .cutdown is an InjectBlock; the parser emits empty children and no FileGroup"
+
+input: |
+  /chapters/intro.cutdown
+
+ast:
+  - _type: InjectBlock
+    src:
+      raw: /chapters/intro.cutdown
+      path: /chapters/intro.cutdown
+      query: []
+      fragment: ''
+    children: []
+    attributes: []
+    reflection: []

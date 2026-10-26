@@ -4,7 +4,7 @@ description: "Caption binding is scope-local: a `^ ` inside a NamedBlock binds t
 
 input: |
   :::figure
-    ![alt](photo.jpg)
+    /photo.jpg
     ^ Inner image caption
   :::
   ^ Named block caption
@@ -16,11 +16,11 @@ ast:
       - _type: Text
         value: "Named block caption"
     children:
-      - _type: ImageBlock
-        alt:
-          - _type: Text
-            value: alt
-        src: "photo.jpg"
-        caption:
-          - _type: Text
-            value: "Inner image caption"
+      - _type: FileGroup
+        children:
+          - _type: FileBlock
+            src:
+              path: "/photo.jpg"
+            caption:
+              - _type: Text
+                value: "Inner image caption"

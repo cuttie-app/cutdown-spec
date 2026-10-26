@@ -1,0 +1,18 @@
+id: imageinline-url-src
+section: "1.7.4"
+description: "An https:// src is a URL: it is decomposed but never invalid, so the // after the scheme emits no diagnostic"
+
+input: |
+  ![logo](https://cdn.example.com/a.png?w=2#top)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        src:
+          raw: "https://cdn.example.com/a.png?w=2#top"
+          path: "https://cdn.example.com/a.png"
+          query:
+            - key: w
+              value: "2"
+          fragment: top

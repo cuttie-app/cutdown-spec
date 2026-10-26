@@ -1,6 +1,6 @@
-id: escape-fileref-opener
+id: escape-fileblock-opener
 section: "8.2"
-description: "`\\/path` at line start suppresses FileRef; line becomes Paragraph"
+description: "`\\/path` at line start suppresses FileBlock; line becomes Paragraph"
 
 input: |
   \/photos/a.png

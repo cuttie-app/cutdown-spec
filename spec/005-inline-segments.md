@@ -12,7 +12,6 @@ The `##` opener (§2.2) is special: it has no closer and terminates at end-of-li
 | Paragraph content | §4      |
 | List item and task item content | §4      |
 | Table cell content | §4      |
-| `alt` slot of `ImageBlock` | §4      |
 | `alt` slot of `ImageInline` | §5      |
 | `Caption` content | §6      |
 | `RefDefinition` content | §4      |
@@ -136,8 +135,9 @@ interface Link {
   _type: "Link"
   kind: "external" | "page" | "tag" | "ref" | "cite"
   children: Inline[]
-  href: string            // for kind: "external", otherwise empty string
-  target: string          // for kind: "page" | "tag" | "ref" | "cite", otherwise empty string
+  href: string                // kind "external"; otherwise ''
+  path: PathResourceLocator   // kind "page"; otherwise every part empty
+  target: string              // kind "tag" | "ref" | "cite"; otherwise ''
   attributes: Attribute[]
 }
 ```
@@ -145,27 +145,34 @@ interface Link {
 | Syntax | Kind | Field |
 |--------|------|-------|
 | `[text](url)` | `"external"` | `href` |
-| `[text][path/to/page]` | `"page"` | `target` |
+| `[text][path/to/page]` | `"page"` | `path` |
 | `[text][#tag/path]` | `"tag"` | `target` |
 | `[text][^ref-id]` | `"ref"` | `target` |
 | `[text][@cite-id]` | `"cite"` | `target` |
 
 - `text` is **parsed by inline rules**. May be empty.
-- `href` / `target` may be empty strings — both are valid and preserved.
-- Page target uses `PATH_LITERAL` characters. Tag target: `#` (octothorpe) + `PATH_LITERAL`. Ref target: `^` (caret) + `ID_LITERAL`. Cite target: `@` + any characters other than `]` (right bracket).
+- An unused locator has every part empty: `{ raw: "", path: "", query: [], fragment: "" }`.
+- **Page target:** a `PathResourceLocator` (§1.7), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
+- **Tag target:** `#` followed by one or more `TAG_LITERAL` levels separated by `/` (§1.2): `[x][#Ціни/2026 Q1]` → `target: "Ціни/2026 Q1"`. The leading `#` is a sigil and is consumed.
+- **Ref target:** `^` (caret) + `ID_LITERAL`. **Cite target:** `@` + any characters other than `]` (right bracket).
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
-- Cutdown does not validate link resolution. That is the consumer's responsibility.
+- Cutdown does not resolve links. Whether a target exists is the consumer's concern.
 - Cutdown does NOT validate URL syntax and URL schema. Consumers may choose to validate or sanitize `href` values.
+
+**Invalid targets.** The parser checks only what it can see in the source:
+
+- An invalid page path (§1.7.5) keeps the `Link` with `path.raw` as written and the other parts empty, and emits warning CDN-0032.
+- A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
 
 **Edge cases:**
 
 ```
-[][target]    → Link { kind: "page", children: [], target: "target" }
-[][]          → Link { kind: "page", children: [], target: "" }
+[][target]    → Link { kind: "page", children: [], path: { raw: "target", path: "target", query: [], fragment: "" } }
+[][]          → Link { kind: "page", children: [], path: { raw: "", path: "", query: [], fragment: "" } }
 []()          → Link { kind: "external", children: [], href: "" }
 ```
 
-All cases above are valid and preserved. Consumers may choose to warn about empty targets or hrefs.
+All cases above are valid and preserved. What an empty target refers to is the consumer's decision.
 
 #### Link types and meaning
 
@@ -186,7 +193,7 @@ Sample text with a reference to [the API][^api-doc] and [the API table][^api-tab
 
 Citation links `[text][@cite-id]` are for linking to a bibliography entry or similar **external reference**. The `target` field contains the citation ID, which consumers can resolve according to their internal citation logic.
 
-Page links `[text][path/to/page]` are for linking to other pages within the same site or system. The `target` field contains the page path, which consumers can resolve according to their internal routing logic. Nevertheless, the client may choose to validate the `target` against a whitelist of allowed page paths and/or emit a warning for suspicious targets.
+Page links `[text][path/to/page]` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x][guide/intro]` and `[x][guide/intro.cutdown]` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names a Section `id` in the target document. A trailing `/` is not a folder index; it makes the path invalid (§1.7.5). The base of a relative path is defined in §1.7.4.
 
 ---
 
@@ -296,16 +303,16 @@ interface QuoteInline {
 interface ImageInline {
   _type: "ImageInline"
   alt: Inline[]
-  src: string
+  src: PathResourceLocator
   attributes: Attribute[]
 }
 ```
 
 - `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
-- `src` is a raw string. No URL validation or sanitization by Cutdown; consumers may choose to validate/sanitize as needed. `src` may be empty.
-- `![]()` is valid and preserved as `ImageInline { alt: [], src: "" }`.
-- **Captions:** `ImageInline` does **not** participate in the caption line (§6.2) — it is not a block. Only `ImageBlock` (§4.9) is captionable.
-- **ImageInline vs ImageBlock (§4.9):** a line at block level beginning with `![` is classified as an `ImageBlock`, and an `ImageBlock` must be the only segment on its line. An image anywhere else — mid-line, or on a line carrying other content — is an `ImageInline`. See §4.9.
+- `src` is a `PathResourceLocator` (§1.7), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. A `src` beginning with `https://` is a URL (§1.7.4): `![logo](https://cdn.example.com/a.png)` is decomposed but never invalid. An invalid path keeps the node, empties the locator's parts, and emits CDN-0032. `src` may be empty.
+- `![]()` is valid and preserved as `ImageInline { alt: [], src: { raw: "", path: "", query: [], fragment: "" } }`.
+- `ImageInline` is the only image construct. An image alone on a line is still inline content: `![a](b)` → `Paragraph([ImageInline(...)])`. A local image that needs a caption or a gallery is written as a `FileBlock` (§4.11).
+- **Captions:** `ImageInline` does **not** participate in the caption line (§6.2) — it is not a block.
 
 ---
 
