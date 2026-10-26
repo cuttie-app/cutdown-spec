@@ -8,13 +8,13 @@ input: |
   Body
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: Title
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Body

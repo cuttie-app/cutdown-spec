@@ -10,9 +10,9 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: note
     children:
-      - type: CodeBlock
+      - _type: CodeBlock
         language: js
         raw: const x = 1

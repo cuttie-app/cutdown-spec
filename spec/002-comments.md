@@ -89,7 +89,7 @@ Input:
   ## note with no preceding block
 
 AST:
-  - type: Paragraph
+  - _type: Paragraph
     children: []
     reflection:
       - loc: { start: 3, end: 31 }
@@ -120,7 +120,7 @@ all captured as a single opaque string
 
 ```typescript
 interface CommentBlock {
-  type: "CommentBlock"
+  _type: "CommentBlock"
   text: string  // content between opener and closer; lines joined with `\n`; single trailing `\n`
 }
 ```

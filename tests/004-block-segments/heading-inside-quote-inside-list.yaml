@@ -6,16 +6,16 @@ input: |
   - > = Heading item
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: false
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: QuoteBlock
+          - _type: QuoteBlock
             children:
-              - type: Section
+              - _type: Section
                 level: 1
                 heading:
-                  - type: Text
+                  - _type: Text
                     value: Heading item

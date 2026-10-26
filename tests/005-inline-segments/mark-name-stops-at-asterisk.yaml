@@ -6,13 +6,13 @@ input: |
   ::a**b**::
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "::a"
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: "b"
-      - type: Text
+      - _type: Text
         value: "::"

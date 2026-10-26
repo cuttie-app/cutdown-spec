@@ -6,17 +6,17 @@ input: |
   [a __b__ c](url)
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: external
         href: url
         children:
-          - type: Text
+          - _type: Text
             value: "a "
-          - type: Emphasis
+          - _type: Emphasis
             children:
-              - type: Text
+              - _type: Text
                 value: b
-          - type: Text
+          - _type: Text
             value: " c"

@@ -10,27 +10,27 @@ input: |
   ^ Second group caption
 
 ast:
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: image
     caption:
-      - type: Text
+      - _type: Text
         value: "First group caption"
     children:
-      - type: FileRef
+      - _type: FileRef
         path: "/photos/a.png"
         fragment: ""
         query: ""
-      - type: FileRef
+      - _type: FileRef
         path: "/photos/b.jpg"
         fragment: ""
         query: ""
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: image
     caption:
-      - type: Text
+      - _type: Text
         value: "Second group caption"
     children:
-      - type: FileRef
+      - _type: FileRef
         path: "/photos/c.png"
         fragment: ""
         query: ""

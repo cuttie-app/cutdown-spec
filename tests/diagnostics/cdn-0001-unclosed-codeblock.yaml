@@ -5,7 +5,7 @@ description: "Unclosed ``` fence; content runs to end of document; CDN-0001 warn
 input: "```python\nx = 1\n"
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: python
     raw: x = 1
 

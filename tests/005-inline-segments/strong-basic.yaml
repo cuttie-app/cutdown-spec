@@ -6,9 +6,9 @@ input: |
   **strong**
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: strong

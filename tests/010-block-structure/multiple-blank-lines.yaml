@@ -5,11 +5,11 @@ description: Multiple consecutive blank lines are treated as a single block sepa
 input: "Para one\n\n\n\nPara two\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Para one
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Para two

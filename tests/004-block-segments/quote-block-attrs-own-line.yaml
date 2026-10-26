@@ -14,29 +14,29 @@ input: |
   {.callout}
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: "{.callout}content 1"
 
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: content 2
     attributes:
       - key: class
         value:
           - callout
 
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: content 3
     attributes:
       - key: class

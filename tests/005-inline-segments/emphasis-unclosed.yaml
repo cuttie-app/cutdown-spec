@@ -6,7 +6,7 @@ input: |
   __ text
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "__ text"

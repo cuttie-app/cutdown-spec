@@ -5,7 +5,7 @@ description: "Escaped triple-backtick at line start does not open CodeBlock; res
 input: "\\`\\`\\` three literal backticks\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "``` three literal backticks"

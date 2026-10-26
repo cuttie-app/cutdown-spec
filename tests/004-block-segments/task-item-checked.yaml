@@ -7,18 +7,18 @@ input: |
   - [X] Also checked
 
 ast:
-  - type: List
+  - _type: List
     kind: "checklist"
     start: null
     loose: false
     children:
-      - type: TaskItem
+      - _type: TaskItem
         checked: true
         children:
-          - type: Text
+          - _type: Text
             value: Write spec
-      - type: TaskItem
+      - _type: TaskItem
         checked: true
         children:
-          - type: Text
+          - _type: Text
             value: Also checked

@@ -46,6 +46,8 @@ PATH_LITERAL = [a-zA-Z0-9._/-]
 
 A **segment** is any node in the Cutdown AST — Block or Inline. This term is used throughout the spec when no distinction between block and inline is needed.
 
+Every segment names its kind in the `_type` property. Property names that begin with `_` (low line) are reserved for structural properties defined by this specification; content properties (`src`, `name`, `children`, `attributes`, …) never begin with `_`. The prefix keeps the discriminator from colliding with a property of the same name in consumer data.
+
 ### 1.4 Block Type
 
 A **Block** segment is any node that occupies a full line-level slot in the document.

@@ -8,15 +8,15 @@ input: |
   > paragraph
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Section
+      - _type: Section
         level: 1
         heading:
-          - type: Text
+          - _type: Text
             value: Heading inside quote
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: paragraph

@@ -6,11 +6,11 @@ input: |
   [About][about/intro]
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: page
         target: about/intro
         children:
-          - type: Text
+          - _type: Text
             value: About

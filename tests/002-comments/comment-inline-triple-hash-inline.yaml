@@ -6,9 +6,9 @@ input: |
   text ### inline triple
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "text "
     reflection:
       - loc: { start: 7, end: 22 }

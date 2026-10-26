@@ -6,10 +6,10 @@ input: |
   /img.png {.a}{}
 
 ast:
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: image
     children:
-      - type: FileRef
+      - _type: FileRef
         path: /img.png
         query: ''
         fragment: ''

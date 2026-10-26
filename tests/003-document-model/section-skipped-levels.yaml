@@ -14,29 +14,29 @@ input: |
   Mid content.
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: Top
     children:
-      - type: Section
+      - _type: Section
         level: 3
         heading:
-          - type: Text
+          - _type: Text
             value: Deep
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: Deep content.
-      - type: Section
+      - _type: Section
         level: 2
         heading:
-          - type: Text
+          - _type: Text
             value: Mid
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: Mid content.

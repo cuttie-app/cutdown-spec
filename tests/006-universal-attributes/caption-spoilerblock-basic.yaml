@@ -9,16 +9,16 @@ input: |
   ^ Spoiler for __The Mystery at Thornfield__
 
 ast:
-  - type: SpoilerBlock
+  - _type: SpoilerBlock
     caption:
-      - type: Text
+      - _type: Text
         value: "Spoiler for "
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: "The Mystery at Thornfield"
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: "Plot twist: the butler did it."

@@ -5,11 +5,11 @@ description: "An unclosed symmetric delimiter is literal at EOF, then becomes St
 input: "**draft**"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: draft
 
 streaming:
@@ -20,15 +20,15 @@ streaming:
       diagnostics: []
     - at: 2
       ast:
-        - type: Paragraph
+        - _type: Paragraph
           children:
-            - type: Text
+            - _type: Text
               value: "**"
       diagnostics: []
     - at: 7
       ast:
-        - type: Paragraph
+        - _type: Paragraph
           children:
-            - type: Text
+            - _type: Text
               value: "**draft"
       diagnostics: []

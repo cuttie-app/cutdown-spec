@@ -10,23 +10,23 @@ input: |
     paragraph
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: true
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: intro
-          - type: Section
+          - _type: Section
             level: 1
             heading:
-              - type: Text
+              - _type: Text
                 value: Inner Section
             children:
-              - type: Paragraph
+              - _type: Paragraph
                 children:
-                  - type: Text
+                  - _type: Text
                     value: paragraph

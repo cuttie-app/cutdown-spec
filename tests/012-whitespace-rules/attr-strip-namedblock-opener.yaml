@@ -8,13 +8,13 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: note
     attributes:
       - key: class
         value: [warn]
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: content

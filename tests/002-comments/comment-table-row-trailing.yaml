@@ -6,18 +6,18 @@ input: |
   | AA | BB | ## what is this?
 
 ast:
-  - type: Table
+  - _type: Table
     reflection:
       - loc: { start: 15, end: 28 }
         text: "what is this?"
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "AA"
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "BB"

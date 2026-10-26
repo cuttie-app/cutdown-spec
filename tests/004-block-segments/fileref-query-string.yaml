@@ -6,7 +6,7 @@ input: |
   /path/to/file.ext?q=value
 
 ast:
-  - type: FileRef
+  - _type: FileRef
     path: /path/to/file.ext?q=value
     query: '?q=value'
     fragment: ''

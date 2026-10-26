@@ -7,10 +7,10 @@ input: |
   second line
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: First line
-      - type: LineBreak
-      - type: Text
+      - _type: LineBreak
+      - _type: Text
         value: second line

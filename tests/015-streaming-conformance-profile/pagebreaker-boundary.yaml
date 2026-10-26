@@ -6,14 +6,14 @@ input: "First\n\n---\n\nSecond"
 
 pages:
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: First
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Second
 
 streaming:
@@ -22,38 +22,38 @@ streaming:
     - at: 5
       pages:
         - children:
-            - type: Paragraph
+            - _type: Paragraph
               children:
-                - type: Text
+                - _type: Text
                   value: First
       diagnostics: []
     - at: 9
       pages:
         - children:
-            - type: Paragraph
+            - _type: Paragraph
               children:
-                - type: Text
+                - _type: Text
                   value: First
-            - type: Paragraph
+            - _type: Paragraph
               children:
-                - type: Text
+                - _type: Text
                   value: "--"
       diagnostics: []
     - at: 10
       pages:
         - children:
-            - type: Paragraph
+            - _type: Paragraph
               children:
-                - type: Text
+                - _type: Text
                   value: First
         - {}
       diagnostics: []
     - at: 12
       pages:
         - children:
-            - type: Paragraph
+            - _type: Paragraph
               children:
-                - type: Text
+                - _type: Text
                   value: First
         - {}
       diagnostics: []

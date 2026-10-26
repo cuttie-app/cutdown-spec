@@ -6,24 +6,24 @@ input: |
   | A | B | |
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: A
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: B
-          - type: Cell
+          - _type: Cell
             children: []
     columns:
-      - type: Column
+      - _type: Column
         align: start
-      - type: Column
+      - _type: Column
         align: start
-      - type: Column
+      - _type: Column
         align: start

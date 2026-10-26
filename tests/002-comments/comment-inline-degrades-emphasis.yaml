@@ -6,9 +6,9 @@ input: |
   __bold ## tail
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "__bold "
     reflection:
       - loc: { start: 10, end: 14 }

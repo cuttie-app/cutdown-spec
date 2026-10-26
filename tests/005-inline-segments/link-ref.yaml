@@ -6,11 +6,11 @@ input: |
   [note text][^note-id]
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: ref
         target: note-id
         children:
-          - type: Text
+          - _type: Text
             value: note text

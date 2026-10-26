@@ -6,13 +6,13 @@ input: |
   aa__bb__cc
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: aa
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: bb
-      - type: Text
+      - _type: Text
         value: cc

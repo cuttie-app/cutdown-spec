@@ -10,7 +10,7 @@ input: |
 
 pages:
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: doc\n## yaml comment, not Cutdown\n"
     children: []

@@ -5,10 +5,10 @@ description: Backslash as last character of a line produces a LineBreak node
 input: "line one\\\nline two\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: line one
-      - type: LineBreak
-      - type: Text
+      - _type: LineBreak
+      - _type: Text
         value: line two

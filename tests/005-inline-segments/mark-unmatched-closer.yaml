@@ -6,10 +6,10 @@ input: |
   ::a::b ::
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Mark
+      - _type: Mark
         name: a
         children: []
-      - type: Text
+      - _type: Text
         value: "b ::"

@@ -6,6 +6,6 @@ input: |
   ____
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis

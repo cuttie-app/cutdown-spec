@@ -6,8 +6,8 @@ input: |
   ::a__b__::
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Mark
+      - _type: Mark
         name: a__b__
         children: []

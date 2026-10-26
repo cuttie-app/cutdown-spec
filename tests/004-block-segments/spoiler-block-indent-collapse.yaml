@@ -9,11 +9,11 @@ input: |
   ^^^
 
 ast:
-  - type: SpoilerBlock
+  - _type: SpoilerBlock
     children:
-      - type: QuoteBlock
+      - _type: QuoteBlock
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: qaqb

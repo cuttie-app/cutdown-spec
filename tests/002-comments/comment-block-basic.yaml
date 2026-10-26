@@ -9,5 +9,5 @@ input: |
   ###
 
 ast:
-  - type: CommentBlock
+  - _type: CommentBlock
     text: "draft note\nTODO: revise\n"

@@ -8,19 +8,19 @@ input: |
 diagnostics: []
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: AA
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Strong
+              - _type: Strong
                 children:
-                  - type: Text
+                  - _type: Text
                     value: BB
                 attributes:
                   - key: class

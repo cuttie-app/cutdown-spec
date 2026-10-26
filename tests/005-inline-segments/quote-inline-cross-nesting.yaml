@@ -6,13 +6,13 @@ input: |
   ""'' inner ''""
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: QuoteInline
+      - _type: QuoteInline
         kind: double
         children:
-          - type: QuoteInline
+          - _type: QuoteInline
             kind: single
             children:
-              - type: Text
+              - _type: Text
                 value: inner

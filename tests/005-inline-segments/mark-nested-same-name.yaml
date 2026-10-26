@@ -6,14 +6,14 @@ input: |
   ::a ::a ::a ::::::
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Mark
+      - _type: Mark
         name: a
         children:
-          - type: Mark
+          - _type: Mark
             name: a
             children:
-              - type: Mark
+              - _type: Mark
                 name: a
                 children: []

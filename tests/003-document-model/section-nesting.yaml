@@ -12,23 +12,23 @@ input: |
   Content A.
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: Title
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Some paragraph.
-      - type: Section
+      - _type: Section
         level: 2
         heading:
-          - type: Text
+          - _type: Text
             value: Sub A
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: Content A.

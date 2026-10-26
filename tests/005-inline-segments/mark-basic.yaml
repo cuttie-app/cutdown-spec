@@ -6,14 +6,14 @@ input: |
   Hello ::marker world:: end
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Hello "
-      - type: Mark
+      - _type: Mark
         name: marker
         children:
-          - type: Text
+          - _type: Text
             value: "world"
-      - type: Text
+      - _type: Text
         value: " end"

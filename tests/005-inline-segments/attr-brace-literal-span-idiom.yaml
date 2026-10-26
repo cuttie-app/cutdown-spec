@@ -6,7 +6,7 @@ input: |
   {a **b**}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "{a **b**}"

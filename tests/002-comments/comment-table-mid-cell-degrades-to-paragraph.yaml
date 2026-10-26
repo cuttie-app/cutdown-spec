@@ -6,9 +6,9 @@ input: |
   | Head ## comment | Next |
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "| Head "
     reflection:
       - loc: { start: 10, end: 26 }

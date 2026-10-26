@@ -7,21 +7,21 @@ input: |
   ^ Photo by __Jane Doe__, **2025**
 
 ast:
-  - type: ImageBlock
+  - _type: ImageBlock
     alt:
-      - type: Text
+      - _type: Text
         value: alt
     src: "photo.jpg"
     caption:
-      - type: Text
+      - _type: Text
         value: "Photo by "
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: "Jane Doe"
-      - type: Text
+      - _type: Text
         value: ", "
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: "2025"

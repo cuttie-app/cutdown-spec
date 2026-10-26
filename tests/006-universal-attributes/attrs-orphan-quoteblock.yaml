@@ -8,18 +8,18 @@ input: |
   > content {.class}
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: "{.class} content"
 
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: content
     attributes:
       - key: class

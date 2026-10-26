@@ -9,11 +9,11 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: note
     children:
-      - type: Section
+      - _type: Section
         level: 1
         heading:
-          - type: Text
+          - _type: Text
             value: "Titlecontent"

@@ -5,13 +5,13 @@ description: "An unresolved bracket opener keeps its current line suffix literal
 input: "[draft](url)"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: external
         href: url
         children:
-          - type: Text
+          - _type: Text
             value: draft
 
 streaming:
@@ -19,15 +19,15 @@ streaming:
   checkpoints:
     - at: 6
       ast:
-        - type: Paragraph
+        - _type: Paragraph
           children:
-            - type: Text
+            - _type: Text
               value: "[draft"
       diagnostics: []
     - at: 8
       ast:
-        - type: Paragraph
+        - _type: Paragraph
           children:
-            - type: Text
+            - _type: Text
               value: "[draft]("
       diagnostics: []

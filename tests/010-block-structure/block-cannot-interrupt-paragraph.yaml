@@ -8,7 +8,7 @@ input: |
   still paragraph
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Paragraph text= Not a headingstill paragraph

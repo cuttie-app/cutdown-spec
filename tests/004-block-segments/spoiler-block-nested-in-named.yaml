@@ -10,12 +10,12 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: callout
     children:
-      - type: SpoilerBlock
+      - _type: SpoilerBlock
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: hidden inside callout

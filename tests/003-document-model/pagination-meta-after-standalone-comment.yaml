@@ -13,13 +13,13 @@ input: |
 
 pages:
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: One\n"
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children: []
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Body

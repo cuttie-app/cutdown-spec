@@ -10,5 +10,5 @@ input: |
   ###
 
 ast:
-  - type: CommentBlock
+  - _type: CommentBlock
     text: "notes\n###\nmore notes\n"

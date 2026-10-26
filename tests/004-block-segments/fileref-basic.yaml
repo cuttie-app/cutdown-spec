@@ -6,7 +6,7 @@ input: |
   /docs/report.pdf
 
 ast:
-  - type: FileRef
+  - _type: FileRef
     path: /docs/report.pdf
     query: ''
     fragment: ''

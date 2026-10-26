@@ -5,16 +5,16 @@ description: "A later heading may close an earlier Section while every source pr
 input: "= One\n\n== Two"
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: One
     children:
-      - type: Section
+      - _type: Section
         level: 2
         heading:
-          - type: Text
+          - _type: Text
             value: Two
 
 streaming:
@@ -22,9 +22,9 @@ streaming:
   checkpoints:
     - at: 5
       ast:
-        - type: Section
+        - _type: Section
           level: 1
           heading:
-            - type: Text
+            - _type: Text
               value: One
       diagnostics: []

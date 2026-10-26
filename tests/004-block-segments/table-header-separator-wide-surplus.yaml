@@ -11,20 +11,20 @@ diagnostics:
     level: warning
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Header
+      - _type: Header
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: A
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: B
     columns:
-      - type: Column
+      - _type: Column
         align: left
-      - type: Column
+      - _type: Column
         align: right

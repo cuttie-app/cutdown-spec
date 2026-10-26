@@ -6,8 +6,8 @@ input: |
   [^note]: See chapter 3 for details.
 
 ast:
-  - type: RefDefinition
+  - _type: RefDefinition
     ref: note
     children:
-      - type: Text
+      - _type: Text
         value: See chapter 3 for details.

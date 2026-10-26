@@ -6,9 +6,9 @@ input: |
   ~~marked~~
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Highlight
+      - _type: Highlight
         children:
-          - type: Text
+          - _type: Text
             value: marked

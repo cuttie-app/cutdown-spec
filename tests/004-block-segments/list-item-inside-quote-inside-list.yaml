@@ -6,18 +6,18 @@ input: |
   - > - item
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: false
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: QuoteBlock
+          - _type: QuoteBlock
             children:
-              - type: List
+              - _type: List
                 kind: "bullet"
                 children:
-                  - type: ListItem
+                  - _type: ListItem
                     children:
-                      - type: Text
+                      - _type: Text
                         value: item

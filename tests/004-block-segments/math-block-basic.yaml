@@ -8,5 +8,5 @@ input: |
   $$$
 
 ast:
-  - type: MathBlock
+  - _type: MathBlock
     raw: "E = mc^2"

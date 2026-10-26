@@ -6,11 +6,11 @@ input: |
   ** __ bb __**
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Emphasis
+          - _type: Emphasis
             children:
-              - type: Text
+              - _type: Text
                 value: bb

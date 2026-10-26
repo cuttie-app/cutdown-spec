@@ -7,18 +7,18 @@ input: |
   ^ Results from the first cohort
 
 ast:
-  - type: Table
+  - _type: Table
     caption:
-      - type: Text
+      - _type: Text
         value: "Results from the first cohort"
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: Name
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: Score

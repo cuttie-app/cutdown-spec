@@ -6,9 +6,9 @@ input: |
   [text ## tail](url)
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     reflection:
       - text: "tail](url)"
     children:
-      - type: Text
+      - _type: Text
         value: "[text "

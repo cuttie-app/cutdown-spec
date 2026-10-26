@@ -7,20 +7,20 @@ input: |
   1. Numeric becomes unordered
 
 ast:
-  - type: List
+  - _type: List
     kind: "checklist"
     start: null
     children:
-      - type: TaskItem
+      - _type: TaskItem
         checked: false
         children:
-          - type: Text
+          - _type: Text
             value: Task item first
-  - type: List
+  - _type: List
     kind: "numbered"
     start: 1
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Numeric becomes unordered

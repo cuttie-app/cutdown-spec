@@ -9,6 +9,6 @@ input: |
 
 pages:
   - meta:
-      type: Meta
+      _type: Meta
       format: toml
       raw: "title = \"Hello\"\n"

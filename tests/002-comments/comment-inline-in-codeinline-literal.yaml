@@ -6,7 +6,7 @@ input: |
   ``code ## not a comment``
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: CodeInline
+      - _type: CodeInline
         value: "code ## not a comment"

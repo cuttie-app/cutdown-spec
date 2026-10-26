@@ -7,13 +7,13 @@ input: |
   ^ Not a caption
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Some paragraph text here."
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "^ Not a caption"
 
 diagnostics:

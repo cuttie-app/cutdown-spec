@@ -30,7 +30,7 @@ The `##` opener (§2.2) is special: it has no closer and terminates at end-of-li
 
 ```typescript
 interface Text {
-  type: "Text"
+  _type: "Text"
   value: string
 }
 ```
@@ -49,7 +49,7 @@ Text segments are **literal** — no inline parsing, no escape processing. A `\`
 
 ```typescript
 interface Emphasis {
-  type: "Emphasis"
+  _type: "Emphasis"
   children: Inline[]
   attributes: Attribute[]
 }
@@ -83,7 +83,7 @@ Strong emphasis. `**` follows the dominant Markdown-family convention (CommonMar
 
 ```typescript
 interface Strong {
-  type: "Strong"
+  _type: "Strong"
   children: Inline[]
   attributes: Attribute[]
 }
@@ -105,7 +105,7 @@ Marks a span of text as highlighted — visually emphasized as important, like a
 
 ```typescript
 interface Highlight {
-  type: "Highlight"
+  _type: "Highlight"
   children: Inline[]
   attributes: Attribute[]
 }
@@ -133,7 +133,7 @@ interface Highlight {
 
 ```typescript
 interface Link {
-  type: "Link"
+  _type: "Link"
   kind: "external" | "page" | "tag" | "ref" | "cite"
   children: Inline[]
   href: string            // for kind: "external", otherwise empty string
@@ -198,7 +198,7 @@ Page links `[text][path/to/page]` are for linking to other pages within the same
 
 ```typescript
 interface CodeInline {
-  type: "CodeInline"
+  _type: "CodeInline"
   value: string
   attributes: Attribute[]
 }
@@ -233,7 +233,7 @@ continues``       → CodeInline { value: "testcontinues" }   (soft break → ze
 
 ```typescript
 interface MathInline {
-  type: "MathInline"
+  _type: "MathInline"
   formula: string
   attributes: Attribute[]
 }
@@ -262,7 +262,7 @@ $ not math $          → Text("$ not math $")
 
 ```typescript
 interface QuoteInline {
-  type: "QuoteInline"
+  _type: "QuoteInline"
   kind: "double" | "single"
   children: Inline[]
   attributes: Attribute[]
@@ -294,7 +294,7 @@ interface QuoteInline {
 
 ```typescript
 interface ImageInline {
-  type: "ImageInline"
+  _type: "ImageInline"
   alt: Inline[]
   src: string
   attributes: Attribute[]
@@ -319,7 +319,7 @@ A named inline container that wraps a range of content as a hook for consumer po
 
 ```typescript
 interface Mark {
-  type: "Mark"
+  _type: "Mark"
   name: string        // non-empty ID_LITERAL run
   children: Inline[]  // empty for the `::name::` form
   attributes: Attribute[]
@@ -382,7 +382,7 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 
 ```typescript
 interface Variable {
-  type: "Variable"
+  _type: "Variable"
   key: string
   attributes: Attribute[]
 }
@@ -404,7 +404,7 @@ interface Variable {
 
 ```typescript
 interface Spoiler {
-  type: "Spoiler"
+  _type: "Spoiler"
   children: Inline[]
   attributes: Attribute[]
 }
@@ -437,7 +437,7 @@ __^^x^^__          → Emphasis([Spoiler([Text("x")])])      (cross-nesting)
 
 ```typescript
 interface LineBreak {
-  type: "LineBreak"
+  _type: "LineBreak"
 }
 ```
 

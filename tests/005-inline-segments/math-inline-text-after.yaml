@@ -6,9 +6,9 @@ input: |
   $$ formula $$ now text.
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: MathInline
+      - _type: MathInline
         formula: " formula "
-      - type: Text
+      - _type: Text
         value: " now text."

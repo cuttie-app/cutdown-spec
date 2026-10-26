@@ -6,7 +6,7 @@ input: |
   price is \{high\}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "price is {high}"

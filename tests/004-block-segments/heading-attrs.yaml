@@ -6,10 +6,10 @@ input: |
   = Hello {#h1}
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: Hello
     attributes:
       - key: id

@@ -6,11 +6,11 @@ input: |
   ___text___
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: "_text"
-      - type: Text
+      - _type: Text
         value: "_"

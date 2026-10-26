@@ -5,7 +5,7 @@ description: "Inside CodeInline, \\` is processed as a literal backtick that doe
 input: "``\\`\\`\\`x``\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: CodeInline
+      - _type: CodeInline
         value: "```x"

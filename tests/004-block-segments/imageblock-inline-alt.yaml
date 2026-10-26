@@ -6,14 +6,14 @@ input: |
   ![A __bold__ caption](photos/shot.jpg)
 
 ast:
-  - type: ImageBlock
+  - _type: ImageBlock
     alt:
-      - type: Text
+      - _type: Text
         value: "A "
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: bold
-      - type: Text
+      - _type: Text
         value: " caption"
     src: photos/shot.jpg

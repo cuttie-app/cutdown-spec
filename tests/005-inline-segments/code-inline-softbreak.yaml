@@ -5,7 +5,7 @@ description: A soft break (single newline) inside CodeInline is folded to zero; 
 input: "``test\ncontinues``\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: CodeInline
+      - _type: CodeInline
         value: testcontinues

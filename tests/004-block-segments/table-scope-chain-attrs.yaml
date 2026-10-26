@@ -6,28 +6,28 @@ input: |
   | td1 | td2 | {.row-class}{.table-class}
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: td1
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: td2
         attributes:
           - key: class
             value: [row-class]
     columns:
-      - type: Column
-      - type: Column
+      - _type: Column
+      - _type: Column
     attributes:
       - key: class
         value: [table-class]

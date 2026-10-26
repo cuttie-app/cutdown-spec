@@ -7,7 +7,7 @@ input: |
   second line
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: First linesecond line

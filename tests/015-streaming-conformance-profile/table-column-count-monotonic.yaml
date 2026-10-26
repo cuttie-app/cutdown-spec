@@ -9,32 +9,32 @@ diagnostics:
     level: warning
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: A
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: B
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: C
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: D
     columns:
-      - type: Column
+      - _type: Column
         align: start
-      - type: Column
+      - _type: Column
         align: start
 
 streaming:
@@ -44,31 +44,31 @@ streaming:
     # ordinary document, not a partial one (§15.1).
     - at: 6
       ast:
-        - type: Table
+        - _type: Table
           columns:
-            - type: Column
+            - _type: Column
               align: start
       diagnostics: []
     # Prefix "| A | B |" — the first content row has closed. columns is now
     # fixed at 2 and every later checkpoint must agree.
     - at: 9
       ast:
-        - type: Table
+        - _type: Table
           columns:
-            - type: Column
+            - _type: Column
               align: start
-            - type: Column
+            - _type: Column
               align: start
       diagnostics: []
     # Prefix cutting mid-row-2, "| A | B |\n| C |" — row 2 is short and pads.
     # No diagnostic: padding loses nothing.
     - at: 15
       ast:
-        - type: Table
+        - _type: Table
           columns:
-            - type: Column
+            - _type: Column
               align: start
-            - type: Column
+            - _type: Column
               align: start
       diagnostics: []
     # Prefix "| A | B |\n| C | D | E" — the surplus cell is now present and
@@ -76,11 +76,11 @@ streaming:
     # checkpoint would have contradicted the one at 9.
     - at: 22
       ast:
-        - type: Table
+        - _type: Table
           columns:
-            - type: Column
+            - _type: Column
               align: start
-            - type: Column
+            - _type: Column
               align: start
       diagnostics:
         - code: CDN-0018

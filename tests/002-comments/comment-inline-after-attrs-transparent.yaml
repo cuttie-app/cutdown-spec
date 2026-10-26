@@ -6,12 +6,12 @@ input: |
   some text {.p} ## tail comment
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     attributes:
       - key: class
         value: [p]
     children:
-      - type: Text
+      - _type: Text
         value: "some text "
     reflection:
       - loc: { start: 18, end: 30 }

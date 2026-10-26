@@ -5,9 +5,9 @@ description: "Trailing spaces before a trailing ## collapse to one and are prese
 input: "a   ## comment \nb\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "a b"
     reflection:
       - text: "comment "

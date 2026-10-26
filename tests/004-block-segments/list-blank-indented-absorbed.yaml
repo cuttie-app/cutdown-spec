@@ -5,15 +5,15 @@ description: Blank line followed by an indented (col > 0) marker is absorbed by 
 input: "    - item A\n\n    - item B\n"
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: true
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: item A
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: item B

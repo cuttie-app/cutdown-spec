@@ -7,22 +7,22 @@ input: |
   - [ ] Task item in ordered list
 
 ast:
-  - type: List
+  - _type: List
     kind: "numbered"
     loose: false
     start: 1
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: First ordered item
-  - type: List
+  - _type: List
     kind: "checklist"
     loose: false
     start: null
     children:
-      - type: TaskItem
+      - _type: TaskItem
         checked: false
         children:
-          - type: Text
+          - _type: Text
             value: Task item in ordered list

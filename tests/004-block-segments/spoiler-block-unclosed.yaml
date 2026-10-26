@@ -5,11 +5,11 @@ description: "Unclosed ^^^ opener; content runs to end of document as SpoilerBlo
 input: "^^^\nSome content\n"
 
 ast:
-  - type: SpoilerBlock
+  - _type: SpoilerBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Some content
 
 diagnostics:

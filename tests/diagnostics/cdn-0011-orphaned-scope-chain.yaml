@@ -10,16 +10,16 @@ diagnostics:
     level: warning
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     attributes:
       - key: class
         value: [c]
     children:
-      - type: ListItem
+      - _type: ListItem
         attributes:
           - key: class
             value: [b]
         children:
-          - type: Text
+          - _type: Text
             value: text

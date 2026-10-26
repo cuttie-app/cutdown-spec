@@ -14,13 +14,13 @@ input: |
 
 pages:
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: doc\n"
     children:
-      - type: CommentBlock
+      - _type: CommentBlock
         text: "preamble note\n"
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: "content"

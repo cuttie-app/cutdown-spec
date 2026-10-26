@@ -9,11 +9,11 @@ input: |
   ```
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Some text"
-      - type: CodeInline
+      - _type: CodeInline
         value: "`jsconst x = 1"
-      - type: Text
+      - _type: Text
         value: "`"

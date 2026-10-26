@@ -8,14 +8,14 @@ input: |
   - Second item
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: First itemcontinues here
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Second item

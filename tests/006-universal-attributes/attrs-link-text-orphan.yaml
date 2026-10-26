@@ -6,11 +6,11 @@ input: |
   [{.foo} text](url)
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: external
         href: url
         children:
-          - type: Text
+          - _type: Text
             value: "{.foo} text"

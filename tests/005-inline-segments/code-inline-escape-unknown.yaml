@@ -5,7 +5,7 @@ description: "Inside CodeInline, an unknown \\X (X not ` or \\) emits both chara
 input: "``\\nb``\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: CodeInline
+      - _type: CodeInline
         value: "\\nb"

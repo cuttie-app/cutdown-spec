@@ -5,7 +5,7 @@ description: "A standalone `##` line at Page scope with no preceding block is an
 input: "## just a comment\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children: []
     reflection:
       - loc: { start: 3, end: 17 }

@@ -8,17 +8,17 @@ input: |
   ^ Two photos from the event
 
 ast:
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: image
     caption:
-      - type: Text
+      - _type: Text
         value: "Two photos from the event"
     children:
-      - type: FileRef
+      - _type: FileRef
         path: "/photos/a.png"
         fragment: ""
         query: ""
-      - type: FileRef
+      - _type: FileRef
         path: "/photos/b.jpg"
         fragment: ""
         query: ""

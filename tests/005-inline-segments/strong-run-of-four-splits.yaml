@@ -6,13 +6,13 @@ input: |
   **one part text **** other part**
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: "one part text"
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: "other part"

@@ -6,13 +6,13 @@ input: |
   {{valid-key}} {{invalid key}} {{also.valid_1}}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Variable
+      - _type: Variable
         key: valid-key
-      - type: Text
+      - _type: Text
         value: " {{invalid key}} "
-      - type: Variable
+      - _type: Variable
         key: also.valid_1
 
 diagnostics:

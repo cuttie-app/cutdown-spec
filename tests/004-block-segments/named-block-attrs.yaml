@@ -8,7 +8,7 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: callout
     attributes:
       - key: class
@@ -16,7 +16,7 @@ ast:
       - key: id
         value: note1
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Content

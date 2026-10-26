@@ -6,10 +6,10 @@ input: |
   "" hello ""
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: QuoteInline
+      - _type: QuoteInline
         kind: double
         children:
-          - type: Text
+          - _type: Text
             value: hello

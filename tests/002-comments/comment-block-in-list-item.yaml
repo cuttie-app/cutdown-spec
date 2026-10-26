@@ -10,16 +10,16 @@ input: |
   - item two
 
 ast:
-  - type: List
+  - _type: List
     kind: bullet
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: "item one"
-          - type: CommentBlock
+          - _type: CommentBlock
             text: "todo\n"
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: "item two"

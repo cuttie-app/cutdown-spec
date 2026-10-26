@@ -9,13 +9,13 @@ input: |
   After the quote
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: First lineContinued
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: After the quote

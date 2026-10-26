@@ -6,11 +6,11 @@ input: |
   [posts][#writing/blog]
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: tag
         target: writing/blog
         children:
-          - type: Text
+          - _type: Text
             value: posts

@@ -9,15 +9,15 @@ input: |
   ^ Version {{version}} — {{author}}
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: python
     raw: "x = 1"
     caption:
-      - type: Text
+      - _type: Text
         value: "Version "
-      - type: Variable
+      - _type: Variable
         key: version
-      - type: Text
+      - _type: Text
         value: " — "
-      - type: Variable
+      - _type: Variable
         key: author

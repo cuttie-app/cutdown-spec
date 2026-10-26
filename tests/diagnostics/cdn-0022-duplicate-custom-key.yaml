@@ -6,9 +6,9 @@ input: |
   Hello {role=main role=nav}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Hello
     attributes:
       - key: role

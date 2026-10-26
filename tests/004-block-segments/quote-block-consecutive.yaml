@@ -8,15 +8,15 @@ input: |
   > beta
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: alpha
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: beta

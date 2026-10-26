@@ -6,9 +6,9 @@ input: |
   ^ Caption with no block above
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "^ Caption with no block above"
 
 diagnostics:

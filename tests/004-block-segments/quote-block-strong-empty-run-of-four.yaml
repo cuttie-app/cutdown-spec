@@ -6,10 +6,10 @@ input: |
   > **** >
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Strong
-          - type: Text
+          - _type: Strong
+          - _type: Text
             value: " >"

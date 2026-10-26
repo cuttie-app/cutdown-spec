@@ -5,11 +5,11 @@ description: "Both mechanisms combined: triple-backtick opener collapses (run-of
 input: "a ```\\`x``` z\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "a "
-      - type: CodeInline
+      - _type: CodeInline
         value: "``x"
-      - type: Text
+      - _type: Text
         value: "` z"

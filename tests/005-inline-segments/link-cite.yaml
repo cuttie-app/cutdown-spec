@@ -6,11 +6,11 @@ input: |
   [Smith 2024][@smith2024]
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: cite
         target: smith2024
         children:
-          - type: Text
+          - _type: Text
             value: Smith 2024

@@ -7,18 +7,18 @@ input: |
   - [ ] Buy milk
 
 ast:
-  - type: List
+  - _type: List
     kind: "checklist"
     start: null
     loose: false
     children:
-      - type: TaskItem
+      - _type: TaskItem
         checked: false
         children:
-          - type: Text
+          - _type: Text
             value: Sell milk
-      - type: TaskItem
+      - _type: TaskItem
         checked: false
         children:
-          - type: Text
+          - _type: Text
             value: Buy milk

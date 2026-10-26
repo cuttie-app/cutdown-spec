@@ -7,16 +7,16 @@ input: |
   ^ Caption text {.highlight}
 
 ast:
-  - type: Table
+  - _type: Table
     caption:
-      - type: Text
+      - _type: Text
         value: "Caption text {.highlight}"
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: col
 
 diagnostics:

@@ -8,14 +8,14 @@ input: |
   ^^^
 
 ast:
-  - type: SpoilerBlock
+  - _type: SpoilerBlock
     attributes:
       - key: class
         value: [nsfw]
       - key: id
         value: note1
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Content

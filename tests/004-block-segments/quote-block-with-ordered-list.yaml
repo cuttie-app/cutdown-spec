@@ -7,18 +7,18 @@ input: |
   > 2. second
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: List
+      - _type: List
         kind: "numbered"
         loose: false
         start: 1
         children:
-          - type: ListItem
+          - _type: ListItem
             children:
-              - type: Text
+              - _type: Text
                 value: first
-          - type: ListItem
+          - _type: ListItem
             children:
-              - type: Text
+              - _type: Text
                 value: second

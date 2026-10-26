@@ -9,8 +9,8 @@ input: |
   ^ Mass-energy equivalence
 
 ast:
-  - type: MathBlock
+  - _type: MathBlock
     raw: "E = mc^2"
     caption:
-      - type: Text
+      - _type: Text
         value: "Mass-energy equivalence"

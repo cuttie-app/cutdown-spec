@@ -9,13 +9,13 @@ input: |
   ^ Box caption text
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: box
     caption:
-      - type: Text
+      - _type: Text
         value: "Box caption text"
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: "Some content here."

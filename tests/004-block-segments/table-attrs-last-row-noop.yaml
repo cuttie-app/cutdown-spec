@@ -6,17 +6,17 @@ input: |
   | td1 | td2 | {.a}{}
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: td1
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: td2
         attributes:
           - key: class

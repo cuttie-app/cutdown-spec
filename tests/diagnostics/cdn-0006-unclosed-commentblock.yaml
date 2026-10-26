@@ -5,7 +5,7 @@ description: "Unclosed `###` opener; content runs to end of document as opaque C
 input: "###\nsome notes\n"
 
 ast:
-  - type: CommentBlock
+  - _type: CommentBlock
     text: "some notes\n"
 
 diagnostics:

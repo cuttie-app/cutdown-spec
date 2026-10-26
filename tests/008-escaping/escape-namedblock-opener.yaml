@@ -7,9 +7,9 @@ input: |
   not a named block
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: ":::calloutnot a named block"
 
 diagnostics: []

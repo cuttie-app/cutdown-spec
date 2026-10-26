@@ -5,11 +5,11 @@ description: "Trailing spaces collapse to one: preserved before a soft break, dr
 input: "a  \nb  \n\nc\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "a b"
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "c"

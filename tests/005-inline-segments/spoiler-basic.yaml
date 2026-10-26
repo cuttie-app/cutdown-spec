@@ -6,9 +6,9 @@ input: |
   ^^hidden^^
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Spoiler
+      - _type: Spoiler
         children:
-          - type: Text
+          - _type: Text
             value: hidden

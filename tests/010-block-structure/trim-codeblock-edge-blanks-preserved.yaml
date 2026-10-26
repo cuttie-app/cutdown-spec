@@ -10,6 +10,6 @@ input: |
   ```
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: text
     raw: "\nhello\n"

@@ -37,7 +37,7 @@ The fence opener is ordinary text, so no `CodeBlock` forms. Soft breaks fold to 
 
 ```typescript
 interface Paragraph {
-  type: "Paragraph"
+  _type: "Paragraph"
   children: Inline[]
   attributes: Attribute[]
   reflection: Reflection[] | null
@@ -80,7 +80,7 @@ A heading creates a `Section` segment. Consumers receive `Section` segments — 
 
 ```typescript
 interface Section {
-  type: "Section"
+  _type: "Section"
   level: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
   heading: Inline[]
   children: Block[]
@@ -136,7 +136,7 @@ content
 
 ```typescript
 interface Meta {
-  type: "Meta"
+  _type: "Meta"
   format: "yaml" | "toml" | "json"  // default: "yaml"
   raw: string
 }
@@ -180,7 +180,7 @@ content
 
 ```typescript
 interface CodeBlock {
-  type: "CodeBlock"
+  _type: "CodeBlock"
   language: string  // default: "text"
   raw: string
   attributes: Attribute[]
@@ -213,7 +213,7 @@ $$$
 
 ```typescript
 interface MathBlock {
-  type: "MathBlock"
+  _type: "MathBlock"
   raw: string
   attributes: Attribute[]
   caption: Inline[] | null
@@ -259,7 +259,7 @@ AST:
 
 ```typescript
 interface QuoteBlock {
-  type: "QuoteBlock"
+  _type: "QuoteBlock"
   children: Block[]
   attributes: Attribute[]
   caption: Inline[] | null
@@ -349,7 +349,7 @@ AST:
 
 ```typescript
 interface List {
-  type: "List"
+  _type: "List"
   kind: "bullet" | "numbered" | "checklist"
   start: number | null  // first item number for kind: "numbered"; null otherwise
   loose: boolean
@@ -385,7 +385,7 @@ interface List {
 
 ```typescript
 interface ListItem {
-  type: "ListItem"
+  _type: "ListItem"
   children: (Block | Inline)[]
   attributes: Attribute[]
 }
@@ -417,7 +417,7 @@ or
 
 ```typescript
 interface TaskItem {
-  type: "TaskItem"
+  _type: "TaskItem"
   checked: boolean
   children: (Block | Inline)[]
   attributes: Attribute[]
@@ -467,7 +467,7 @@ A table opens with a line starting with `|` (pipe). Standard Markdown (GFM) pipe
 
 ```typescript
 interface Table {
-  type: "Table"
+  _type: "Table"
   rows: Row[]
   columns: Column[]
   attributes: Attribute[]
@@ -476,20 +476,20 @@ interface Table {
 }
 
 interface Row {
-  type: "Row" | "Header"
+  _type: "Row" | "Header"
   children: Cell[]
   attributes: Attribute[]
 }
 
 interface Cell {
-  type: "Cell"
+  _type: "Cell"
   children: Inline[]
   row: number                    // zero-indexed position in Table.rows[]
   column: number                 // zero-indexed
 }
 
 interface Column {
-  type: "Column"
+  _type: "Column"
   align: "start" | "left" | "right" | "center" | "comma" | "decimal"  // default: "start"
 }
 ```
@@ -500,12 +500,12 @@ interface Column {
 
 #### Header rows
 
-A row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `type: "Header"`. All other content rows are `type: "Row"`.
+A row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `_type: "Header"`. All other content rows are `type: "Row"`.
 
 ```
 | A | B |
-|---|---|    ← header separator → preceding rows become type: "Header"
-| C | D |    ← type: "Row"
+|---|---|    ← header separator → preceding rows become _type: "Header"
+| C | D |    ← _type: "Row"
 ```
 
 Discontiguous header sections are valid — HTML `<table>` supports mixed `<thead>`/`<tbody>` ordering. A header separator anywhere marks only the rows in the immediately preceding section.
@@ -639,7 +639,7 @@ A line at block level beginning with `![` is classified as an `ImageBlock`.
 
 ```typescript
 interface ImageBlock {
-  type: "ImageBlock"
+  _type: "ImageBlock"
   alt: Inline[]
   src: string
   attributes: Attribute[]
@@ -705,7 +705,7 @@ Any line beginning with `/` is a file reference block.
 
 ```typescript
 interface FileRef {
-  type: "FileRef"
+  _type: "FileRef"
   path: string
   fragment: string | ''
   query: string | ''
@@ -742,7 +742,7 @@ Consecutive `FileRef` or `ImageBlock` lines of the **same known group** with no 
 
 ```typescript
 interface FileRefGroup {
-  type: "FileRefGroup"
+  _type: "FileRefGroup"
   group: "image" | "video" | "audio"
   children: (FileRef | ImageBlock)[]
   attributes: Attribute[]
@@ -787,7 +787,7 @@ AST:
 
 ```typescript
 interface NamedBlock {
-  type: "NamedBlock"
+  _type: "NamedBlock"
   name: string
   children: Block[]
   attributes: Attribute[]
@@ -830,7 +830,7 @@ MUST start at the beginning of a line.
 
 ```typescript
 interface RefDefinition {
-  type: "RefDefinition"
+  _type: "RefDefinition"
   ref: string
   children: Inline[]
   attributes: Attribute[]
@@ -861,7 +861,7 @@ interface RefDefinition {
 
 ```typescript
 interface SpoilerBlock {
-  type: "SpoilerBlock"
+  _type: "SpoilerBlock"
   children: Block[]
   attributes: Attribute[]
   caption: Inline[] | null
@@ -918,7 +918,7 @@ opaque content
 
 ```typescript
 interface CommentBlock {
-  type: "CommentBlock"
+  _type: "CommentBlock"
   text: string
   reflection: Reflection[] | null
 }

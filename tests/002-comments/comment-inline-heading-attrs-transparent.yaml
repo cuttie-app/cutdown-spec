@@ -6,13 +6,13 @@ input: |
   = Heading {.c} ## note
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     attributes:
       - key: class
         value: [c]
     heading:
-      - type: Text
+      - _type: Text
         value: "Heading "
     reflection:
       - loc: { start: 18, end: 22 }

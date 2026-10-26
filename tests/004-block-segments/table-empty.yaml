@@ -6,6 +6,6 @@ input: |
   |
 
 ast:
-  - type: Table
+  - _type: Table
     rows: []
     columns: []

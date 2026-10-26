@@ -7,12 +7,12 @@ input: |
   ^ William Shakespeare
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: To be, or not to be.
     caption:
-      - type: Text
+      - _type: Text
         value: William Shakespeare

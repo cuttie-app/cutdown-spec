@@ -6,8 +6,8 @@ input: |
   []()
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: external
         href: ""

@@ -6,14 +6,14 @@ input: |
   = Title with __bold__ word
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: "Title with "
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: bold
-      - type: Text
+      - _type: Text
         value: " word"

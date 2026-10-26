@@ -6,14 +6,14 @@ input: |
   = Heading **bold**{.b} {#h}
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: "Heading "
-      - type: Strong
+      - _type: Strong
         children:
-          - type: Text
+          - _type: Text
             value: bold
         attributes:
           - key: class

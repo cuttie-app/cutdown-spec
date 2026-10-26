@@ -9,12 +9,12 @@ input: |
   :::
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: bb
     children:
-      - type: QuoteBlock
+      - _type: QuoteBlock
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: qaqb

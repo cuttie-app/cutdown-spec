@@ -14,7 +14,7 @@ The root node of every Cutdown file. Produced automatically — there is no expl
 
 ```typescript
 interface Document {
-  type: "Document"
+  _type: "Document"
   children: Page[]
 }
 ```
@@ -29,7 +29,7 @@ A logical division within a document. Every document has at least one Page.
 
 ```typescript
 interface Page {
-  type: "Page"
+  _type: "Page"
   meta: Meta | null
   children: Block[]
 }

@@ -6,7 +6,7 @@ input: |
   /path/to/page.cutdown#section-id
 
 ast:
-  - type: FileRef
+  - _type: FileRef
     path: /path/to/page.cutdown
     query: ''
     fragment: section-id

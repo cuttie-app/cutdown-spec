@@ -7,15 +7,15 @@ input: |
   4. Fourth
 
 ast:
-  - type: List
+  - _type: List
     kind: "numbered"
     start: 3
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Third
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Fourth

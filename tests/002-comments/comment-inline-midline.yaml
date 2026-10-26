@@ -6,9 +6,9 @@ input: |
   foo bar ## trailing comment
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "foo bar "
     reflection:
       - loc: { start: 11, end: 27 }

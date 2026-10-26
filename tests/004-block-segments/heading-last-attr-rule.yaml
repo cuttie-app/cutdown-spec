@@ -6,16 +6,16 @@ input: |
   = H1 [link](..){.link-class}{}
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: "H1 "
-      - type: Link
+      - _type: Link
         kind: external
         href: ".."
         children:
-          - type: Text
+          - _type: Text
             value: link
         attributes:
           - key: class

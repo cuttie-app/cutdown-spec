@@ -7,7 +7,7 @@ input: |
   foo # also literal
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "# not a commentfoo # also literal"

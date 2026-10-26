@@ -6,10 +6,10 @@ input: |
   = Title {{var}}
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: "Title "
-      - type: Variable
+      - _type: Variable
         key: var

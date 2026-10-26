@@ -10,5 +10,5 @@ input: |
   ###
 
 ast:
-  - type: CommentBlock
+  - _type: CommentBlock
     text: "= not a heading\n**not bold**\n``not code``\n"

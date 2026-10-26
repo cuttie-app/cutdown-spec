@@ -6,8 +6,8 @@ input: |
   = Hello
 
 ast:
-  - type: Section
+  - _type: Section
     level: 1
     heading:
-      - type: Text
+      - _type: Text
         value: Hello

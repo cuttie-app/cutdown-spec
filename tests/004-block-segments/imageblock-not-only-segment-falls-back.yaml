@@ -5,12 +5,12 @@ description: "An image line carrying trailing content fails the only-segment rul
 input: "![a](b) trailing text\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: ImageInline
+      - _type: ImageInline
         src: "b"
         alt:
-          - type: Text
+          - _type: Text
             value: "a"
-      - type: Text
+      - _type: Text
         value: " trailing text"

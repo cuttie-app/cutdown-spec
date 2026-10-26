@@ -6,11 +6,11 @@ input: |
   __^^x^^__
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Spoiler
+          - _type: Spoiler
             children:
-              - type: Text
+              - _type: Text
                 value: x

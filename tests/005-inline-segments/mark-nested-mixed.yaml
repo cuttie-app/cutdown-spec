@@ -6,17 +6,17 @@ input: |
   ::a b ::c d:: e::
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Mark
+      - _type: Mark
         name: a
         children:
-          - type: Text
+          - _type: Text
             value: "b "
-          - type: Mark
+          - _type: Mark
             name: c
             children:
-              - type: Text
+              - _type: Text
                 value: "d"
-          - type: Text
+          - _type: Text
             value: " e"

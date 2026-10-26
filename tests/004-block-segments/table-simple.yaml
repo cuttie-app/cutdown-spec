@@ -7,36 +7,36 @@ input: |
   | Cell C | Cell D |
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: Cell A
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: Cell B
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             row: 1
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: Cell C
-          - type: Cell
+          - _type: Cell
             row: 1
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: Cell D
     columns:
-      - type: Column
-      - type: Column
+      - _type: Column
+      - _type: Column

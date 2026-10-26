@@ -10,17 +10,17 @@ input: |
   ^ Named block caption
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: figure
     caption:
-      - type: Text
+      - _type: Text
         value: "Named block caption"
     children:
-      - type: ImageBlock
+      - _type: ImageBlock
         alt:
-          - type: Text
+          - _type: Text
             value: alt
         src: "photo.jpg"
         caption:
-          - type: Text
+          - _type: Text
             value: "Inner image caption"

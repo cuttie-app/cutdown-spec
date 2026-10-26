@@ -8,14 +8,14 @@ input: |
   Second line
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "First line"
     reflection:
       - loc: { start: 14, end: 29 }
         text: "comment between"
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Second line"

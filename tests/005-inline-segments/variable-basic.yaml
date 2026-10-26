@@ -6,11 +6,11 @@ input: |
   Hello {{title}}!
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Hello "
-      - type: Variable
+      - _type: Variable
         key: title
-      - type: Text
+      - _type: Text
         value: "!"

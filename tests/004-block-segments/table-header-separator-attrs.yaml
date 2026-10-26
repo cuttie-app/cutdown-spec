@@ -8,33 +8,33 @@ input: |
   | AA     | BB     |
 
 ast:
-  - type: Table
+  - _type: Table
     attributes:
       - key: class
         value: [green]
     columns:
-      - type: Column
+      - _type: Column
         align: left
-      - type: Column
+      - _type: Column
         align: right
     rows:
-      - type: Header
+      - _type: Header
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "Head A"
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "Head B"
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "AA"
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "BB"

@@ -6,11 +6,11 @@ input: |
   1. 2. 3. nested item
 
 ast:
-  - type: List
+  - _type: List
     kind: "numbered"
     start: 1
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: "2. 3. nested item"

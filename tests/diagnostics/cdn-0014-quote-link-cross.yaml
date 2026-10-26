@@ -6,14 +6,14 @@ input: |
   "" q start [link "" q end][/path]
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: QuoteInline
+      - _type: QuoteInline
         kind: double
         children:
-          - type: Text
+          - _type: Text
             value: "q start [link"
-      - type: Text
+      - _type: Text
         value: " q end][/path]"
 
 diagnostics:

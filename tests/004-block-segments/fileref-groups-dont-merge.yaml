@@ -9,25 +9,25 @@ input: |
   /c.mp4
 
 ast:
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: image
     children:
-      - type: FileRef
+      - _type: FileRef
         path: /a.png
         query: ''
         fragment: ''
-      - type: FileRef
+      - _type: FileRef
         path: /a.jpg
         query: ''
         fragment: ''
-  - type: FileRefGroup
+  - _type: FileRefGroup
     group: video
     children:
-      - type: FileRef
+      - _type: FileRef
         path: /b.mp4
         query: ''
         fragment: ''
-      - type: FileRef
+      - _type: FileRef
         path: /c.mp4
         query: ''
         fragment: ''

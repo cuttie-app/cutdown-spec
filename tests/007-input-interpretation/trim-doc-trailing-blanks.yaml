@@ -5,7 +5,7 @@ description: "Trailing blank lines (including whitespace-only lines) at document
 input: "Hello world\n\n   \n\n\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Hello world

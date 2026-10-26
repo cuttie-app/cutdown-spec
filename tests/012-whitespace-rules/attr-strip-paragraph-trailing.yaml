@@ -5,10 +5,10 @@ description: "Whitespace immediately before a consumed trailing `{attr}` on a pa
 input: "paragraph text  {.p}\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     attributes:
       - key: class
         value: [p]
     children:
-      - type: Text
+      - _type: Text
         value: paragraph text

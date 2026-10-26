@@ -9,8 +9,8 @@ input: |
 
 pages:
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Hello
   - {}

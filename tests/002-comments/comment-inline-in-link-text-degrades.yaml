@@ -6,9 +6,9 @@ input: |
   [text ## here](url)
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "[text "
     reflection:
       - loc: { start: 9, end: 19 }

@@ -201,14 +201,14 @@ Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with no
 A table opens with a line starting with `|`. The shape is close to GFM pipe tables, with three differences: the leading `|` is required, an alignment cell needs at least three dashes, and `---,` / `---.` add comma and decimal alignment.
 
 ```
-| Cell A | Cell B |          ← no header, all rows type: "Row"
+| Cell A | Cell B |          ← no header, all rows _type: "Row"
 
 | Name   | Score |           ← table with header
 |:-------|------:|           ← header separator; also sets alignment
-| Alice  |    42 |           ← type: "Row"
+| Alice  |    42 |           ← _type: "Row"
 ```
 
-**Header separator:** A row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `type: "Header"`. Alignment taken from the first header separator only.
+**Header separator:** A row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `_type: "Header"`. Alignment taken from the first header separator only.
 
 **Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` start (default — follows text direction; not the same as left).
 

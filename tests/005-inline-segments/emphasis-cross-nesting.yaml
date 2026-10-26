@@ -6,11 +6,11 @@ input: |
   __**bold and strong**__
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Strong
+          - _type: Strong
             children:
-              - type: Text
+              - _type: Text
                 value: bold and strong

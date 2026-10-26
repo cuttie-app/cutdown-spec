@@ -8,6 +8,6 @@ input: |
   ```
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: text
     raw: "hello world"

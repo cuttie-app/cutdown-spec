@@ -7,11 +7,11 @@ input: |
   ^ Photo from the event
 
 ast:
-  - type: ImageBlock
+  - _type: ImageBlock
     alt:
-      - type: Text
+      - _type: Text
         value: "alt text"
     src: "photo.jpg"
     caption:
-      - type: Text
+      - _type: Text
         value: "Photo from the event"

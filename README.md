@@ -16,11 +16,11 @@ Cutdown derives from Markdown. The name is literal: *cut* from the wide variety 
 
 ```json
 {
-  "type": "Section",
+  "_type": "Section",
   "level": 2,
   "heading": [
-    { "type": "Text", "value": "Hello " },
-    { "type": "Strong", "children": [{ "type": "Text", "value": "world" }] }
+    { "_type": "Text", "value": "Hello " },
+    { "_type": "Strong", "children": [{ "_type": "Text", "value": "world" }] }
   ]
 }
 ```

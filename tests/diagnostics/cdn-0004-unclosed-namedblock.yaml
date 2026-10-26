@@ -5,12 +5,12 @@ description: "Unclosed :::name opener; content runs to end of document as NamedB
 input: ":::callout\nSome content\n"
 
 ast:
-  - type: NamedBlock
+  - _type: NamedBlock
     name: callout
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Some content
 
 diagnostics:

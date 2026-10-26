@@ -4,8 +4,8 @@
 
 | Segment    | Fields |
 |------------|--------|
-| `Document` | `type: "Document", children: Page[]` |
-| `Page`     | `type: "Page", meta: Meta\|null, children: Block[]` |
+| `Document` | `_type: "Document", children: Page[]` |
+| `Page`     | `_type: "Page", meta: Meta\|null, children: Block[]` |
 
 ### 14.2 Block Segments
 
@@ -13,49 +13,49 @@ All block segments carry `reflection: Reflection[] | null` (null when no `##` co
 
 | Segment         | Fields                                                                                                                                              |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `Paragraph`     | `type: "Paragraph", children: Inline[], reflection, attributes`                                                                                     |
-| `Section`       | `type: "Section", level: 1..9, heading: Inline[], children: Block[], reflection, attributes`                                                        |
-| `CodeBlock`     | `type: "CodeBlock", language: string = "text", raw: string, caption: Inline[]\|null, reflection, attributes`                                        |
-| `MathBlock`     | `type: "MathBlock", raw: string, caption: Inline[]\|null, reflection, attributes`                                                                   |
-| `QuoteBlock`    | `type: "QuoteBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                        |
-| `List`          | `type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes`    |
-| `Table`         | `type: "Table", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
-| `ImageBlock`    | `type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, reflection, attributes`                                                   |
-| `FileRef`       | `type: "FileRef", path: string, fragment: string\|'', query: string\|'', caption: Inline[]\|null, reflection, attributes`                           |
-| `FileRefGroup`  | `type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], caption: Inline[]\|null, reflection, attributes`        |
-| `NamedBlock`    | `type: "NamedBlock", name: string, children: Block[], caption: Inline[]\|null, reflection, attributes`                                              |
-| `SpoilerBlock`  | `type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
-| `CommentBlock`  | `type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
-| `RefDefinition` | `type: "RefDefinition", ref: string, children: Inline[], reflection, attributes`                                                                     |
+| `Paragraph`     | `_type: "Paragraph", children: Inline[], reflection, attributes`                                                                                     |
+| `Section`       | `_type: "Section", level: 1..9, heading: Inline[], children: Block[], reflection, attributes`                                                        |
+| `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[]\|null, reflection, attributes`                                        |
+| `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[]\|null, reflection, attributes`                                                                   |
+| `QuoteBlock`    | `_type: "QuoteBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                        |
+| `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: int\|null, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes`    |
+| `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[]\|null, reflection, attributes`                            |
+| `ImageBlock`    | `_type: "ImageBlock", alt: Inline[], src: string, caption: Inline[]\|null, reflection, attributes`                                                   |
+| `FileRef`       | `_type: "FileRef", path: string, fragment: string\|'', query: string\|'', caption: Inline[]\|null, reflection, attributes`                           |
+| `FileRefGroup`  | `_type: "FileRefGroup", group: "image"\|"video"\|"audio", children: (FileRef\|ImageBlock)[], caption: Inline[]\|null, reflection, attributes`        |
+| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Block[], caption: Inline[]\|null, reflection, attributes`                                              |
+| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Block[], caption: Inline[]\|null, reflection, attributes`                                                          |
+| `CommentBlock`  | `_type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5).                                                       |
+| `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflection, attributes`                                                                     |
 
 ### 14.3 Inline Segments
 
 | Segment         | Fields |
 |-----------------|--------|
-| `Text`          | `type: "Text", value: string` |
-| `Emphasis`      | `type: "Emphasis", children: Inline[], attributes` |
-| `Strong`        | `type: "Strong", children: Inline[], attributes` |
-| `Highlight`     | `type: "Highlight", children: Inline[], attributes` |
-| `Spoiler`       | `type: "Spoiler", children: Inline[], attributes` |
-| `Link`          | `type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|'', target: string\|'', attributes` |
-| `CodeInline`    | `type: "CodeInline", value: string, attributes` |
-| `MathInline`    | `type: "MathInline", formula: string, attributes` |
-| `QuoteInline`   | `type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
-| `ImageInline`   | `type: "ImageInline", alt: Inline[], src: string, attributes` |
-| `Mark`          | `type: "Mark", name: string, children: Inline[], attributes` |
-| `LineBreak`     | `type: "LineBreak"` |
-| `Variable`      | `type: "Variable", key: string, attributes`                                     |
+| `Text`          | `_type: "Text", value: string` |
+| `Emphasis`      | `_type: "Emphasis", children: Inline[], attributes` |
+| `Strong`        | `_type: "Strong", children: Inline[], attributes` |
+| `Highlight`     | `_type: "Highlight", children: Inline[], attributes` |
+| `Spoiler`       | `_type: "Spoiler", children: Inline[], attributes` |
+| `Link`          | `_type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string\|'', target: string\|'', attributes` |
+| `CodeInline`    | `_type: "CodeInline", value: string, attributes` |
+| `MathInline`    | `_type: "MathInline", formula: string, attributes` |
+| `QuoteInline`   | `_type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
+| `ImageInline`   | `_type: "ImageInline", alt: Inline[], src: string, attributes` |
+| `Mark`          | `_type: "Mark", name: string, children: Inline[], attributes` |
+| `LineBreak`     | `_type: "LineBreak"` |
+| `Variable`      | `_type: "Variable", key: string, attributes`                                     |
 
 ### 14.4 Special Nodes
 
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
-| `Meta`          | `type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string`            |
-| `ListItem`      | `type: "ListItem", children: (Block\|Inline)[], attributes`                     |
-| `TaskItem`      | `type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
-| `Column`        | `type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
-| `Row`           | `type: "Row"\|"Header", children: Cell[], attributes`                           |
-| `Cell`          | `type: "Cell", children: Inline[], row: number, column: number` |
+| `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string`            |
+| `ListItem`      | `_type: "ListItem", children: (Block\|Inline)[], attributes`                     |
+| `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes`      |
+| `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
+| `Row`           | `_type: "Row"\|"Header", children: Cell[], attributes`                           |
+| `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
 
 ### 14.5 Synthetic Segments
 
@@ -63,7 +63,7 @@ The AST schema admits nodes that are not producible by parsing. **Conforming par
 
 | Segment    | Fields |
 |------------|--------|
-| `Fragment` | `type: "Fragment", meta: Meta\|null, children: Block[]` |
+| `Fragment` | `_type: "Fragment", meta: Meta\|null, children: Block[]` |
 
 `Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item.
 

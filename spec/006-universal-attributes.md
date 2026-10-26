@@ -271,7 +271,7 @@ Input:
 AST:
   Table {
     caption: [Text("Results from the first cohort")],
-    rows: [Row(type:"Header",...), Row(type:"Row",...)],
+    rows: [Row(_type:"Header",...), Row(_type:"Row",...)],
     attributes: []
   }
 

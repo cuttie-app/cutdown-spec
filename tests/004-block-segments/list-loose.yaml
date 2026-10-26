@@ -8,19 +8,19 @@ input: |
   - Item two
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: false
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Item one
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: false
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Item two

@@ -6,9 +6,9 @@ input: |
   ========== Too deep
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "========== Too deep"
 
 diagnostics:

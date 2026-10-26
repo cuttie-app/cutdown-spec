@@ -13,18 +13,18 @@ input: |
 
 pages:
   - children:
-      - type: Section
+      - _type: Section
         level: 1
         heading:
-          - type: Text
+          - _type: Text
             value: Chapter
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: In chapter.
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Outside.

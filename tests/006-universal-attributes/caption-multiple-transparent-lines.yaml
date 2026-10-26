@@ -9,16 +9,16 @@ input: |
   ^ Caption text
 
 ast:
-  - type: Table
+  - _type: Table
     caption:
-      - type: Text
+      - _type: Text
         value: "Caption text"
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: col
     attributes:
       - key: id

@@ -14,21 +14,21 @@ diagnostics:
     level: warning
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: true
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: item
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: "---"
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: after

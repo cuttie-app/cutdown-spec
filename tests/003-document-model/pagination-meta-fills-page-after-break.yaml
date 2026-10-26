@@ -15,16 +15,16 @@ input: |
 
 pages:
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Para one
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: Two\n"
     children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: Para two

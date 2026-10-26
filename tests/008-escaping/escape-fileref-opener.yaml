@@ -6,7 +6,7 @@ input: |
   \/photos/a.png
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "/photos/a.png"

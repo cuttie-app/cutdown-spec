@@ -6,7 +6,7 @@ input: |
   ## a whole-line comment
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children: []
     reflection:
       - loc: { start: 3, end: 23 }

@@ -6,11 +6,11 @@ input: |
   ^^^x^^^
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Spoiler
+      - _type: Spoiler
         children:
-          - type: Text
+          - _type: Text
             value: "^x"
-      - type: Text
+      - _type: Text
         value: "^"

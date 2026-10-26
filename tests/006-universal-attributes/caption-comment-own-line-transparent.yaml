@@ -8,17 +8,17 @@ input: |
   ^ Caption text
 
 ast:
-  - type: Table
+  - _type: Table
     caption:
-      - type: Text
+      - _type: Text
         value: "Caption text"
     reflection:
       - loc: { start: 11, end: 25 }
         text: "editorial note"
     rows:
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: col

@@ -10,25 +10,25 @@ input: |
     This starts a new paragraph inside item two.
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: false
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: First item
-  - type: List
+  - _type: List
     kind: "bullet"
     loose: true
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: Second item
-          - type: Paragraph
+          - _type: Paragraph
             children:
-              - type: Text
+              - _type: Text
                 value: This starts a new paragraph inside item two.

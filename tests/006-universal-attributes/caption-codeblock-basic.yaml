@@ -9,9 +9,9 @@ input: |
   ^ A simple assignment
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: python
     raw: "x = 1"
     caption:
-      - type: Text
+      - _type: Text
         value: "A simple assignment"

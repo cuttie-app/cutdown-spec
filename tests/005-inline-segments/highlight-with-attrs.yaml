@@ -6,12 +6,12 @@ input: |
   ~~crossed~~{.ct}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Highlight
+      - _type: Highlight
         attributes:
           - key: class
             value: [ct]
         children:
-          - type: Text
+          - _type: Text
             value: crossed

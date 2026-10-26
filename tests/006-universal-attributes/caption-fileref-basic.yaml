@@ -7,10 +7,10 @@ input: |
   ^ Annual report, 2025
 
 ast:
-  - type: FileRef
+  - _type: FileRef
     path: "/docs/report.pdf"
     fragment: ""
     query: ""
     caption:
-      - type: Text
+      - _type: Text
         value: "Annual report, 2025"

@@ -6,19 +6,19 @@ input: |
   Hello ::marker world::{#here .highlight} end
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Hello "
-      - type: Mark
+      - _type: Mark
         name: marker
         children:
-          - type: Text
+          - _type: Text
             value: "world"
         attributes:
           - key: id
             value: here
           - key: class
             value: [highlight]
-      - type: Text
+      - _type: Text
         value: " end"

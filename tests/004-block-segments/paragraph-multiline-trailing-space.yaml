@@ -5,7 +5,7 @@ description: A trailing space before a soft break is preserved as a word boundar
 input: "First line \nsecond line\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: First line second line

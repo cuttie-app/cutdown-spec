@@ -6,16 +6,16 @@ input: |
   - item {.item-class}{.list-class}
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     attributes:
       - key: class
         value: [list-class]
     children:
-      - type: ListItem
+      - _type: ListItem
         attributes:
           - key: class
             value: [item-class]
         children:
-          - type: Text
+          - _type: Text
             value: item

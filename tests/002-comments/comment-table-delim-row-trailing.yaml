@@ -8,35 +8,35 @@ input: |
   | AA     | BB     |
 
 ast:
-  - type: Table
+  - _type: Table
     reflection:
       - loc: { start: 23, end: 34 }
         text: "header note"
       - loc: { start: 58, end: 68 }
         text: "delim note"
     rows:
-      - type: Header
+      - _type: Header
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "Head A"
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "Head B"
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "AA"
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: "BB"
     columns:
-      - type: Column
+      - _type: Column
         align: left
-      - type: Column
+      - _type: Column
         align: start

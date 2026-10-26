@@ -9,52 +9,52 @@ input: |
   | Bob   |    17 |
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Header
+      - _type: Header
         children:
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: Name
-          - type: Cell
+          - _type: Cell
             row: 0
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: Score
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             row: 1
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: Alice
-          - type: Cell
+          - _type: Cell
             row: 1
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: "42"
-      - type: Row
+      - _type: Row
         children:
-          - type: Cell
+          - _type: Cell
             row: 2
             column: 0
             children:
-              - type: Text
+              - _type: Text
                 value: Bob
-          - type: Cell
+          - _type: Cell
             row: 2
             column: 1
             children:
-              - type: Text
+              - _type: Text
                 value: "17"
     columns:
-      - type: Column
+      - _type: Column
         align: left
-      - type: Column
+      - _type: Column
         align: right

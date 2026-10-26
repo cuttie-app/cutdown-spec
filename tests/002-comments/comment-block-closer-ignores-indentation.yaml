@@ -10,9 +10,9 @@ input: |
   after
 
 ast:
-  - type: CommentBlock
+  - _type: CommentBlock
     text: "note\n"
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: after

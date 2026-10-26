@@ -8,14 +8,14 @@ input: |
   ^ Orphaned caption
 
 ast:
-  - type: ImageBlock
+  - _type: ImageBlock
     alt:
-      - type: Text
+      - _type: Text
         value: alt
     src: "photo.jpg"
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "^ Orphaned caption"
 
 diagnostics:

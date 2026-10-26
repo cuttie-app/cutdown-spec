@@ -13,10 +13,10 @@ input: |
 
 pages:
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: First\n"
   - meta:
-      type: Meta
+      _type: Meta
       format: yaml
       raw: "title: Second\n"

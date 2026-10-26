@@ -6,7 +6,7 @@ input: |
   [a __b__ c
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "[a __b__ c"

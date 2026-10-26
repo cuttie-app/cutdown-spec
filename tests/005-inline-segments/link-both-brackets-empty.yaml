@@ -6,9 +6,9 @@ input: |
   [][]{#anchor .marker}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Link
+      - _type: Link
         kind: page
         children: []
         target: ""

@@ -6,8 +6,8 @@ input: |
   == Subtitle
 
 ast:
-  - type: Section
+  - _type: Section
     level: 2
     heading:
-      - type: Text
+      - _type: Text
         value: Subtitle

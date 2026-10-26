@@ -8,7 +8,7 @@ input: |
   para after
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "para before---para after"

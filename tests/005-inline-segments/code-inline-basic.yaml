@@ -6,7 +6,7 @@ input: |
   ``code``
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: CodeInline
+      - _type: CodeInline
         value: code

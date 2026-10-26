@@ -8,8 +8,8 @@ input: |
   > ```
 
 ast:
-  - type: QuoteBlock
+  - _type: QuoteBlock
     children:
-      - type: CodeBlock
+      - _type: CodeBlock
         language: js
         raw: const x = 1

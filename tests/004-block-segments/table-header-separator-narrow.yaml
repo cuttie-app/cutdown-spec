@@ -9,26 +9,26 @@ input: |
 diagnostics: []
 
 ast:
-  - type: Table
+  - _type: Table
     rows:
-      - type: Header
+      - _type: Header
         children:
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: A
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: B
-          - type: Cell
+          - _type: Cell
             children:
-              - type: Text
+              - _type: Text
                 value: C
     columns:
-      - type: Column
+      - _type: Column
         align: right
-      - type: Column
+      - _type: Column
         align: start
-      - type: Column
+      - _type: Column
         align: start

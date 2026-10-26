@@ -6,8 +6,8 @@ input: |
   ![A sunset](photos/sunset.jpg)
 
 ast:
-  - type: ImageBlock
+  - _type: ImageBlock
     alt:
-      - type: Text
+      - _type: Text
         value: A sunset
     src: photos/sunset.jpg

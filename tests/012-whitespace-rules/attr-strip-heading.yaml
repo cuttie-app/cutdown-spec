@@ -5,10 +5,10 @@ description: "Whitespace immediately before a consumed `{attr}` on a heading-ope
 input: "== Start Heading  {.red}\n"
 
 ast:
-  - type: Section
+  - _type: Section
     level: 2
     heading:
-      - type: Text
+      - _type: Text
         value: Start Heading
     attributes:
       - key: class

@@ -5,15 +5,15 @@ description: Soft break inside an inline block is folded to zero; trailing space
 input: "__bold \ncontinuation__ and __nospace\ncontinuation__\n"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: bold continuation
-      - type: Text
+      - _type: Text
         value: " and "
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: nospacecontinuation

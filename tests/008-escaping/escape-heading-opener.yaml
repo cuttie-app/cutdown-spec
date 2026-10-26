@@ -6,7 +6,7 @@ input: |
   \== Not a heading
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "== Not a heading"

@@ -7,18 +7,18 @@ input: |
   ^ A caption
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: ImageInline
+      - _type: ImageInline
         alt:
-          - type: Text
+          - _type: Text
             value: a
         src: "b"
-      - type: Text
+      - _type: Text
         value: " trailing text"
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "^ A caption"
 
 diagnostics:

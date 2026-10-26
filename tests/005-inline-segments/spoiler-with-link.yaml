@@ -6,13 +6,13 @@ input: |
   ^^[text](/url)^^
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Spoiler
+      - _type: Spoiler
         children:
-          - type: Link
+          - _type: Link
             kind: external
             children:
-              - type: Text
+              - _type: Text
                 value: text
             href: /url

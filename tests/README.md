@@ -34,11 +34,11 @@ description: "__ delimiters produce Emphasis; single _ is literal text"
 input: "__bold__"
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: bold
 ```
 
@@ -95,9 +95,9 @@ streaming:
 
 ```yaml
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: Hello
 ```
 
@@ -106,9 +106,9 @@ ast:
 ```yaml
 pages:
   - children:
-      - type: Paragraph
+      - _type: Paragraph
         children:
-          - type: Text
+          - _type: Text
             value: First
   - {}
 ```
@@ -125,12 +125,12 @@ Attributes are asserted as an ordered array of `{ key, value }` objects. The `cl
 
 ```yaml
 ast:
-  - type: List
+  - _type: List
     attributes:
       - key: class
         value: [list-class]
     children:
-      - type: ListItem
+      - _type: ListItem
         attributes:
           - key: class
             value: [item-class]
@@ -148,7 +148,7 @@ description: "Unclosed ``` fence; content runs to end of document; CDN-0001 warn
 input: "```python\nx = 1\n"
 
 ast:
-  - type: CodeBlock
+  - _type: CodeBlock
     language: python
     content: x = 1
 

@@ -6,7 +6,7 @@ input: |
   $$a^2 + b^2$$
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: MathInline
+      - _type: MathInline
         formula: a^2 + b^2

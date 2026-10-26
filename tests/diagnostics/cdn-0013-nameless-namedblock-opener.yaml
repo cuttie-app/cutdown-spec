@@ -6,9 +6,9 @@ input: |
   ::: {.alert}
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "::: {.alert}"
 
 diagnostics:

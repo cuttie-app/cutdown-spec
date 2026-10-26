@@ -6,12 +6,12 @@ input: |
   Hello ::a:: world
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Text
+      - _type: Text
         value: "Hello "
-      - type: Mark
+      - _type: Mark
         name: a
         children: []
-      - type: Text
+      - _type: Text
         value: " world"

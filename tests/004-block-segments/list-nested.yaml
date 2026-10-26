@@ -8,23 +8,23 @@ input: |
   - Item two
 
 ast:
-  - type: List
+  - _type: List
     kind: "bullet"
     start: null
     children:
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Item one
-          - type: List
+          - _type: List
             kind: "bullet"
             start: null
             children:
-              - type: ListItem
+              - _type: ListItem
                 children:
-                  - type: Text
+                  - _type: Text
                     value: Nested
-      - type: ListItem
+      - _type: ListItem
         children:
-          - type: Text
+          - _type: Text
             value: Item two

@@ -6,13 +6,13 @@ input: |
   __ a ** b __ c **
 
 ast:
-  - type: Paragraph
+  - _type: Paragraph
     children:
-      - type: Emphasis
+      - _type: Emphasis
         children:
-          - type: Text
+          - _type: Text
             value: "a ** b"
-      - type: Text
+      - _type: Text
         value: " c **"
 
 diagnostics:
