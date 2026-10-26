@@ -108,10 +108,16 @@ Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment
 type Attribute =
   | { key: "id",    value: string }
   | { key: "class", value: string[] }
-  | { key: string,  value: string }   // value: "" for bare-key tokens
+  | { key: string,  value: string | JsonObject | JsonArray }   // value: "" for bare-key tokens
+
+type JsonValue  = null | boolean | number | string | JsonObject | JsonArray
+type JsonObject = { [key: string]: JsonValue }
+type JsonArray  = JsonValue[]
 ```
 
-`attributes` is typed `Attribute[]`. A block or inline node with no attributes carries an empty array, never `null`. Nodes that admit no attributes at all (`CommentBlock`, `Meta`, `Column`, `Cell`) omit the field entirely.
+A JSON attribute value (§6.1.1) is author data, so a JSON `null` may appear inside it. It never stands for an absent property.
+
+Property `attributes`: is typed `Attribute[]`. A block or inline node with no attributes carries an empty array, never `null`. Nodes that admit no attributes at all (`CommentBlock`, `Meta`, `Column`, `Cell`) omit the field entirely.
 
 Ordering: entries appear in **source order**. Deduplication rules (see §6.1.1) may drop entries before the array is emitted.
 

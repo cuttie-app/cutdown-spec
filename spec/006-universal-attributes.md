@@ -12,8 +12,18 @@
 
 Token types inside `{}`:
 - `#identifier` — the `#` (octothorpe) sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
-- `.classname` — appends to the `class` entry. All `.classname` tokens in a block are collected into a single `{ key: "class", value: string[] }` entry. `.class` syntax has priority: if `class=` also appears, `class=` is dropped and CDN-0021 is emitted.
+- `.classname` and `class=value` — both add to one `class` entry, `{ key: "class", value: string[] }`. Every `.x` token and every `class=` value contribute in source order; a `class=` value is split on whitespace, so `class="b c"` adds `b` and `c`. A repeated class is dropped without a diagnostic; the first occurrence keeps its place. The entry sits at the position of the first contributing token. `class=""` contributes nothing, and with no contributions there is no `class` entry.
+  ```
+  {.a class="b c" .d .a}  →  [{ key: "class", value: ["a", "b", "c", "d"] }]
+  ```
+  At most 32 classes are kept. Further classes are dropped and CDN-0034 is emitted.
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
+- `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array (RFC 8259), and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
+  - Only objects and arrays are JSON. `key=123` and `key=true` stay strings (`"123"`, `"true"`).
+  - The JSON must be strict and on one line. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
+  - At most 4096 Unicode scalar values and a nesting depth of 8.
+  - `id` and `class` take no JSON value.
+  - JSON that is malformed, over a limit, or given to `id` or `class` violates the attribute grammar: the whole `{…}` slice becomes literal text (§6.1.3).
 - `key` (bare, with no `=` (equals sign)) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
 - Token order inside `{}` is preserved in the emitted `Attribute[]`.
 

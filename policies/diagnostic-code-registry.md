@@ -216,10 +216,10 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0021 |
 | title | class= conflicts with .class syntax |
 | level | warning |
-| trigger | A `class=` token appears alongside one or more `.classname` tokens in the same `{...}` block |
-| recovery | The `class=` token is dropped; all `.classname` tokens are collected into the `class` entry |
+| trigger | None since 0.11.0. Formerly: a `class=` token appears alongside one or more `.classname` tokens in the same `{...}` block |
+| recovery | None since 0.11.0: `class=` and `.classname` merge into one `class` entry (§6.1.1). Formerly: the `class=` token was dropped |
 | introduced_in | 0.2.0 |
-| status | active |
+| status | deprecated — no longer emitted; the code stays reserved |
 | owner | Language |
 
 ---
@@ -386,3 +386,20 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |
+
+---
+
+### CDN-0034 — Class limit exceeded
+
+| Field | Value |
+|---|---|
+| code | CDN-0034 |
+| title | Class limit exceeded |
+| level | warning |
+| trigger | One `{...}` group contributes more than 32 distinct classes through `.classname` and `class=` tokens (§6.1.1) |
+| recovery | The first 32 classes are kept in source order; the rest are dropped. `loc` spans the first dropped class token |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---

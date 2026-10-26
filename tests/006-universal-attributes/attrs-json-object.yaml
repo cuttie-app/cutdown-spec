@@ -1,0 +1,18 @@
+id: attrs-json-object
+section: "6.1.1"
+description: "key={...} holds strict JSON; the entry carries the parsed value, and JSON null is author data"
+
+input: |
+  Hello {data={"a":1,"b":[true,null],"c":"x}y"}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: data
+        value:
+          a: 1
+          b: [true, null]
+          c: "x}y"

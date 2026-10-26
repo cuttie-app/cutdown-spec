@@ -1,0 +1,15 @@
+id: attrs-json-array
+section: "6.1.1"
+description: "key=[...] holds a JSON array"
+
+input: |
+  Hello {sizes=[1,2,3]}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: sizes
+        value: [1, 2, 3]

@@ -121,7 +121,7 @@ A parser-only implementation skips this directory. Nothing here is a parser obli
 
 ## Attribute fixtures
 
-Attributes are asserted as an ordered array of `{ key, value }` objects. The `class` shorthand (`.class`) produces `value: string[]` (array of strings); all other values are plain strings:
+Attributes are asserted as an ordered array of `{ key, value }` objects. The `class` entry (from `.class` tokens and `class=` values) has `value: string[]`; a `key={…}` or `key=[…]` entry holds the parsed JSON object or array; all other values are plain strings:
 
 ```yaml
 ast:

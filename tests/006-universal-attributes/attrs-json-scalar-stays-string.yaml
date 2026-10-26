@@ -1,0 +1,17 @@
+id: attrs-json-scalar-stays-string
+section: "6.1.1"
+description: "Only objects and arrays are JSON; key=123 and key=true stay strings"
+
+input: |
+  Hello {n=123 flag=true}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: n
+        value: "123"
+      - key: flag
+        value: "true"

@@ -1,0 +1,15 @@
+id: attrs-class-merge-mixed-forms
+section: "6.1.1"
+description: ".class tokens and class= values merge into one class entry in source order; class= splits on whitespace; repeats are dropped silently"
+
+input: |
+  Hello {.foo class="bar baz" .qux .foo}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: class
+        value: [foo, bar, baz, qux]

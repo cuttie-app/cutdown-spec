@@ -1,0 +1,12 @@
+id: attrs-json-invalid-literal
+section: "6.1.3"
+description: "Malformed JSON violates the attribute grammar: the whole slice, braces included, is one verbatim Text run"
+
+input: |
+  {data={"a":}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{data={"a":}}'

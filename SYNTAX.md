@@ -317,10 +317,12 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 ## Attributes
 
 ```
-{#id .class key=value key="spaced value"}
+{#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-Attach **after** their target on the same line (or next line, no blank line between). Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
+`.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
+
+Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 
 **Block opening lines (headings, named blocks):** last `{...}` on the line → claimed by the block. Earlier `{...}` attach to preceding inline elements. Empty `{}` as last token = no attrs on block.
 
