@@ -1,5 +1,5 @@
 id: cdn-0032-no-fire-url
-section: "1.7.4"
+section: "9.2.4"
 description: "CDN-0032 does not fire for a URL: the validity rules do not apply to an https:// path"
 
 input: |

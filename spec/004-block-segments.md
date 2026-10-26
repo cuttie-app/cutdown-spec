@@ -74,7 +74,7 @@ AST:
 ={n} inline-content {attrs}
 ```
 
-A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A `Section`'s extent is not parsed; it is derived by the sectionization fold defined in §9.5.1.
+A heading creates a `Section` segment. Consumers receive `Section` segments — there is no bare `Heading` node in the AST. A `Section`'s extent is not parsed; it is derived by the sectionization fold defined in §9.3.1.
 
 **AST type:**
 
@@ -102,11 +102,11 @@ interface Section {
 | `========= Heading` | 9     |
 
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
-- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` (§2.2), or a `^ ` caption line (§6.5). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
+- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` (§2.2), or a `^ ` caption line (§6.2). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
 - A heading MUST be preceded by a blank line (or be the first line of the document or block container).
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
-- Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). The fold runs independently inside each container, so a `Section` never crosses a container boundary (§9.5.1).
+- Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). The fold runs independently inside each container, so a `Section` never crosses a container boundary (§9.3.1).
 - **Opener escape:** `\=` at line start suppresses heading formation at **any** level — `\=`, `\==`, `\===` ... all become `Paragraph([Text("= ...")])`. See §8.2.
 
 **Examples:**
@@ -144,7 +144,7 @@ interface Meta {
 
 - Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
-- Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§9.5.2). Never appears in `Page.children`.
+- Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§9.3.2). Never appears in `Page.children`.
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.
 - No `attributes` field.
@@ -535,7 +535,7 @@ A column with no corresponding position in the header separator, and every colum
 
 #### Table shape
 
-**Leading `|` required.** Every content row and header separator opens with `|`. It is the detection anchor (§9.3 classifies a table by `^\|`); without it the line is a Paragraph.
+**Leading `|` required.** Every content row and header separator opens with `|`. It is the detection anchor (§9.1.3 classifies a table by `^\|`); without it the line is a Paragraph.
 
 **Trailing `|` optional.** The last `|` on a line is always the **closer**, never a cell separator. It closes the final cell rather than opening an empty one.
 
@@ -559,7 +559,7 @@ The closer also determines how deep a trailing `{attrs}` chain reaches — see *
 
 - Each `|` content line is one independent logical row.
 - Cells contain `Inline[]` parsed by full inline rules.
-- The table ends at the first line that is neither a content row nor a header separator — including a blank line, a container boundary, or any other block opener. That line is classified on its own (§9.3); a later `|` line opens a **new** table.
+- The table ends at the first line that is neither a content row nor a header separator — including a blank line, a container boundary, or any other block opener. That line is classified on its own (§9.1.3); a later `|` line opens a **new** table.
 
 **Attrs scope chain.** Rule B (§6) applies. The slots available to a row's trailing `{attrs}` sequence depend on two things — which row it is, and whether the last cell was closed:
 
@@ -671,7 +671,7 @@ https://youtu.be/dQw4w9WgXcQ {.wide}
 ---
 ```
 
-A top-level line beginning exactly `---`. A PageBreaker is a pagination signal, not a block: it is consumed by the pagination fold (§9.5.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
+A top-level line beginning exactly `---`. A PageBreaker is a pagination signal, not a block: it is consumed by the pagination fold (§9.3.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
 
 - The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and CDN-0016 is emitted. There is no attributed form.
 - Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`): a blank-line-surrounded `---` line is not a PageBreaker — it parses as `Paragraph([Text("---")])` and CDN-0017 is emitted. Glued to a preceding paragraph, `---` is ordinary paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
@@ -712,7 +712,7 @@ interface FileBlock {
 }
 ```
 
-- `src` is a `PathResourceLocator` (§1.7). Its extent is the whole line from the leading `/`, after removing one trailing attribute sequence and then trailing whitespace (§1.7.1). Spaces inside the path are path content: `/My Docs/Q3 report.pdf` is one path.
+- `src` is a `PathResourceLocator` (§9.2). Its extent is the whole line from the leading `/`, after removing one trailing attribute sequence and then trailing whitespace (§9.2.1). Spaces inside the path are path content: `/My Docs/Q3 report.pdf` is one path.
 - A line holding only `/` is a `FileBlock` whose `src.raw` is `"/"`. What it refers to is the consumer's decision.
 - Cutdown assigns no media type and no group. A consumer that needs one inspects `src.path`.
 - A `FileBlock` never stands alone: it is always a child of a `FileGroup` (§4.12).
@@ -834,7 +834,7 @@ interface RefDefinition {
 - Empty content (`[^ref]:`) is valid and produces an empty `children` array.
 - Content is **parsed by inline rules**. Result is `Inline[]`.
 - Cutdown does not validate that every `[^ref]` link has a matching definition.
-- When the same `ref` is defined more than once in a document, resolution uses the last definition in source order (**last wins**). Resolution is the consumer's responsibility (§9.4).
+- When the same `ref` is defined more than once in a document, resolution uses the last definition in source order (**last wins**). Resolution is the consumer's responsibility (§9.1.4).
 
 ---
 
@@ -920,7 +920,7 @@ interface CommentBlock {
 - Content is **opaque** — captured verbatim with no inline or block parsing. Lines joined with `\n`; a single trailing `\n` is appended.
 - Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
-- `CommentBlock` takes no part in pagination (§9.5.2): only a `Meta` and a PageBreaker create Page boundaries.
+- `CommentBlock` takes no part in pagination (§9.3.2): only a `Meta` and a PageBreaker create Page boundaries.
 - Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
 - No `attributes` field.
 - **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
@@ -968,8 +968,8 @@ interface InjectBlock {
 }
 ```
 
-- `src` is parsed exactly as for `FileBlock` (§4.11, §1.7). The test looks at `src.path`, so a query or fragment does not hide it: `/card.cutdown?name=Ann` and `/intro.cutdown#setup` are `InjectBlock`s. The suffix `.cutdown` is matched case-sensitively.
-- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§1.7.5).
+- `src` is parsed exactly as for `FileBlock` (§4.11, §9.2). The test looks at `src.path`, so a query or fragment does not hide it: `/card.cutdown?name=Ann` and `/intro.cutdown#setup` are `InjectBlock`s. The suffix `.cutdown` is matched case-sensitively.
+- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§9.2.5).
 - A line holding only `/` is a `FileBlock`, not an injection of the root folder.
 - The parser always emits `children: []`. Cutdown's parser does no I/O; a consumer that resolves the injection fills `children` as §17 defines. An `InjectBlock` that no consumer resolves stays in the AST unchanged.
 - `children` is a block scope (§1.6), and Sections never cross its edge (§17).

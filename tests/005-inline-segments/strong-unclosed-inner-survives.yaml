@@ -1,5 +1,5 @@
 id: strong-unclosed-inner-survives
-section: "9.4.1"
+section: "9.1.4.1"
 description: "An unclosed ** is a Class 1 (symmetric) opener: only the opener degrades to Text; constructs after it parse normally"
 
 input: |

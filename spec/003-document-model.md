@@ -35,7 +35,7 @@ interface Page {
 }
 ```
 
-Pages are not parsed — they are **derived** from the root block sequence by the pagination fold, which is defined in §9.5.2. Two constructs drive it: `Meta` blocks (§4.3) and PageBreakers (§4.10).
+Pages are not parsed — they are **derived** from the root block sequence by the pagination fold, which is defined in §9.3.2. Two constructs drive it: `Meta` blocks (§4.3) and PageBreakers (§4.10).
 
 A **Ghost Page** is a Page with `meta: null` and `children: []`. Ghost Pages are valid and emitted as-is; consumers decide how to handle them.
 

@@ -1,6 +1,6 @@
 id: pagination-meta-fills-page-after-break
 section: "3"
-description: "A Meta block fills the meta slot of the Page a preceding PageBreaker opened — the PageBreaker makes the boundary, the Meta adds none of its own, so no Ghost Page appears (§9.5.2)"
+description: "A Meta block fills the meta slot of the Page a preceding PageBreaker opened — the PageBreaker makes the boundary, the Meta adds none of its own, so no Ghost Page appears (§9.3.2)"
 
 input: |
   Para one

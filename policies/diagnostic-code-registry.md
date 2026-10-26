@@ -366,7 +366,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0032 |
 | title | Invalid path |
 | level | warning |
-| trigger | A `PathResourceLocator` (§1.7) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §1.7.5: a control character, more than 1024 Unicode scalar values, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. Never emitted for a URL (`https://…`) |
+| trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5: a control character, more than 1024 Unicode scalar values, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. Never emitted for a URL (`https://…`) |
 | recovery | The owning node is emitted as usual. Its locator keeps `raw` as written and has `path: ''`, `query: []`, `fragment: ''`. `loc` spans the path |
 | introduced_in | 0.11.0 |
 | status | active |

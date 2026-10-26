@@ -1,5 +1,5 @@
 id: attr-brace-literal-span-idiom
-section: "9.4.1"
+section: "9.1.4.1"
 description: "A closed { } whose content violates the attribute grammar is the literal-span idiom: the whole slice, braces included, is one verbatim Text run and is never inline-parsed"
 
 input: |

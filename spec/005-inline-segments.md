@@ -152,7 +152,7 @@ interface Link {
 
 - `text` is **parsed by inline rules**. May be empty.
 - An unused locator has every part empty: `{ raw: "", path: "", query: [], fragment: "" }`.
-- **Page target:** a `PathResourceLocator` (§1.7), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
+- **Page target:** a `PathResourceLocator` (§9.2), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
 - **Tag target:** `#` followed by one or more `TAG_LITERAL` levels separated by `/` (§1.2): `[x][#Ціни/2026 Q1]` → `target: "Ціни/2026 Q1"`. The leading `#` is a sigil and is consumed.
 - **Ref target:** `^` (caret) + `ID_LITERAL`. **Cite target:** `@` + any characters other than `]` (right bracket).
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
@@ -161,7 +161,7 @@ interface Link {
 
 **Invalid targets.** The parser checks only what it can see in the source:
 
-- An invalid page path (§1.7.5) keeps the `Link` with `path.raw` as written and the other parts empty, and emits warning CDN-0032.
+- An invalid page path (§9.2.5) keeps the `Link` with `path.raw` as written and the other parts empty, and emits warning CDN-0032.
 - A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
 
 **Edge cases:**
@@ -193,7 +193,7 @@ Sample text with a reference to [the API][^api-doc] and [the API table][^api-tab
 
 Citation links `[text][@cite-id]` are for linking to a bibliography entry or similar **external reference**. The `target` field contains the citation ID, which consumers can resolve according to their internal citation logic.
 
-Page links `[text][path/to/page]` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x][guide/intro]` and `[x][guide/intro.cutdown]` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names a Section `id` in the target document. A trailing `/` is not a folder index; it makes the path invalid (§1.7.5). The base of a relative path is defined in §1.7.4.
+Page links `[text][path/to/page]` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x][guide/intro]` and `[x][guide/intro.cutdown]` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names a Section `id` in the target document. A trailing `/` is not a folder index; it makes the path invalid (§9.2.5). The base of a relative path is defined in §9.2.4.
 
 ---
 
@@ -309,7 +309,7 @@ interface ImageInline {
 ```
 
 - `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
-- `src` is a `PathResourceLocator` (§1.7), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. A `src` beginning with `https://` is a URL (§1.7.4): `![logo](https://cdn.example.com/a.png)` is decomposed but never invalid. An invalid path keeps the node, empties the locator's parts, and emits CDN-0032. `src` may be empty.
+- `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. A `src` beginning with `https://` is a URL (§9.2.4): `![logo](https://cdn.example.com/a.png)` is decomposed but never invalid. An invalid path keeps the node, empties the locator's parts, and emits CDN-0032. `src` may be empty.
 - `![]()` is valid and preserved as `ImageInline { alt: [], src: { raw: "", path: "", query: [], fragment: "" } }`.
 - `ImageInline` is the only image construct. An image alone on a line is still inline content: `![a](b)` → `Paragraph([ImageInline(...)])`. A local image that needs a caption or a gallery is written as a `FileBlock` (§4.11).
 - **Captions:** `ImageInline` does **not** participate in the caption line (§6.2) — it is not a block.
@@ -345,11 +345,11 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 
 **Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by `ID_LITERAL+` and then a space or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
 
-- Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.4.1, Class 3).
+- Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.1.4.1, Class 3).
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
 - Children are **parsed by inline rules** (see the context table at the head of §5).
 - **Maximum nesting depth is 8.** A `Mark` opener at depth 9 or deeper does not open; it degrades to literal `Text("::" + name)` and emits warning CDN-0031.
-- An unclosed opener degrades per Class 1 (§9.4.1): the opener alone is emitted as `Text` and parsing continues immediately after it. No diagnostic.
+- An unclosed opener degrades per Class 1 (§9.1.4.1): the opener alone is emitted as `Text` and parsing continues immediately after it. No diagnostic.
 - Attributes trail the closer, glued to it as for every other inline node: `::a b::{#x .y}`.
 - Whitespace inside the delimiters follows §12, as for any container inline.
 

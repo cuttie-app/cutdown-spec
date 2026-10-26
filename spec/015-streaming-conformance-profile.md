@@ -18,7 +18,7 @@ Every snapshot is an ordinary valid Cutdown document. End of input is the virtua
 
 At end of input, existing rules apply without repair:
 
-- unresolved inline openers degrade according to §9.4.1;
+- unresolved inline openers degrade according to §9.1.4.1;
 - an unclosed fence or container consumes its current body and emits its existing diagnostic;
 - no closer, marker, whitespace, normalization, or other **source** is synthesized. This constrains source text only; synthesising AST nodes where the rules require them — a padded table `Cell` (§4.8) — is not source synthesis and is unaffected.
 

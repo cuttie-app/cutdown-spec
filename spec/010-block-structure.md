@@ -4,7 +4,7 @@
 
 Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7); consecutive blank lines act as one (§12.1).
 
-A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.3). A run does not always produce one block:
+A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.1.3). A run does not always produce one block:
 
 - A **single-line block** — `Section`, `FileBlock`, `EmbedBlock`, `InjectBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification, so `= Title` followed directly by `content` yields a `Section` and a `Paragraph`.
 - A **`Paragraph`** consumes the whole run: it ends at the blank line that closes the run, and at no earlier line — not even one that would open a block if it began a run (see the no-interrupt rule below).
@@ -28,7 +28,7 @@ Trailing spaces on a line collapse to one space. That space is kept as `Text(" "
 
 ### 10.3 Block Classification
 
-Each block candidate is classified by its first line (see §9.3 for the full classification table).
+Each block candidate is classified by its first line (see §9.1.3 for the full classification table).
 
 ### 10.4 Syntax Primitives
 
@@ -61,7 +61,7 @@ Doubled-symbol delimiters may appear:
 - Adjacent to literal text on one or both sides: `aa**bb**cc`
 - Adjacent to another delimiter: `__**text**__`
 
-In all cases the delimiter is recognized. Whether an unmatched opener is treated as literal text follows the same rule as all inline constructs (§5, §9.4).
+In all cases the delimiter is recognized. Whether an unmatched opener is treated as literal text follows the same rule as all inline constructs (§5, §9.1.4).
 
 #### 10.4.4 Symbol repetition
 
@@ -93,7 +93,7 @@ When N identical characters appear at an inline position, the following rules ap
 |--------|---|---|---|-----|
 | `=` | Heading L1 (+space) | Heading L2 | Heading L3 | … up to L9; 10+ = literal |
 | `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
-| `-` | list marker (`- `+space) or literal | literal `--` | PageBreaker (top level; no node — §9.6) | PageBreaker (tail dropped, CDN-0016) |
+| `-` | list marker (`- `+space) or literal | literal `--` | PageBreaker (top level; no node — §9.4) | PageBreaker (tail dropped, CDN-0016) |
 | `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
 | `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
 | `\|` | Table row (§4.8) | — | — | — |

@@ -1,5 +1,5 @@
 id: imageinline-balanced-parens
-section: "1.7.1"
+section: "9.2.1"
 description: "Balanced parentheses stay in the path; the first unbalanced ) ends it"
 
 input: |

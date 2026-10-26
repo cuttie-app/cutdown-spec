@@ -61,7 +61,7 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
 | `Row`           | `_type: "Row"\|"Header", children: Cell[], attributes` |
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
-| `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§1.7) |
+| `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§9.2) |
 
 ### 14.5 Location Type
 

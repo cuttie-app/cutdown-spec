@@ -16,7 +16,7 @@ The `InjectBlock` itself stays in the tree. Its `src`, `attributes`, and `reflec
 
 ### 17.2 Section boundary
 
-Sections never cross the edge of `InjectBlock.children`. The sectionization fold (§9.5.1) runs inside `children` on its own, as it does inside any block container:
+Sections never cross the edge of `InjectBlock.children`. The sectionization fold (§9.3.1) runs inside `children` on its own, as it does inside any block container:
 
 - an injected heading opens a Section inside `children`, at the level it was written; levels are not shifted;
 - an injected level-1 heading does not close the host's open Sections;

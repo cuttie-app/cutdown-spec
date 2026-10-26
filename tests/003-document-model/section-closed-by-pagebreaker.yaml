@@ -1,5 +1,5 @@
 id: section-closed-by-pagebreaker
-section: "9.5.2"
+section: "9.3.2"
 description: A PageBreaker closes all open root-level Sections; content after the break belongs to the new Page, not the old Section
 
 input: |

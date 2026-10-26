@@ -1,5 +1,5 @@
 id: link-page-balanced-brackets
-section: "1.7.1"
+section: "9.2.1"
 description: "Balanced square brackets stay in a page path; the first unbalanced ] ends it"
 
 input: |

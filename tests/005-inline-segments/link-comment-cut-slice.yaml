@@ -1,5 +1,5 @@
 id: link-comment-cut-slice
-section: "9.4.1"
+section: "9.1.4.1"
 description: "The ## cut terminates the line before the ] closer; the dead [ opener emits the verbatim slice up to the cut, and the payload lands in reflection"
 
 input: |

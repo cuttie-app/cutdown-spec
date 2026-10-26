@@ -1,5 +1,5 @@
 id: escape-path-paren
-section: "1.7.2"
+section: "9.2.2"
 description: "An escaped ) inside a path is content: it is not counted and does not end the path"
 
 input: |

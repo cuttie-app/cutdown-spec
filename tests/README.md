@@ -49,7 +49,7 @@ ast:
 | Field | Required | Description |
 |---|---|---|
 | `id` | yes | Unique fixture ID (kebab-case, matches filename without `.yaml`) |
-| `section` | yes | Spec section number as a string (e.g. `"9.4"`) |
+| `section` | yes | Spec section number as a string (e.g. `"9.1.4"`) |
 | `description` | yes | One-line human-readable description |
 | `input` | yes | Raw Cutdown source text |
 | `ast` | — | Expected children of the first page (see [Assertions](#assertions)) |

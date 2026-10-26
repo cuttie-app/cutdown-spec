@@ -1,5 +1,5 @@
 id: fileblock-query-and-fragment
-section: "1.7.3"
+section: "9.2.3"
 description: The query runs to the first #; everything after # is the fragment, including a later ?
 
 input: |

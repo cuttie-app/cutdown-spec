@@ -21,8 +21,8 @@ foo ## trailing comment
 ```
 
 - The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value **verbatim** — trailing whitespace inside the payload is preserved, since the payload is opaque (§12's trailing-space rule does not reach inside it).
-- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.4.
-- **`##` boundaries are detected during Phase 2 preprocessing** (§9.2), before block classification. Block classification operates on the pre-`##` substring of each line.
+- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.1.4.
+- **`##` boundaries are detected during Phase 2 preprocessing** (§9.1.2), before block classification. Block classification operates on the pre-`##` substring of each line.
 - `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned.
 - `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values.
 - A literal `##` in normal text is written `\##` or `#\#` (§8).
@@ -53,7 +53,7 @@ When `##` appears after content on a line that belongs to a block, the payload i
 
 #### Standalone `## comment` line
 
-A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.2).
+A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.1.2).
 
 - Attaches to the **immediately preceding structural block** in the current scope, carrying its own `loc`. Consecutive standalone comments accumulate in source order.
 - **Closes** any active accumulation (continuing Paragraph, open FileGroup) before attaching.
@@ -70,7 +70,7 @@ foo ## bar                  →  Text("foo ") — block gains { loc, text: "bar"
 ### at inline               →  reflection entry; text: "# at inline"
 
 [text ## comment](url)
-  →  Text("[text ")  (the [ has no ] closer before the ## cut; the verbatim slice runs to the cut, §9.4.1)
+  →  Text("[text ")  (the [ has no ] closer before the ## cut; the verbatim slice runs to the cut, §9.1.4.1)
      Paragraph.reflection += { loc, text: "comment](url)" }
 
 | Head ## comment | Next |

@@ -1,5 +1,5 @@
 id: fileblock-braces-in-path
-section: "1.7.1"
+section: "9.2.1"
 description: "A {...} group that is not preceded by whitespace, or does not close the line, is path content"
 
 input: |

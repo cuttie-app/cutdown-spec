@@ -1,5 +1,5 @@
 id: fileblock-spaces-in-path
-section: "1.7.1"
+section: "9.2.1"
 description: "Spaces are path content; the path runs to end of line minus a trailing whitespace-led attribute sequence"
 
 input: |

@@ -1,5 +1,5 @@
 id: cdn-0032-invalid-path
-section: "1.7.5"
+section: "9.2.5"
 description: "CDN-0032: an empty path segment makes a page path invalid; the Link is kept with raw as written and the other parts empty"
 
 input: |

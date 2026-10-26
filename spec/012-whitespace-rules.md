@@ -42,7 +42,7 @@ Rows run from the line as a whole, through block structure, to inline content.
 | `Mark` | Follows §12.2 for its content. Exactly one space separates `name` from the content; that space is consumed |
 | `Link` `[text]` slot | Follows §12.2 |
 | `ImageInline` `alt` slot | Follows §12.2 |
-| `Link` page `path`, `ImageInline` `src` | Exempt — a `PathResourceLocator` keeps its whitespace exactly as written (§1.7) |
+| `Link` page `path`, `ImageInline` `src` | Exempt — a `PathResourceLocator` keeps its whitespace exactly as written (§9.2) |
 | `Link` external `href` | Exempt — kept as written |
 | `CodeInline` | Exempt — see below |
 | `MathInline` | Exempt — the formula is kept as written, like `CodeInline` |

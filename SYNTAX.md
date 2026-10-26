@@ -89,7 +89,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 
 Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed.
 
-Sections are not parsed — they are derived by a fold (§9.5.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
+Sections are not parsed — they are derived by a fold (§9.3.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
@@ -138,7 +138,7 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ^ Caption for a.png
 ```
 
-Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), parsed as a `PathResourceLocator` (§1.7): `raw`, `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`). Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A lone `/` is a valid `FileBlock`.
+Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), parsed as a `PathResourceLocator` (§9.2): `raw`, `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`). Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A lone `/` is a valid `FileBlock`.
 
 ### Injection → `InjectBlock`
 
@@ -242,7 +242,7 @@ Must start at line start. When the same `ref` is defined more than once in a doc
 
 ## Inline Elements
 
-Parsed in source order. An unclosed opener degrades by its class (§9.4.1):
+Parsed in source order. An unclosed opener degrades by its class (§9.1.4.1):
 
 - **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
 - **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
@@ -363,7 +363,7 @@ foo bar ## tail       → Text("foo bar ") + reflection entry on block
 
 Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
 
 **Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
 
@@ -438,7 +438,7 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 3. MathBlock `$$$` — content always literal
 4. CommentBlock `###` — content always literal (opaque)
 5. Inline code \`\` — content literal except `` \` ``
-6. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; acts as the terminator for open inline constructs, which degrade per their class (§9.4.1)
+6. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
 7. Escape `\x` — resolved before delimiter matching
 8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 9. Inline math `$$` — matched before emphasis; content literal

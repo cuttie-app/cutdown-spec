@@ -1,5 +1,5 @@
 id: imageinline-url-src
-section: "1.7.4"
+section: "9.2.4"
 description: "An https:// src is a URL: it is decomposed but never invalid, so the // after the scheme emits no diagnostic"
 
 input: |

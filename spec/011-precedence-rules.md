@@ -9,7 +9,7 @@ When multiple constructs compete for the same input, the following priority appl
 | 3 | MathBlock `$$$`                                                                 | Content always literal |
 | 4 | CommentBlock `###`                                                              | Content always literal (opaque). See §2.3, §4.16 |
 | 5 | Inline code \`\` `CodeInline`                                                   | Content literal |
-| 6 | Line comment `##`                                                               | No closer; runs to EOL. Payload stored as `Reflection` entry on enclosing block. Acts as the terminator for any open inline constructs, which degrade per their class (§9.4.1) — Class 2 openers emit the verbatim slice up to the `##` cut. Not recognized inside CodeInline / MathInline / quoted attribute values. See §2.2 |
+| 6 | Line comment `##`                                                               | No closer; runs to EOL. Payload stored as `Reflection` entry on enclosing block. Acts as the terminator for any open inline constructs, which degrade per their class (§9.1.4.1) — Class 2 openers emit the verbatim slice up to the `##` cut. Not recognized inside CodeInline / MathInline / quoted attribute values. See §2.2 |
 | 7 | Escape `\x`                                                                     | Resolved before delimiter matching |
 | 8 | Links and images `[...](...)`                                                   | Matched before emphasis runs |
 | 9 | Inline math `$$`                                                                | Matched before emphasis; content is literal |
@@ -19,6 +19,6 @@ When multiple constructs compete for the same input, the following priority appl
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.
 
-Note: inside a path (§1.7.1) brackets nest by the path's own counting, and inside a JSON attribute value (§6.1.1) braces and brackets within JSON strings are not counted. Neither is ordered by this table.
+Note: inside a path (§9.2.1) brackets nest by the path's own counting, and inside a JSON attribute value (§6.1.1) braces and brackets within JSON strings are not counted. Neither is ordered by this table.
 
 ---
