@@ -1,0 +1,13 @@
+id: interpolation-token-in-href
+section: "5.11.1"
+description: "{{key}} inside a string property stays verbatim for the consumer; no Variable node is produced"
+
+input: |
+  [docs](https://example.com/{{lang}}/start)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: "https://example.com/{{lang}}/start"

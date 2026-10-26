@@ -1,0 +1,16 @@
+id: cdn-0015-variable-inner-spaces
+section: "5.11"
+description: "CDN-0015: a Variable admits no whitespace inside the braces; {{ key }} is literal text"
+
+input: |
+  Hi {{ name }}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "Hi {{ name }}"
+
+diagnostics:
+  - code: CDN-0015
+    level: warning

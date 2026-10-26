@@ -251,26 +251,26 @@ Parsed in source order. An unclosed opener degrades by its class (§9.4.1):
 
 Degradation to visible literal text is silent — no diagnostics.
 
-| Syntax          | Node | Notes                                                                                                          |
-|-----------------|------|----------------------------------------------------------------------------------------------------------------|
-| `__text__`      | `Emphasis` | Single `_` = literal                                                                                           |
-| `**text**`      | `Strong` | Single `*` = literal                                                                                           |
-| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                           |
-| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                              |
-| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                     |
-| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                         |
-| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                           |
-| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                           |
-| `[text](url)`   | `Link(external)` |                                                                                                                |
-| `[text][page]`  | `Link(page)` | target is a page, Wiki-like syntax                                                                             |
-| `[text][#tag]`  | `Link(tag)` | resolved by consumer in Tag's namespace                                                                        |
-| `[text][^ref]`  | `Link(ref)` | resolved by consumer on page in Ref's / ID's namespace                                                         |
-| `[text][@cite]` | `Link(cite)` | resolved by consumer in outer Ref vocabulary                                                                   |
-| `![alt](src)`   | `ImageInline` |                                                                                                                |
-| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.        |
-| `{{key}}`       | `Variable` | Key is `ID_LITERAL`. Empty/invalid key → literal text + CDN-0015. Unclosed `{{` → verbatim slice.              |
-| `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`. |
-| `\` at line end | `LineBreak` |                                                                                                                |
+| Syntax          | Node | Notes                                                                                                                                                                                                 |
+|-----------------|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `__text__`      | `Emphasis` | Single `_` = literal                                                                                                                                                                                  |
+| `**text**`      | `Strong` | Single `*` = literal                                                                                                                                                                                  |
+| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                                                                                                                  |
+| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                                                                                                                     |
+| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                                                                                                            |
+| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                                                                                                                |
+| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
+| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
+| `[text](url)`   | `Link(external)` |                                                                                                                                                                                                       |
+| `[text][page]`  | `Link(page)` | `path` is a `PathResourceLocator`; always a `.cutdown` document (extension optional, leading slash optional). Wiki-like syntax. Invalid path → CDN-0032                                                               |
+| `[text][#tag]`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `#` `/` `]`. Empty level → CDN-0033                                                                                                                 |
+| `[text][^ref]`  | `Link(ref)` | resolved by consumer on page in Ref's / ID's namespace                                                                                                                                                |
+| `[text][@cite]` | `Link(cite)` | resolved by consumer in outer Ref vocabulary                                                                                                                                                          |
+| `![alt](src)`   | `ImageInline` | `src` is a `PathResourceLocator`; `https://…` is a URL, never invalid. Balanced `()` stay in the path                                                                                                 |
+| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
+| `{{key}}`       | `Variable` | Key is `ID_LITERAL`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
+| `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
+| `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
 

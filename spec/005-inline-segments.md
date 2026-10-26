@@ -395,11 +395,21 @@ interface Variable {
 }
 ```
 
-- `key` MUST use `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
+- `key` MUST use `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
 - Unclosed `{{` → literal text. Empty-key `{{}}` → literal text → warning CDN-0015.
 - Variables are only parsed in inline contexts where inline rules are active (not inside code/math/meta blocks).
 - Brace tie-break: `{{` is always matched before `{` (longest opener wins).
 - May carry trailing attributes: `{{key}} {#id .class}`.
+
+#### 5.11.1 Interpolation tokens in string properties
+
+A variable can also stand inside a string property, where no `Variable` node can live. There the parser leaves `{{key}}` in the string exactly as written, and the consumer substitutes it. Such an occurrence is an **interpolation token**.
+
+- **Interpolated properties:** `Link.href`; every `PathResourceLocator` (`raw`, and the `path`, `query`, and `fragment` decomposed from it); `EmbedBlock.url`; attribute string values, including strings inside a JSON value (§6.1.1).
+- **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
+- A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
+- `\{{` escapes a token. The parser leaves the backslash in place; the consumer's substitution step removes it and emits a literal `{{`.
+- The parser emits no diagnostic for a token. Whether a key has a value is the consumer's concern.
 
 ---
 

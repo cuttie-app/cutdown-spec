@@ -15,7 +15,7 @@ Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block c
 | `(` | left parenthesis | Link URL opener; nests inside a path (§1.7.1)                                                 | Yes |
 | `)` | right parenthesis | Link URL closer; the first unbalanced `)` ends an image path                                   | Yes |
 | `!` | exclamation mark | Image prefix                                                                                   | Yes |
-| `{` | left brace | Attribute/variable opener                                                                      | Yes |
+| `{` | left brace | Attribute/variable opener / interpolation token `{{` in string properties (§5.11.1)            | Yes |
 | `}` | right brace | Attribute/variable closer                                                                      | Yes |
 | `:` | colon | Mark delimiter (`::`) / NamedBlock (`:::`)                                                     | Yes |
 | `-` | hyphen | List marker / PageBreaker (`---`, top level)                                                     | Yes |

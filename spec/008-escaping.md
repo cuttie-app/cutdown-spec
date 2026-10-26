@@ -82,4 +82,6 @@ Opaque containers (whose content is captured verbatim) admit a single **narrow e
 
 A `PathResourceLocator` (§1.7) has its own escape table, defined once in §1.7.2: `\\`, the brackets, and `\?` `\#` `\&` `\=` resolve to the literal character, so a path can hold a `)` or a `?` without ending or splitting.
 
+In every string property that carries interpolation tokens (§5.11.1), `\{{` is left in place by the parser and resolved by the consumer to a literal `{{`. It is the one escape the parser does not consume.
+
 ---
