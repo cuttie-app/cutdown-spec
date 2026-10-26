@@ -3,7 +3,6 @@ title: Cutdown Canonical Serialization Policy
 Status: Active
 Scope: Byte-stable canonical representation of parse results
 Related:
-  - ../spec/016-canonical-form.md
   - ./conformance-policy.md
   - ./diagnostics-policy.md
 ---
@@ -34,7 +33,7 @@ Canonical serialized output contains:
 
 - No insignificant whitespace in canonical JSON.
 - Strings use JSON standard escaping.
-- Null fields are included only when required by schema; optional absent fields are omitted.
+- Every AST node property is emitted. An empty text field is `""` and an empty list is `[]`; `null` appears only as `Page.meta` when the page has no Meta block.
 - Numeric fields use canonical decimal form (no leading plus, no unnecessary leading zeros).
 
 ## AST/Diagnostics Shape Stability
