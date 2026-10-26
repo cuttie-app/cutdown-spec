@@ -96,9 +96,10 @@ When N identical characters appear at an inline position, the following rules ap
 | `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
 | `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
 | `\|` | Table row (§4.8) | — | — | — |
-| `/` | FileRef when followed by a path (§4.11) | — | — | — |
+| `/` | FileBlock, or InjectBlock for a `.cutdown` or folder path (§4.11, §4.17) | — | — | — |
+| `{n}.` | ordered list marker (`1.`–`99999.` + space, §4.7) | — | — | — |
 
-The two halves of this table use different keys. Rows for `=`, `>`, `:` and `#` are keyed by run length. Rows for `-`, `^`, `\|` and `/` are keyed by the character that **follows** the symbol at column 1 — a space, a cell, or a path — not by repetition.
+The two halves of this table use different keys. Rows for `=`, `>`, `:` and `#` are keyed by run length. Rows for `-`, `^`, `\|` and `/` are keyed by the character that **follows** the symbol at column 1 — a space, a cell, or a path — not by repetition. The `{n}.` row is keyed by digit count: one to five digits, then `.` and a space; six or more digits open no list.
 
 `https://` at the start of a block line opens an `EmbedBlock` (§4.9). It is a fixed eight-character prefix, not a repeated symbol.
 

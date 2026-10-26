@@ -360,9 +360,9 @@ interface List {
 ```
 
 - Unordered marker: `-` (hyphen) followed by one space. Only `-` is supported.
-- Ordered marker: `{number}.` followed by one space. The first item's number sets `List.start`; every other item's number is ignored.
+- Ordered marker: `{number}.` followed by one space, where `{number}` is 1–5 ASCII digits. A run of six or more digits is not a marker, so the line is not a list item. The first item's number sets `List.start`; every other item's number is ignored.
 - `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
-- `start` is non-null only for `kind: "numbered"`.
+- `start` is always present. It is `1` for `kind: "bullet"` and `"checklist"`. For `"numbered"` it is the first item's number, except that `0` is coerced to `1`, silently.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment.
 - **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.

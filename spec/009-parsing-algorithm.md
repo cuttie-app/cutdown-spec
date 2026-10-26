@@ -32,7 +32,7 @@ Each block candidate is classified by its first line:
 | `^\|` | Table |
 | `^>` | QuoteBlock |
 | `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
-| `^[0-9]+\. ` | List (ordered) |
+| `^[0-9]{1,5}\. ` | List (ordered) |
 | `^\[^[ID_LITERAL]` | RefDefinition |
 | `^\$\$\$` | MathBlock |
 | `^\^\^\^` | SpoilerBlock |

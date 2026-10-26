@@ -1,0 +1,11 @@
+id: list-ordered-five-digits
+section: "4.7"
+description: "A five-digit ordered marker is still a list marker"
+
+input: |
+  99999. last
+
+ast:
+  - _type: List
+    kind: "numbered"
+    start: 99999

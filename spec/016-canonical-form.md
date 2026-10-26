@@ -16,7 +16,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 |---|---|---|---|---|
 | 1 | `Meta` format tag | lowercase — `yaml`, `toml`, `json` | any case | §4.3 |
 | 2 | Nested quote marker | `> >` | `>>` | §4.6 |
-| 3 | Ordered list item numbers | consecutive ascending integers from `List.start` | any numbers after the first | §4.7 |
+| 3 | Ordered list item numbers | consecutive ascending integers from `List.start`; a first number of `0` is written `1` | any numbers after the first; `0` as the first | §4.7 |
 | 4 | `TaskItem` unchecked marker | `[ ]` | — | §4.7.2 |
 | 5 | `TaskItem` checked marker | `[+]` | `[x]`, `[X]` | §4.7.2 |
 | 6 | Trailing `\|` on a table row | omitted, where omitting it does not move the attribute scope chain | present | §4.8 |

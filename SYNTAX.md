@@ -129,7 +129,7 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
   - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered. Actual numbers ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the recommended style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
+Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
 
 ### Files → `FileBlock`, `FileGroup`
 

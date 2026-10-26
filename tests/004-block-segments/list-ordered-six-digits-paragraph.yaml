@@ -1,0 +1,12 @@
+id: list-ordered-six-digits-paragraph
+section: "4.7"
+description: "An ordered marker has 1-5 digits; a six-digit number opens no list and the line is a Paragraph"
+
+input: |
+  123456. not a list
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "123456. not a list"

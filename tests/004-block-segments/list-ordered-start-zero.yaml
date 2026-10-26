@@ -1,0 +1,21 @@
+id: list-ordered-start-zero
+section: "4.7"
+description: "A numbered list starting at 0 has start 1; the coercion is silent"
+
+input: |
+  0. zero
+  1. one
+
+ast:
+  - _type: List
+    kind: "numbered"
+    start: 1
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: zero
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: one
