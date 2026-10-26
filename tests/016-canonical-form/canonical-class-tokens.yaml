@@ -1,0 +1,9 @@
+id: canonical-class-tokens
+section: "16.1"
+description: "Classes are written as one .name token each, in order, without repeats"
+
+input: |
+  Hello {class="a b" .a .c}
+
+canonical: |
+  Hello {.a .b .c}

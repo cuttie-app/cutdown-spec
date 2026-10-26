@@ -1,0 +1,11 @@
+id: canonical-list-item-padding
+section: "16.1"
+description: "ListItem nested content sits 2 spaces past the parent marker's column, whatever the marker's width"
+
+input: |
+  10. ten
+      - nested
+
+canonical: |
+  10. ten
+    - nested
