@@ -119,13 +119,12 @@ The pagination fold applies **only to the root sequence** — blocks inside cont
 
 1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
 2. A **PageBreaker** unconditionally closes the current Page — as a Ghost Page if it is empty — and opens a new empty Page. A PageBreaker also closes all open root-level Sections. Every PageBreaker produces a page boundary: a leading `---` at document start yields a leading Ghost Page; consecutive separators yield Ghost Pages.
-3. A **`Meta` block** is handled by the current Page's `meta` slot, not by its position in the document.
-   - Slot empty → the `Meta` fills it. No new Page is created, whatever content the Page already holds.
-   - Slot already set → the `Meta` closes the current Page and opens a new Page carrying itself as `meta`.
+3. A **`Meta` block** whose current Page has `meta: null` fills that slot. No new Page is created, whatever content the Page already holds: a `Meta` after paragraphs, comments, or any other block still fills the Page those blocks are on, and a `Meta` after a PageBreaker fills the Page the PageBreaker opened.
+4. A **`Meta` block** whose current Page already has a `meta` closes that Page and opens a new Page carrying itself as `meta`.
+5. All other root blocks are appended to the current Page's `children`.
+6. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 
-   Content before a `Meta` therefore never creates a Page: a `Meta` after paragraphs, comments, or any other block still fills the Page those blocks are on. A `Meta` after a PageBreaker fills the Page the PageBreaker opened — the boundary is the PageBreaker's doing, and the `Meta` adds none of its own.
-4. All other root blocks are appended to the current Page's `children`.
-5. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
+Steps 3 and 4 depend only on the current Page's `meta` slot, never on where the `Meta` stands among other blocks. Content before a `Meta` therefore never creates a Page boundary; only a PageBreaker or a second `Meta` does.
 
 ### 9.6 PageBreaker
 

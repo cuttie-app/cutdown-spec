@@ -48,7 +48,7 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | `ImageInline`   | `_type: "ImageInline", alt: Inline[], src: PathResourceLocator, attributes` |
 | `Mark`          | `_type: "Mark", name: string, children: Inline[], attributes` |
 | `LineBreak`     | `_type: "LineBreak"` |
-| `Variable`      | `_type: "Variable", key: string, attributes`                                     |
+| `Variable`      | `_type: "Variable", key: string, attributes` |
 
 ### 14.4 Special Nodes
 
@@ -59,7 +59,7 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes` |
 | `FileBlock`     | `_type: "FileBlock", src: PathResourceLocator, caption: Inline[], attributes` — only inside a `FileGroup`; no `reflection` (§2.2) |
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
-| `Row`           | `_type: "Row"\|"Header", children: Cell[], attributes`                           |
+| `Row`           | `_type: "Row"\|"Header", children: Cell[], attributes` |
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
 | `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§1.7) |
 

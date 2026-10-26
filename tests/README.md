@@ -8,10 +8,12 @@ Fixtures are organized by spec section. Each subdirectory maps to one section:
 
 ```
 tests/
+  002-comments/
   003-document-model/
   004-block-segments/
   005-inline-segments/
   006-universal-attributes/
+  007-input-interpretation/
   008-escaping/
   010-block-structure/
   012-whitespace-rules/

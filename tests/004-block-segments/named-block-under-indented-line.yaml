@@ -1,0 +1,18 @@
+id: named-block-under-indented-line
+section: "4.13"
+description: "A content line indented less than the base padding loses all its leading spaces and nothing else; no diagnostic"
+
+input: |
+  :::note
+      first
+    second
+  :::
+
+ast:
+  - _type: NamedBlock
+    name: note
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: firstsecond

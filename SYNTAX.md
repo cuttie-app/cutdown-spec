@@ -200,7 +200,7 @@ Content is literal. Unclosed → warning CDN-0003.
 :::
 ```
 
-`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First content line establishes base indent (stripped from all lines).
+`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
 
 ### Spoiler Block → `SpoilerBlock`
 
@@ -210,7 +210,7 @@ Content is literal. Unclosed → warning CDN-0003.
 ^^^
 ```
 
-Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. First content line establishes base indent. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Tables → `Table`
 

@@ -38,10 +38,14 @@ This profile defines no chunk envelope, completion event, retry, ordering, repla
 
 ### 15.6 Evidence
 
-A conforming implementation MUST run every Unicode-scalar prefix of each fixture in `tests/015-streaming-conformance-profile/`, including the empty and full prefixes. For every prefix it MUST demonstrate:
+A **prefix** of a fixture's `input` is its first *n* Unicode scalar values (§1.1), for every *n* from 0 — the empty prefix — up to the full length of `input`.
 
-1. parsing terminates with an ordinary `Document` result;
-2. repeated parsing is deterministic in AST and diagnostics; and
-3. every listed checkpoint matches the fixture’s expected AST/pages and diagnostics.
+For each fixture in `tests/015-streaming-conformance-profile/`, a conforming implementation MUST parse every prefix, and for every prefix:
 
-The fixture schema is defined in `tests/README.md`.
+1. parsing MUST terminate and return an ordinary `Document`;
+2. parsing the same prefix again MUST return the same AST and the same diagnostics;
+3. where the fixture lists a checkpoint at *n*, the AST (or pages) and the diagnostics for that prefix MUST match the checkpoint.
+
+An implementation conforms to the profile when all three hold for every prefix of every fixture. The fixture schema is defined in `tests/README.md`.
+
+---

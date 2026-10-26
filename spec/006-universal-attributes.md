@@ -31,7 +31,7 @@ Token types inside `{}`:
 
 #### 6.1.2 Placement
 
-Attributes MUST appear **after** their target element on the **same line**.
+An attribute group always **follows** its target, never precedes it. It is written either on the target's own line, or — for a block — on the lines immediately after the block with no blank line between (*trailing attribute lines*, below). In both positions it is the same group, distributed by the same rules.
 
 ```
 == Section {#intro}

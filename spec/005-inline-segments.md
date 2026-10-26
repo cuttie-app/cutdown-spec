@@ -376,7 +376,7 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 ::a::b ::::         → Mark { name: "a" } + Text("b ::::")
 :: ::               → Text(":: ::")                             no name
 ::a b __c__         → Text("::a b ") + Emphasis([Text("c")])    unclosed opener, Class 1
-::a b::{#x .y}      → Mark { name: "a", children: [Text("b")], attributes: {id:"x", class:["y"]} }
+::a b::{#x .y}      → Mark { name: "a", children: [Text("b")], attributes: [{ key: "id", value: "x" }, { key: "class", value: ["y"] }] }
 ```
 
 ---

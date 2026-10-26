@@ -113,11 +113,11 @@ interface Section {
 
 ```
 = H1 [with link](..){.class}
-→ Section { level: 1, heading: [Text("H1 "), Link(...)], attributes: { class: ["class"] } }
+→ Section { level: 1, heading: [Text("H1 "), Link(...)], attributes: [{ key: "class", value: ["class"] }] }
 
 = H1 [with link](..){.class}{}
 → {} is last token → Section carries no attributes; {.class} attaches to Link
-→ Section { level: 1, heading: [Text("H1 "), Link(..., {class:"class"})], attributes: {} }
+→ Section { level: 1, heading: [Text("H1 "), Link(..., [{ key: "class", value: ["class"] }])], attributes: [] }
 ```
 
 ---
@@ -792,7 +792,7 @@ interface NamedBlock {
 - A `:::` opener not followed immediately by an `ID_LITERAL` character does NOT open a NamedBlock — classified as a Paragraph → warning CDN-0013. **Exception:** if the line begins with an escaped opener (`\:::`, `:\::`, `::\:`), no warning is emitted — the escape is a deliberate author signal. See §8.2.
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document → warning CDN-0004.
-- **Indentation collapsing:** The first content line establishes the base indentation. That many leading spaces are stripped from all content lines before parsing.
+- **Container padding:** The first non-blank content line (after the edge-blank trim below) sets the base padding. Up to that many leading spaces are removed from every content line before parsing; a line with fewer leading spaces loses all it has, and nothing else. No diagnostic is emitted. A tab counts as one space (§7). The opener and closer may themselves be indented by any amount. See §10.2.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing `:::` (no blank line) sets `caption: Inline[]` on this node.
 
@@ -802,7 +802,7 @@ interface NamedBlock {
 :::callout {.warning}
   > quoted text
 :::
-→ NamedBlock { name: "callout", children: [QuoteBlock([Text("quoted text")])], attributes: {class:["warning"]} }
+→ NamedBlock { name: "callout", children: [QuoteBlock([Text("quoted text")])], attributes: [{ key: "class", value: ["warning"] }] }
 ```
 
 ---
@@ -865,7 +865,7 @@ interface SpoilerBlock {
 - Content is **parsed as blocks** — paragraphs, lists, images, and `:::` NamedBlocks are all permitted. The contrast is intentional, because a Spoiler hides *meaning*, not *structure*.
 - **No nested SpoilerBlocks.** The first `^^^` line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
 - Fixed 3-caret fence `^^^`. Variable-length fences not supported.
-- **Indentation collapsing:** the first content line establishes the base indentation; that many leading spaces are stripped from all content lines before parsing — same rule as `NamedBlock` (§4.13).
+- **Container padding:** same rule as `NamedBlock` (§4.13) — the first non-blank content line sets the base padding, and up to that many leading spaces are removed from every content line.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 - Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
@@ -885,7 +885,7 @@ Input:
 
 AST:
   SpoilerBlock {
-    attributes: { class: ["nsfw"] },
+    attributes: [{ key: "class", value: ["nsfw"] }],
     children: [
       Paragraph([Text("Plot twist: "), Emphasis([Text("the butler")]), Text(" did it.")]),
       List { kind: "bullet", children: [ListItem([Text("and so did the gardener")])] }

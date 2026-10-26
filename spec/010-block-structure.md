@@ -16,14 +16,15 @@ Comments (§2) are detected in Phase 2 before block boundary analysis. A line st
 
 ### 10.2 Leading and Trailing Whitespace
 
-Any number of leading spaces (including none) are stripped before block classification. Indentation has exactly two uses in Cutdown:
+Any number of leading spaces (including none) are stripped before block classification. A tab counts as one space (§7). Indentation has exactly three uses in Cutdown:
 
 1. **Block classification ignores it.** The stripped line determines the block type.
 2. **List nesting uses it.** For a list marker, the parser records the marker's **original column** (before stripping) as separate metadata and feeds it to the nesting stack model (§10.5). The column is used during list parsing only.
+3. **Container padding removes it.** In a `NamedBlock` or `SpoilerBlock`, the first non-blank content line (after the edge-blank trim, §10.6) sets the base padding, and up to that many leading spaces are removed from every content line before its children are parsed. A line with fewer leading spaces loses all it has; no diagnostic is emitted. Relative indentation beyond the base survives, which keeps the shape of a `CodeBlock` body inside the container (§4.13, §4.15).
 
 Indented code blocks (as in CommonMark) are not supported.
 
-Trailing-space handling is defined in §12.1.
+Trailing spaces on a line collapse to one space. That space is kept as `Text(" ")` before a soft break, and dropped at a block boundary — a blank line, end of input, or the end of a single-line block's inline context. §12.1 states the rule in full.
 
 ### 10.3 Block Classification
 
@@ -33,7 +34,7 @@ Each block candidate is classified by its first line (see §9.3 for the full cla
 
 Cutdown uses two structural patterns for delimiters:
 
-> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. `snake_case`, an apostrophe in "don't", `2*3`, and `a_b` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
+> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. The single `_` (low line) in `snake_case` and `a_b`, the single `'` (apostrophe) in "don't", and the single `*` (asterisk) in `2*3` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
 
 #### 10.4.1 Doubled-symbol inline delimiter
 
