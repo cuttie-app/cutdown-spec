@@ -62,7 +62,6 @@ Document
 - `Meta` block → fills the current Page's `meta` slot; if that slot is already set, closes the Page and opens a new one carrying it as `meta`. Content before a `Meta` never creates a Page.
 - Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
 
-The schema also admits **synthetic segments** that no parse produces (currently `Fragment`, §14): parsers never emit them, consumers must accept them.
 
 ---
 

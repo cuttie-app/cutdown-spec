@@ -63,17 +63,7 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
 | `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§1.7) |
 
-### 14.5 Synthetic Segments
-
-The AST schema admits nodes that are not producible by parsing. **Conforming parsers never emit them; conforming consumers must accept them.**
-
-| Segment    | Fields |
-|------------|--------|
-| `Fragment` | `_type: "Fragment", meta: Meta\|null, children: Block[]` |
-
-`Fragment` is a container block with no `name`. Its `meta` carries the `Meta` of the source Page it was materialized from, or `null`. A `Fragment` is a section-scope boundary and is opaque to the derived-structure folds (§9.5): the sectionization and pagination folds treat it as a single opaque item.
-
-### 14.6 Location Type
+### 14.5 Location Type
 
 Every segment MAY carry a source location, `loc?: Loc`:
 
@@ -88,10 +78,11 @@ interface Loc {
 - Offsets index **UTF-16 code units of the raw input file** — the text exactly as read, before any interpretation (§7). This mirrors the Language Server Protocol's baseline position encoding and is the native indexing of the reference TypeScript implementation.
 - Line/column positions are derived from offsets by consumers; they are never stored.
 - Conformance AST comparison **ignores `loc`**. Position correctness is verified by a separate, smaller test set.
-- Segments the parser synthesises rather than reads carry the `loc` of the causing construct in the containing file, or no `loc` at all. A `Fragment` has a causing construct — its `FileRef` line — and takes that `loc`. A padded table `Cell` (§4.8) has no source range and no causing construct at a position, so it carries no `loc`. A padded `Cell` is an ordinary empty `Cell`, not a distinct node type; it is not listed under Synthetic Segments.
+- Segments the parser synthesises rather than reads carry the `loc` of the causing construct in the containing file, or no `loc` at all. A padded table `Cell` (§4.8) has no source range and no causing construct at a position, so it carries no `loc`. A padded `Cell` is an ordinary empty `Cell`, not a distinct node type.
+- Blocks a consumer places in `InjectBlock.children` (§17) keep the `loc` of the document they were parsed from; `loc.file` names that document.
 - Diagnostics (CDN codes) carry a `loc` identifying the triggering source range.
 
-### 14.7 Reflection Type
+### 14.6 Reflection Type
 
 ```typescript
 interface Reflection {
@@ -102,7 +93,7 @@ interface Reflection {
 
 Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
 
-### 14.8 Attributes Type
+### 14.7 Attributes Type
 
 ```typescript
 type Attribute =
