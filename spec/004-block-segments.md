@@ -40,7 +40,7 @@ interface Paragraph {
   _type: "Paragraph"
   children: Inline[]
   attributes: Attribute[]
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 
@@ -85,7 +85,7 @@ interface Section {
   heading: Inline[]
   children: Block[]
   attributes: Attribute[]
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 
@@ -184,8 +184,8 @@ interface CodeBlock {
   language: string  // default: "text"
   raw: string
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -216,8 +216,8 @@ interface MathBlock {
   _type: "MathBlock"
   raw: string
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -262,8 +262,8 @@ interface QuoteBlock {
   _type: "QuoteBlock"
   children: Block[]
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -351,11 +351,11 @@ AST:
 interface List {
   _type: "List"
   kind: "bullet" | "numbered" | "checklist"
-  start: number | null  // first item number for kind: "numbered"; null otherwise
+  start: number         // first item number for kind: "numbered"; 1 otherwise
   loose: boolean
   children: (ListItem | TaskItem)[]
   attributes: Attribute[]
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 
@@ -471,8 +471,8 @@ interface Table {
   rows: Row[]
   columns: Column[]
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 
 interface Row {
@@ -791,8 +791,8 @@ interface NamedBlock {
   name: string
   children: Block[]
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -834,7 +834,7 @@ interface RefDefinition {
   ref: string
   children: Inline[]
   attributes: Attribute[]
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 
@@ -864,8 +864,8 @@ interface SpoilerBlock {
   _type: "SpoilerBlock"
   children: Block[]
   attributes: Attribute[]
-  caption: Inline[] | null
-  reflection: Reflection[] | null
+  caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -920,7 +920,7 @@ opaque content
 interface CommentBlock {
   _type: "CommentBlock"
   text: string
-  reflection: Reflection[] | null
+  reflection: Reflection[]
 }
 ```
 

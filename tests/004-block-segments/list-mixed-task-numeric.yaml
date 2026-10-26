@@ -9,7 +9,7 @@ input: |
 ast:
   - _type: List
     kind: "checklist"
-    start: null
+    start: 1
     children:
       - _type: TaskItem
         checked: false

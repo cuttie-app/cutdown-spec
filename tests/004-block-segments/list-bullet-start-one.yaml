@@ -1,0 +1,11 @@
+id: list-bullet-start-one
+section: "4.7"
+description: "start is always present; a bullet list carries start 1"
+
+input: |
+  - item
+
+ast:
+  - _type: List
+    kind: "bullet"
+    start: 1

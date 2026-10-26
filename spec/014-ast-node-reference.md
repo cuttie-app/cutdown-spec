@@ -1,5 +1,9 @@
 ## 14. AST Node (Segment) Reference
 
+**Empty values.** The AST never uses `null` for an absent value, with one exception. A string property with no content is `''`; an array property with no entries is `[]`; a number property is always a number. The exception is `Page.meta`, which is `null` when the Page has no `Meta` block. An empty `Meta` block is not `null`: it is a `Meta` whose `raw` is `''`.
+
+A property a node does not admit is omitted, not emptied — `CommentBlock` has no `attributes` property at all (§14.7).
+
 ### 14.1 Root Segments
 
 | Segment    | Fields |
@@ -9,7 +13,7 @@
 
 ### 14.2 Block Segments
 
-All block segments carry `reflection: Reflection[] | null` (null when no `##` comment is present). See §2.2 for attachment rules.
+All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment is present). See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
 
 | Segment         | Fields                                                                                                                                              |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -94,7 +98,7 @@ interface Reflection {
 }
 ```
 
-`reflection` is typed `Reflection[] | null`, and is `null` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
+Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
 
 ### 14.8 Attributes Type
 

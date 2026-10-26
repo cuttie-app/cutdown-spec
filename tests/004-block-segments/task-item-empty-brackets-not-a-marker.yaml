@@ -8,7 +8,7 @@ input: |
 ast:
   - _type: List
     kind: "bullet"
-    start: null
+    start: 1
     loose: false
     children:
       - _type: ListItem

@@ -12,7 +12,7 @@ ast:
       - _type: List
         kind: "checklist"
         loose: false
-        start: null
+        start: 1
         children:
           - _type: TaskItem
             checked: false

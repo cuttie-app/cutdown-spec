@@ -10,7 +10,7 @@ input: |
 ast:
   - _type: List
     kind: "bullet"
-    start: null
+    start: 1
     children:
       - _type: ListItem
         children:
@@ -18,7 +18,7 @@ ast:
             value: Item one
           - _type: List
             kind: "bullet"
-            start: null
+            start: 1
             children:
               - _type: ListItem
                 children:

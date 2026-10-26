@@ -36,7 +36,7 @@ interface Reflection {
 }
 ```
 
-Every block type carries `reflection: Reflection[] | null` (null when no `##` is present). See §14 for the full list.
+Every block type carries `reflection: Reflection[]` (`[]` when no `##` is present). See §14 for the full list.
 
 #### Trailing inline `##` (on a structural line)
 
