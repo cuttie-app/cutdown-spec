@@ -500,7 +500,7 @@ interface Column {
 
 #### Header rows
 
-A row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `_type: "Header"`. All other content rows are `type: "Row"`.
+A row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `_type: "Header"`. All other content rows are `_type: "Row"`.
 
 ```
 | A | B |
@@ -518,14 +518,14 @@ Alignment is taken from the cell patterns of the **first header separator** in t
 
 | Pattern | Alignment |
 |---------|-----------|
-| `:---` | `"left"` |
-| `---:` | `"right"` |
-| `:---:` | `"center"` |
-| `---,` | `"comma"` |
-| `---.` | `"decimal"` |
-| `----` | `"start"` (default) |
+| `:--` | `"left"` |
+| `--:` | `"right"` |
+| `:-:` | `"center"` |
+| `--,` | `"comma"` |
+| `--.` | `"decimal"` |
+| `---` | `"start"` (default) |
 
-Each pattern requires **at least three `-`** (with the optional alignment marks shown). The minimum is a deliberate guard: a content row of single-dash placeholder cells (`| - |`) remains content, not a header separator.
+Each pattern is at least **three symbols long, alignment marks included**, and contains at least one `-`. Any number of further `-` may be added: `:---` is the same pattern as `:--`. The minimum is a deliberate guard: a content row of one- or two-dash placeholder cells (`| - |`, `| -- |`) remains content, not a header separator.
 
 A column with no corresponding position in the header separator, and every column of a table with no header separator, takes `"start"`.
 

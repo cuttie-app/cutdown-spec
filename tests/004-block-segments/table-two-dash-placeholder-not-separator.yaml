@@ -1,0 +1,18 @@
+id: table-two-dash-placeholder-not-separator
+section: "4.8"
+description: "Two symbols are below the minimum: a row of -- cells is content, not a header separator"
+
+input: |
+  | A |
+  | -- |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: "--"

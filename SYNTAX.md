@@ -214,7 +214,7 @@ Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with no
 
 ### Tables → `Table`
 
-A table opens with a line starting with `|`. The shape is close to GFM pipe tables, with three differences: the leading `|` is required, an alignment cell needs at least three dashes, and `---,` / `---.` add comma and decimal alignment.
+A table opens with a line starting with `|`. The shape is close to GFM pipe tables, with three differences: the leading `|` is required, an alignment cell needs at least three symbols (marks included), and `--,` / `--.` add comma and decimal alignment.
 
 ```
 | Cell A | Cell B |          ← no header, all rows _type: "Row"
@@ -224,9 +224,9 @@ A table opens with a line starting with `|`. The shape is close to GFM pipe tabl
 | Alice  |    42 |           ← _type: "Row"
 ```
 
-**Header separator:** A row whose every cell is an alignment pattern (≥ 3 dashes; the minimum keeps `| - |` placeholder rows as content) marks the preceding rows as `_type: "Header"`. Alignment taken from the first header separator only.
+**Header separator:** A row whose every cell is an alignment pattern (≥ 3 symbols, marks included; the minimum keeps `| - |` and `| -- |` placeholder rows as content) marks the preceding rows as `_type: "Header"`. Alignment taken from the first header separator only.
 
-**Alignment patterns:** `:---` left, `---:` right, `:---:` center, `---,` comma, `---.` decimal, `----` start (default — follows text direction; not the same as left).
+**Alignment patterns:** `:--` left, `--:` right, `:-:` center, `--,` comma, `--.` decimal, `---` start (default — follows text direction; not the same as left). Extra `-` are allowed.
 
 **Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped (CDN-0018).
 

@@ -10,7 +10,7 @@ The serialization of a parse *result* is a different subject, governed by [`poli
 
 ### 16.1 Registry
 
-The table is closed. Every point at which two distinct inputs produce the same AST appears here. A spelling that carries a different AST value is not an alias and does not appear — `:---` and `----` differ (`"left"` versus `"start"`, §4.8), so neither is canonical for the other.
+The table is closed. Every point at which two distinct inputs produce the same AST appears here. A spelling that carries a different AST value is not an alias and does not appear — `:--` and `---` differ (`"left"` versus `"start"`, §4.8), so neither is canonical for the other.
 
 | # | Point | Canonical | Also valid as input | Defined in |
 |---|---|---|---|---|

@@ -1,0 +1,17 @@
+id: table-short-separator
+section: "4.8"
+description: "A separator cell needs three symbols, alignment marks included: :-: is center and --: is right"
+
+input: |
+  | A | B |
+  |:-:|--:|
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Header
+    columns:
+      - _type: Column
+        align: center
+      - _type: Column
+        align: right

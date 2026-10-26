@@ -1,6 +1,6 @@
 id: table-pipe-dash-placeholder-not-separator
 section: "4.8"
-description: "The 3-dash minimum guard: a row of single-dash placeholder cells is content, not a header separator; preceding rows stay type Row"
+description: "The 3-symbol minimum guard: a row of single-dash placeholder cells is content, not a header separator; preceding rows stay _type Row"
 
 input: |
   | A | B |
