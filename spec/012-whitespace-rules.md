@@ -20,7 +20,7 @@
 
 ### 12.2 Whitespaces in Inline Segments
 
-Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, QuoteInline, Mark):
+**The rules.** Within an inline segment that follows this section:
 
 | Situation | Rule |
 |-----------|------|
@@ -31,7 +31,23 @@ Within any inline block (Emphasis, Strong, Highlight, Spoiler, MathInline, Quote
 | Interior whitespace runs | Collapsed to one space |
 | Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
 
-`CodeInline` is **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. The paragraph-level soft-break rule (single `\n` → zero) also applies: a `CodeInline` spanning two lines of a paragraph has the newline removed with no replacement in `value`. For multi-line code, use `CodeBlock` (§4).
+**Which segments follow them.** Every inline segment either follows the rules above, is exempt from them, or admits no whitespace at all:
+
+| Segment | Whitespace |
+|---|---|
+| `Text` | Interior runs collapse at paragraph level (§12.1) |
+| `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` | Follows §12.2 |
+| `Mark` | Follows §12.2 for its content. Exactly one space separates `name` from the content; that space is consumed |
+| `Link` `[text]` slot | Follows §12.2 |
+| `ImageInline` `alt` slot | Follows §12.2 |
+| `Link` page `path`, `ImageInline` `src` | Exempt — a `PathResourceLocator` keeps its whitespace exactly as written (§1.7) |
+| `Link` external `href` | Exempt — kept as written |
+| `CodeInline` | Exempt — see below |
+| `MathInline` | Exempt — the formula is kept as written, like `CodeInline` |
+| `Variable` | Admits none — `{{ key }}` is literal text and emits CDN-0015 (§5.11) |
+| `LineBreak` | Not applicable — no content |
+
+`CodeInline` and `MathInline` are **exempt from whitespace collapsing** — boundary stripping and interior run collapsing do not apply. The paragraph-level soft-break rule (single `\n` → zero) still applies: a `CodeInline` or `MathInline` spanning two lines of a paragraph has the newline removed with no replacement. For multi-line code or math, use `CodeBlock` or `MathBlock` (§4).
 
 **Examples:**
 

@@ -1,0 +1,12 @@
+id: math-inline-whitespace-preserved
+section: "12.2"
+description: "MathInline is exempt from whitespace collapsing; interior runs are kept as written"
+
+input: |
+  $$a  \text{b  c}$$
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: MathInline
+        formula: "a  \\text{b  c}"

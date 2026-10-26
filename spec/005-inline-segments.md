@@ -247,7 +247,7 @@ interface MathInline {
 ```
 
 - `$$` opener and closer. A single `$` is always literal text.
-- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
+- Content is **literal** — no inline parsing, and whitespace is kept exactly as written (§12.2). Passed as raw string to the consumer (KaTeX or equivalent).
 - Run of 3: `$$$` at inline position = `$$` (opener/closer) + `$` (literal).
 - Unclosed `$$` → `Text("$$")`. Same-type nesting not allowed.
 
