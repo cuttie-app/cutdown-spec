@@ -38,7 +38,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 
 ## Table of Contents
 
-1. [Conventions](001-conventions.md) — Identifier charset, PathResourceLocator, Segment, Block type, Inline type
+1. [Conventions](001-conventions.md) — Identifier charset, Segment, Block type, Inline type
 2. [Comments](002-comments.md) — `##` line comment (Block.Reflection), CommentBlock (`###`)
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, PageBreaker, FileBlock, FileGroup, EmbedBlock, InjectBlock, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
@@ -46,7 +46,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 6. [Universal Attributes](006-universal-attributes.md)
 7. [Input Interpretation](007-input-interpretation.md)
 8. [Escaping](008-escaping.md)
-9. [Parsing Algorithm](009-parsing-algorithm.md)
+9. [Parsing Algorithm](009-parsing-algorithm.md) — Phases, PathResourceLocator, derived structure
 10. [Block Structure and Block Boundaries](010-block-structure.md)
 11. [Precedence Rules](011-precedence-rules.md)
 12. [Whitespace Rules](012-whitespace-rules.md)
