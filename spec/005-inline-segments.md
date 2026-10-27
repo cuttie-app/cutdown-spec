@@ -128,6 +128,7 @@ interface Highlight {
 [text](^note)                → ref (footnote) link
 [text](~writing/blog)        → tag link
 [text](@smith2024)           → cite link
+[Getting started]()          → wiki link: a page link built from the text
 ```
 
 **AST type:**
@@ -159,12 +160,14 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 | `^` (caret) | `"ref"` | `target` |
 | `~` (tilde) | `"tag"` | `target` |
 | `@` (commercial at) | `"cite"` | `target` |
-| anything else, the empty target included | `"page"` | `raw`, `path` |
+| nothing — the target is empty | `"page"`, a **wiki link** | `raw` (`''`), `path` |
+| anything else | `"page"` | `raw`, `path` |
 
 The sigils `#`, `^`, `~`, and `@` count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`.
 
 - **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
-- **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. A page link names another Cutdown document, defined below.
+- **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`; `raw` keeps the target as written. `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "guide/intro.cutdown", query: [], fragment: "setup" }`.
+- **Wiki:** an empty target makes the link text the target. `path.path` is `/`, then the **plain text** of the link text, then `.cutdown`: `[Getting started]()` → `path: "/Getting started.cutdown"`. The plain text is what a reader sees — the `value` of every `Text` and `CodeInline`, the `formula` of every `MathInline`, `{{key}}` for a `Variable`, and the plain text of the children (or `alt`) of every other inline, in order; delimiters and attributes contribute nothing. Only `/` is structure in it, separating folders: `?` and `#` are title characters, so `query` is `[]` and `fragment` is `''`. `raw` is `''`. The built path is checked like any other (§9.2.5); a link with empty plain text names nothing, so `[]()` has `path: null` and emits CDN-0032. A wiki link is always root-relative; for a relative path, a query, or a fragment, write the target.
 - **Id:** `target` is the text after `#`. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document.
 - **Ref:** `target` is the text after `^`, one `ID_LITERAL` run (§1.2). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
 - **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a run of `TAG_LITERAL` (§1.2): `[x](~Ціни/2026 Q1)` → `target: "Ціни/2026 Q1"`.
@@ -191,8 +194,10 @@ See [docs][guide] and **this**  →  Text("See [docs][guide] and ") + Strong([Te
 **Edge cases:**
 
 ```
-[](target)   → Link { kind: "page", children: [], raw: "target", path: { path: "target", query: [], fragment: "" } }
-[]()         → Link { kind: "page", children: [], raw: "", path: { path: "", query: [], fragment: "" } }
+[](target)               → Link { kind: "page", children: [], raw: "target", path: { path: "target.cutdown", query: [], fragment: "" } }
+[__What__ is C#?]()      → Link { kind: "page", raw: "", path: { path: "/What is C#?.cutdown", query: [], fragment: "" } }
+[Guides/Setup]()         → Link { kind: "page", raw: "", path: { path: "/Guides/Setup.cutdown", query: [], fragment: "" } }
+[]()                     → Link { kind: "page", children: [], raw: "", path: null } — CDN-0032
 [](#)        → Link { kind: "id", children: [], target: "" } — CDN-0033
 ```
 
@@ -213,7 +218,7 @@ The price is fixed[](^1) until [the review](^review).
 
 **Cite links** `[text](@cite-id)` link to a bibliography entry or a similar **external reference**, resolved by the consumer's citation logic.
 
-**Page links** `[text](path/to/page)` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x](guide/intro)` and `[x](guide/intro.cutdown)` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names the segment with that `id` in the target document, as an id link does inside it. A trailing `/` is not a folder index; it makes the path invalid (§9.2.5). The base of a relative path is defined in §9.2.4.
+**Page links** `[text](path/to/page)` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x](guide/intro)` and `[x](guide/intro.cutdown)` name the same document and carry the same `path.path`, `guide/intro.cutdown`. A consumer never resolves a page link to a file of any other kind. **Wiki links** `[Page title]()` name a document by its title, from the root, as wikis do. A `#id` fragment names the segment with that `id` in the target document, as an id link does inside it. A trailing `/` is not a folder index; it makes the path invalid (§9.2.5). The base of a relative path is defined in §9.2.4.
 
 ---
 
@@ -451,7 +456,7 @@ interface Variable {
 
 A variable can also stand inside a string property, where no `Variable` node can live. There the parser leaves `{{key}}` in the string exactly as written, and the consumer substitutes it. Such an occurrence is an **interpolation token**.
 
-- **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
+- **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
 - An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one left-to-right pass, together with the tokens: `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.

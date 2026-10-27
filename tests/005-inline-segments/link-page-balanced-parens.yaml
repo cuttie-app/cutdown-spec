@@ -12,3 +12,6 @@ ast:
         kind: page
         raw: "notes (draft)"
         path:
+          path: "notes (draft).cutdown"
+          query: []
+          fragment: ""

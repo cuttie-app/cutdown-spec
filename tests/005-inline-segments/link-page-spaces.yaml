@@ -12,4 +12,4 @@ ast:
         kind: page
         raw: "Guides/Getting started"
         path:
-          path: "Guides/Getting started"
+          path: "Guides/Getting started.cutdown"

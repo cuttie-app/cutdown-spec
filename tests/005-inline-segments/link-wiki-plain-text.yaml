@@ -1,0 +1,17 @@
+id: link-wiki-plain-text
+section: "5.5"
+description: "A wiki path uses the text a reader sees: delimiters drop, CodeInline values stay"
+
+input: |
+  [**Use** ``npm`` here]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: ""
+        path:
+          path: "/Use npm here.cutdown"
+          query: []
+          fragment: ""

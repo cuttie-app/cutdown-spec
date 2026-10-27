@@ -1,6 +1,6 @@
 id: link-empty-target
 section: "5.5"
-description: "[]() with empty text and an empty target is a page link with an empty path locator; trailing attributes still attach"
+description: "[]() is a wiki link with no text: it names nothing, so path is null with CDN-0032; trailing attributes still attach"
 
 input: |
   [](){#anchor .marker}
@@ -13,10 +13,7 @@ ast:
         children: []
         href: ""
         raw: ""
-        path:
-          path: ""
-          query: []
-          fragment: ""
+        path: null
         target: ""
         attributes:
           - key: id
@@ -24,3 +21,7 @@ ast:
           - key: class
             value:
               - marker
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

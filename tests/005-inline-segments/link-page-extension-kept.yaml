@@ -1,0 +1,17 @@
+id: link-page-extension-kept
+section: "5.5"
+description: "A page path that already ends with .cutdown is not extended again"
+
+input: |
+  [x](guide/intro.cutdown)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: guide/intro.cutdown
+        path:
+          path: guide/intro.cutdown
+          query: []
+          fragment: ""

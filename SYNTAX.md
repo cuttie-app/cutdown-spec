@@ -261,7 +261,8 @@ Degradation to visible literal text is silent — no diagnostics.
 | `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
 | `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
 | `[text](https://…)`, `[text](mailto:…)` | `Link(external)` | `href` as written. Any URI scheme (a letter, then letters, digits, `+` `-` `.`, then `:`) makes an external link; Cutdown filters none — that is the consumer's call |
-| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); always a `.cutdown` document (extension optional). `#id` fragment = any segment with that id there. Invalid path → CDN-0032 |
+| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); always a `.cutdown` document: the parser appends `.cutdown` to `path.path` when absent. `#id` fragment = any segment with that id there. Invalid path → CDN-0032 |
+| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. Only `/` splits folders; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
 | `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
 | `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
 | `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/` and controls; balanced `()` allowed |

@@ -1,0 +1,17 @@
+id: link-wiki-title-characters
+section: "5.5"
+description: "In a wiki path only / splits folders; ? and # are title characters"
+
+input: |
+  [Guides/What is C#?]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: ""
+        path:
+          path: "/Guides/What is C#?.cutdown"
+          query: []
+          fragment: ""

@@ -183,7 +183,7 @@ An invalid path does not change the parse. The owning node is emitted as usual w
 
 **Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
 
-An empty path is valid. `[text]()` produces `raw: ""` and `path: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
+An empty path is valid. `![alt]()` produces `raw: ""` and `src: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision. A page link never has an empty path: an empty target is a wiki link (§5.5), and `.cutdown` is appended to every other page path.
 
 ### 9.3 Derived Structure
 

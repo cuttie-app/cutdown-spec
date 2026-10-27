@@ -1,6 +1,6 @@
 id: link-page
 section: "5.5"
-description: "[text][path] without leading sigil produces a Link with kind=page; the target is a PathResourceLocator in path"
+description: "[text](path) without a sigil or scheme produces a Link with kind=page; the parser appends .cutdown to path.path"
 
 input: |
   [About](about/intro)
@@ -12,7 +12,7 @@ ast:
         kind: page
         raw: about/intro
         path:
-          path: about/intro
+          path: about/intro.cutdown
           query: []
           fragment: ''
         target: ''

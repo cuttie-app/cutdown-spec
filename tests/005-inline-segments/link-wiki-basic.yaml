@@ -1,0 +1,22 @@
+id: link-wiki-basic
+section: "5.5"
+description: "[text]() is a wiki link: path is / + the text + .cutdown, raw is empty"
+
+input: |
+  [Getting started]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        href: ""
+        raw: ""
+        target: ""
+        path:
+          path: "/Getting started.cutdown"
+          query: []
+          fragment: ""
+        children:
+          - _type: Text
+            value: Getting started
