@@ -1,0 +1,16 @@
+id: fileblock-root-fragment-not-injection
+section: "4.17"
+description: "A path of / alone with a fragment is a FileBlock, not a root-folder injection"
+
+input: |
+  /#
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: "/#"
+        src:
+          path: /
+          query: []
+          fragment: ""

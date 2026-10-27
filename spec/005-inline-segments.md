@@ -335,9 +335,14 @@ interface ImageInline {
 ```
 
 - `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
-- `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032. The path may be empty.
+- `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032.
 - A source beginning with literal `https://` makes the node an `EmbedImageInline` instead (§5.9.1).
-- `![]()` is valid and preserved as `ImageInline { alt: [], raw: "", src: { path: "", query: [], fragment: "" } }`.
+- An image names a file the consumer fetches and places (§9.2), so its source must be a path that names one. These sources are invalid — `src: null`, CDN-0032 — though the node keeps its type:
+  - an empty `path`: `![x]()`, `![x](#a)`, `![x](?a=1)`;
+  - a source beginning with an unescaped link sigil — `#`, `^`, `~`, `@` — which is reserved: `![x](~t)`, `![x](@k)`;
+  - a source beginning with a URI scheme other than `https://`: `![x](tel:1)`, `![x](data:…)`, `![x](http://…)`.
+
+  An escaped sigil is path content: `![x](\~t.png)` has the path `~t.png`.
 - `ImageInline` is the only image construct. An image alone on a line is still inline content: `![a](b)` → `Paragraph([ImageInline(...)])`. A local image that needs a caption or a gallery is written as a `FileBlock` (§4.11).
 - **Captions:** `ImageInline` does **not** participate in the caption line (§6.2) — it is not a block.
 

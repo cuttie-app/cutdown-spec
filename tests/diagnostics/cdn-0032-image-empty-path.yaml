@@ -1,0 +1,17 @@
+id: cdn-0032-image-empty-path
+section: "5.9"
+description: "CDN-0032: an image with an empty source names no file; src is null"
+
+input: |
+  ![x]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: ""
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

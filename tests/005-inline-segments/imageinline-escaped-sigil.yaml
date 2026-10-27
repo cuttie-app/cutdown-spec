@@ -1,0 +1,16 @@
+id: imageinline-escaped-sigil
+section: "5.9"
+description: "An escaped sigil at the start of an image source is path content"
+
+input: |
+  ![x](\~t.png)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: "~t.png"
+        src:
+          path: "~t.png"
+          query: []
+          fragment: ""

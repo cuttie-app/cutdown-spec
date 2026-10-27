@@ -1,0 +1,17 @@
+id: cdn-0032-image-reserved-sigil
+section: "5.9"
+description: "CDN-0032: an image source beginning with a link sigil is reserved"
+
+input: |
+  ![x](~t)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: "~t"
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

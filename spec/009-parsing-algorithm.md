@@ -174,6 +174,7 @@ A path whose `raw` begins with `/` is **root-relative**: the root is supplied by
 
 A path is **invalid** when any of these holds:
 
+- `path` is empty — a path must name something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
 - `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
 - `path` contains an empty segment (`a//b`);
 - `path` is root-relative and a `..` segment climbs above the root (`/../x`);
@@ -183,7 +184,7 @@ An invalid path does not change the parse. The owning node is emitted as usual w
 
 **Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
 
-An empty path is valid. `![alt]()` produces `raw: ""` and `src: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision. A page link never has an empty path: an empty target is a wiki link (§5.5), and `.cutdown` is appended to every other page path.
+A page link never has an empty path: an empty target is a wiki link (§5.5), and `.cutdown` is appended to every other page path. A `FileBlock` or `InjectBlock` path begins with `/`, so it is never empty either.
 
 ### 9.3 Derived Structure
 

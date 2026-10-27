@@ -1,0 +1,17 @@
+id: cdn-0032-image-fragment-only
+section: "5.9"
+description: "CDN-0032: an image source with only a fragment has an empty path"
+
+input: |
+  ![x](#a)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: "#a"
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

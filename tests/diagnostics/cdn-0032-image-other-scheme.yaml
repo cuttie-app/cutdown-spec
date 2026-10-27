@@ -1,0 +1,17 @@
+id: cdn-0032-image-other-scheme
+section: "5.9"
+description: "CDN-0032: an image source with a URI scheme other than https:// is invalid"
+
+input: |
+  ![x](tel:1)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: "tel:1"
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning
