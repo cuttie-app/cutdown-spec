@@ -382,7 +382,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | title | Invalid tag |
 | level | warning |
 | trigger | A tag link target (§5.5) has an empty level: `[x][#]`, `[x][#a//b]`, `[x][#a/]` |
-| recovery | The `Link` is emitted with `kind: "tag"` and `target` as written. `loc` spans the target |
+| recovery | The `Link` is emitted with `kind: "tag"` and `target` as written, without the `#` sigil. `loc` spans the target |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |

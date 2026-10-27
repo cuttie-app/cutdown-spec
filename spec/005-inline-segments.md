@@ -163,7 +163,7 @@ interface Link {
 **Invalid targets.** The parser checks only what it can see in the source:
 
 - An invalid page path (§9.2.5) keeps the `Link` with `path.raw` as written and the other parts empty, and emits warning CDN-0032.
-- A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
+- A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written, without the `#` sigil, and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
 
 **Edge cases:**
 
