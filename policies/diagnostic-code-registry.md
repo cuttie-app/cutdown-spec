@@ -367,7 +367,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | title | Invalid path |
 | level | warning |
 | trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5: a control character, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. A value beginning with `https://` is a URL, not a path, and never triggers it |
-| recovery | The owning node is emitted as usual, with `raw` as written and its locator `null`. `loc` spans the path |
+| recovery | The owning node is emitted as usual, with `raw` as written and its locator `null`. `loc` spans the path. When `raw` begins with `http://`, the message adds the hint "did you mean https://?" — only `https://` makes a URL |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |
