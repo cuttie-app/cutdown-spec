@@ -1,0 +1,17 @@
+id: cdn-0033-empty-id-target
+section: "5.5"
+description: "CDN-0033: a bare # keeps an id Link with an empty target"
+
+input: |
+  [top](#)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: id
+        target: ""
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

@@ -3,7 +3,7 @@ section: "5.12"
 description: "Links (higher precedence than emphasis family) parse inside Spoiler children"
 
 input: |
-  ^^[text](/url)^^
+  ^^[text](https://example.com)^^
 
 ast:
   - _type: Paragraph
@@ -15,4 +15,4 @@ ast:
             children:
               - _type: Text
                 value: text
-            href: /url
+            href: https://example.com

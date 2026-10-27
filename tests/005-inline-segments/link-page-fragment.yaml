@@ -3,7 +3,7 @@ section: "5.5"
 description: "A page link may carry #id naming a Section id in the target document"
 
 input: |
-  [Setup][guide/intro#setup]
+  [Setup](guide/intro#setup)
 
 ast:
   - _type: Paragraph

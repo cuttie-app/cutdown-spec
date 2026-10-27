@@ -1,0 +1,24 @@
+id: link-scheme-any-is-external
+section: "5.5"
+description: "Any URI scheme makes an external link; href is kept as written and no scheme is filtered"
+
+input: |
+  [a](mailto:a@example.com) [b](http://x.org) [c](javascript:void(0))
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: "mailto:a@example.com"
+        path: null
+      - _type: Text
+        value: " "
+      - _type: Link
+        kind: external
+        href: "http://x.org"
+      - _type: Text
+        value: " "
+      - _type: Link
+        kind: external
+        href: "javascript:void(0)"

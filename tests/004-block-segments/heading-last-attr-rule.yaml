@@ -3,7 +3,7 @@ section: "4.2"
 description: Explicit empty {} as last token means heading has no attributes; earlier {attrs} attach to inline elements
 
 input: |
-  = H1 [link](..){.link-class}{}
+  = H1 [link](https://example.com){.link-class}{}
 
 ast:
   - _type: Section
@@ -13,7 +13,7 @@ ast:
         value: "H1 "
       - _type: Link
         kind: external
-        href: ".."
+        href: https://example.com
         children:
           - _type: Text
             value: link

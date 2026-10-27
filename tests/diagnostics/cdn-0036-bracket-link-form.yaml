@@ -1,0 +1,20 @@
+id: cdn-0036-bracket-link-form
+section: "5.5"
+description: "CDN-0036: [text][target] is not a link; both bracket groups are literal text and parsing continues after them"
+
+input: |
+  See [docs][guide] and **this**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "See [docs][guide] and "
+      - _type: Strong
+        children:
+          - _type: Text
+            value: this
+
+diagnostics:
+  - code: CDN-0036
+    level: warning

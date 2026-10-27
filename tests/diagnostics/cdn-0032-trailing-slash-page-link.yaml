@@ -3,7 +3,7 @@ section: "9.2.5"
 description: "CDN-0032: a trailing / is invalid outside an InjectBlock; a page link has no folder index"
 
 input: |
-  [x][guide/]
+  [x](guide/)
 
 ast:
   - _type: Paragraph

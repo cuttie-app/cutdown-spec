@@ -3,7 +3,7 @@ section: "5.5"
 description: "[text][path] without leading sigil produces a Link with kind=page; the target is a PathResourceLocator in path"
 
 input: |
-  [About][about/intro]
+  [About](about/intro)
 
 ast:
   - _type: Paragraph

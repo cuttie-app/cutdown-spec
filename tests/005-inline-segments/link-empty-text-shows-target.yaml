@@ -1,0 +1,26 @@
+id: link-empty-text-shows-target
+section: "5.5"
+description: "[](target) is valid for every kind; children is empty and the consumer displays the target"
+
+input: |
+  [](https://example.com) [](^1) [](~news)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        children: []
+        href: "https://example.com"
+      - _type: Text
+        value: " "
+      - _type: Link
+        kind: ref
+        children: []
+        target: "1"
+      - _type: Text
+        value: " "
+      - _type: Link
+        kind: tag
+        children: []
+        target: news

@@ -1,0 +1,20 @@
+id: cdn-0036-bracket-image-form
+section: "5.5"
+description: "CDN-0036: ![alt][target] is not an image; both bracket groups are literal text"
+
+input: |
+  ![logo][brand] __ok__
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "![logo][brand] "
+      - _type: Emphasis
+        children:
+          - _type: Text
+            value: ok
+
+diagnostics:
+  - code: CDN-0036
+    level: warning

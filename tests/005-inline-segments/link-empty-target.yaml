@@ -1,9 +1,9 @@
-id: link-both-brackets-empty
+id: link-empty-target
 section: "5.5"
-description: "[][] with both brackets empty is a valid page link with an empty path locator; allows empty inline anchors with custom attributes when attrs trail the construct"
+description: "[]() with empty text and an empty target is a page link with an empty path locator; trailing attributes still attach"
 
 input: |
-  [][]{#anchor .marker}
+  [](){#anchor .marker}
 
 ast:
   - _type: Paragraph
@@ -11,11 +11,13 @@ ast:
       - _type: Link
         kind: page
         children: []
+        href: ""
         raw: ""
         path:
           path: ""
           query: []
           fragment: ""
+        target: ""
         attributes:
           - key: id
             value: anchor

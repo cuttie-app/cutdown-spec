@@ -1,9 +1,9 @@
 id: link-tag
 section: "5.5"
-description: "[text][#tag/path] produces a Link with kind=tag; # sigil is consumed"
+description: "[text](~tag/path) produces a Link with kind=tag; the ~ sigil is consumed"
 
 input: |
-  [posts][#writing/blog]
+  [posts](~writing/blog)
 
 ast:
   - _type: Paragraph

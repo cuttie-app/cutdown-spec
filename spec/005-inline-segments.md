@@ -118,14 +118,16 @@ interface Highlight {
 
 ### 5.5 Link
 
-**Syntax:** Several forms depending on link kind.
+**Syntax:** `[text](target)`. The target selects the link kind.
 
 ```
-[text](url)          → external link
-[text][path/to/page] → page link
-[text][#tag/path]    → tag link
-[text][^ref-id]      → reference link
-[text][@cite-id]     → citation link
+[text](https://example.com)  → external link
+[text](mailto:a@example.com) → external link
+[text](guide/intro)          → page link
+[text](#install)             → id link
+[text](^note)                → ref (footnote) link
+[text](~writing/blog)        → tag link
+[text](@smith2024)           → cite link
 ```
 
 **AST type:**
@@ -133,69 +135,85 @@ interface Highlight {
 ```typescript
 interface Link {
   _type: "Link"
-  kind: "external" | "page" | "tag" | "ref" | "cite"
+  kind: "external" | "page" | "id" | "ref" | "tag" | "cite"
   children: Inline[]
   href: string                       // kind "external"; otherwise ''
   raw: string                        // kind "page": the target as written; otherwise ''
   path: PathResourceLocator | null   // kind "page" with a valid path; otherwise null
-  target: string                     // kind "tag" | "ref" | "cite"; otherwise ''
+  target: string                     // kind "id" | "ref" | "tag" | "cite", without the sigil; otherwise ''
   attributes: Attribute[]
 }
 ```
 
-| Syntax | Kind | Field |
-|--------|------|-------|
-| `[text](url)`, `[text][https://…]` | `"external"` | `href` |
-| `[text][path/to/page]` | `"page"` | `raw`, `path` |
-| `[text][#tag/path]` | `"tag"` | `target` |
-| `[text][^ref-id]` | `"ref"` | `target` |
-| `[text][@cite-id]` | `"cite"` | `target` |
+A link is a **pointer**: the consumer follows it, prints it, or ignores it, and never places the resource it names. So a link accepts every kind of target, where an image, which the consumer fetches and places, accepts only a path or an `https://` URL (§9.2).
 
 - `text` is **parsed by inline rules**. May be empty.
-- **URL target:** a bracket target beginning with literal `https://` is a URL, not a page: `[x][https://example.com]` → `Link { kind: "external", href: "https://example.com" }`, the same as `[x](https://example.com)`. The URL runs to the first unbalanced `]` and is kept as written.
-- **Page target:** any other bracket target that is not a tag, ref, or cite is a `PathResourceLocator` (§9.2), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
-- **Tag target:** `#` followed by one or more `TAG_LITERAL` levels separated by `/` (§1.2): `[x][#Ціни/2026 Q1]` → `target: "Ціни/2026 Q1"`. The leading `#` is a sigil and is consumed.
-- **Ref target:** `^` (caret) + `ID_LITERAL`. **Cite target:** `@` + any characters other than `]` (right bracket).
-- Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
+- The target runs from the character after `(` to the first unbalanced `)`, by the path scan of §9.2.1 and §9.2.2: balanced parentheses stay in the target, and a backslash escapes the next character. The kind is chosen once the extent is known.
+
+**Kind.** The first characters of the target choose the kind:
+
+| Target begins with | Kind | Field |
+|---|---|---|
+| a URI scheme: a letter, then letters, digits, `+`, `-`, or `.`, then `:` | `"external"` | `href` |
+| `#` (octothorpe) | `"id"` | `target` |
+| `^` (caret) | `"ref"` | `target` |
+| `~` (tilde) | `"tag"` | `target` |
+| `@` (commercial at) | `"cite"` | `target` |
+| anything else, the empty target included | `"page"` | `raw`, `path` |
+
+The sigils `#`, `^`, `~`, and `@` count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`.
+
+- **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
+- **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. A page link names another Cutdown document, defined below.
+- **Id:** `target` is the text after `#`. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document.
+- **Ref:** `target` is the text after `^`, one `ID_LITERAL` run (§1.2). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
+- **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a run of `TAG_LITERAL` (§1.2): `[x](~Ціни/2026 Q1)` → `target: "Ціни/2026 Q1"`.
+- **Cite:** `target` is the text after `@`, any characters other than control characters.
+
+In `target`, escapes are resolved: `\)` gives `)`, `\\` gives `\`.
+
+**Empty text.** `[](target)` is valid for every kind and has `children: []`. The consumer displays the target itself — the URL, the path, the id, the tag, the citation key; for a ref, the footnote marker. It is Cutdown's form of a Markdown autolink `<https://…>`.
+
+**Unsupported form `[text][target]`.** Cutdown has one link form. Where the `]` that closes a link's text is followed directly by a second `[`, and that `[` closes on the same line at its first unbalanced `]` (escaped brackets not counted), the two bracket groups are emitted as one literal `Text`, exactly as written, and parsing continues after them. Warning CDN-0036 is emitted. The same holds for `![alt][target]`. A second `[` with no closer on the line leaves the first `[` unresolved, as any `[` with no target (§9.1.4.1).
+
+```
+See [docs][guide] and **this**  →  Text("See [docs][guide] and ") + Strong([Text("this")]) — CDN-0036
+```
+
 - Cutdown does not resolve links. Whether a target exists is the consumer's concern.
-- Cutdown does NOT validate URL syntax and URL schema. Consumers may choose to validate or sanitize `href` values.
 - An `href` longer than 2048 Unicode scalar values is kept in full; warning CDN-0035 is emitted. A page path follows the same limit (§9.2.5).
 
 **Invalid targets.** The parser checks only what it can see in the source:
 
 - An invalid page path (§9.2.5) keeps the `Link` with `raw` as written and `path: null`, and emits warning CDN-0032.
-- A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written, without the `#` sigil, and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
+- An id, ref, tag, or cite target that is empty or holds a character its kind does not admit keeps the `Link` with its kind and `target` as written, without the sigil, and emits warning CDN-0033: `[x](#)`, `[x](^a b)`, `[x](~a//b)`, `[x](~a/)`, `[x](@)`.
 
 **Edge cases:**
 
 ```
-[][target]    → Link { kind: "page", children: [], raw: "target", path: { path: "target", query: [], fragment: "" } }
-[][]          → Link { kind: "page", children: [], raw: "", path: { path: "", query: [], fragment: "" } }
-[]()          → Link { kind: "external", children: [], href: "" }
+[](target)   → Link { kind: "page", children: [], raw: "target", path: { path: "target", query: [], fragment: "" } }
+[]()         → Link { kind: "page", children: [], raw: "", path: { path: "", query: [], fragment: "" } }
+[](#)        → Link { kind: "id", children: [], target: "" } — CDN-0033
 ```
 
-All cases above are valid and preserved. What an empty target refers to is the consumer's decision.
+#### Link kinds and meaning
 
-#### Link types and meaning
+**Id links** `[text](#id)` point to one segment of the current document: the one whose `id` attribute is `id`. Ids are local to their document (§17.3).
 
-Ordinary links `[text](url)` are for external URLs. At least `(url)` part should be treated as HTML DOM `<a>` `href` attribute value and validated/sanitized accordingly. Consumers may choose to also validate the `url` against a whitelist of allowed URL schemas (e.g. `http:`, `https:`, `mailto:`) and/or emit a warning for suspicious URLs (e.g. `javascript:`).
-
-Tag links `[text][#tag/path]` are for linking to a **tag or category** within the whole project where document is defined. The `target` field contains the tag name, which consumers can resolve according to their internal tagging logic. Cutdown does not specify where tags are defined or how they are resolved.
-
-Reference links `[text][^ref-id]` are for linking to a **reference** definition elsewhere **in the same document**. There can be two way `ref-id` resolution. Either anywhere in the document the `[^ref-id]: target` syntax is used to define a `RefDefinition` segment with the given `id`, or `id` attribute of any segment matches the `ref-id`.
+**Ref links** `[text](^ref)` are footnote references. The `RefDefinition` `[^ref]: …` holds the footnote; a document defines it once, anywhere, and the last definition wins (§4.14). `[](^ref)` is a bare footnote marker, which the consumer numbers.
 
 ```
-Sample text with a reference to [the API][^api-doc] and [the API table][^api-table].
+The price is fixed[](^1) until [the review](^review).
 
-| Endpoint | Description |
-| ...      | ...         | {#api-table}
-
-[^api-doc]: https://example.com/api-doc
+[^1]: Until 2027.
+[^review]: Scheduled for March.
 ```
 
-Citation links `[text][@cite-id]` are for linking to a bibliography entry or similar **external reference**. The `target` field contains the citation ID, which consumers can resolve according to their internal citation logic.
+**Tag links** `[text](~tag/path)` link to a **tag or category** of the project the document belongs to. Cutdown does not specify where tags are defined or how they are resolved.
 
-Page links `[text][path/to/page]` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x][guide/intro]` and `[x][guide/intro.cutdown]` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names a Section `id` in the target document. A trailing `/` is not a folder index; it makes the path invalid (§9.2.5). The base of a relative path is defined in §9.2.4.
+**Cite links** `[text](@cite-id)` link to a bibliography entry or a similar **external reference**, resolved by the consumer's citation logic.
+
+**Page links** `[text](path/to/page)` link to another Cutdown document. A page link only ever refers to a `.cutdown` file: the extension is implied and may be omitted, so `[x](guide/intro)` and `[x](guide/intro.cutdown)` name the same document. A consumer resolves `path.path` as written when it ends with `.cutdown`, and appends `.cutdown` otherwise; it never resolves a page link to a file of any other kind. A `#id` fragment names the segment with that `id` in the target document, as an id link does inside it. A trailing `/` is not a folder index; it makes the path invalid (§9.2.5). The base of a relative path is defined in §9.2.4.
 
 ---
 
@@ -462,7 +480,7 @@ interface Spoiler {
 }
 ```
 
-- `^^` opener and closer. A single `^` is always literal text in inline context. (Inside `[...][^id]` link/definition target slots, `^` retains its reference-marker role per §5.5 / §4.14 — that context is delimited and never reaches the Spoiler parser.)
+- `^^` opener and closer. A single `^` is always literal text in inline context. (In a `(^ref)` link target and a `[^ref]:` definition, `^` is the reference sigil per §5.5 / §4.14 — those contexts are delimited and never reach the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
 - Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy close in source order, unclosed `^^` → `Text("^^")`, no same-type nesting.
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, and `Link` is allowed.

@@ -91,15 +91,20 @@ An opener that never matches degrades per **Class 1**: the opener alone (`::` pl
 
 `##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.1.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` (right bracket) because `##` swallowed it), the opener degrades per its class (§9.1.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
 
-Reference links (`[text][^ref]`) are emitted as `Link { kind: "ref" }` in-place. Resolution against `RefDefinition` segments is the consumer's responsibility.
-
-Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { kind: "cite" }` in-place. Citation resolution is the consumer's responsibility.
+Id, ref, tag, and cite links (`[text](#id)`, `[text](^ref)`, `[text](~tag)`, `[text](@cite)`, including the empty-text forms such as `[](^ref)`) are emitted as `Link` nodes in place. Resolving them — against segment ids, `RefDefinition` segments, tags, or a bibliography — is the consumer's responsibility.
 
 ### 9.2 PathResourceLocator
 
 A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). Each of those nodes also carries `raw: string`, the path as written with escapes resolved (§9.2.2); the locator holds what is decomposed from `raw`. This subsection is the only definition of how a path is parsed; those sections state only where their path ends.
 
-A path never begins with `https://`. Where such a value stands in a path position, the node is a URL node instead: `![alt](https://…)` is an `EmbedImageInline` (§5.9.1) and `[text][https://…]` is an external `Link` (§5.5). Every URL is a plain string, kept as written and never decomposed.
+**Resources and pointers.** Two families of nodes name something outside the document, and they admit different targets:
+
+- A **resource** is fetched by the consumer and placed in the document: `FileBlock`, `InjectBlock`, `ImageInline`, `EmbedImageInline`, `EmbedBlock`. Its source is a path, or — for the embed nodes only — a URL beginning with literal `https://`. Nothing else is admitted, because the consumer must be able to fetch and place it.
+- A **pointer** is followed, printed, or ignored by the consumer, never placed: `Link`. Its target is as wide as possible — every URI scheme, a page path, or an id, ref, tag, or cite target (§5.5).
+
+Cutdown filters no scheme. It cannot know its consumer: in an HTML page `javascript:` is a hazard, in a printed book it is ink. Filtering is the consumer's decision.
+
+A path never begins with `https://`. Where such a value stands in an image source, the node is an `EmbedImageInline` instead (§5.9.1). In a link target, any URI scheme makes an external `Link` (§5.5). Every URL is a plain string, kept as written and never decomposed.
 
 ```typescript
 interface PathResourceLocator {
@@ -124,7 +129,9 @@ The construct that owns the path decides where it ends:
 |---|---|---|
 | `FileBlock`, `InjectBlock` (a line beginning `/`) | the leading `/` | the end of the line, after removing one trailing attribute sequence — whitespace followed by one or more `{…}` groups that close the line — and then trailing whitespace |
 | `ImageInline` `(…)` | the character after `(` | the first unbalanced `)` |
-| `Link` page target `[…]` | the character after `[` | the first unbalanced `]` |
+| `Link` `(…)` | the character after `(` | the first unbalanced `)` |
+
+A link target is scanned this way whatever its kind; the kind is chosen after the extent is known (§5.5).
 
 Brackets nest inside every path. A `(` or `[` opens a pair, and the closer that matches it is path content, not the end of the path: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. Parentheses and square brackets are counted separately. Escaped brackets are not counted.
 
@@ -139,6 +146,7 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 | `\\` | `\\`, unchanged | a literal backslash, resolved by the consumer (§5.11.1); the pair is still an escape while the path is scanned, so `\\)` ends the path |
 | `\(` `\)` `\[` `\]` | the bracket | not counted for nesting, never ends the path |
 | `\?` `\#` `\&` `\=` | the character | no query, fragment, or pair boundary |
+| `\^` `\~` `\@` | the character | in a link target, no ref, tag, or cite sigil (§5.5) |
 | `\{{` | `\{{`, unchanged | an escaped interpolation token, resolved by the consumer (§5.11.1) |
 | `\` before any other character | both characters | none |
 
@@ -175,7 +183,7 @@ An invalid path does not change the parse. The owning node is emitted as usual w
 
 **Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
 
-An empty path is valid. `[text][]` produces `raw: ""` and `path: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
+An empty path is valid. `[text]()` produces `raw: ""` and `path: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
 
 ### 9.3 Derived Structure
 

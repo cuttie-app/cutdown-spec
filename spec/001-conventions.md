@@ -37,10 +37,10 @@ This charset is used for all identifier-like tokens: block names, mark names, co
 `TAG_LITERAL` is the character class of one tag level in a tag link target (§5.5):
 
 ```
-TAG_LITERAL = any Unicode scalar value except # (octothorpe), / (slash), ] (right bracket), and the line terminator
+TAG_LITERAL = any Unicode scalar value except / (slash) and the control characters U+0000–U+001F, U+007F, U+0080–U+009F
 ```
 
-A tag target is `#` followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters.
+A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character.
 
 Paths are not identifiers. They are parsed as a `PathResourceLocator` (§9.2).
 

@@ -1,9 +1,9 @@
 id: link-tag-unicode
 section: "5.5"
-description: "Tag levels accept any Unicode except # / ] and the line terminator, spaces included"
+description: "Tag levels accept any Unicode except / and control characters, spaces included"
 
 input: |
-  [prices][#Ціни/2026 Q1]
+  [prices](~Ціни/2026 Q1)
 
 ast:
   - _type: Paragraph

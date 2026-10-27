@@ -3,7 +3,7 @@ section: "5.5"
 description: "[text][^id] produces a Link with kind=ref; ^ sigil is consumed"
 
 input: |
-  [note text][^note-id]
+  [note text](^note-id)
 
 ast:
   - _type: Paragraph

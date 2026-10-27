@@ -1,0 +1,19 @@
+id: link-id
+section: "5.5"
+description: "[text](#id) is an id link: target is the id without the # sigil"
+
+input: |
+  [Install](#install-linux)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: id
+        target: install-linux
+        href: ""
+        raw: ""
+        path: null
+        children:
+          - _type: Text
+            value: Install

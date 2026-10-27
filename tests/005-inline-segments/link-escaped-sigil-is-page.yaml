@@ -1,0 +1,14 @@
+id: link-escaped-sigil-is-page
+section: "5.5"
+description: "An escaped sigil is not a sigil: [x](\\~a) is a page link whose path begins with ~"
+
+input: |
+  [x](\~a)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "~a"
+        target: ""

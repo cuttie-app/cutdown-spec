@@ -1,0 +1,14 @@
+id: link-page-balanced-parens
+section: "9.2.1"
+description: "Balanced parentheses stay in a page path; the first unbalanced ) ends it"
+
+input: |
+  [x](notes (draft))
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "notes (draft)"
+        path:

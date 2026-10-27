@@ -83,7 +83,7 @@ When N identical characters appear at an inline position, the following rules ap
 
 ¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$`, `^^^` are block fences (CodeBlock, Meta, MathBlock, SpoilerBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
 
-² A single `^` (caret) is literal in inline context. Inside a `[...][^id]` link/definition target slot it retains its reference-marker role (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
+² A single `^` (caret) is literal in inline context. In a `(^ref)` link target and a `[^ref]:` definition it is the reference sigil (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
 
 ³ `###` is a block fence only when it begins a block candidate — that is, when it is the first non-whitespace content of a line after container-indent stripping (§10.2, §10.6). In inline position, `###` parses as `##` (line comment opener — runs to EOL) + `#` (collapsed into the payload text).
 

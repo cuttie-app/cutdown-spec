@@ -1,0 +1,13 @@
+id: link-tag-balanced-parens
+section: "5.5"
+description: "A tag target is scanned as a path: balanced parentheses stay in it"
+
+input: |
+  [x](~Release (beta))
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: tag
+        target: "Release (beta)"

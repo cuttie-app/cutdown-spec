@@ -193,8 +193,8 @@ price is \{high\}  →  Text("price is {high}")
 `{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 
 ```
-[**bold** {.foo}](url)  →  Link { children: [Strong({class:"foo"}, "bold")], href: "url" }
-[{.foo} text](url)      →  Link { children: [Text("text")], href: "url" }   ({.foo} dropped)
+[**bold** {.foo}](https://a.b)  →  Link { children: [Strong({class:"foo"}, "bold")], href: "https://a.b" }
+[{.foo} text](https://a.b)      →  Link { children: [Text("text")], href: "https://a.b" }   ({.foo} dropped)
 ```
 
 ### 6.2 Caption

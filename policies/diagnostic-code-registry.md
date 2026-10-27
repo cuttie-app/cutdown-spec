@@ -374,15 +374,15 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
-### CDN-0033 — Invalid tag
+### CDN-0033 — Invalid link target
 
 | Field | Value |
 |---|---|
 | code | CDN-0033 |
-| title | Invalid tag |
+| title | Invalid link target |
 | level | warning |
-| trigger | A tag link target (§5.5) has an empty level: `[x][#]`, `[x][#a//b]`, `[x][#a/]` |
-| recovery | The `Link` is emitted with `kind: "tag"` and `target` as written, without the `#` sigil. `loc` spans the target |
+| trigger | An id, ref, tag, or cite link target (§5.5) is empty or holds a character its kind does not admit: `[x](#)`, `[x](^a b)`, `[x](~a//b)`, `[x](~a/)`, `[x](@)` |
+| recovery | The `Link` is emitted with the kind its sigil selects and `target` as written, without the sigil. `loc` spans the target |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |
@@ -413,6 +413,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | level | warning |
 | trigger | A path `raw` (§9.2.5), an `EmbedBlock.url` (§4.9), or a `Link.href` (§5.5) is longer than 2048 Unicode scalar values |
 | recovery | None needed: the value is kept in full, and a path is decomposed as usual. The node keeps its type. `loc` spans the value |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0036 — Unsupported link form `[text][target]`
+
+| Field | Value |
+|---|---|
+| code | CDN-0036 |
+| title | Unsupported link form `[text][target]` |
+| level | warning |
+| trigger | The `]` closing a link text or image alt is followed directly by a second `[` that closes on the same line (§5.5): `[docs][guide]`, `![a][b]` |
+| recovery | Both bracket groups are emitted as one literal `Text`, exactly as written, and parsing continues after them. The message says to write `[text](target)`. `loc` spans both groups |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |

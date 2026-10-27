@@ -3,14 +3,14 @@ section: "9.1.4.1"
 description: "The closed twin of the verbatim-slice case: with the link properly closed, the inner Emphasis parses normally"
 
 input: |
-  [a __b__ c](url)
+  [a __b__ c](https://example.com)
 
 ast:
   - _type: Paragraph
     children:
       - _type: Link
         kind: external
-        href: url
+        href: https://example.com
         children:
           - _type: Text
             value: "a "

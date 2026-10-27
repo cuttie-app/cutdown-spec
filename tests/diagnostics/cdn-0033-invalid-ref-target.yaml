@@ -1,0 +1,17 @@
+id: cdn-0033-invalid-ref-target
+section: "5.5"
+description: "CDN-0033: a ref target outside ID_LITERAL keeps the Link with target as written"
+
+input: |
+  [x](^a b)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: ref
+        target: "a b"
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

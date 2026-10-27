@@ -3,7 +3,7 @@ section: "5.5"
 description: "A page target is a PathResourceLocator; spaces are path content and nothing is trimmed"
 
 input: |
-  [Start][Guides/Getting started]
+  [Start](Guides/Getting started)
 
 ast:
   - _type: Paragraph

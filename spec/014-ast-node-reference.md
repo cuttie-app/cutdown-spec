@@ -44,7 +44,7 @@ All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Re
 | `Strong`        | `_type: "Strong", children: Inline[], attributes` |
 | `Highlight`     | `_type: "Highlight", children: Inline[], attributes` |
 | `Spoiler`       | `_type: "Spoiler", children: Inline[], attributes` |
-| `Link`          | `_type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string, raw: string, path: PathResourceLocator\|null, target: string, attributes` |
+| `Link`          | `_type: "Link", kind: "external"\|"page"\|"id"\|"ref"\|"tag"\|"cite", children: Inline[], href: string, raw: string, path: PathResourceLocator\|null, target: string, attributes` |
 | `CodeInline`    | `_type: "CodeInline", value: string, attributes` |
 | `MathInline`    | `_type: "MathInline", formula: string, attributes` |
 | `QuoteInline`   | `_type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |

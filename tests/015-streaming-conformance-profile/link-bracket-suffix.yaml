@@ -2,14 +2,14 @@ id: link-bracket-suffix
 section: "15"
 description: "An unresolved bracket opener keeps its current line suffix literal until a complete link arrives"
 
-input: "[draft](url)"
+input: "[draft](https://example.com)"
 
 ast:
   - _type: Paragraph
     children:
       - _type: Link
         kind: external
-        href: url
+        href: https://example.com
         children:
           - _type: Text
             value: draft
