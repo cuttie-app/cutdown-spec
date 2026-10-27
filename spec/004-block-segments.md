@@ -657,7 +657,7 @@ interface EmbedBlock {
 ```
 
 - `url` runs from the `h` of `https://` to the end of the line, after removing one trailing attribute sequence (whitespace followed by one or more `{…}` groups that close the line) and then trailing whitespace. It is a raw string: Cutdown does not parse, validate, or fetch it. `{{key}}` interpolation tokens stay in it verbatim (§5.11).
-- A `url` longer than 1024 Unicode scalar values does not open an `EmbedBlock`; the line is a `Paragraph`.
+- A `url` longer than 2048 Unicode scalar values is kept in full and still opens an `EmbedBlock`; warning CDN-0035 is emitted.
 - What an embed shows is the consumer's decision — for example, resolving an oEmbed snippet at render time and placing it in the page.
 - An `EmbedBlock` never joins a `FileGroup` (§4.12), and an `EmbedBlock` line ends an open `FileGroup`. Consecutive `EmbedBlock` lines are separate blocks.
 - Like every block opener, `https://` cannot interrupt a paragraph (§10.1): a URL line glued to paragraph text is paragraph content.

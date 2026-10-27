@@ -366,7 +366,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0032 |
 | title | Invalid path |
 | level | warning |
-| trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5: a control character, more than 1024 Unicode scalar values, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. Never emitted for a URL (`https://…`) |
+| trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5: a control character, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. Never emitted for a URL (`https://…`) |
 | recovery | The owning node is emitted as usual. Its locator keeps `raw` as written and has `path: ''`, `query: []`, `fragment: ''`. `loc` spans the path |
 | introduced_in | 0.11.0 |
 | status | active |
@@ -398,6 +398,21 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | level | warning |
 | trigger | One `{...}` group contributes more than 32 distinct classes through `.classname` and `class=` tokens (§6.1.1) |
 | recovery | The first 32 classes are kept in source order; the rest are dropped. `loc` spans the first dropped class token |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0035 — Value exceeds limit of 2048 chars
+
+| Field | Value |
+|---|---|
+| code | CDN-0035 |
+| title | Value exceeds limit of 2048 chars |
+| level | warning |
+| trigger | A path `raw` (§9.2.5), an `EmbedBlock.url` (§4.9), or a `Link.href` (§5.5) is longer than 2048 Unicode scalar values |
+| recovery | None needed: the value is kept in full, and a path is decomposed as usual. The node keeps its type. `loc` spans the value |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |

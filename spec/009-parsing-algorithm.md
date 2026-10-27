@@ -168,12 +168,13 @@ A path whose `raw` begins with `https://` is a **URL**. It is decomposed by the 
 A path is **invalid** when any of these holds:
 
 - `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
-- `raw` is longer than 1024 Unicode scalar values;
 - `path` contains an empty segment (`a//b`);
 - `path` is root-relative and a `..` segment climbs above the root (`/../x`);
 - `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17).
 
 An invalid path does not change the parse. The owning node is emitted as usual, its locator keeps `raw` and has `path: ''`, `query: []`, `fragment: ''`, and warning CDN-0032 is emitted.
+
+**Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values — a path or a URL — is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9) and `Link.href` (§5.5).
 
 An empty path is valid. `[text][]` produces `{ raw: "", path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
 

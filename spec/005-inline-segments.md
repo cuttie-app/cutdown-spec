@@ -158,6 +158,7 @@ interface Link {
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
 - Cutdown does not resolve links. Whether a target exists is the consumer's concern.
 - Cutdown does NOT validate URL syntax and URL schema. Consumers may choose to validate or sanitize `href` values.
+- An `href` longer than 2048 Unicode scalar values is kept in full; warning CDN-0035 is emitted. A page path follows the same limit (§9.2.5).
 
 **Invalid targets.** The parser checks only what it can see in the source:
 
