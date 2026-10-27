@@ -9,6 +9,6 @@ ast:
   - _type: Paragraph
     children:
       - _type: ImageInline
+        raw: "/a)b.png"
         src:
-          raw: "/a)b.png"
           path: "/a)b.png"

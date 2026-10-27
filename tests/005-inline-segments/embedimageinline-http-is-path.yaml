@@ -1,0 +1,17 @@
+id: embedimageinline-http-is-path
+section: "5.9.1"
+description: "Only https:// makes a URL: an http:// image source is read as a path, which is invalid (empty segment)"
+
+input: |
+  ![x](http://x.com/a.png)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        raw: "http://x.com/a.png"
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

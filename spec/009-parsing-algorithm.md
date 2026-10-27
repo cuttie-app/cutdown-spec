@@ -75,7 +75,7 @@ If no closer is found before the end of the inline context, the opener alone is 
 
 | Opener | Construct |
 |--------|-----------|
-| `[` / `![` | Link / ImageInline |
+| `[` / `![` | Link / ImageInline, EmbedImageInline |
 | `{{` | Variable |
 | `{` | attribute scan (§6) |
 
@@ -97,11 +97,12 @@ Citation links (`[text][@cite]`, including `[][@cite]`) are emitted as `Link { k
 
 ### 9.2 PathResourceLocator
 
-A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). This subsection is the only definition of how a path is parsed; those sections state only where their path ends.
+A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). Each of those nodes also carries `raw: string`, the path as written with escapes resolved (§9.2.2); the locator holds what is decomposed from `raw`. This subsection is the only definition of how a path is parsed; those sections state only where their path ends.
+
+A path never begins with `https://`. Where such a value stands in a path position, the node is a URL node instead: `![alt](https://…)` is an `EmbedImageInline` (§5.9.1) and `[text][https://…]` is an external `Link` (§5.5). Every URL is a plain string, kept as written and never decomposed.
 
 ```typescript
 interface PathResourceLocator {
-  raw: string                // the path as written, escapes resolved (§9.2.2)
   path: string               // raw up to the first unescaped ? or #
   query: QueryParam[]        // pairs after ?, up to the first unescaped #
   fragment: string           // everything after the first unescaped #
@@ -151,7 +152,7 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 Absent parts are empty: `query: []`, `fragment: ''`.
 
 ```
-/My Docs/Q3 report.pdf         → { raw: "/My Docs/Q3 report.pdf", path: "/My Docs/Q3 report.pdf", query: [], fragment: "" }
+/My Docs/Q3 report.pdf         → { path: "/My Docs/Q3 report.pdf", query: [], fragment: "" }
 /data.csv?sheet=2&range=A1:D9  → { path: "/data.csv", query: [{key:"sheet",value:"2"}, {key:"range",value:"A1:D9"}], fragment: "" }
 /video.mp4#t=30,45             → { path: "/video.mp4", query: [], fragment: "t=30,45" }
 /card.cutdown?name=Ann&flag    → { path: "/card.cutdown", query: [{key:"name",value:"Ann"}, {key:"flag",value:""}], fragment: "" }
@@ -160,8 +161,6 @@ Absent parts are empty: `query: []`, `fragment: ''`.
 #### 9.2.4 Base
 
 A path whose `raw` begins with `/` is **root-relative**: the root is supplied by the consumer. Any other path is relative to the document that contains it. Cutdown resolves no path; it only fixes how a path is read.
-
-A path whose `raw` begins with `https://` is a **URL**. It is decomposed by the same steps, but the base rule above and the validity rules below do not apply to it.
 
 #### 9.2.5 Validity
 
@@ -172,11 +171,11 @@ A path is **invalid** when any of these holds:
 - `path` is root-relative and a `..` segment climbs above the root (`/../x`);
 - `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17).
 
-An invalid path does not change the parse. The owning node is emitted as usual, its locator keeps `raw` and has `path: ''`, `query: []`, `fragment: ''`, and warning CDN-0032 is emitted.
+An invalid path does not change the parse. The owning node is emitted as usual with `raw` as written, its locator is `null`, and warning CDN-0032 is emitted.
 
-**Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values — a path or a URL — is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9) and `Link.href` (§5.5).
+**Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
 
-An empty path is valid. `[text][]` produces `{ raw: "", path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
+An empty path is valid. `[text][]` produces `raw: ""` and `path: { path: "", query: [], fragment: "" }`; what it refers to is the consumer's decision.
 
 ### 9.3 Derived Structure
 

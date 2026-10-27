@@ -1,6 +1,9 @@
 ## 14. AST Node (Segment) Reference
 
-**Empty values.** The AST never uses `null` for an absent value, with one exception. A string property with no content is `''`; an array property with no entries is `[]`; a number property is always a number. The exception is `Page.meta`, which is `null` when the Page has no `Meta` block. An empty `Meta` block is not `null`: it is a `Meta` whose `raw` is `''`.
+**Empty values.** The AST uses `null` only to say that a node has no value of a kind. A string property with no content is `''`; an array property with no entries is `[]`; a number property is always a number. There are two exceptions:
+
+- `Page.meta` is `null` when the Page has no `Meta` block. An empty `Meta` block is not `null`: it is a `Meta` whose `raw` is `''`.
+- A path locator — `FileBlock.src`, `InjectBlock.src`, `ImageInline.src`, `Link.path` — is `null` when the node holds no valid path: the path is invalid (§9.2.5), or the `Link` is not `kind: "page"`. The node's `raw` still holds the text as written.
 
 A property a node does not admit is omitted, not emptied — `CommentBlock` has no `attributes` property at all (§14.7).
 
@@ -26,7 +29,7 @@ All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Re
 | `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], attributes` |
 | `FileGroup`     | `_type: "FileGroup", children: FileBlock[], attributes` |
 | `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflection, attributes` |
-| `InjectBlock`   | `_type: "InjectBlock", src: PathResourceLocator, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
+| `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
 | `NamedBlock`    | `_type: "NamedBlock", name: string, children: Block[], caption: Inline[], reflection, attributes` |
 | `SpoilerBlock`  | `_type: "SpoilerBlock", children: Block[], caption: Inline[], reflection, attributes` |
 | `CommentBlock`  | `_type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5). |
@@ -41,11 +44,12 @@ All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Re
 | `Strong`        | `_type: "Strong", children: Inline[], attributes` |
 | `Highlight`     | `_type: "Highlight", children: Inline[], attributes` |
 | `Spoiler`       | `_type: "Spoiler", children: Inline[], attributes` |
-| `Link`          | `_type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string, path: PathResourceLocator, target: string, attributes` |
+| `Link`          | `_type: "Link", kind: "external"\|"page"\|"tag"\|"ref"\|"cite", children: Inline[], href: string, raw: string, path: PathResourceLocator\|null, target: string, attributes` |
 | `CodeInline`    | `_type: "CodeInline", value: string, attributes` |
 | `MathInline`    | `_type: "MathInline", formula: string, attributes` |
 | `QuoteInline`   | `_type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
-| `ImageInline`   | `_type: "ImageInline", alt: Inline[], src: PathResourceLocator, attributes` |
+| `ImageInline`   | `_type: "ImageInline", alt: Inline[], raw: string, src: PathResourceLocator\|null, attributes` |
+| `EmbedImageInline` | `_type: "EmbedImageInline", alt: Inline[], url: string, attributes` |
 | `Mark`          | `_type: "Mark", name: string, children: Inline[], attributes` |
 | `LineBreak`     | `_type: "LineBreak"` |
 | `Variable`      | `_type: "Variable", key: string, attributes` |
@@ -57,11 +61,11 @@ All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Re
 | `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
 | `ListItem`      | `_type: "ListItem", children: (Block\|Inline)[], reflection, attributes` |
 | `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], reflection, attributes` |
-| `FileBlock`     | `_type: "FileBlock", src: PathResourceLocator, caption: Inline[], reflection, attributes` — only inside a `FileGroup` |
+| `FileBlock`     | `_type: "FileBlock", raw: string, src: PathResourceLocator\|null, caption: Inline[], reflection, attributes` — only inside a `FileGroup` |
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
 | `Row`           | `_type: "Row"\|"Header", children: Cell[], reflection, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
-| `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§9.2) |
+| `PathResourceLocator` | `path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§9.2) |
 
 ### 14.5 Location Type
 

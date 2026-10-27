@@ -12,8 +12,8 @@ ast:
         alt:
           - _type: Text
             value: A sunset
+        raw: photos/sunset.jpg
         src:
-          raw: photos/sunset.jpg
           path: photos/sunset.jpg
           query: []
           fragment: ''

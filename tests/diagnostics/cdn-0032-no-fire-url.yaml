@@ -1,6 +1,6 @@
 id: cdn-0032-no-fire-url
-section: "9.2.4"
-description: "CDN-0032 does not fire for a URL: the validity rules do not apply to an https:// path"
+section: "5.9.1"
+description: "CDN-0032 does not fire for a URL: an https:// image source is an EmbedImageInline whose url is never validated"
 
 input: |
   ![x](https://example.com//a.png)
@@ -8,6 +8,5 @@ input: |
 ast:
   - _type: Paragraph
     children:
-      - _type: ImageInline
-        src:
-          path: "https://example.com//a.png"
+      - _type: EmbedImageInline
+        url: "https://example.com//a.png"

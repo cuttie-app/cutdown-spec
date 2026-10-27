@@ -10,9 +10,8 @@ ast:
     children:
       - _type: Link
         kind: page
-        path:
-          raw: guide/
-          path: ''
+        raw: guide/
+        path: null
 
 diagnostics:
   - code: CDN-0032

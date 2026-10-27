@@ -10,8 +10,8 @@ ast:
     attributes: []
     children:
       - _type: FileBlock
+        raw: /docs/report.pdf
         src:
-          raw: /docs/report.pdf
           path: /docs/report.pdf
           query: []
           fragment: ''

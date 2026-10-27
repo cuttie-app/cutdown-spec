@@ -9,8 +9,8 @@ ast:
   - _type: Paragraph
     children:
       - _type: ImageInline
+        raw: "/shots/run (2).png"
         src:
-          raw: "/shots/run (2).png"
           path: "/shots/run (2).png"
       - _type: Text
         value: " done"

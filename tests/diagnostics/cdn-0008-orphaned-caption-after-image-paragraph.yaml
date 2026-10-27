@@ -13,8 +13,8 @@ ast:
         alt:
           - _type: Text
             value: a
+        raw: "b"
         src:
-          raw: "b"
           path: "b"
   - _type: Paragraph
     children:

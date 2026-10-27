@@ -7,8 +7,8 @@ input: |
 
 ast:
   - _type: InjectBlock
+    raw: /path/to/page.cutdown#section-id
     src:
-      raw: /path/to/page.cutdown#section-id
       path: /path/to/page.cutdown
       query: []
       fragment: section-id

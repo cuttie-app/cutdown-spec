@@ -10,6 +10,6 @@ ast:
     children:
       - _type: Link
         kind: page
+        raw: "Guides/Getting started"
         path:
-          raw: "Guides/Getting started"
           path: "Guides/Getting started"

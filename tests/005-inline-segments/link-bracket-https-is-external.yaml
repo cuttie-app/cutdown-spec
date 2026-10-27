@@ -1,0 +1,15 @@
+id: link-bracket-https-is-external
+section: "5.5"
+description: "A bracket target beginning with https:// is a URL: the Link is external, as with (url)"
+
+input: |
+  [docs][https://example.com/a]
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: "https://example.com/a"
+        raw: ""
+        path: null

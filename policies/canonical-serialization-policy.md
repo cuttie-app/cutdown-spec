@@ -33,7 +33,7 @@ Canonical serialized output contains:
 
 - No insignificant whitespace in canonical JSON.
 - Strings use JSON standard escaping.
-- Every AST node property is emitted. An empty text field is `""` and an empty list is `[]`; `null` appears only as `Page.meta` when the page has no Meta block.
+- Every AST node property is emitted. An empty text field is `""` and an empty list is `[]`; `null` appears only where the AST reference allows it: `Page.meta` with no Meta block, and a path locator with no valid path.
 - Numeric fields use canonical decimal form (no leading plus, no unnecessary leading zeros).
 
 ## AST/Diagnostics Shape Stability

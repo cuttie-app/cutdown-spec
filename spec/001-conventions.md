@@ -90,6 +90,7 @@ Inline =
     | MathInline
     | QuoteInline
     | ImageInline
+    | EmbedImageInline
     | Mark
     | LineBreak
     | Variable

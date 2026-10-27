@@ -1,6 +1,6 @@
 id: cdn-0032-invalid-path
 section: "9.2.5"
-description: "CDN-0032: an empty path segment makes a page path invalid; the Link is kept with raw as written and the other parts empty"
+description: "CDN-0032: an empty path segment makes a page path invalid; the Link is kept with raw as written and path null"
 
 input: |
   [x][a//b]
@@ -10,11 +10,8 @@ ast:
     children:
       - _type: Link
         kind: page
-        path:
-          raw: a//b
-          path: ''
-          query: []
-          fragment: ''
+        raw: a//b
+        path: null
 
 diagnostics:
   - code: CDN-0032

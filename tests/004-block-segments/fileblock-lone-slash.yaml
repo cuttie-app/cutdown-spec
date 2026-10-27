@@ -9,8 +9,8 @@ ast:
   - _type: FileGroup
     children:
       - _type: FileBlock
+        raw: /
         src:
-          raw: /
           path: /
           query: []
           fragment: ''

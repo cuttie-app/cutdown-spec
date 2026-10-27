@@ -18,6 +18,6 @@ ast:
                 value: bold
           - _type: Text
             value: " caption"
+        raw: photos/shot.jpg
         src:
-          raw: photos/shot.jpg
           path: photos/shot.jpg

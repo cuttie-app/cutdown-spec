@@ -9,8 +9,8 @@ ast:
   - _type: FileGroup
     children:
       - _type: FileBlock
+        raw: '/a/\{{x}}/b\\{{y}}.png'
         src:
-          raw: '/a/\{{x}}/b\\{{y}}.png'
           path: '/a/\{{x}}/b\\{{y}}.png'
           query: []
           fragment: ''

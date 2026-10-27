@@ -7,8 +7,8 @@ input: |
 
 ast:
   - _type: InjectBlock
+    raw: /chapters/intro.cutdown
     src:
-      raw: /chapters/intro.cutdown
       path: /chapters/intro.cutdown
       query: []
       fragment: ''

@@ -12,7 +12,7 @@ The `##` opener (§2.2) is special: it has no closer and terminates at end-of-li
 | Paragraph content | §4      |
 | List item and task item content | §4      |
 | Table cell content | §4      |
-| `alt` slot of `ImageInline` | §5      |
+| `alt` slot of `ImageInline` and `EmbedImageInline` | §5      |
 | `Caption` content | §6      |
 | `RefDefinition` content | §4      |
 | Children of `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, `Spoiler` | §5      |
@@ -135,24 +135,25 @@ interface Link {
   _type: "Link"
   kind: "external" | "page" | "tag" | "ref" | "cite"
   children: Inline[]
-  href: string                // kind "external"; otherwise ''
-  path: PathResourceLocator   // kind "page"; otherwise every part empty
-  target: string              // kind "tag" | "ref" | "cite"; otherwise ''
+  href: string                       // kind "external"; otherwise ''
+  raw: string                        // kind "page": the target as written; otherwise ''
+  path: PathResourceLocator | null   // kind "page" with a valid path; otherwise null
+  target: string                     // kind "tag" | "ref" | "cite"; otherwise ''
   attributes: Attribute[]
 }
 ```
 
 | Syntax | Kind | Field |
 |--------|------|-------|
-| `[text](url)` | `"external"` | `href` |
-| `[text][path/to/page]` | `"page"` | `path` |
+| `[text](url)`, `[text][https://…]` | `"external"` | `href` |
+| `[text][path/to/page]` | `"page"` | `raw`, `path` |
 | `[text][#tag/path]` | `"tag"` | `target` |
 | `[text][^ref-id]` | `"ref"` | `target` |
 | `[text][@cite-id]` | `"cite"` | `target` |
 
 - `text` is **parsed by inline rules**. May be empty.
-- An unused locator has every part empty: `{ raw: "", path: "", query: [], fragment: "" }`.
-- **Page target:** a `PathResourceLocator` (§9.2), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
+- **URL target:** a bracket target beginning with literal `https://` is a URL, not a page: `[x][https://example.com]` → `Link { kind: "external", href: "https://example.com" }`, the same as `[x](https://example.com)`. The URL runs to the first unbalanced `]` and is kept as written.
+- **Page target:** any other bracket target that is not a tag, ref, or cite is a `PathResourceLocator` (§9.2), running to the first unbalanced `]`. Spaces and non-ASCII letters are path content: `[x][Guides/Getting started]`.
 - **Tag target:** `#` followed by one or more `TAG_LITERAL` levels separated by `/` (§1.2): `[x][#Ціни/2026 Q1]` → `target: "Ціни/2026 Q1"`. The leading `#` is a sigil and is consumed.
 - **Ref target:** `^` (caret) + `ID_LITERAL`. **Cite target:** `@` + any characters other than `]` (right bracket).
 - Shorthand `[@cite-id]` (no text bracket) is NOT a citation link — emitted as plain bracket text.
@@ -162,14 +163,14 @@ interface Link {
 
 **Invalid targets.** The parser checks only what it can see in the source:
 
-- An invalid page path (§9.2.5) keeps the `Link` with `path.raw` as written and the other parts empty, and emits warning CDN-0032.
+- An invalid page path (§9.2.5) keeps the `Link` with `raw` as written and `path: null`, and emits warning CDN-0032.
 - A tag target with an empty level — `[x][#]`, `[x][#a//b]`, `[x][#a/]` — keeps the `Link` with `target` as written, without the `#` sigil, and emits warning CDN-0033. A second `#` cannot occur inside a tag target: `#` is not a `TAG_LITERAL` character, so `[x][#a#b]` is not a tag link at all.
 
 **Edge cases:**
 
 ```
-[][target]    → Link { kind: "page", children: [], path: { raw: "target", path: "target", query: [], fragment: "" } }
-[][]          → Link { kind: "page", children: [], path: { raw: "", path: "", query: [], fragment: "" } }
+[][target]    → Link { kind: "page", children: [], raw: "target", path: { path: "target", query: [], fragment: "" } }
+[][]          → Link { kind: "page", children: [], raw: "", path: { path: "", query: [], fragment: "" } }
 []()          → Link { kind: "external", children: [], href: "" }
 ```
 
@@ -304,16 +305,42 @@ interface QuoteInline {
 interface ImageInline {
   _type: "ImageInline"
   alt: Inline[]
-  src: PathResourceLocator
+  raw: string                       // the path as written (§9.2)
+  src: PathResourceLocator | null   // null when the path is invalid
   attributes: Attribute[]
 }
 ```
 
 - `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
-- `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. A `src` beginning with `https://` is a URL (§9.2.4): `![logo](https://cdn.example.com/a.png)` is decomposed but never invalid. An invalid path keeps the node, empties the locator's parts, and emits CDN-0032. `src` may be empty.
-- `![]()` is valid and preserved as `ImageInline { alt: [], src: { raw: "", path: "", query: [], fragment: "" } }`.
+- `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032. The path may be empty.
+- A source beginning with literal `https://` makes the node an `EmbedImageInline` instead (§5.9.1).
+- `![]()` is valid and preserved as `ImageInline { alt: [], raw: "", src: { path: "", query: [], fragment: "" } }`.
 - `ImageInline` is the only image construct. An image alone on a line is still inline content: `![a](b)` → `Paragraph([ImageInline(...)])`. A local image that needs a caption or a gallery is written as a `FileBlock` (§4.11).
 - **Captions:** `ImageInline` does **not** participate in the caption line (§6.2) — it is not a block.
+
+#### 5.9.1 EmbedImageInline
+
+**Syntax:** `![alt](https://…) {attrs}` — the `ImageInline` syntax with a source beginning with literal, case-sensitive `https://`.
+
+**AST type:**
+
+```typescript
+interface EmbedImageInline {
+  _type: "EmbedImageInline"
+  alt: Inline[]
+  url: string
+  attributes: Attribute[]
+}
+```
+
+- `EmbedImageInline` is to `ImageInline` what `EmbedBlock` (§4.9) is to `FileBlock`: a remote resource named by URL rather than a path.
+- `url` runs to the first unbalanced `)`, as a path does (§9.2.1), and is kept as written. Cutdown does not decompose, validate, or fetch it, so it is never invalid. `{{key}}` interpolation tokens stay in it (§5.11.1). A `url` longer than 2048 Unicode scalar values is kept in full and emits CDN-0035.
+- `alt` and attributes follow `ImageInline`.
+- Every other scheme, `http://` included, is read as a path: `![](http://x.com/a.png)` is an `ImageInline` whose path is invalid (empty segment), with `src: null` and CDN-0032.
+
+```
+![logo](https://cdn.example.com/a.png)  →  EmbedImageInline { alt: [Text("logo")], url: "https://cdn.example.com/a.png" }
+```
 
 ---
 
@@ -406,7 +433,7 @@ interface Variable {
 
 A variable can also stand inside a string property, where no `Variable` node can live. There the parser leaves `{{key}}` in the string exactly as written, and the consumer substitutes it. Such an occurrence is an **interpolation token**.
 
-- **Interpolated properties:** `Link.href`; every `PathResourceLocator` (`raw`, and the `path`, `query`, and `fragment` decomposed from it); `EmbedBlock.url`; attribute string values, including strings inside a JSON value (§6.1.1).
+- **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
 - An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one left-to-right pass, together with the tokens: `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.

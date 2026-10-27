@@ -10,8 +10,8 @@ ast:
     children:
       - _type: Link
         kind: page
+        raw: about/intro
         path:
-          raw: about/intro
           path: about/intro
           query: []
           fragment: ''

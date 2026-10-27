@@ -12,8 +12,8 @@ ast:
         value: [b]
     children:
       - _type: FileBlock
+        raw: /My Docs/Q3 report.pdf
         src:
-          raw: /My Docs/Q3 report.pdf
           path: /My Docs/Q3 report.pdf
         attributes:
           - key: class

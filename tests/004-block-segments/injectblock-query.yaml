@@ -7,8 +7,8 @@ input: |
 
 ast:
   - _type: InjectBlock
+    raw: /card.cutdown?name=Ann&plan=pro
     src:
-      raw: /card.cutdown?name=Ann&plan=pro
       path: /card.cutdown
       query:
         - key: name

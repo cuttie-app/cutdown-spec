@@ -10,5 +10,5 @@ ast:
     children:
       - _type: Link
         kind: page
+        raw: "notes [draft]"
         path:
-          raw: "notes [draft]"

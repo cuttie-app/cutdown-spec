@@ -715,7 +715,8 @@ A line at block level beginning with `/` is a `FileBlock`, unless it is an `Inje
 ```typescript
 interface FileBlock {
   _type: "FileBlock"
-  src: PathResourceLocator
+  raw: string                       // the path as written (§9.2)
+  src: PathResourceLocator | null   // null when the path is invalid
   attributes: Attribute[]
   caption: Inline[]
   reflection: Reflection[]
@@ -723,7 +724,7 @@ interface FileBlock {
 ```
 
 - `src` is a `PathResourceLocator` (§9.2). Its extent is the whole line from the leading `/`, after removing one trailing attribute sequence and then trailing whitespace (§9.2.1). Spaces inside the path are path content: `/My Docs/Q3 report.pdf` is one path.
-- A line holding only `/` is a `FileBlock` whose `src.raw` is `"/"`. What it refers to is the consumer's decision.
+- A line holding only `/` is a `FileBlock` whose `raw` is `"/"`. What it refers to is the consumer's decision.
 - Cutdown assigns no media type and no group. A consumer that needs one inspects `src.path`.
 - A `FileBlock` never stands alone: it is always a child of a `FileGroup` (§4.12).
 - **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
@@ -765,10 +766,10 @@ Input:
 
 AST:
   FileGroup
-  ├── FileBlock { src: { raw: "/photos/a.png", … }, caption: [Text("First")] }
-  └── FileBlock { src: { raw: "/docs/report.pdf", … } }
+  ├── FileBlock { raw: "/photos/a.png", src: { path: "/photos/a.png", … }, caption: [Text("First")] }
+  └── FileBlock { raw: "/docs/report.pdf", src: { path: "/docs/report.pdf", … } }
   FileGroup
-  └── FileBlock { src: { raw: "/photos/b.jpg", … } }
+  └── FileBlock { raw: "/photos/b.jpg", src: { path: "/photos/b.jpg", … } }
 ```
 
 ---
@@ -970,7 +971,8 @@ A `FileBlock`-shaped line (a line at block level beginning with `/`) is an `Inje
 ```typescript
 interface InjectBlock {
   _type: "InjectBlock"
-  src: PathResourceLocator
+  raw: string                       // the path as written (§9.2)
+  src: PathResourceLocator | null   // null when the path is invalid
   children: Block[]
   attributes: Attribute[]
   reflection: Reflection[]
@@ -978,7 +980,7 @@ interface InjectBlock {
 ```
 
 - `src` is parsed exactly as for `FileBlock` (§4.11, §9.2). The test looks at `src.path`, so a query or fragment does not hide it: `/card.cutdown?name=Ann` and `/intro.cutdown#setup` are `InjectBlock`s. The suffix `.cutdown` is matched case-sensitively.
-- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§9.2.5).
+- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§9.2.5). An `InjectBlock` whose path is invalid for another reason keeps its type, with `src: null`.
 - A line holding only `/` is a `FileBlock`, not an injection of the root folder.
 - The parser always emits `children: []`. Cutdown's parser does no I/O; a consumer that resolves the injection fills `children` as §17 defines. An `InjectBlock` that no consumer resolves stays in the AST unchanged.
 - `children` is a block scope (§1.6), and Sections never cross its edge (§17).
@@ -996,7 +998,7 @@ Input:
 
 AST:
   Section { level: 2, heading: [Text("Setup")], children: [
-    InjectBlock { src: { raw: "/parts/install.cutdown?arch=arm64#linux", path: "/parts/install.cutdown", query: [{ key: "arch", value: "arm64" }], fragment: "linux" }, children: [] }
+    InjectBlock { raw: "/parts/install.cutdown?arch=arm64#linux", src: { path: "/parts/install.cutdown", query: [{ key: "arch", value: "arm64" }], fragment: "linux" }, children: [] }
   ] }
 ```
 

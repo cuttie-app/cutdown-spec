@@ -10,12 +10,12 @@ ast:
   - _type: FileGroup
     children:
       - _type: FileBlock
+        raw: /a {draft}.png
         src:
-          raw: /a {draft}.png
           path: /a {draft}.png
         attributes: []
       - _type: FileBlock
+        raw: /img/{{lang}}/hero.png
         src:
-          raw: /img/{{lang}}/hero.png
           path: /img/{{lang}}/hero.png
         attributes: []

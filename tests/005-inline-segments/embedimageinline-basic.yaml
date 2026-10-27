@@ -1,0 +1,15 @@
+id: embedimageinline-basic
+section: "5.9.1"
+description: "An https:// image source makes an EmbedImageInline; the url is kept as written and not decomposed"
+
+input: |
+  ![logo](https://cdn.example.com/a.png?w=2#top)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: EmbedImageInline
+        alt:
+          - _type: Text
+            value: logo
+        url: "https://cdn.example.com/a.png?w=2#top"

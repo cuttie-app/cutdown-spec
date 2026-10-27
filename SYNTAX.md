@@ -138,7 +138,7 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ^ Caption for a.png
 ```
 
-Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), parsed as a `PathResourceLocator` (§9.2): `raw`, `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`). Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A lone `/` is a valid `FileBlock`.
+Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` (§9.2): `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`); `src` is `null` when the path is invalid. Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A lone `/` is a valid `FileBlock`.
 
 ### Injection → `InjectBlock`
 
@@ -159,7 +159,7 @@ https://youtu.be/dQw4w9WgXcQ {attrs}
 
 Line starting with literal `https://`. `url` is raw; the consumer decides what to show (e.g. oEmbed). Captionable; never in a `FileGroup`.
 
-Images have no block form: `![alt](src)` is always `ImageInline`, even alone on a line. Use a `FileBlock` for a captioned or grouped image.
+Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInline` for an `https://` source), even alone on a line. Use a `FileBlock` for a captioned or grouped image.
 
 ### Quote Block → `QuoteBlock`
 
@@ -261,11 +261,11 @@ Degradation to visible literal text is silent — no diagnostics.
 | `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
 | `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
 | `[text](url)`   | `Link(external)` |                                                                                                                                                                                                       |
-| `[text][page]`  | `Link(page)` | `path` is a `PathResourceLocator`; always a `.cutdown` document (extension optional, leading slash optional). Wiki-like syntax. Invalid path → CDN-0032                                                               |
+| `[text][page]`  | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); `[text][https://…]` is an external link instead; always a `.cutdown` document (extension optional, leading slash optional). Wiki-like syntax. Invalid path → CDN-0032                                                               |
 | `[text][#tag]`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `#` `/` `]`. Empty level → CDN-0033                                                                                                                 |
 | `[text][^ref]`  | `Link(ref)` | resolved by consumer on page in Ref's / ID's namespace                                                                                                                                                |
 | `[text][@cite]` | `Link(cite)` | resolved by consumer in outer Ref vocabulary                                                                                                                                                          |
-| `![alt](src)`   | `ImageInline` | `src` is a `PathResourceLocator`; `https://…` is a URL, never invalid. Balanced `()` stay in the path                                                                                                 |
+| `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid                                                                                                 |
 | `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
 | `{{key}}`       | `Variable` | Key is `ID_LITERAL`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |

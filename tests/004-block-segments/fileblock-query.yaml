@@ -9,8 +9,8 @@ ast:
   - _type: FileGroup
     children:
       - _type: FileBlock
+        raw: /path/to/file.ext?q=value&flag&q=a%20b
         src:
-          raw: /path/to/file.ext?q=value&flag&q=a%20b
           path: /path/to/file.ext
           query:
             - key: q
