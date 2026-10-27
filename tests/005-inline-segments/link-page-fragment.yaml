@@ -12,6 +12,6 @@ ast:
         kind: page
         raw: guide/intro#setup
         path:
-          path: guide/intro.cutdown
+          path: /guide/intro.cutdown
           query: []
           fragment: setup

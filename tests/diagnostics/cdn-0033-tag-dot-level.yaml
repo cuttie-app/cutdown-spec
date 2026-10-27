@@ -1,0 +1,17 @@
+id: cdn-0033-tag-dot-level
+section: "5.5"
+description: "CDN-0033: a tag is a name, not a path; a .. level is invalid and is not normalized"
+
+input: |
+  [x](~a/../b)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: tag
+        target: a/../b
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

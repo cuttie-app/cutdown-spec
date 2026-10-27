@@ -15,7 +15,7 @@ ast:
             value: a
         raw: "b"
         src:
-          path: "b"
+          path: "/b"
   - _type: Paragraph
     children:
       - _type: Text

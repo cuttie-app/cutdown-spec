@@ -366,8 +366,8 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0032 |
 | title | Invalid path |
 | level | warning |
-| trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5 or §5.9: an empty path, a control character, an empty segment, a `..` climbing above the root, or a trailing `/` outside an `InjectBlock`. A wiki link with empty text (`[]()`, §5.5) names no path and triggers it too, and so does an image source beginning with a link sigil (`#`, `^`, `~`, `@`) or with a URI scheme other than `https://` (§5.9). A value beginning with `https://` is a URL, not a path, and never triggers it |
-| recovery | The owning node is emitted as usual, with `raw` as written and its locator `null`. `loc` spans the path. When `raw` begins with `http://`, the message adds the hint "did you mean https://?" — only `https://` makes a URL |
+| trigger | A `PathResourceLocator` (§9.2) — in a `FileBlock`, `InjectBlock`, `ImageInline`, or page `Link` — breaks a validity rule of §9.2.5 or §5.9: an empty path, a control character, a `..` climbing above the root (paths are read from the project root, so `[x](../intro)` triggers it), or a trailing `/` after normalization outside an `InjectBlock`. An empty segment (`a//b`) is normalized away and never triggers it. A wiki link with empty text (`[]()`, §5.5) names no path and triggers it too, and so does an image source beginning with a link sigil (`#`, `^`, `~`, `@`) or with a URI scheme other than `https://` (§5.9). A value beginning with `https://` is a URL, not a path, and never triggers it |
+| recovery | The owning node is emitted as usual, with `raw` as written and its locator `null`. `loc` spans the path. When `raw` begins with `http://`, the message adds the hint "did you mean https://?" — only `https://` makes a URL. When a `..` climbs above the root, the message adds the hint "paths start at the project root" |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |
@@ -381,7 +381,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0033 |
 | title | Invalid link target |
 | level | warning |
-| trigger | An id, ref, tag, or cite link target (§5.5) is empty or holds a character its kind does not admit: `[x](#)`, `[x](^a b)`, `[x](~a//b)`, `[x](~a/)`, `[x](@)` |
+| trigger | An id, ref, tag, or cite link target (§5.5) is empty or holds a character its kind does not admit: `[x](#)`, `[x](^a b)`, `[x](~a//b)`, `[x](~a/)`, `[x](~a/../b)`, `[x](@)` |
 | recovery | The `Link` is emitted with the kind its sigil selects and `target` as written, without the sigil. `loc` spans the target |
 | introduced_in | 0.11.0 |
 | status | active |

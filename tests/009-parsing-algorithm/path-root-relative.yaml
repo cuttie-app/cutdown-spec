@@ -1,0 +1,19 @@
+id: path-root-relative
+section: "9.2.4"
+description: "A path without a leading / is read from the project root: the parser prepends /"
+
+input: |
+  ![x](images/a.png)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        alt:
+          - _type: Text
+            value: x
+        raw: images/a.png
+        src:
+          path: /images/a.png
+          query: []
+          fragment: ""

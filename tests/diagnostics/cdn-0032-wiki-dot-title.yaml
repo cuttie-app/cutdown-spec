@@ -1,0 +1,21 @@
+id: cdn-0032-wiki-dot-title
+section: "9.2.5"
+description: "CDN-0032: a wiki title that is only .. climbs above the root and names no page"
+
+input: |
+  [..]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: ""
+        path: null
+        children:
+          - _type: Text
+            value: ..
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

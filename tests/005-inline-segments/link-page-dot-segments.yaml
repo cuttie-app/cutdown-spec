@@ -1,0 +1,22 @@
+id: link-page-dot-segments
+section: "5.5"
+description: "A page link path is normalized before .cutdown is appended"
+
+input: |
+  [x](a/b/../c)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        href: ""
+        raw: a/b/../c
+        target: ""
+        path:
+          path: /a/c.cutdown
+          query: []
+          fragment: ""
+        children:
+          - _type: Text
+            value: x

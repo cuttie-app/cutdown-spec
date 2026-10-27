@@ -95,7 +95,7 @@ Id, ref, tag, and cite links (`[text](#id)`, `[text](^ref)`, `[text](~tag)`, `[t
 
 ### 9.2 PathResourceLocator
 
-A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). Each of those nodes also carries `raw: string`, the path as written with escapes resolved (§9.2.2); the locator holds what is decomposed from `raw`. This subsection is the only definition of how a path is parsed; those sections state only where their path ends.
+A **PathResourceLocator** is the parsed form of a path written in source. Four properties carry one: `FileBlock.src` (§4.11), `InjectBlock.src` (§4.17), `ImageInline.src` (§5.9), and `Link.path` (§5.5). Each of those nodes also carries `raw: string`, the path as written with escapes resolved (§9.2.2); the locator holds what is decomposed from `raw` and normalized (§9.2.4). This subsection is the only definition of how a path is parsed; those sections state only where their path ends.
 
 **Resources and pointers.** Two families of nodes name something outside the document, and they admit different targets:
 
@@ -166,25 +166,45 @@ Absent parts are empty: `query: []`, `fragment: ''`.
 /card.cutdown?name=Ann&flag    → { path: "/card.cutdown", query: [{key:"name",value:"Ann"}, {key:"flag",value:""}], fragment: "" }
 ```
 
-#### 9.2.4 Base
+#### 9.2.4 Root and normalization
 
-A path whose `raw` begins with `/` is **root-relative**: the root is supplied by the consumer. Any other path is relative to the document that contains it. Cutdown resolves no path; it only fixes how a path is read.
+Every path is read from the **project root**, which the consumer supplies. A path written without a leading `/` is read as if it began with one: `![x](images/a.png)` and `![x](/images/a.png)` name the same file. Cutdown has no paths relative to the document, because the parser does not know where the document lies.
+
+After decomposition the parser normalizes `path`, in this order:
+
+1. If `path` does not begin with `/`, a `/` is prepended.
+2. `path` is split at every `/` into segments, which are read left to right:
+   - an empty segment is dropped: `/a//b` → `/a/b`;
+   - a `.` segment is dropped: `/a/./b` → `/a/b`;
+   - a `..` segment drops itself and the segment before it: `/a/b/../c` → `/a/c`. A `..` with no segment before it is dropped too, and it makes the path invalid (§9.2.5): `/../x`, `../intro`.
+3. The remaining segments are joined with `/` after a leading `/`. If the last written segment was empty, `.`, or `..`, the result ends with `/`: `/a/.` → `/a/`, `/a/b/..` → `/a/`. A path with no segments left is `/`.
+4. The result is converted to Unicode Normalization Form C (NFC), so that a letter written as one code point and the same letter written with a combining mark give the same `path`.
+
+`raw` keeps what was written; `query` and `fragment` are not normalized, except as §5.5 states for a page link. Nothing is percent-decoded and letter case is kept.
+
+```
+images/a.png        → { path: "/images/a.png" }
+/a/./b/../c.png     → { path: "/a/c.png" }
+//x.png             → { path: "/x.png" }
+/chapters/.         → { path: "/chapters/" }
+```
+
+Every later rule reads the normalized `path`: whether a line is an `InjectBlock` (§4.17), the validity rules below, and the `.cutdown` suffix of a page link (§5.5). Cutdown still resolves no path; it fixes how a path is read and spelled.
 
 #### 9.2.5 Validity
 
 A path is **invalid** when any of these holds:
 
-- `path` is empty — a path must name something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
+- `path` is empty before normalization — a path must name something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
 - `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
-- `path` contains an empty segment (`a//b`);
-- `path` is root-relative and a `..` segment climbs above the root (`/../x`);
-- `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17).
+- a `..` segment climbs above the root (`/../x`, `../intro`, `/a/../../b`);
+- the normalized `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17), and in a `FileBlock` whose path is `/` itself (§4.11).
 
 An invalid path does not change the parse. The owning node is emitted as usual with `raw` as written, its locator is `null`, and warning CDN-0032 is emitted.
 
-**Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and decomposed by the steps above; nothing is cut or rewritten, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
+**Length.** Length is not a validity rule. A `raw` longer than 2048 Unicode scalar values is kept in full and read by the steps above; nothing is cut, and warning CDN-0035 is emitted. The same limit applies to every URL string: `EmbedBlock.url` (§4.9), `EmbedImageInline.url` (§5.9.1), and `Link.href` (§5.5).
 
-A page link never has an empty path: an empty target is a wiki link (§5.5), and `.cutdown` is appended to every other page path. A `FileBlock` or `InjectBlock` path begins with `/`, so it is never empty either.
+A page link never has an empty path: an empty target is a wiki link (§5.5). A `FileBlock` or `InjectBlock` path begins with `/`, so it is never empty either.
 
 ### 9.3 Derived Structure
 

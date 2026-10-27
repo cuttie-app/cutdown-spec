@@ -1,0 +1,15 @@
+id: attrs-id-nfc
+section: "6.1.1"
+description: "An id value is converted to NFC: a decomposed letter becomes one code point"
+
+input: |
+  Text {#Café}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: id
+        value: "Caf\u00e9"

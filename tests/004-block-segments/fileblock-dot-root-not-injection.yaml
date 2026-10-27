@@ -1,0 +1,23 @@
+id: fileblock-dot-root-not-injection
+section: "4.17"
+description: "A path that normalizes to / is a FileBlock, never a root-folder injection: /./ and /a/.."
+
+input: |
+  /./
+  /a/..
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /./
+        src:
+          path: /
+          query: []
+          fragment: ""
+      - _type: FileBlock
+        raw: /a/..
+        src:
+          path: /
+          query: []
+          fragment: ""

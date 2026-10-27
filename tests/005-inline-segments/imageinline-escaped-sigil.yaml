@@ -11,6 +11,6 @@ ast:
       - _type: ImageInline
         raw: "~t.png"
         src:
-          path: "~t.png"
+          path: "/~t.png"
           query: []
           fragment: ""

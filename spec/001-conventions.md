@@ -40,7 +40,7 @@ This charset is used for all identifier-like tokens: block names, mark names, co
 TAG_LITERAL = any Unicode scalar value except / (slash) and the control characters U+0000–U+001F, U+007F, U+0080–U+009F
 ```
 
-A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character.
+A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character. A level may not be `.` or `..`, and a tag is never normalized as a path is.
 
 `ID_VALUE` is the value of an `id` attribute (§6.1.1) and the target of an id link (§5.5). One rule serves both, so every id an author can write, a link can reach:
 
@@ -48,7 +48,7 @@ A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated
 ID_VALUE = one or more Unicode scalar values except whitespace (the Unicode White_Space property), # (octothorpe), ) (right parenthesis), } (right brace), and the control characters U+0000–U+001F, U+007F, U+0080–U+009F
 ```
 
-Unlike `ID_LITERAL`, it admits non-ASCII letters: `install-linux` and `Установка` are both ids. Matching is case-sensitive.
+Unlike `ID_LITERAL`, it admits non-ASCII letters: `install-linux` and `Установка` are both ids. The parser converts every id value to Unicode Normalization Form C (NFC), wherever it is written, so the same letters always give the same id; no other change is made, and matching is case-sensitive.
 
 Paths are not identifiers. They are parsed as a `PathResourceLocator` (§9.2).
 

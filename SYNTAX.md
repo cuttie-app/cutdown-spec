@@ -138,7 +138,7 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ^ Caption for a.png
 ```
 
-Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` (§9.2): `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`); `src` is `null` when the path is invalid. Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. A path of `/` alone — `/`, `/#`, `/?a=1` — is a valid `FileBlock`, never a root-folder injection.
+Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` (§9.2): `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`); `src` is `null` when the path is invalid. Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. Every path is read from the project root and normalized: `/` is prepended when missing, `//` and `.` collapse, `..` removes the folder before it (above the root → invalid), and the result is NFC; `raw` keeps what was written. A path that normalizes to `/` — `/`, `/#`, `/?a=1`, `/./` — is a valid `FileBlock`, never a root-folder injection.
 
 ### Injection → `InjectBlock`
 
@@ -148,7 +148,7 @@ Line starting with `/`. The whole line, spaces included, is the path (minus a tr
 /chapters/
 ```
 
-A file line whose `path` ends with `.cutdown` or `/` (folder). The parser emits `children: []`; the consumer fills it (§17): blocks of all injected Pages, `meta` dropped, Sections never cross the edge, ids/refs stay local, `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable.
+A file line whose normalized `path` ends with `.cutdown` or `/` (folder). The parser emits `children: []`; the consumer fills it (§17): blocks of all injected Pages, `meta` dropped, Sections never cross the edge, ids/refs stay local, `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable.
 
 ### Embed → `EmbedBlock`
 
@@ -261,11 +261,11 @@ Degradation to visible literal text is silent — no diagnostics.
 | `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
 | `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
 | `[text](https://…)`, `[text](mailto:…)` | `Link(external)` | `href` as written. Any URI scheme (a letter, then letters, digits, `+` `-` `.`, then `:`) makes an external link; Cutdown filters none — that is the consumer's call |
-| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); always a `.cutdown` document: the parser appends `.cutdown` to `path.path` when absent. `#id` fragment = any segment with that id there. Invalid path → CDN-0032 |
-| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. Only `/` splits folders; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
+| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); read from the project root and normalized (`guide/./intro` → `/guide/intro`), then the parser appends `.cutdown` when absent. `#id` fragment = any segment with that id there (NFC). Invalid path, `..` above the root included → CDN-0032 |
+| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. `/` splits folders and `.`/`..` are normalized; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
 | `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
 | `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
-| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/` and controls; balanced `()` allowed |
+| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/` and controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
 | `[text](@cite)` | `Link(cite)` | `target`; resolved by the consumer's citation logic |
 | `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
 | `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
@@ -322,7 +322,7 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 {#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#Установка}` is valid; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
+An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#Установка}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
 
 Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 

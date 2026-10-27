@@ -20,4 +20,4 @@ ast:
             value: " caption"
         raw: photos/shot.jpg
         src:
-          path: photos/shot.jpg
+          path: /photos/shot.jpg

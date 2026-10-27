@@ -1,0 +1,15 @@
+id: injectblock-folder-dot
+section: "4.17"
+description: "Classification reads the normalized path: /chapters/. normalizes to /chapters/ and is a folder InjectBlock"
+
+input: |
+  /chapters/.
+
+ast:
+  - _type: InjectBlock
+    raw: /chapters/.
+    src:
+      path: /chapters/
+      query: []
+      fragment: ""
+    children: []

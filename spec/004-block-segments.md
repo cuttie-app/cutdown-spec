@@ -724,7 +724,7 @@ interface FileBlock {
 ```
 
 - `src` is a `PathResourceLocator` (§9.2). Its extent is the whole line from the leading `/`, after removing one trailing attribute sequence and then trailing whitespace (§9.2.1). Spaces inside the path are path content: `/My Docs/Q3 report.pdf` is one path.
-- A line whose path is `/` — `/` alone, or `/` with only a query or fragment, such as `/#` or `/?a=1` — is a valid `FileBlock` with `src.path` `"/"`. What it refers to is the consumer's decision.
+- A line whose normalized path (§9.2.4) is `/` — `/` alone, `/` with only a query or fragment such as `/#` or `/?a=1`, or a spelling such as `/./` or `/a/..` — is a valid `FileBlock` with `src.path` `"/"`. What it refers to is the consumer's decision.
 - Cutdown assigns no media type and no group. A consumer that needs one inspects `src.path`.
 - A `FileBlock` never stands alone: it is always a child of a `FileGroup` (§4.12).
 - **Opener escape:** `\/path` at line start → `Paragraph([Text("/path")])`. See §8.2.
@@ -964,7 +964,7 @@ AST:
 /chapters/
 ```
 
-A `FileBlock`-shaped line (a line at block level beginning with `/`) is an `InjectBlock` when the `path` of its locator ends with `.cutdown` or with `/`.
+A `FileBlock`-shaped line (a line at block level beginning with `/`) is an `InjectBlock` when the normalized `path` of its locator (§9.2.4) ends with `.cutdown` or with `/`.
 
 **AST type:**
 
@@ -980,8 +980,9 @@ interface InjectBlock {
 ```
 
 - `src` is parsed exactly as for `FileBlock` (§4.11, §9.2). The test looks at `src.path`, so a query or fragment does not hide it: `/card.cutdown?name=Ann` and `/intro.cutdown#setup` are `InjectBlock`s. The suffix `.cutdown` is matched case-sensitively.
-- The test runs on the decomposed path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§9.2.5). An `InjectBlock` whose path is invalid for another reason keeps its type, with `src: null`.
-- A path that is `/` itself is never an injection: `/`, `/#`, and `/?a=1` are `FileBlock`s (§4.11), not an injection of the root folder.
+- The test runs on the normalized path before validity is checked: a trailing `/`, invalid in any other path, is what makes `/chapters/` a folder injection (§9.2.5), and `/chapters/.` is one too. An `InjectBlock` whose path is invalid for another reason keeps its type, with `src: null`: `/../x.cutdown`.
+- A path that normalizes to `/` is never an injection: `/`, `/#`, `/?a=1`, `/./`, and `/a/..` are `FileBlock`s (§4.11), not an injection of the root folder.
+- When the path ends with `.cutdown`, the `fragment` names an id and is converted to NFC, as in a page link (§5.5).
 - The parser always emits `children: []`. Cutdown's parser does no I/O; a consumer that resolves the injection fills `children` as §17 defines. An `InjectBlock` that no consumer resolves stays in the AST unchanged.
 - `children` is a block scope (§1.6), and Sections never cross its edge (§17).
 - An `InjectBlock` never joins a `FileGroup`, and an `InjectBlock` line ends an open `FileGroup`.

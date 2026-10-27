@@ -1,0 +1,22 @@
+id: link-wiki-dot-segments
+section: "5.5"
+description: "A wiki path is normalized like any path: . and .. segments in the title are structure"
+
+input: |
+  [Guides/../FAQ]()
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        href: ""
+        raw: ""
+        target: ""
+        path:
+          path: /FAQ.cutdown
+          query: []
+          fragment: ""
+        children:
+          - _type: Text
+            value: Guides/../FAQ

@@ -12,7 +12,7 @@ ast:
         kind: page
         raw: about/intro
         path:
-          path: about/intro.cutdown
+          path: /about/intro.cutdown
           query: []
           fragment: ''
         target: ''

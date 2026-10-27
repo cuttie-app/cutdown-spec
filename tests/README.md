@@ -15,6 +15,7 @@ tests/
   006-universal-attributes/
   007-input-interpretation/
   008-escaping/
+  009-parsing-algorithm/
   010-block-structure/
   012-whitespace-rules/
   015-streaming-conformance-profile/   ← may add `streaming` checkpoints

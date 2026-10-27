@@ -1,0 +1,22 @@
+id: link-page-fragment-nfc
+section: "5.5"
+description: "A page link fragment names an id, so it is converted to NFC; raw keeps the decomposed form"
+
+input: |
+  [x](menu#Café)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        href: ""
+        raw: "menu#Cafe\u0301"
+        target: ""
+        path:
+          path: /menu.cutdown
+          query: []
+          fragment: "Caf\u00e9"
+        children:
+          - _type: Text
+            value: x
