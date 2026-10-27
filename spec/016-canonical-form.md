@@ -20,7 +20,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 | 4 | `TaskItem` unchecked marker | `[ ]` | — | §4.7.2 |
 | 5 | `TaskItem` checked marker | `[+]` | `[x]`, `[X]` | §4.7.2 |
 | 6 | Trailing `\|` on a table row | omitted, where omitting it does not move the attribute scope chain | present | §4.8 |
-| 7 | A table with no rows and no columns | `\|` | a header-separator-only table | §4.8 |
+| 7 | An empty `Header` row directly before a header separator | omitted — the separator alone | a written row of empty cells | §4.8 |
 | 8 | Trailing `{attrs}` placement | on the block's own line | on following attribute-continuation lines | §6.1 |
 | 9 | Block-opener escape placement | backslash before the marker — `` \``` `` | `` `\`` ``, `` ``\` `` and the equivalents for every other marker | §8.2 |
 | 10 | Blank lines at the start and end of a document | start: none; end: exactly one line terminator after the last line | any number of blank lines at either end; no final terminator | §12.1 |
@@ -38,7 +38,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 
 **Row 6 — not always an alias.** A trailing `|` after the last cell changes which slot a following `{attrs}` fills (§4.8). Where it does, it is load-bearing and the row does not apply.
 
-**Row 7 — a writer must still pick one.** `Table { rows: [], columns: [] }` is produced both by a lone `|` and by a table whose only line is a header separator. The separator carries alignment for columns that do not exist, so the shorter form is canonical.
+**Row 7 — not always an alias.** A header separator with no row above it inserts an empty `Header` row (§4.8), so `|---|---|` alone and `| | |` above it can parse to the same rows. A written row stops being an alias when it fixes the column count, or carries `{attrs}` or a `## comment`; then it is written.
 
 **Row 10 — a final line terminator, not a blank line.** The canonical document ends with its last line terminated: `…last line\n`. That is a text file as POSIX defines it, so tools that insert a final newline already produce it.
 

@@ -1,0 +1,23 @@
+id: comment-table-caption-line
+section: "6.2"
+description: "A trailing `##` on a table's caption line goes to the table's last row"
+
+input: |
+  | a |
+  ^ Cap ## note
+
+ast:
+  - _type: Table
+    caption:
+      - _type: Text
+        value: "Cap "
+    rows:
+      - _type: Row
+        reflection:
+          - loc: { start: 15, end: 19 }
+            text: "note"
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: a

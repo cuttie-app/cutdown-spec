@@ -1,6 +1,6 @@
 id: caption-comment-own-line-transparent
 section: "6.2"
-description: "A standalone `## comment` line between a captionable block and a `^ ` line does not break caption binding — the payload attaches to the Table's reflection; no sibling node is emitted"
+description: "A standalone `## comment` line directly after a table does not break caption binding — the payload attaches to the table's last row; no sibling node is emitted"
 
 input: |
   | col |
@@ -12,11 +12,11 @@ ast:
     caption:
       - _type: Text
         value: "Caption text"
-    reflection:
-      - loc: { start: 11, end: 25 }
-        text: "editorial note"
     rows:
       - _type: Row
+        reflection:
+          - loc: { start: 11, end: 25 }
+            text: "editorial note"
         children:
           - _type: Cell
             children:

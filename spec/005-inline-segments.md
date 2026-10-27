@@ -480,12 +480,12 @@ Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`
 
 **Syntax:** `content ## trailing comment`
 
-Line Comment runs till the end of line (EOL). Payload captured as a `Reflection` on the enclosing block, omitted by renderers by default (§2.5).
+Line Comment runs till the end of line (EOL). Payload captured as a `Reflection` on the node that owns the line, omitted by renderers by default (§2.5).
 
 See §2.2 for the full normative semantics. Summary:
 
 - Recognized at line-start or mid-line; runs to EOL; opaque to all other delimiters.
-- Payload stored as `Reflection` entry on the enclosing block — does not appear in the inline stream.
+- Payload stored as `Reflection` entry on the node that owns the line — does not appear in the inline stream.
 - A single `#` is always literal (see §10.4.4). `###` at inline position → `##` (comment opener) + trailing `#` in payload.
 - Not recognized inside `CodeInline`, `MathInline`, or quoted attribute values.
 - Escaped with `\##` or `#\#`.

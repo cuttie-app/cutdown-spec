@@ -17,7 +17,7 @@ Cutdown's parsing model makes three testable guarantees:
 
 1. Split input into lines.
 2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
-3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**.
+3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**. A standalone comment line is neither blank nor content; §2.2 defines where it attaches and which runs it ends.
 4. Apply the fenced constructs that override blank-line boundaries — `` ``` ``, `~~~`, `:::`, `$$$`, `^^^` and `###`. Each opens until its closer or end of document; see §10.4.2 for the shared fence pattern and §4.3–§4.16 for each construct.
 
 #### 9.1.3 Phase 3 — Block Classification

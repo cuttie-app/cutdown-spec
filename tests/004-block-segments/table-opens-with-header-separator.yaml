@@ -1,6 +1,6 @@
 id: table-opens-with-header-separator
 section: "4.8"
-description: "A table whose only row is a header separator has no content row to fix the column count, so columns is empty"
+description: "A table whose only line is a header separator gets one inserted empty Header row; with no content row to fix the column count, columns is empty"
 
 input: |
   |:---|----|
@@ -9,5 +9,7 @@ diagnostics: []
 
 ast:
   - _type: Table
-    rows: []
+    rows:
+      - _type: Header
+        children: []
     columns: []

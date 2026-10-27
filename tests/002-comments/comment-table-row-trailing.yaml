@@ -1,17 +1,17 @@
 id: comment-table-row-trailing
 section: "4.8"
-description: "Trailing `## comment` after a row's content bubbles to Table.reflection at the row's line offset, NOT to any Row or cell"
+description: "Trailing `## comment` after a row's content goes to that Row's reflection; Table has no reflection"
 
 input: |
   | AA | BB | ## what is this?
 
 ast:
   - _type: Table
-    reflection:
-      - loc: { start: 15, end: 28 }
-        text: "what is this?"
     rows:
       - _type: Row
+        reflection:
+          - loc: { start: 15, end: 28 }
+            text: "what is this?"
         children:
           - _type: Cell
             children:

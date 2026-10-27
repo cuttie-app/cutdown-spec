@@ -1,0 +1,31 @@
+id: comment-line-after-blank-ends-list
+section: "2.2"
+description: "After a blank line a `##` line is an empty Paragraph; the next marker opens a new List without a blank line"
+
+input: |
+  1. a
+
+  ## note
+  2. b
+
+ast:
+  - _type: List
+    start: 1
+    children:
+      - _type: ListItem
+        reflection: []
+        children:
+          - _type: Text
+            value: a
+  - _type: Paragraph
+    children: []
+    reflection:
+      - loc: { start: 9, end: 13 }
+        text: "note"
+  - _type: List
+    start: 2
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: b

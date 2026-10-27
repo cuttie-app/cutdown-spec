@@ -13,7 +13,7 @@ A property a node does not admit is omitted, not emptied — `CommentBlock` has 
 
 ### 14.2 Block Segments
 
-All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment is present). See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
+All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
 
 | Segment         | Fields |
 |-----------------|--------|
@@ -22,9 +22,9 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[], reflection, attributes` |
 | `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[], reflection, attributes` |
 | `QuoteBlock`    | `_type: "QuoteBlock", children: Block[], caption: Inline[], reflection, attributes` |
-| `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: number = 1, loose: bool, children: (ListItem\|TaskItem)[], reflection, attributes` |
-| `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], reflection, attributes` |
-| `FileGroup`     | `_type: "FileGroup", children: FileBlock[], reflection, attributes` |
+| `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: number = 1, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
+| `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], attributes` |
+| `FileGroup`     | `_type: "FileGroup", children: FileBlock[], attributes` |
 | `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflection, attributes` |
 | `InjectBlock`   | `_type: "InjectBlock", src: PathResourceLocator, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
 | `NamedBlock`    | `_type: "NamedBlock", name: string, children: Block[], caption: Inline[], reflection, attributes` |
@@ -55,11 +55,11 @@ All block segments carry `reflection: Reflection[]` (`[]` when no `##` comment i
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
 | `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
-| `ListItem`      | `_type: "ListItem", children: (Block\|Inline)[], attributes` |
-| `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], attributes` |
-| `FileBlock`     | `_type: "FileBlock", src: PathResourceLocator, caption: Inline[], attributes` — only inside a `FileGroup`; no `reflection` (§2.2) |
+| `ListItem`      | `_type: "ListItem", children: (Block\|Inline)[], reflection, attributes` |
+| `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], reflection, attributes` |
+| `FileBlock`     | `_type: "FileBlock", src: PathResourceLocator, caption: Inline[], reflection, attributes` — only inside a `FileGroup` |
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
-| `Row`           | `_type: "Row"\|"Header", children: Cell[], attributes` |
+| `Row`           | `_type: "Row"\|"Header", children: Cell[], reflection, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
 | `PathResourceLocator` | `raw: string, path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§9.2) |
 
@@ -91,7 +91,7 @@ interface Reflection {
 }
 ```
 
-Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment is present on or adjacent to the block. See §2.2 for attachment rules.
+Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment is present on or after the node's lines. See §2.2 for attachment rules.
 
 ### 14.7 Attributes Type
 

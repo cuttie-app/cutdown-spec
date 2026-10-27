@@ -1,0 +1,25 @@
+id: comment-table-leading-separator
+section: "4.8"
+description: "A comment on a header separator with no row above it goes to the inserted empty Header row"
+
+input: |
+  |---| ## note
+  | a |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Header
+        reflection:
+          - loc: { start: 9, end: 13 }
+            text: "note"
+        children:
+          - _type: Cell
+            children: []
+      - _type: Row
+        reflection: []
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: a

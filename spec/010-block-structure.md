@@ -12,7 +12,7 @@ A parser identifies block boundaries by scanning for blank line sequences. Each 
 
 **Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
 
-Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) acts as a blank line for block-boundary purposes and stores its payload as a `Reflection` entry on the nearest block. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
+Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an empty `Paragraph`. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
 
 ### 10.2 Leading and Trailing Whitespace
 

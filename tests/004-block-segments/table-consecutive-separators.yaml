@@ -1,0 +1,29 @@
+id: table-consecutive-separators
+section: "4.8"
+description: "A header separator directly after another one inserts an empty Header row, padded to the column count"
+
+input: |
+  | a |
+  |---|
+  |---|
+  | b |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Header
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: a
+      - _type: Header
+        children:
+          - _type: Cell
+            children: []
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: b

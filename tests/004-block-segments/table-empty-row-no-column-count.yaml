@@ -1,0 +1,34 @@
+id: table-empty-row-no-column-count
+section: "4.8"
+description: "A `|` row with no cells does not fix the column count; it is padded to the count fixed by the first row with cells"
+
+input: |
+  |
+  | a | b |
+
+diagnostics: []
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        children:
+          - _type: Cell
+            children: []
+          - _type: Cell
+            children: []
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: a
+          - _type: Cell
+            children:
+              - _type: Text
+                value: b
+    columns:
+      - _type: Column
+        align: start
+      - _type: Column
+        align: start

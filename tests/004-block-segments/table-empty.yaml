@@ -1,11 +1,13 @@
 id: table-empty
 section: "4.8"
-description: "A single `|` line with no cell content produces a valid empty table"
+description: "A single `|` line with no cell content is a table with one empty Row"
 
 input: |
   |
 
 ast:
   - _type: Table
-    rows: []
+    rows:
+      - _type: Row
+        children: []
     columns: []

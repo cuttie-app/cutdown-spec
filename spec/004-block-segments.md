@@ -102,7 +102,7 @@ interface Section {
 | `========= Heading` | 9     |
 
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
-- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` (§2.2), or a `^ ` caption line (§6.2). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
+- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§2.2), or a `^ ` caption line (§6.2). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
 - A heading MUST be preceded by a blank line (or be the first line of the document or block container).
 - The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
@@ -355,7 +355,6 @@ interface List {
   loose: boolean
   children: (ListItem | TaskItem)[]
   attributes: Attribute[]
-  reflection: Reflection[]
 }
 ```
 
@@ -364,7 +363,8 @@ interface List {
 - `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
 - `start` is always present. It is `1` for `kind: "bullet"` and `"checklist"`. For `"numbered"` it is the first item's number, except that `0` is coerced to `1`, silently.
 - **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
-- A blank line followed by a col-0 marker ends the current list and starts a new `List` segment.
+- A blank line followed by a col-0 marker ends the current list and starts a new `List` segment. A standalone `##` line directly after an item does not: it attaches to that item and the list continues (§2.2).
+- `List` has no `reflection`. A `## comment` on an item's line goes to that item.
 - **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.
 
 ---
@@ -388,6 +388,7 @@ interface ListItem {
   _type: "ListItem"
   children: (Block | Inline)[]
   attributes: Attribute[]
+  reflection: Reflection[]
 }
 ```
 
@@ -421,6 +422,7 @@ interface TaskItem {
   checked: boolean
   children: (Block | Inline)[]
   attributes: Attribute[]
+  reflection: Reflection[]
 }
 ```
 
@@ -472,13 +474,13 @@ interface Table {
   columns: Column[]
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
 }
 
 interface Row {
   _type: "Row" | "Header"
   children: Cell[]
   attributes: Attribute[]
+  reflection: Reflection[]
 }
 
 interface Cell {
@@ -509,6 +511,13 @@ A row whose every cell consists solely of an alignment pattern (see Column align
 ```
 
 Discontiguous header sections are valid — HTML `<table>` supports mixed `<thead>`/`<tbody>` ordering. A header separator anywhere marks only the rows in the immediately preceding section.
+
+**Empty header.** A header separator with no content row in its section — at the start of the table, or directly after another separator — inserts one empty `Header` row before itself. The row is inserted whether or not the separator carries a comment. Its cells are padded to the column count like any short row, it carries the `loc` of its separator or none (§14.5), and it does not fix the column count. A writer does not emit it: the separator alone reproduces it (§16).
+
+```
+|---|---|    →  Header (empty, inserted)
+| C | D |    →  Row
+```
 
 ---
 
@@ -547,17 +556,17 @@ A column with no corresponding position in the header separator, and every colum
 
 The closer also determines how deep a trailing `{attrs}` chain reaches — see *Attrs scope chain* below and §6.
 
-**Column count is fixed by the first content row.** Not `max()` across rows. A header separator is never a content row, so it never defines the count.
+**Column count is fixed by the first content row that has at least one cell.** Not `max()` across rows. A header separator is never a content row, so it never defines the count, and neither does a row with no cells or an inserted empty `Header` row.
 
-- A later row with **fewer** cells is padded with empty `Cell` nodes to the column count. No diagnostic — nothing is lost, this is normalisation. Padded cells carry no `loc` (§14).
+- A row with **fewer** cells — a later row, or an earlier row with no cells — is padded with empty `Cell` nodes to the column count. No diagnostic — nothing is lost, this is normalisation. Padded cells carry no `loc` (§14).
 - A later row with **more** cells has the surplus cells **dropped** and emits **CDN-0018**.
 - A header separator **wider** than the column count likewise drops its surplus and emits **CDN-0018** — losing alignment silently is the failure the diagnostic exists to prevent.
 - A header separator **narrower** than the column count is not an error; the uncovered columns take `"start"` per *Column alignment* above.
-- A table whose only rows are header separators has `columns: []` and emits **no** diagnostic — with no content row, no column count was ever established for the separator to exceed. This is consistent with `|` alone yielding an empty table.
+- A table whose only rows are header separators has `columns: []` and emits **no** diagnostic — with no content row, no column count was ever established for the separator to exceed. Each separator still inserts its empty `Header` row.
 
 #### Row content
 
-- Each `|` content line is one independent logical row.
+- Each `|` content line is one independent logical row, a `|` with no cells included.
 - Cells contain `Inline[]` parsed by full inline rules.
 - The table ends at the first line that is neither a content row nor a header separator — including a blank line, a container boundary, or any other block opener. That line is classified on its own (§9.1.3); a later `|` line opens a **new** table.
 
@@ -600,21 +609,21 @@ Mid-table row:
 
 #### Empty tables
 
-A single `|` line with no cell content is a valid empty table:
+A single `|` line with no cell content is a valid table with one empty row:
 
 ```
-|            →  Table { rows: [], columns: [] }
+|            →  Table { rows: [Row { children: [] }], columns: [] }
 
-| {.tbl}     →  Table { rows: [], columns: [], attributes: [{class:["tbl"]}] }
+| {.tbl}     →  Table { rows: [Row { children: [] }], columns: [], attributes: [{class:["tbl"]}] }
 ```
 
-For `| {.tbl}`: no row is present, so `{.tbl}` has no Row slot to claim; it falls through to the Table slot directly.
+For `| {.tbl}`: the row is the last content row and a single `{}` claims the Table slot, as for any last row.
 
 ---
 
 #### Reflection
 
-Trailing `## comment` on any table line (content row or header separator) bubbles to `Table.reflection` carrying the payload's `loc`. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
+`Table` has no `reflection`. A trailing `## comment` on a content row goes to that row's `reflection`, carrying the payload's `loc`. On a header separator it goes to the row before the separator — the inserted empty `Header` row when the separator has no content row above it. On the caption line it goes to the last row. A standalone `##` line directly after a row goes to that row and does not end the table. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
 
 ---
 
@@ -709,6 +718,7 @@ interface FileBlock {
   src: PathResourceLocator
   attributes: Attribute[]
   caption: Inline[]
+  reflection: Reflection[]
 }
 ```
 
@@ -732,14 +742,13 @@ interface FileGroup {
   _type: "FileGroup"
   children: FileBlock[]
   attributes: Attribute[]
-  reflection: Reflection[]
 }
 ```
 
 - Every `FileBlock` is inside a `FileGroup`. A single `FileBlock` line forms a `FileGroup` with one child.
 - A blank line ends the group. The next `FileBlock` line starts a new `FileGroup`.
-- Any line that is not a `FileBlock` line also ends the group — an `EmbedBlock` or `InjectBlock` line included — except a caption line and a trailing `{attrs}` line, which emit no block (§6.2). A standalone `## comment` line acts as a blank line and ends the group (§2.2).
-- A `## comment` on a `FileBlock` line goes to the `FileGroup`'s `reflection`, as a comment on a list item line goes to the `List` (§2.2). `FileBlock` has no `reflection` of its own.
+- Any line that is not a `FileBlock` line also ends the group — an `EmbedBlock` or `InjectBlock` line included — except a caption line and a trailing `{attrs}` line, which emit no block (§6.2), and a standalone `## comment` line directly after a `FileBlock`, which attaches to it (§2.2).
+- `FileGroup` has no `reflection`. A `## comment` on a `FileBlock` line goes to that `FileBlock`.
 - The members need not be of one kind: `/a.png` and `/b.pdf` on consecutive lines share a group.
 - `FileGroup` takes no caption. Each member carries its own.
 - Attribute placement follows the scope-chain rule (§6.1.2).

@@ -1,0 +1,17 @@
+id: comment-fileblock-trailing
+section: "2.2"
+description: "A trailing `##` on a file line goes to that FileBlock; FileGroup has no reflection"
+
+input: |
+  /a.png ## first
+  /b.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        reflection:
+          - loc: { start: 10, end: 15 }
+            text: "first"
+      - _type: FileBlock
+        reflection: []

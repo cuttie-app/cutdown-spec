@@ -1,0 +1,24 @@
+id: comment-line-indented-into-item
+section: "2.2"
+description: "An indented `##` line directly after an item belongs to that item's scope and attaches to the item"
+
+input: |
+  1. a
+    ## note
+  2. b
+
+ast:
+  - _type: List
+    kind: "numbered"
+    children:
+      - _type: ListItem
+        reflection:
+          - loc: { start: 10, end: 14 }
+            text: "note"
+        children:
+          - _type: Text
+            value: a
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: b

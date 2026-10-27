@@ -1,6 +1,6 @@
 id: comment-table-delim-row-trailing
 section: "4.8"
-description: "Trailing `##` on header row and `|:---|` header separator both bubble to Table.reflection at their respective payload locs"
+description: "Trailing `##` on a header row goes to that row; on the header separator it goes to the row above it — here the same Header row"
 
 input: |
   | Head A | Head B | ## header note
@@ -9,13 +9,13 @@ input: |
 
 ast:
   - _type: Table
-    reflection:
-      - loc: { start: 23, end: 34 }
-        text: "header note"
-      - loc: { start: 58, end: 68 }
-        text: "delim note"
     rows:
       - _type: Header
+        reflection:
+          - loc: { start: 23, end: 34 }
+            text: "header note"
+          - loc: { start: 58, end: 68 }
+            text: "delim note"
         children:
           - _type: Cell
             children:
@@ -26,6 +26,7 @@ ast:
               - _type: Text
                 value: "Head B"
       - _type: Row
+        reflection: []
         children:
           - _type: Cell
             children:

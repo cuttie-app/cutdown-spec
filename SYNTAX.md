@@ -367,9 +367,9 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 **Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
 
-**Standalone line comment.** `## comment` on its own line closes any active Paragraph or FileGroup and attaches to the preceding block's `reflection`. No preceding block → empty `Paragraph { children: [], reflection: [...] }`.
+**Standalone line comment.** `## comment` on its own line, directly after content, attaches to the owner of the line above (the last item, row, or file of a List, Table, or FileGroup) and does not split that run; it does end a Paragraph. After a blank line, or with no preceding block → empty `Paragraph { children: [], reflection: [...] }`. No blank line is needed after a comment line.
 
-**Table rows.** A trailing `## comment` after a row's content bubbles to `Table.reflection`, not to any `Row` or cell. `{attrs}` on a header separator row claim the Table slot (§4.8).
+**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`. `List`, `Table`, and `FileGroup` have no `reflection`. On a header separator it goes to the row above; a separator with no row above inserts an empty `Header` row. `{attrs}` on a header separator row claim the Table slot (§4.8).
 
 ---
 

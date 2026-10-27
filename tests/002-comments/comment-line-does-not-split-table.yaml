@@ -1,0 +1,28 @@
+id: comment-line-does-not-split-table
+section: "2.2"
+description: "A standalone `##` line directly after a table row attaches to that row and the table continues"
+
+input: |
+  | a |
+  ## note
+  | b |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        reflection:
+          - loc: { start: 9, end: 13 }
+            text: "note"
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: a
+      - _type: Row
+        reflection: []
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: b

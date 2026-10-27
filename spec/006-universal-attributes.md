@@ -224,7 +224,7 @@ Condition 2 is a fact about the parse, not about the AST: a bare `^ ` line binds
 Lines that emit no block are **transparent** — they are not "the immediately preceding block" and do not break binding. Any number of them may intervene:
 
 - a trailing `{attrs}` line (sets the block's attributes; emits no node);
-- a standalone `## comment` line (attaches to the preceding block's `reflection`, §2.2).
+- a standalone `## comment` line directly after the block (attaches backwards, §2.2).
 
 ```
 | col |
@@ -233,7 +233,7 @@ Lines that emit no block are **transparent** — they are not "the immediately p
 
 | col |
 ## editorial note
-^ Caption text   →  Table { caption: [...], reflection: [{ loc: { start: 11, end: 25 }, text: "editorial note" }] }
+^ Caption text   →  Table { caption: [...], rows: [Row { reflection: [{ loc: { start: 11, end: 25 }, text: "editorial note" }] }] }
 ```
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2, so it orphans.
@@ -266,7 +266,7 @@ All captionable blocks carry `caption: []` when no caption line binds. `FileGrou
 
 **Inline content.** The caption text is parsed by the full inline rule set:
 
-- `##` behaves normally — consumes to EOL; payload stored in the caption's parent block `reflection` at the caption line's offset.
+- `##` behaves normally — consumes to EOL; the payload goes to the captioned node's `reflection` at the caption line's offset, or, for a `Table`, to its last row (§2.2).
 - `{{variable}}` is allowed — `Variable` nodes are valid caption content.
 - A trailing `{attrs}` sequence at end of the caption line is emitted as literal text and does not attach to anything → warning CDN-0009. Caption text inherits no scope-chain slot; the parent block's attributes are set independently.
 

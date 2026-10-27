@@ -27,7 +27,7 @@ foo ## trailing comment
 - `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values.
 - A literal `##` in normal text is written `\##` or `#\#` (§8).
 
-**`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the nearest enclosing block:
+**`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the node that owns its line:
 
 ```typescript
 interface Reflection {
@@ -36,29 +36,36 @@ interface Reflection {
 }
 ```
 
-Every block type carries `reflection: Reflection[]` (`[]` when no `##` is present). See §14 for the full list.
+Every block type carries `reflection: Reflection[]` (`[]` when no `##` is present), except `List`, `Table`, and `FileGroup`: they own no line of their own. Each line inside them is owned by a `ListItem`, `TaskItem`, `Row`, or `FileBlock`, which carries `reflection` instead. See §14 for the full list.
 
 #### Trailing inline `##` (on a structural line)
 
 When `##` appears after content on a line that belongs to a block, the payload is recorded with the `loc` of that payload's source range.
 
-**Bubbling rule.** When the structural line belongs to a *child* of a container, the payload bubbles to the **outermost container** at that scope level:
+**Line-owner rule.** The payload attaches to the node that owns the structural line:
 
 | Structural line | `reflection` attaches to |
 |---|---|
-| Table row line | `Table` (not `Row`) |
-| List item line | `List` (not `ListItem`) |
+| Table content row line | that `Row` (`_type: "Row"` or `"Header"`) |
+| Table header separator line | the row before it in the table (§4.8) |
+| Table caption line | the table's last row |
+| List item line | that `ListItem` or `TaskItem` |
 | NamedBlock / QuoteBlock opener | that container |
-| FileBlock line | `FileGroup` (not `FileBlock`) |
+| FileBlock line | that `FileBlock` |
+| Any other block's line | that block |
 
 #### Standalone `## comment` line
 
-A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It acts as a blank line for block-boundary purposes (§9.1.2).
+A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It is neither content nor a blank line. Its indentation places it in a block scope (§1.6), and what it does depends on the line above it in that scope:
 
-- Attaches to the **immediately preceding structural block** in the current scope, carrying its own `loc`. Consecutive standalone comments accumulate in source order.
-- **Closes** any active accumulation (continuing Paragraph, open FileGroup) before attaching.
-- **Orphan** — no preceding structural block in the current scope: produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Multiple consecutive orphan lines fold into one empty Paragraph.
-- Inside a container body (NamedBlock, QuoteBlock, ListItem, etc.) the same rule applies within that block scope (§1.6): it attaches to the preceding sibling block in that scope.
+- **Directly after content** (no blank line between): it attaches backwards to the owner of the preceding line, carrying its own `loc`. After a `List`, `Table`, or `FileGroup` that owner is the last `ListItem`/`TaskItem`, row, or `FileBlock` of that scope — `- a`, `  - b`, `## c` gives the comment to item `a`, not to the nested `b`. Consecutive comment lines attach to the same node in source order.
+- **After a blank line, or with no preceding block in the scope** (an orphan): it produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Consecutive comment lines fold into that one empty Paragraph. It is a block like any other.
+
+Either way the comment line ends at its line terminator, and the next line opens its own context — no blank line is needed after it: `## note` followed by `- a` opens a `List`.
+
+- A comment line directly after content is **transparent to List, Table, and FileGroup runs**: the run continues on the next line as if the comment line were absent. `- a`, `## c`, `- b` is one `List`.
+- A comment line **ends a Paragraph**: the next line starts a new block.
+- A comment line directly after content is transparent to caption binding as well (§6.2).
 
 **Examples:**
 
@@ -80,7 +87,7 @@ foo ## bar                  →  Text("foo ") — block gains { loc, text: "bar"
 
 | AA | BB | ## row comment
   →  pre-## `| AA | BB |` is a valid 2-cell row.
-     Table.reflection += { loc, text: "row comment" }
+     Row.reflection += { loc, text: "row comment" }
 ```
 
 Orphan:
