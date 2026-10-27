@@ -135,15 +135,15 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 
 | Written | `raw` holds | Effect |
 |---|---|---|
-| `\\` | `\` | a literal backslash |
+| `\\` | `\\`, unchanged | a literal backslash, resolved by the consumer (§5.11.1); the pair is still an escape while the path is scanned, so `\\)` ends the path |
 | `\(` `\)` `\[` `\]` | the bracket | not counted for nesting, never ends the path |
 | `\?` `\#` `\&` `\=` | the character | no query, fragment, or pair boundary |
-| `\{{` | `\{{`, unchanged | an escaped interpolation token, resolved by the consumer (§5.11) |
+| `\{{` | `\{{`, unchanged | an escaped interpolation token, resolved by the consumer (§5.11.1) |
 | `\` before any other character | both characters | none |
 
 #### 9.2.3 Decomposition
 
-1. `raw` is the extent with escapes resolved. In a `FileBlock` or `InjectBlock` line, leading and trailing whitespace is removed first.
+1. `raw` is the extent with escapes resolved, except the two template escapes `\\` and `\{{`, which stay for the consumer (§5.11.1). In a `FileBlock` or `InjectBlock` line, leading and trailing whitespace is removed first.
 2. `path` is `raw` up to the first unescaped `?` or `#`, or all of `raw` if neither occurs.
 3. If an unescaped `?` comes first, the query text runs from after it to the first unescaped `#` or the end. It is split on `&`; each part is split at its first `=` into `key` and `value`. A part with no `=` has `value: ''`. Empty parts (`a&&b`) produce no pair. Pairs keep source order, and repeated keys are all kept. Nothing is percent-decoded: `%20` stays `%20`. At most 32 pairs are kept; any further pairs are dropped without a diagnostic.
 4. `fragment` is everything after the first unescaped `#`. A `?` after the `#` is fragment content.

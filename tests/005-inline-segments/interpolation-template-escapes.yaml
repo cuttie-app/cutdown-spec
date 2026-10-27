@@ -1,0 +1,16 @@
+id: interpolation-template-escapes
+section: "5.11.1"
+description: "In an interpolated property the parser leaves both template escapes, \\\\ and \\{{, in place for the consumer"
+
+input: |
+  /a/\{{x}}/b\\{{y}}.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        src:
+          raw: '/a/\{{x}}/b\\{{y}}.png'
+          path: '/a/\{{x}}/b\\{{y}}.png'
+          query: []
+          fragment: ''

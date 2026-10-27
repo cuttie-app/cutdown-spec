@@ -409,7 +409,14 @@ A variable can also stand inside a string property, where no `Variable` node can
 - **Interpolated properties:** `Link.href`; every `PathResourceLocator` (`raw`, and the `path`, `query`, and `fragment` decomposed from it); `EmbedBlock.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
-- `\{{` escapes a token. The parser leaves the backslash in place; the consumer's substitution step removes it and emits a literal `{{`.
+- An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one left-to-right pass, together with the tokens: `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
+
+```
+/a/\{{x}}     raw "/a/\{{x}}"     →  consumer: "/a/{{x}}"         (escaped token)
+/a/\\{{x}}    raw "/a/\\{{x}}"    →  consumer: "/a/\" + value of x  (literal backslash, then a token)
+```
+
+- Inside a JSON attribute value the template is the decoded JSON string: `"\\{{x}}"` in JSON decodes to `\{{x}}`, an escaped token.
 - The parser emits no diagnostic for a token. Whether a key has a value is the consumer's concern.
 
 ---
