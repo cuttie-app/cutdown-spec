@@ -1,0 +1,19 @@
+id: code-block-four-backticks
+section: "4.4"
+description: "Four backticks open and close a CodeBlock; the surplus backtick starts the tail, so the language is the default \"text\"; each tail is dropped with CDN-0016"
+
+input: |
+  ````js
+  x
+  ````
+
+ast:
+  - _type: CodeBlock
+    language: text
+    raw: "x"
+
+diagnostics:
+  - code: CDN-0016
+    level: warning
+  - code: CDN-0016
+    level: warning

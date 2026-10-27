@@ -1,0 +1,25 @@
+id: attrs-scope-chain-list-mid-item
+section: "6.1.2"
+description: "On an item that is not the last of its List, the chain starts at the ListItem: a single {} styles the item"
+
+input: |
+  - a {.x}
+  - b
+
+ast:
+  - _type: List
+    kind: "bullet"
+    attributes: []
+    children:
+      - _type: ListItem
+        attributes:
+          - key: class
+            value: [x]
+        children:
+          - _type: Text
+            value: a
+      - _type: ListItem
+        attributes: []
+        children:
+          - _type: Text
+            value: b

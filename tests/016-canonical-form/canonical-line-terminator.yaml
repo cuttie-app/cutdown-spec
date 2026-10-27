@@ -1,0 +1,7 @@
+id: canonical-line-terminator
+section: "16.1"
+description: "CRLF and lone CR line terminators are written as LF"
+
+input: "a\r\n\r\nb\r"
+
+canonical: "a\n\nb\n"

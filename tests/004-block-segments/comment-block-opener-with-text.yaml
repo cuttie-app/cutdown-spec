@@ -1,0 +1,16 @@
+id: comment-block-opener-with-text
+section: "4.16"
+description: "A line beginning with ### opens a CommentBlock even with text after it; the tail is dropped with CDN-0016"
+
+input: |
+  ### note
+  body
+  ###
+
+ast:
+  - _type: CommentBlock
+    text: "body\n"
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

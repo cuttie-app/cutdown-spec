@@ -1,0 +1,18 @@
+id: comment-block-four-hashes
+section: "4.16"
+description: "#### opens and closes a CommentBlock; the surplus # on each fence line is a dropped tail"
+
+input: |
+  ####
+  body
+  ####
+
+ast:
+  - _type: CommentBlock
+    text: "body\n"
+
+diagnostics:
+  - code: CDN-0016
+    level: warning
+  - code: CDN-0016
+    level: warning

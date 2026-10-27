@@ -1,15 +1,23 @@
 id: cdn-0013-nameless-namedblock-opener
 section: "4.13"
-description: "::: not followed immediately by [ID_LITERAL]; block classified as Paragraph; all content literal; CDN-0013 warning"
+description: "A ::: opener with no name word opens a NamedBlock with name \"\"; its attributes are kept and its body is parsed as blocks; CDN-0013 warning"
 
 input: |
   ::: {.alert}
+  Some content
+  :::
 
 ast:
-  - _type: Paragraph
+  - _type: NamedBlock
+    name: ""
+    attributes:
+      - key: class
+        value: [alert]
     children:
-      - _type: Text
-        value: "::: {.alert}"
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: Some content
 
 diagnostics:
   - code: CDN-0013

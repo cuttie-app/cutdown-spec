@@ -2,9 +2,9 @@
 
 Cutdown's parsing model makes three testable guarantees:
 
-1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§15).
-2. **Bounded lookahead.** At most one line at block level; at most to end of line at inline level.
-3. **Deferred attachment.** A deferred structural decision attaches or regroups already-built nodes only; it never re-parses text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until end of line.
+1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. A parser that records closer positions as it scans an inline context never rescans text to match an opener, so inline matching stays linear. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§15).
+2. **Bounded lookahead.** At most one line at block level. At inline level, a Class 1 or Class 3 opener (§9.1.4.1) looks ahead to the end of its inline context, which ends at the block's last line; a Class 2 opener looks ahead to the end of its line or the `##` cut.
+3. **Deferred attachment.** A deferred structural decision attaches or regroups already-built nodes only; it never re-parses text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until the end of the inline context.
 
 ### 9.1 Phases
 
@@ -16,7 +16,7 @@ Cutdown's parsing model makes three testable guarantees:
 #### 9.1.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
+2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. A `CodeInline` or `MathInline` counts only when its closer is found within the inline context; escapes are recognized first (§11). If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate**. A standalone comment line is neither blank nor content; §2.2 defines where it attaches and which runs it ends.
 4. Apply the fenced constructs that override blank-line boundaries — `` ``` ``, `~~~`, `:::`, `$$$`, `^^^` and `###`. Each opens until its closer or end of document; see §10.4.2 for the shared fence pattern and §4.3–§4.16 for each construct.
 
@@ -26,14 +26,14 @@ Each block candidate is classified by its first line:
 
 | First line matches | Block type |
 |-------------------|------------|
-| `^(={1,9}) ` | Heading → Section |
+| `^=+ ` | Heading → Section; ten or more `=` give level 9 (§4.2) |
 | `^---` | PageBreaker (top level only; no node — §9.4) |
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
-| `^:::[ID_LITERAL]` | NamedBlock |
+| `^:::` | NamedBlock |
 | `^\|` | Table |
 | `^>` | QuoteBlock |
-| `^- ` or `^- \[[ x]\] ` | List (unordered / task) |
+| `^- ` or `^- \[[ xX+]\] ` | List (unordered / task) |
 | `^[0-9]{1,5}\. ` | List (ordered) |
 | `^\[^[ID_LITERAL]` | RefDefinition |
 | `^\$\$\$` | MathBlock |
@@ -55,7 +55,7 @@ Inline content is parsed in source order within each block that contains inline 
 
 ##### 9.1.4.1 Degradation classes
 
-Inline openers fall into two classes with different degradation behavior. In both cases no diagnostic is emitted — degradation to visible literal text is silent by design.
+Inline openers fall into three classes with different degradation behavior. An unmatched opener degrades to visible literal text without a diagnostic, by design. CDN-0031 caps `Mark` nesting depth (§5.10); it is a limit, not a degradation.
 
 **Class 1 — symmetrical doubled delimiters: opener-as-text.**
 
@@ -224,7 +224,7 @@ The sectionization fold applies independently to every flat block sequence (root
 
 **Skipped levels.** A heading whose level is deeper than the innermost open Section by more than one (e.g. `=` followed directly by `===`) nests under the nearest shallower open Section. The written level is preserved in the `Section` node; no intermediate Sections are synthesized; no diagnostic is emitted. The written level is the source of truth — tree depth is incidental, and consumers that need a normalized depth derive it themselves.
 
-**Section attributes** are those on the heading line only. Rule B (§6) never assigns a scope-chain slot to a Section.
+**Section attributes** are those at the end of the heading only. Rule B (§6) never assigns a scope-chain slot to a Section.
 
 #### 9.3.2 Pagination fold
 

@@ -6,13 +6,14 @@ Blocks are separated by one or more **blank lines**. A blank line is a line cont
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.1.3). A run does not always produce one block:
 
-- A **single-line block** — `Section`, `FileBlock`, `EmbedBlock`, `InjectBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification, so `= Title` followed directly by `content` yields a `Section` and a `Paragraph`.
+- A **single-line block** — `FileBlock`, `EmbedBlock`, `InjectBlock`, `RefDefinition`, a table row — consumes its own line. The rest of the run re-enters classification.
+- A **heading** continues over the following lines under the paragraph continuation rules (§4.2), so `= Title` followed directly by `content` is one heading reading `Titlecontent`.
 - A **`Paragraph`** consumes the whole run: it ends at the blank line that closes the run, and at no earlier line — not even one that would open a block if it began a run (see the no-interrupt rule below).
 - A **fenced block** consumes from its opener to its closer, which may lie past a blank line (§10.4.2).
 
 **Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
 
-Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an empty `Paragraph`. See §2 for the full semantics and §10.4.4 for the symbol-repetition table.
+Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an empty `Paragraph`. See §2 for the full semantics and §13 for every character's role.
 
 ### 10.2 Leading and Trailing Whitespace
 
@@ -24,7 +25,7 @@ Any number of leading spaces (including none) are stripped before block classifi
 
 Indented code blocks (as in CommonMark) are not supported.
 
-Trailing spaces on a line collapse to one space. That space is kept as `Text(" ")` before a soft break, and dropped at a block boundary — a blank line, end of input, or the end of a single-line block's inline context. §12.1 states the rule in full.
+Trailing spaces on a line collapse to one space. That space is kept as `Text(" ")` before a soft break, and dropped at a block boundary — a blank line, end of input, or the end of an inline context that ends at its line. §12.1 states the rule in full.
 
 ### 10.3 Block Classification
 
@@ -34,7 +35,7 @@ Each block candidate is classified by its first line (see §9.1.3 for the full c
 
 Cutdown uses two structural patterns for delimiters:
 
-> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. The single `_` (low line) in `snake_case` and `a_b`, the single `'` (apostrophe) in "don't", and the single `*` (asterisk) in `2*3` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
+> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. The single `_` (underscore) in `snake_case` and `a_b`, the single `'` (single quote) in "don't", and the single `*` (asterisk) in `2*3` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
 
 #### 10.4.1 Doubled-symbol inline delimiter
 
@@ -44,15 +45,30 @@ Any two identical characters form an inline block delimiter:
 
 The opener and closer are the same doubled symbol. Inline blocks delimited this way are composable (nestable with other types). The parser recognizes a built-in exclusive list of doubled symbols (see §5). Unrecognized doubled symbols are emitted as literal text.
 
-#### 10.4.2 Tripled-symbol block delimiter
+#### 10.4.2 Fences
 
-Any three identical characters form a block delimiter:
+A line that begins with three or more identical fence symbols opens a fence. The fence symbols are `` ` `` (CodeBlock, §4.4), `~` (Meta, §4.3), `$` (MathBlock, §4.5), `^` (SpoilerBlock, §4.15), `:` (NamedBlock, §4.13), and `#` (CommentBlock, §4.16):
 
-    <Symbol><Symbol><Symbol>[name] {attrs}
+    <Symbol><Symbol><Symbol>[word] {attrs} ## comment
     content
-    <Symbol><Symbol><Symbol>
+    <Symbol><Symbol><Symbol> ## comment
 
-The opener may carry an optional name and attributes. The closer is the bare tripled symbol. The parser recognizes a built-in exclusive list of tripled symbols (see §4). Unrecognized tripled symbols are emitted as literal text.
+- **Opener.** The parser consumes three symbols. What follows them is the **tail**. A construct keeps only the parts of the tail it defines, and drops the rest with warning CDN-0016:
+
+  | Fence | Kept on the opener | Kept on the closer |
+  |---|---|---|
+  | CodeBlock | language word, `{attrs}`, `## comment` | `## comment` |
+  | MathBlock | `{attrs}`, `## comment` | `## comment` |
+  | SpoilerBlock | `{attrs}`, `## comment` | `## comment` |
+  | NamedBlock | name word, `{attrs}`, `## comment` | `## comment` |
+  | Meta | format word | — |
+  | CommentBlock | — | — |
+
+  A surplus fence symbol starts the tail, so it is never part of a word: four backticks open a CodeBlock with the default language, `~~~~` a Meta with the default format, and `::::` a NamedBlock with no valid name. A kept `## comment` goes to the block's `reflection` (§2.2).
+- **Closer.** The next line that begins with three or more of the same symbol closes the fence. Its tail is treated as above. Inside an open NamedBlock a line with a valid name word opens a nested block instead (§4.13); no other fence nests.
+- **Escapes.** A body line that must begin with the fence symbols is written with a block-opener escape (§8.2) or, in opaque content, a closer escape (§8.3).
+
+A PageBreaker (`---`, §4.10) follows the same rule for its tail, and keeps nothing.
 
 #### 10.4.3 Delimiter placement
 
@@ -65,63 +81,7 @@ In all cases the delimiter is recognized. Whether an unmatched opener is treated
 
 #### 10.4.4 Symbol repetition
 
-When N identical characters appear at an inline position, the following rules apply:
-
-**Inline delimiter symbols** (inline parsing context):
-
-| Symbol | 1 | 2 | 3 | 4 | 5 |
-|--------|---|---|---|---|---|
-| `*` | literal | `Strong` open/close | `**` + `*` literal | `Strong([])` empty | `Strong([])` + `*` literal |
-| `_` | literal | `Emphasis` open/close | `__` + `_` literal | `Emphasis([])` empty | `Emphasis([])` + `_` literal |
-| `"` | literal | `QuoteInline(double)` open/close | `""` + `"` literal | `QuoteInline([])` empty | `QuoteInline([])` + `"` literal |
-| `'` | literal | `QuoteInline(single)` open/close | `''` + `'` literal | `QuoteInline([])` empty | `QuoteInline([])` + `'` literal |
-| \` | literal | `CodeInline` open/close | \`\` + \` literal¹ | `CodeInline("")` empty | `CodeInline("\`")` |
-| `~` | literal | `Highlight` open/close | `~~` + `~` literal¹ | `Highlight([])` empty | `Highlight([])` + `~` literal |
-| `$` | literal | `MathInline` open/close | `$$` + `$` literal¹ | `MathInline("")` empty | `MathInline("$")` |
-| `^` | literal² | `Spoiler` open/close | `^^` + `^` literal¹ | `Spoiler([])` empty | `Spoiler([])` + `^` literal |
-| `#` | literal | `##` line comment → Reflection entry (to EOL, no closer) | `CommentBlock` fence³ | `CommentBlock` fence + `#` literal | `CommentBlock` fence + `##` literal |
-
-¹ When appearing at the **start of a block line**, ` ``` `, `~~~`, `$$$`, `^^^` are block fences (CodeBlock, Meta, MathBlock, SpoilerBlock respectively). In inline context, they parse as 2-delimiter + 1 literal.
-
-² A single `^` (caret) is literal in inline context. In a `(^ref)` link target and a `[^ref]:` definition it is the reference sigil (§4.14, §5.5); that role is delimited by the surrounding brackets and never reaches the Spoiler parser.
-
-³ `###` is a block fence only when it begins a block candidate — that is, when it is the first non-whitespace content of a line after container-indent stripping (§10.2, §10.6). In inline position, `###` parses as `##` (line comment opener — runs to EOL) + `#` (collapsed into the payload text).
-
-**Block/structural symbols**:
-
-| Symbol | 1 | 2 | 3 | 4+ |
-|--------|---|---|---|-----|
-| `=` | Heading L1 (+space) | Heading L2 | Heading L3 | … up to L9; 10+ = literal |
-| `>` | QuoteBlock L1 | QuoteBlock L2 | QuoteBlock L3 | Level N (no limit) |
-| `-` | list marker (`- `+space) or literal | literal `--` | PageBreaker (top level; no node — §9.4) | PageBreaker (tail dropped, CDN-0016) |
-| `:` | literal | Mark `::name … ::` (§5.10) | NamedBlock prefix `:::name` | literal |
-| `^` | Caption line when followed by a space (`^ text`, §6.2) | inline `Spoiler` opener — not a block | SpoilerBlock fence¹ | — |
-| `\|` | Table row (§4.8) | — | — | — |
-| `/` | FileBlock, or InjectBlock for a `.cutdown` or folder path (§4.11, §4.17) | — | — | — |
-| `{n}.` | ordered list marker (`1.`–`99999.` + space, §4.7) | — | — | — |
-
-The two halves of this table use different keys. Rows for `=`, `>`, `:` and `#` are keyed by run length. Rows for `-`, `^`, `\|` and `/` are keyed by the character that **follows** the symbol at column 1 — a space, a cell, or a path — not by repetition. The `{n}.` row is keyed by digit count: one to five digits, then `.` and a space; six or more digits open no list.
-
-`https://` at the start of a block line opens an `EmbedBlock` (§4.9). It is a fixed eight-character prefix, not a repeated symbol.
-
-Paired symbols (`{}`/`[]`) follow their own rules and are not covered by this table; this includes the bracket-initiated block opener `[^` (RefDefinition, §4.14). `![` opens no block: an image is always an `ImageInline` (§5.9).
-
-#### 10.4.5 Delimiter collisions
-
-When N identical characters appear and the parser recognizes a delimiter of length 2 or 3 at that position, the maximum recognized length is consumed as the delimiter. Any remaining characters are treated as literal content.
-
-Known collisions:
-
-| Sequence | Parsed as |
-|----------|-----------|
-| `~~~` at inline position | `~~` (Highlight opener) + `~` (literal) |
-| `$$$` at inline position | `$$` (MathInline opener) + `$` (literal) |
-| \`\`\` at inline position | \`\` (CodeInline opener) + \` (literal inside) |
-| `"""` at inline position | `""` (QuoteInline double opener) + `"` (literal) |
-| `'''` at inline position | `''` (QuoteInline single opener) + `'` (literal) |
-| `^^^` at inline position | `^^` (Spoiler opener) + `^` (literal) |
-| `###` at inline position | `##` (line comment → Reflection entry; trailing `#` is part of the payload text) |
-| `---` non-line-start | literal text (PageBreaker only recognized at top-level line start) |
+What a run of N identical characters means — at the start of a line and at an inline position — is listed character by character in §13. At an inline position the longest recognized delimiter is consumed and the rest of the run is literal: `~~~` inline is `~~` (Highlight) followed by a literal `~`.
 
 ### 10.5 List Indentation Model
 
@@ -147,7 +107,7 @@ Depth-0 items (no parent on the stack) accept any non-blank non-marker line unco
 - Blank line followed by content at **col 0** → block boundary. The current `List` segment ends. If the next line is a list marker, a new `List` node begins.
 - Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item (`ListItem.children` becomes `Block[]`). The `List` is marked `loose: true`.
 
-**Style note:** Two spaces of indentation per nesting level is the canonical form (§16.1, row 12). The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
+**Style note:** Two spaces of indentation per nesting level is the canonical form (§16.1, row 11). The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
 
 ```
 Input (standard):
@@ -176,11 +136,13 @@ Input (loose list — absorbed blank line):
 AST:
   List { kind: "bullet", loose: true }
   ├── ListItem
-  │   └── Text("First item continues here")
+  │   └── Text("First itemcontinues here")
   └── ListItem
       ├── Paragraph("Second item")
       └── Paragraph("This starts a new paragraph inside item two.")
 ```
+
+The list is loose because it absorbed a blank line. Only item two absorbed it, so only item two is block-promoted (§4.7.1).
 
 ### 10.6 Container-Edge Blank Lines
 

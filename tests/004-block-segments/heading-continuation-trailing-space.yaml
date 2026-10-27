@@ -1,0 +1,12 @@
+id: heading-continuation-trailing-space
+section: "4.2"
+description: "A heading continues onto the next line; the trailing space before the soft break separates the words and the continuation line's leading spaces are stripped"
+
+input: "= Text_A  \n  Text_B\n"
+
+ast:
+  - _type: Section
+    level: 1
+    heading:
+      - _type: Text
+        value: "Text_A Text_B"

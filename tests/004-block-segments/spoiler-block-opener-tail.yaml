@@ -1,0 +1,23 @@
+id: spoiler-block-opener-tail
+section: "4.15"
+description: "Text after ^^^ on the opener is dropped with CDN-0016; {attrs} are kept"
+
+input: |
+  ^^^ hidden {.nsfw}
+  body
+  ^^^
+
+ast:
+  - _type: SpoilerBlock
+    attributes:
+      - key: class
+        value: [nsfw]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: body
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

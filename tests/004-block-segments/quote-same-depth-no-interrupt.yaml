@@ -1,0 +1,15 @@
+id: quote-same-depth-no-interrupt
+section: "4.6"
+description: "At the same quote depth the no-interrupt rule holds: a list marker under a quoted paragraph line is paragraph content"
+
+input: |
+  > a
+  > - b
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: a- b

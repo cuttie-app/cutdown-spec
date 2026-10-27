@@ -67,11 +67,13 @@ Document
 
 ## Block Elements
 
-Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1).
+Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
+
+**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with CDN-0016, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§10.4.2).
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). `\` at line end → `LineBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). Runs of spaces inside the text collapse to one (U+00A0 excepted). `\` at line end → `LineBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -87,7 +89,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed.
+Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
 
 Sections are not parsed — they are derived by a fold (§9.3.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
@@ -104,7 +106,7 @@ key: value
 ~~~
 ```
 
-Formats: `yaml` (default), `toml`, `json`. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
+Formats: `yaml` (default), `toml`, `json`, any case. Any other word → `yaml` + warning CDN-0039. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
 
 ### PageBreaker → new Page (no node)
 
@@ -128,7 +130,7 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
   - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true` (item content block-promoted).
+Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. Only the item that absorbed the blank line is block-promoted; the others keep inline children.
 
 ### Files → `FileBlock`, `FileGroup`
 
@@ -169,7 +171,7 @@ Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInl
 >> nested quote
 ```
 
-The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `>` chars.
+The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `>` chars; a line at a new depth ends the paragraph above it, so `> a` then `>> b` nests without a blank line.
 
 ### Code Block → `CodeBlock`
 
@@ -179,7 +181,7 @@ literal content — no inline parsing
 ```
 ````
 
-Language defaults to `"text"`. Fixed 3-backtick fence. No nesting. Unclosed → warning CDN-0001.
+Language defaults to `"text"`; a word that is not `ID_LITERAL` (```` ```c++ ````) → `"text"` + warning CDN-0038. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed → warning CDN-0001.
 
 ### Math Block → `MathBlock`
 
@@ -199,7 +201,7 @@ Content is literal. Unclosed → warning CDN-0003.
 :::
 ```
 
-`:::` + name required — nameless `:::` opener → Paragraph, warning CDN-0013. Closing `:::` alone. Unclosed → warning CDN-0004. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
+A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a NamedBlock with `name: ""` and warning CDN-0013. Inside an open block, a `:::` line with a valid name opens a nested block; any other `:::` line closes. Unclosed → warning CDN-0004. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
 
 ### Spoiler Block → `SpoilerBlock`
 
@@ -209,11 +211,11 @@ Content is literal. Unclosed → warning CDN-0003.
 ^^^
 ```
 
-Fixed 3-caret fence. Content is **parsed as blocks** (the only XXX-fence with non-literal body — code/meta/math are literal; spoiler hides meaning, not structure). Closing `^^^` alone. SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+Content is **parsed as blocks**, like `NamedBlock`; code, meta, math, and comment fences are literal. The next `^^^` line closes it: SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Tables → `Table`
 
-A table opens with a line starting with `|`. The shape is close to GFM pipe tables, with three differences: the leading `|` is required, an alignment cell needs at least three symbols (marks included), and `--,` / `--.` add comma and decimal alignment.
+A table opens with a line starting with `|`; every row starts with `|`. A header separator row sets alignments: each cell needs at least three symbols (marks included), and `--,` / `--.` add comma and decimal alignment.
 
 ```
 | Cell A | Cell B |          ← no header, all rows _type: "Row"
@@ -352,7 +354,7 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 |------|--------|-------|
 | `#` | literal text | Single `#` does nothing — written exactly as typed. |
 | `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `CommentBlock` segment | Block comment. Bare `###` opener, bare `###` closer. Opaque content (no parsing). No `[name]`, no `{attrs}`. |
+| `### … ###` | `CommentBlock` segment | Block comment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped (CDN-0016), so `### note` opens one. Opaque content (no parsing). No `attributes`, no `reflection`. |
 
 ```
 # literal hash, not a comment
@@ -364,7 +366,7 @@ foo bar ## tail       → Text("foo bar ") + reflection entry on block
 ###
 ```
 
-Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006.
+Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line directly after a `CommentBlock` is an orphan → empty `Paragraph`.
 
 **Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
 
@@ -394,7 +396,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
+Special characters, and where each may be escaped: the register in §13.
 
 ### Block-opener escape (line start)
 
@@ -404,6 +406,7 @@ Special characters: `= # * _ ~ ^ $ [ ] ( ) ! { } : - > / \ | " '` and \`
 |---|---|---|
 | `=` ... `=========` heading | `\=`, `\==`, ... | literal |
 | `- ` list | `\- item` | literal |
+| `{n}. ` ordered list | `\2026. A year`, `2026\. A year` | literal |
 | `> ` quote | `\> text` | literal |
 | `---` PageBreaker | `\---`, `-\--`, `--\-` | literal; no Page boundary occurs |
 | `/path` file / injection | `\/path` | literal |
@@ -440,11 +443,11 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 2. MetaBlock fence `~~~` — content always literal
 3. MathBlock `$$$` — content always literal
 4. CommentBlock `###` — content always literal (opaque)
-5. Inline code \`\` — content literal except `` \` ``
-6. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
-7. Escape `\x` — resolved before delimiter matching
-8. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
-9. Inline math `$$` — matched before emphasis; content literal
+5. Escape `\x` — an escaped character is never a delimiter or a `##`
+6. Inline code \`\` — content literal except `` \` ``
+7. Inline math `$$` — content literal
+8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
+9. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
 11. Named mark `::name … ::` — matched after emphasis; name run is lexical
 12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then source order

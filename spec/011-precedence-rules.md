@@ -7,12 +7,12 @@ When multiple constructs compete for the same input, the following priority appl
 | 1 | CodeBlock fence ` ``` `                                                         | Content always literal |
 | 2 | MetaBlock fence `~~~`                                                           | Content always literal |
 | 3 | MathBlock `$$$`                                                                 | Content always literal |
-| 4 | CommentBlock `###`                                                              | Content always literal (opaque). See §2.3, §4.16 |
-| 5 | Inline code \`\` `CodeInline`                                                   | Content literal |
-| 6 | Line comment `##`                                                               | No closer; runs to EOL. Payload stored as `Reflection` entry on enclosing block. Acts as the terminator for any open inline constructs, which degrade per their class (§9.1.4.1) — Class 2 openers emit the verbatim slice up to the `##` cut. Not recognized inside CodeInline / MathInline / quoted attribute values. See §2.2 |
-| 7 | Escape `\x`                                                                     | Resolved before delimiter matching |
-| 8 | Links and images `[...](...)`                                                   | Matched before emphasis runs |
-| 9 | Inline math `$$`                                                                | Matched before emphasis; content is literal |
+| 4 | CommentBlock `###`                                                              | Content always literal (opaque). See §4.16 |
+| 5 | Escape `\x`                                                                     | Resolved before every inline construct: an escaped character is never a delimiter or a `##`. Inside opaque content only the narrow escapes of §8.3 apply. Also recognized in Phase 2, before the `##` cut (§9.1.2) |
+| 6 | Inline code \`\` `CodeInline`                                                   | Content literal |
+| 7 | Inline math `$$`                                                                | Matched before emphasis; content is literal |
+| 8 | Line comment `##`                                                               | No closer; runs to EOL. Payload stored as `Reflection` entry on enclosing block. Acts as the terminator for any open inline constructs, which degrade per their class (§9.1.4.1) — Class 2 openers emit the verbatim slice up to the `##` cut. Not recognized inside a CodeInline or MathInline that closes (both rank above it), nor — the one exception to this order — inside a quoted attribute value. See §2.2 |
+| 9 | Links and images `[...](...)`                                                   | Matched before emphasis runs |
 | 10 | Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` | Source order, greedy |
 | 11 | Mark `::name … ::`                                                              | Matched after emphasis. The name run is lexed before delimiter matching and is independent of this table — see *Name lexing* in §5.10 |
 | 12 | Variable `{{key}}` / Attributes `{...}`                                         | Longest opener wins (`{{` before `{`), then source order |

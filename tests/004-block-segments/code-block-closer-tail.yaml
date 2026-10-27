@@ -1,0 +1,19 @@
+id: code-block-closer-tail
+section: "4.4"
+description: "Any line beginning with three backticks closes the CodeBlock; a ## comment on the closer goes to the block's reflection, other text is dropped with CDN-0016"
+
+input: |
+  ```js
+  x
+  ``` done ## closer note
+
+ast:
+  - _type: CodeBlock
+    language: js
+    raw: "x"
+    reflection:
+      - text: closer note
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

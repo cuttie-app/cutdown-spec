@@ -44,7 +44,7 @@ Whitespace between a segment and its attaching `{...}` is consumed by the attach
 
 ##### Block Opening Lines — Last-Attr Rule
 
-On lines that open a block construct (headings, named blocks), the **last `{...}` token on the line is claimed by the block**. All earlier `{...}` tokens on the same line follow inline attachment rules and bind to their immediately preceding inline element.
+On a heading, the **last `{...}` token at the end of its content is claimed by the Section**; on a fence opener line (CodeBlock, MathBlock, NamedBlock, SpoilerBlock), the last `{...}` token on the line is claimed by the block. All earlier `{...}` tokens on the same line follow inline attachment rules and bind to their immediately preceding inline element.
 
 An empty `{}` as the last token explicitly assigns no attributes to the block, freeing earlier `{...}` to bind inward.
 
@@ -67,7 +67,7 @@ This rule applies only in block opening line context. In paragraph context all `
 
 ##### Scope-chain rule (Rule B)
 
-A sequence of `{attr}` blocks at the end of an inline context is distributed **right-to-left** through a scope chain. The **last** `{}` in the sequence is claimed by the **highest segment** in the current hierarchy; each preceding `{}` claims the next lower segment. Any `{}` blocks at the front of the sequence that have no segment to claim are **silently dropped**.
+A sequence of `{attr}` blocks at the end of an inline context is distributed **right-to-left** through a scope chain. The **last** `{}` in the sequence is claimed by the **highest segment** in the current hierarchy; each preceding `{}` claims the next lower segment. Any `{}` blocks at the front of the sequence that have no segment to claim are dropped with CDN-0011 (§6.1.3).
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
@@ -78,13 +78,21 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 | Context | Slot 1 (last `{}`) | Slot 2 | Slot 3 |
 |---|---|---|---|
 | Standalone Paragraph | Paragraph | last attr-bearing inline | — |
-| List item | List | ListItem | last attr-bearing inline |
+| List item — last item of its List | List | ListItem | last attr-bearing inline |
+| List item — any other item | ListItem | last attr-bearing inline | — |
 | Table row — mid-table, cell open | Row | last attr-bearing inline | — |
 | Table row — mid-table, cell sealed | Row | — | — |
 | Table row — last row, cell open | Table | Row | last attr-bearing inline |
 | Table row — last row, cell sealed | Table | Row | — |
 | FileBlock line | FileGroup | FileBlock | — |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
+
+**List items.** Only the last item of a `List` reaches the `List`, as only the last row reaches the `Table`. Every other item's chain starts at its own `ListItem` or `TaskItem`, so each `List` has one claimant. Whether an item is last is known at the next line (one-block emission latency, §9). A nested item reaches only its own `List`.
+
+```
+- a {.x}          →  ListItem({.x}, "a")             ← not last: slot 1 = ListItem
+- b {.y}{.z}      →  ListItem({.y}, "b"), List({.z}) ← last: slot 1 = List
+```
 
 **Table rows.** `Cell` bears no attributes (see *Per-segment placement rules* above), so the chain walks **past** the cell to the last attr-bearing inline inside it. Whether that slot exists depends on the trailing `|` (pipe):
 

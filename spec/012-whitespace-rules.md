@@ -11,12 +11,13 @@ Rows run from the line as a whole, through block structure, to inline content.
 | Tabs inside code/meta/math fences | Preserved literally |
 | Leading spaces on block line | Stripped before block classification |
 | Leading spaces inside a `NamedBlock` or `SpoilerBlock` body | Up to the base padding removed from every content line (§10.2) |
-| Leading spaces on paragraph continuation line | Stripped before inline parsing |
+| Leading spaces on a continuation line (paragraph, heading, quote, list item) | Stripped before inline parsing |
 | Multiple blank lines | Treated as a single blank line |
-| Blank lines inside code/math fence | Preserved literally in `content` string |
+| Blank lines inside code/math fence | Preserved literally in `raw` string |
 | Blank lines inside meta fence | Passed through in `raw` string |
-| Trailing spaces | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** — a blank line, end of input, or the end of a single-line block's inline context (a heading line, a table cell, a caption line) |
+| Trailing spaces | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** — a blank line, end of input, or the end of an inline context that ends at its line (a table cell, a caption line) |
 | Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
+| Interior whitespace runs in inline text | Collapsed to one space, in every `Text` that follows §12.2. U+00A0 is never collapsed. Exempt segments (§12.2) keep their whitespace |
 | `LineBreak` (`\` at line end) | Produces a `LineBreak` segment — a line break inside the paragraph, not a block boundary (§5.13) |
 | Whitespace immediately preceding a `{attr}` block that is **consumed** by an attribute slot (block-opener last-attr, inline attachment, or scope-chain) | Stripped from the preceding text value. Does NOT apply when `{...}` falls through to literal `Text("{...}")` per §6.1.3 (orphan). |
 
@@ -37,7 +38,7 @@ Rows run from the line as a whole, through block structure, to inline content.
 
 | Segment | Whitespace |
 |---|---|
-| `Text` | Interior runs collapse at paragraph level (§12.1) |
+| `Text` | Interior runs collapse to one space (§12.1) |
 | `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` | Follows §12.2 |
 | `Mark` | Follows §12.2 for its content. Exactly one space separates `name` from the content; that space is consumed |
 | `Link` `[text]` slot | Follows §12.2 |

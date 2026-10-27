@@ -1,13 +1,13 @@
 id: canonical-meta-format-tag-case
 section: "16.1"
-description: "A Meta format tag is written lowercase"
+description: "A Meta format word other than the default is written lowercase"
 
 input: |
-  ~~~YAML
-  title: One
+  ~~~TOML
+  title = "One"
   ~~~
 
 canonical: |
-  ~~~yaml
-  title: One
+  ~~~toml
+  title = "One"
   ~~~

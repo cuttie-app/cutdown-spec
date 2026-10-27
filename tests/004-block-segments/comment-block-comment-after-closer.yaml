@@ -1,0 +1,17 @@
+id: comment-block-comment-after-closer
+section: "4.16"
+description: "CommentBlock has no reflection; a ## line directly after its closer is an orphan and produces an empty Paragraph"
+
+input: |
+  ###
+  hidden
+  ###
+  ## note
+
+ast:
+  - _type: CommentBlock
+    text: "hidden\n"
+  - _type: Paragraph
+    children: []
+    reflection:
+      - text: note

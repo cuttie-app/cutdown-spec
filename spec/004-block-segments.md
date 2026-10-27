@@ -15,6 +15,8 @@ A contiguous run of non-blank lines not matched by any other block type.
 
 **No block opens inside a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`) alike. No block opener is an exception, and none emits a diagnostic: to open a block, put a blank line before it.
 
+Container prefixes are not block openers either. A `>` line whose quote depth differs from the depth of the paragraph above it closes that paragraph and goes to the quote at its own depth (§4.6); at the same depth the rule above holds, so `> a` followed by `> - b` is one paragraph.
+
 Two line forms are **not** block openers and are unaffected by this rule — they attach to the preceding block instead of starting one, and may follow a paragraph line directly:
 
 - a caption line (`^ `, §6.2);
@@ -103,8 +105,9 @@ interface Section {
 
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
 - The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§2.2), or a `^ ` caption line (§6.2). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
-- A heading MUST be preceded by a blank line (or be the first line of the document or block container).
-- The **last `{...}` on the heading line** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
+- A `=` line that does not begin a run is paragraph content (§4.1): a heading opens only after a blank line, or as the first line of the document or a block container.
+- A run of ten or more `=` followed by a space opens a level-9 heading. The first nine `=` are the marker; the rest begin the heading content, so `========== Deep` gives `level: 9` and `heading: [Text("= Deep")]`. Warning CDN-0012 is emitted.
+- The **last `{...}` at the end of the heading** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
 - Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). The fold runs independently inside each container, so a `Section` never crosses a container boundary (§9.3.1).
 - **Opener escape:** `\=` at line start suppresses heading formation at **any** level — `\=`, `\==`, `\===` ... all become `Paragraph([Text("= ...")])`. See §8.2.
@@ -124,7 +127,7 @@ interface Section {
 
 ### 4.3 Meta (Front Matter)
 
-**Syntax:** Fenced with exactly three tildes.
+**Syntax:** Fenced with three tildes (§10.4.2).
 
 ```
 ~~~format
@@ -142,7 +145,7 @@ interface Meta {
 }
 ```
 
-- Recognized formats: `yaml`, `toml`, `json` (case-insensitive). Default: `"yaml"`.
+- **Format word:** the run after `~~~` up to whitespace or end of line. `yaml`, `toml`, and `json` are recognized in any case and stored lowercased. No word, or a run of four or more `~`, gives `"yaml"`. Any other word gives `"yaml"` and warning CDN-0039. Text after the word is dropped with CDN-0016.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
 - Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§9.3.2). Never appears in `Page.children`.
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
@@ -168,7 +171,7 @@ AST:
 
 ### 4.4 CodeBlock
 
-**Syntax:** Fenced with exactly three backticks.
+**Syntax:** Fenced with three backticks (§10.4.2).
 
 ````
 ```language {attrs}
@@ -189,9 +192,10 @@ interface CodeBlock {
 }
 ```
 
-- Language identifier uses `[ID_LITERAL]+`. If omitted (means equal empty string) should be made default to `"text"`.
+- **Language word:** the run after ```` ``` ```` up to whitespace, `{`, or end of line. A word of `[ID_LITERAL]+` is the language. No word, or a run of four or more backticks, gives `"text"`. Any other word (```` ```c++ ````) gives `"text"` and warning CDN-0038.
+- After the language word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016. The closer keeps only a `## comment`.
 - Content is **literal** — no inline parsing. Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
-- Fixed 3-backtick fence. Variable-length fences not supported. No nesting.
+- No nesting: the next line that begins with three or more backticks closes the fence (§10.4.2).
 - Unclosed fence: content runs to end of document → warning CDN-0001.
 - Legal inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`. Container indentation is stripped from content lines.
 - **Closer escape:** `` \` `` inside the body emits a literal `` ` `` (backtick) and consumes the `\`. A line `` \``` ``, `` `\`` ``, or `` ``\` `` therefore does NOT close the fence. All other `\X` sequences are literal (including `\\` → two chars). See §8.3. Opener escape: see §8.2.
@@ -201,7 +205,7 @@ interface CodeBlock {
 
 ### 4.5 MathBlock
 
-**Syntax:** Fenced with exactly three dollar signs.
+**Syntax:** Fenced with three dollar signs (§10.4.2).
 
 ```
 $$$ {attrs}
@@ -222,10 +226,11 @@ interface MathBlock {
 ```
 
 - Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
+- The opener keeps `{attrs}` and a `## comment` (§2.2); the closer keeps a `## comment`. Any other text after the three `$` is dropped with CDN-0016.
 - Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
 - Unclosed fence: content runs to end of document → warning CDN-0003.
 - Legal inside block containers. Indentation handling follows the same rules as `CodeBlock`.
-- **No closer escape — LaTeX owns `\`.** Every backslash inside a MathBlock body is literal, including `\$`. A literal `$$$` line inside the body therefore prematurely closes the fence; this is an accepted unsupported case (wrap such content in a `CodeBlock` or split the math). See §8.3. Opener escape (`\$$$`): see §8.2.
+- **No closer escape — LaTeX owns `\`.** Every backslash inside a MathBlock body is literal, including `\$`. A body line that begins with `$$$` therefore prematurely closes the fence; this is an accepted unsupported case (wrap such content in a `CodeBlock` or split the math). See §8.3. Opener escape (`\$$$`): see §8.2.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing fence (no blank line) sets `caption: Inline[]` on this node.
 
 **Example:**
@@ -239,7 +244,7 @@ Input:
 AST:
   MathBlock {
     raw: "\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}",
-    attributes: [{ id: "eq1"}, {class: ["display"] }]
+    attributes: [{ key: "class", value: ["display"] }, { key: "id", value: "eq1" }]
   }
 ```
 
@@ -268,10 +273,10 @@ interface QuoteBlock {
 ```
 
 - The `>` (greater-than sign) prefix opens the quote. It is required on the quote's first line.
-- **Lazy continuation.** A following line without `>` continues the quote. The line is handed to the quote's current child block and follows that block's own continuation rules — a `Paragraph` absorbs it as a continuation line (§4.1), a list item absorbs it per §10.5, a `Section` keeps it in the section body. This is the same continuation behaviour the line would have outside the quote.
+- **Lazy continuation.** A following line without `>` continues the quote. The line is handed to the quote's current child block and follows that block's own continuation rules — a `Paragraph` absorbs it as a continuation line (§4.1), a list item absorbs it per §10.5, a heading absorbs it as a continuation line (§4.2). This is the same continuation behaviour the line would have outside the quote.
 - The quote ends at a blank line, at the end of the enclosing block container, or at the end of the document. A `>` line after a blank line opens a new `QuoteBlock`.
 - The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
-- Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters. A lazy continuation line carries no `>`, so it does not change the current depth — it continues the innermost open quote.
+- Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters. A line whose depth differs from the line above is a structural boundary, not a block opener: it closes the open paragraph and goes to the quote at its own depth, opening or closing quotes as needed (§4.1). A lazy continuation line carries no `>`, so it does not change the current depth — it continues the innermost open quote.
 - **Body edge-blank trim:** After `>` stripping, leading and trailing blank lines inside the quoted body are stripped before children are parsed. See §10.6.
 - **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing line (no blank line) sets `caption: Inline[]` on this node.
@@ -362,7 +367,7 @@ interface List {
 - Ordered marker: `{number}.` followed by one space, where `{number}` is 1–5 ASCII digits. A run of six or more digits is not a marker, so the line is not a list item. The first item's number sets `List.start`; every other item's number is ignored.
 - `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
 - `start` is always present. It is `1` for `kind: "bullet"` and `"checklist"`. For `"numbered"` it is the first item's number, except that `0` is coerced to `1`, silently.
-- **Tight vs loose:** A list is `loose: true` when a blank line appears between items within the list scope. `loose` is an advisory flag for consumers — the parser does not alter children based on it.
+- **Tight vs loose:** A list is `loose: true` when it absorbs a blank line, between two items or inside one. `loose` is an advisory flag for consumers — the parser does not alter children based on it; block promotion is decided per item (§4.7.1).
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment. A standalone `##` line directly after an item does not: it attaches to that item and the list continues (§2.2).
 - `List` has no `reflection`. A `## comment` on an item's line goes to that item.
 - **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.
@@ -393,7 +398,7 @@ interface ListItem {
 ```
 
 - Content on the marker line is **parsed by inline rules**. Continuation lines at the same or deeper indentation are absorbed.
-- When a blank line is absorbed inside the list (loose list), content is block-promoted: `children` becomes `Block[]` (e.g. `Paragraph`).
+- An item whose own body absorbs a blank line is block-promoted: its `children` become `Block[]` (e.g. `Paragraph`). Every other item of the same list keeps `Inline[]`, even when the list is loose.
 - Attributes follow the scope-chain rule (§6).
 
 ---
@@ -454,7 +459,7 @@ AST:
 
 ### 4.8 Table
 
-A table opens with a line starting with `|` (pipe). Standard Markdown (GFM) pipe tables parse unchanged.
+A table opens with a line starting with `|` (pipe). Each line is one row of cells separated by `|`; an optional header separator row sets the column alignments.
 
 ```
 | Cell A | Cell B |                        ← no-header table
@@ -682,7 +687,7 @@ https://youtu.be/dQw4w9WgXcQ {.wide}
 
 A top-level line beginning exactly `---`. A PageBreaker is a pagination signal, not a block: it is consumed by the pagination fold (§9.3.2) and **produces no AST node**. It unconditionally closes the current Page — as a Ghost Page if empty — opens a new one, and closes all open root-level Sections.
 
-- The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and CDN-0016 is emitted. There is no attributed form.
+- The rest of the line — surplus hyphens, `{attrs}`, any other content — is dropped, and CDN-0016 is emitted, as for a fence line (§10.4.2). There is no attributed form.
 - Inside a **Block container** (`List`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`): a blank-line-surrounded `---` line is not a PageBreaker — it parses as `Paragraph([Text("---")])` and CDN-0017 is emitted. Glued to a preceding paragraph, `---` is ordinary paragraph content per the no-interrupt rule (§10.1); no diagnostic is emitted.
 - **Opener escape:** `\---`, `-\--`, or `--\-` at top level → `Paragraph([Text("---")])`; no Page boundary occurs. See §8.2.
 - Cutdown performs no front-matter detection: a document-leading `---` is a PageBreaker like any other, yielding a leading Ghost Page.
@@ -797,9 +802,10 @@ interface NamedBlock {
 }
 ```
 
-- Opening: `:::` followed immediately by a block name (`[ID_LITERAL]+`), then optional attributes.
-- Closing: `:::` on its own line (no name).
-- A `:::` opener not followed immediately by an `ID_LITERAL` character does NOT open a NamedBlock — classified as a Paragraph → warning CDN-0013. **Exception:** if the line begins with an escaped opener (`\:::`, `:\::`, `::\:`), no warning is emitted — the escape is a deliberate author signal. See §8.2.
+- Opening: a line that begins with three or more `:` (§10.4.2). The **name word** runs from directly after the third `:` to whitespace, `{`, or end of line. A word of `[ID_LITERAL]+` is the `name`.
+- A missing name word, or one that is not wholly `ID_LITERAL` (`:::`, `::: x`, `:::c++`, `::::`), still opens a NamedBlock, with `name: ""` and warning CDN-0013. Its body is parsed as blocks like any other. An escaped opener (`\:::`, `:\::`, `::\:`) opens nothing and emits no warning. See §8.2.
+- After the name word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
+- Closing: inside an open NamedBlock, a line that begins with three or more `:` and carries a valid name word opens a nested NamedBlock; any other such line closes the innermost open one. The closer keeps a `## comment`; any other text after the three `:` is dropped with CDN-0016.
 - Content: any block content, including nested `:::` containers.
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Container padding:** The first non-blank content line (after the edge-blank trim below) sets the base padding. Up to that many leading spaces are removed from every content line before parsing; a line with fewer leading spaces loses all it has, and nothing else. No diagnostic is emitted. A tab counts as one space (§7). The opener and closer may themselves be indented by any amount. See §10.2.
@@ -850,7 +856,7 @@ interface RefDefinition {
 
 ### 4.15 SpoilerBlock
 
-**Syntax:** Fenced with exactly three carets.
+**Syntax:** Fenced with three carets (§10.4.2).
 
 ```
 ^^^ {attrs}
@@ -870,11 +876,10 @@ interface SpoilerBlock {
 }
 ```
 
-- Opening: `^^^` at line start, optionally followed by `{attrs}`. The opening line carries no other content.
-- Closing: `^^^` on its own line.
-- Content is **parsed as blocks** — paragraphs, lists, images, and `:::` NamedBlocks are all permitted. The contrast is intentional, because a Spoiler hides *meaning*, not *structure*.
-- **No nested SpoilerBlocks.** The first `^^^` line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
-- Fixed 3-caret fence `^^^`. Variable-length fences not supported.
+- Opening: a line that begins with three or more `^`. The opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
+- Closing: the next line that begins with three or more `^`. The closer keeps a `## comment`; any other text is dropped with CDN-0016.
+- Content is parsed as blocks.
+- **No nested SpoilerBlocks.** The first such line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
 - **Container padding:** same rule as `NamedBlock` (§4.13) — the first non-blank content line sets the base padding, and up to that many leading spaces are removed from every content line.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
 - Unclosed fence: content runs to end of document (or end of the parent block container) → warning CDN-0005.
@@ -907,7 +912,7 @@ AST:
 
 ### 4.16 CommentBlock
 
-**Syntax:** Fenced with exactly three octothorpes. See §2.3 for the full normative semantics; this section restates the block-level surface.
+**Syntax:** Fenced with three octothorpes (§10.4.2).
 
 ```
 ###
@@ -920,13 +925,13 @@ opaque content
 ```typescript
 interface CommentBlock {
   _type: "CommentBlock"
-  text: string
-  reflection: Reflection[]
+  text: string  // content between opener and closer; lines joined with `\n`; single trailing `\n`
 }
 ```
 
-- Opening: a line whose stripped content begins `###`. **No** `[name]` and **no** `{attrs}` are recognized on the opener line. Any trailing characters on the opener line are part of the opener (ignored).
-- Closing: the next line whose stripped content is exactly `###`, as for every other fence. Indentation is not compared. To place a literal `###` line inside the body, escape it (§8.3).
+- Opening: a line whose stripped content begins with three or more `#`. Nothing on the opener line is kept: surplus `#`, `{attrs}`, a `## comment`, and any other text are dropped with CDN-0016. `### note` and `####` both open a CommentBlock.
+- Closing: the next line whose stripped content begins with three or more `#`, as for every other fence; its tail is dropped the same way. Indentation is not compared. To place a literal `###` line inside the body, escape it (§8.3).
+- No `reflection`: the block is already opaque. A standalone `## comment` line directly after the closer is an orphan and produces an empty `Paragraph` (§2.2).
 - Content is **opaque** — captured verbatim with no inline or block parsing. Lines joined with `\n`; a single trailing `\n` is appended.
 - Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
@@ -951,6 +956,20 @@ AST:
   Paragraph([Text("intro paragraph")])
   CommentBlock { text: "draft note — revise before publish\n" }
   Paragraph([Text("next paragraph")])
+```
+
+```
+Input:
+  - item one
+    ###
+    todo
+    ###
+  - item two
+
+AST:
+  List
+  ├── ListItem [Text("item one"), CommentBlock { text: "todo\n" }]
+  └── ListItem [Text("item two")]
 ```
 
 ---

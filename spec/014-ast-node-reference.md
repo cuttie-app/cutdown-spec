@@ -16,7 +16,7 @@ A property a node does not admit is omitted, not emptied — `CommentBlock` has 
 
 ### 14.2 Block Segments
 
-All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
+All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
 
 | Segment         | Fields |
 |-----------------|--------|
@@ -32,7 +32,7 @@ All block segments except `List`, `Table`, and `FileGroup` carry `reflection: Re
 | `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
 | `NamedBlock`    | `_type: "NamedBlock", name: string, children: Block[], caption: Inline[], reflection, attributes` |
 | `SpoilerBlock`  | `_type: "SpoilerBlock", children: Block[], caption: Inline[], reflection, attributes` |
-| `CommentBlock`  | `_type: "CommentBlock", text: string, reflection` — no `attributes`. Hidden by default (§2.5). |
+| `CommentBlock`  | `_type: "CommentBlock", text: string` — no `attributes`, no `reflection`. Hidden by default (§2.5). |
 | `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflection, attributes` |
 
 ### 14.3 Inline Segments

@@ -1,0 +1,16 @@
+id: cdn-0016-fence-tail-dropped
+section: "10.4.2"
+description: "Text after the three symbols of a fence opener that the construct does not keep is dropped; the fence takes effect and CDN-0016 is emitted"
+
+input: |
+  $$$ formula
+  x
+  $$$
+
+ast:
+  - _type: MathBlock
+    raw: "x"
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

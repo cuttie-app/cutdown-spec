@@ -1,0 +1,14 @@
+id: math-block-closer-comment
+section: "4.5"
+description: "A ## comment on a MathBlock closer goes to the block's reflection"
+
+input: |
+  $$$
+  x^2
+  $$$ ## squared
+
+ast:
+  - _type: MathBlock
+    raw: "x^2"
+    reflection:
+      - text: squared

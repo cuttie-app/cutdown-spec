@@ -96,7 +96,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0006 |
 | title | Unclosed CommentBlock fence |
 | level | warning |
-| trigger | A `###` opening fence has no matching closing `###` before end of document |
+| trigger | A `###` opening fence has no closing line (one beginning with `###`) before end of document |
 | recovery | Content from the opening fence to end of document is treated as `CommentBlock` text (opaque raw string). The same rule applies as for other opaque fences (CDN-0001, CDN-0002, CDN-0003) — container boundaries are not observable from inside an opaque block. |
 | introduced_in | 0.5.0 |
 | status | active |
@@ -111,7 +111,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0007 |
 | title | Attributes on table delimiter row dropped |
 | level | warning |
-| trigger | A `{...}` block appears on a table delimiter row (the alignment row of a GFM table) |
+| trigger | A `{...}` block appears on a table header separator row |
 | recovery | The `{...}` block is dropped. Delimiter rows are structural metadata (alignment markers) and have no AST shape to carry attributes. Trailing CommentInlines on the delimiter row are still attached to the preceding header Row's `comments` array (see §4.8). |
 | introduced_in | 0.5.0 |
 | status | removed — as of 0.8.0 `{attrs}` on a header separator row claim the Table slot (§4.8) and `+` rows in pipe tables are ignored entirely; no dropped-attr case remains |
@@ -187,7 +187,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | title | Heading level out of range |
 | level | warning |
 | trigger | A line begins with 10 or more `=` characters followed by a space (would be heading level > 9) |
-| recovery | The entire line is emitted as literal `Text`; no Section node is created |
+| recovery | A level-9 Section is created. The first nine `=` are the marker; the surplus `=` begin the heading content (§4.2). `loc` spans the surplus |
 | introduced_in | 0.1.4 |
 | status | active |
 | owner | Language |
@@ -239,15 +239,15 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
-### CDN-0013 — Nameless NamedBlock opener
+### CDN-0013 — NamedBlock without a valid name
 
 | Field | Value |
 |---|---|
 | code | CDN-0013 |
-| title | Nameless NamedBlock opener |
+| title | NamedBlock without a valid name |
 | level | warning |
-| trigger | A line starts with `:::` but is not followed by an `[ID_LITERAL]` character (e.g. `::: {.alert}`, `:::` alone on a non-closing line) |
-| recovery | The block candidate is parsed as a Paragraph. All content including `:::` and any trailing `{attrs}` is emitted as literal text. |
+| trigger | A NamedBlock opener (three or more `:` at the start of a line, outside an open NamedBlock) has no name word, or one that is not wholly `ID_LITERAL`: `:::`, `::: {.alert}`, `:::c++`, `::::` |
+| recovery | A NamedBlock is opened with `name: ""`; `{attrs}` and a `## comment` on the opener are kept, and the body is parsed as blocks (§4.13). An escaped opener (`\:::`) is not an opener and emits nothing |
 | introduced_in | 0.1.5 |
 | status | active |
 | owner | Language |
@@ -284,15 +284,15 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 
 ---
 
-### CDN-0016 — PageBreaker tail dropped
+### CDN-0016 — Fence tail dropped
 
 | Field | Value |
 |---|---|
 | code | CDN-0016 |
-| title | PageBreaker tail dropped |
+| title | Fence tail dropped |
 | level | warning |
-| trigger | A top-level PageBreaker line (`---`) contains anything after the leading three hyphens — surplus hyphens, `{attrs}`, or text (e.g., `----`, `--- {.x}`, `--- some text`) |
-| recovery | The tail is discarded; the PageBreaker takes effect normally (page boundary, no node). `loc` spans the dropped tail |
+| trigger | An opener or closer line of a fence (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`), or a top-level PageBreaker line (`---`), carries text after its three symbols that the construct does not keep (§10.4.2): surplus symbols, unsupported `{attrs}`, or other text — `----`, `--- {.x}`, four backticks, `### note`, `^^^ x`, ```` ``` done ```` |
+| recovery | The tail is discarded and the construct takes effect normally. `loc` spans the dropped tail |
 | introduced_in | 0.8.0 |
 | status | active |
 | owner | Language |
@@ -443,6 +443,36 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | level | warning |
 | trigger | An `id` attribute value (`#x` or `id=x`, §6.1.1) holds a character outside `ID_VALUE` (§1.2): `{id="a b"}`, `{#a#b}` |
 | recovery | The `id` entry is kept with its value as written. No id link can reach it. `loc` spans the value |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0038 — Invalid language code
+
+| Field | Value |
+|---|---|
+| code | CDN-0038 |
+| title | Invalid language code |
+| level | warning |
+| trigger | A CodeBlock opener carries a language word that is not wholly `ID_LITERAL` (§4.4): ```` ```c++ ````, ```` ```C# ```` |
+| recovery | `language` is `"text"`; the rest of the opener is read as usual. `loc` spans the word |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0039 — Invalid Meta format
+
+| Field | Value |
+|---|---|
+| code | CDN-0039 |
+| title | Invalid Meta format |
+| level | warning |
+| trigger | A Meta opener carries a format word other than `yaml`, `toml`, or `json` in any case (§4.3): `~~~xml`, `~~~yml` |
+| recovery | `format` is `"yaml"`. `loc` spans the word |
 | introduced_in | 0.11.0 |
 | status | active |
 | owner | Language |

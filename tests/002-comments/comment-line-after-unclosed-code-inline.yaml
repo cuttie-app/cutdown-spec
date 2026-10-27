@@ -1,0 +1,14 @@
+id: comment-line-after-unclosed-code-inline
+section: "2.2"
+description: "Behind a CodeInline opener that never closes, ## is a comment; the dead opener degrades to literal text"
+
+input: |
+  a ``b ## note
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a ``b"
+    reflection:
+      - text: note

@@ -1,0 +1,18 @@
+id: meta-block-four-tildes
+section: "4.3"
+description: "Four tildes open a Meta with the default format yaml; the surplus tilde is a dropped tail"
+
+input: |
+  ~~~~
+  title: One
+  ~~~
+
+pages:
+  - meta:
+      _type: Meta
+      format: yaml
+      raw: "title: One\n"
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

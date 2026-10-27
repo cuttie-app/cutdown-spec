@@ -1,0 +1,34 @@
+id: attrs-scope-chain-list-two-claims
+section: "6.1.2"
+description: "Only the last item reaches the List, so two items never both claim it; a non-last item's chain is ListItem, then its last attr-bearing inline"
+
+input: |
+  - **a** {.x}{.p}
+  - b {.y}{.q}
+
+ast:
+  - _type: List
+    kind: "bullet"
+    attributes:
+      - key: class
+        value: [q]
+    children:
+      - _type: ListItem
+        attributes:
+          - key: class
+            value: [p]
+        children:
+          - _type: Strong
+            attributes:
+              - key: class
+                value: [x]
+            children:
+              - _type: Text
+                value: a
+      - _type: ListItem
+        attributes:
+          - key: class
+            value: [y]
+        children:
+          - _type: Text
+            value: b

@@ -12,11 +12,7 @@ A backslash before a **non-special** character emits both the backslash and the 
 
 ### 8.1 Special Characters
 
-The following characters are special and may be escaped:
-
-```
-= # * _ ~ ` $ [ ] ( ) ! { } : - > / \ | " ' ^
-```
+The special characters, and where each may be escaped, are listed in the **Escapable** column of §13. A character marked "Yes" is escapable anywhere outside opaque content; the others only in the context the column names.
 
 Escaping inside opaque containers (CodeInline, CodeBlock, Meta, MathBlock, CommentBlock) follows narrow per-construct rules — see §8.3.
 
@@ -32,6 +28,7 @@ Applies at **line start only** (after container-indent stripping, before the fir
 |---|---|---|---|
 | Heading (§4.2) | `=` ... `=========` | `\=`, `\==`, `\===` ... | `Paragraph([Text("= ...")])` |
 | List item (§4.7) | `- ` | `\- item` | `Paragraph([Text("- item")])` |
+| Ordered list item (§4.7) | `{n}. ` | `\2026. A year`, `2026\. A year` | `Paragraph([Text("2026. A year")])` — a backslash before the first digit or before the `.`; elsewhere `\` before a digit or `.` is literal (§8) |
 | QuoteBlock (§4.6) | `> ` | `\> quoted` | `Paragraph([Text("> quoted")])` |
 | PageBreaker (§4.10) | `---` | `\---`, `-\--`, `--\-` | `Paragraph([Text("---")])` — top level only; no Page boundary occurs |
 | FileBlock / InjectBlock (§4.11, §4.17) | `/path` | `\/path` | `Paragraph([Text("/path")])` |

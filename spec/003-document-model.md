@@ -2,7 +2,7 @@
 
 Cutdown introduces `Document`, `Page`, `Section`, and `Block` segments to represent the logical structure of a document. The parser produces a tree of these segments, which is then consumed by renderers or other tools.
 
-A Cutdown document is a tree rooted at a `Document` segment. Every file produces at least one `Page`, even if empty. Every file produce exactly one `Document` segment, even if multiple pages or multiple transclusions are present.
+A Cutdown document is a tree rooted at a `Document` segment. Every file produces at least one `Page`, even if empty. Every file produces exactly one `Document`, however many pages it holds.
 
 ---
 

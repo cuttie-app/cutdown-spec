@@ -1,0 +1,17 @@
+id: cdn-0038-invalid-language-code
+section: "4.4"
+description: "A CodeBlock language word that is not wholly ID_LITERAL falls back to \"text\"; CDN-0038 warning"
+
+input: |
+  ```c++
+  int x;
+  ```
+
+ast:
+  - _type: CodeBlock
+    language: text
+    raw: "int x;"
+
+diagnostics:
+  - code: CDN-0038
+    level: warning

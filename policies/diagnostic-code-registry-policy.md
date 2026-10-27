@@ -22,7 +22,7 @@ Each diagnostic code entry must include:
 
 - `code`
 - `title`
-- `level` (`error` | `warning` | `info`)
+- `level` (`warning` | `info`)
 - `trigger`
 - `recovery`
 - `introduced_in`

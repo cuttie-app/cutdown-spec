@@ -1,0 +1,21 @@
+id: canonical-default-words-omitted
+section: "16.1"
+description: "A Meta format word yaml and a CodeBlock language word text are omitted"
+
+input: |
+  ~~~YAML
+  title: One
+  ~~~
+
+  ```text
+  x
+  ```
+
+canonical: |
+  ~~~
+  title: One
+  ~~~
+
+  ```
+  x
+  ```

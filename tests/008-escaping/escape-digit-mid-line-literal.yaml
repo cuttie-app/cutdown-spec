@@ -1,0 +1,12 @@
+id: escape-digit-mid-line-literal
+section: "8.2"
+description: "Away from an ordered-list marker, a backslash before a digit or `.` is literal and kept"
+
+input: |
+  version v1\.2 and \3
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "version v1\\.2 and \\3"

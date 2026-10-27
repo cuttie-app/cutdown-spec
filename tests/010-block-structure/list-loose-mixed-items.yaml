@@ -1,0 +1,30 @@
+id: list-loose-mixed-items
+section: "10.5"
+description: "A loose list block-promotes only the item that absorbed the blank line; the continuation line folds into the first item with no separator"
+
+input: |
+  - First item
+    continues here
+  - Second item
+
+    This starts a new paragraph inside item two.
+
+ast:
+  - _type: List
+    kind: "bullet"
+    loose: true
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: First itemcontinues here
+      - _type: ListItem
+        children:
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: Second item
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: This starts a new paragraph inside item two.

@@ -24,18 +24,17 @@ A parser returns:
 Each diagnostic includes:
 
 - `code` (stable identifier, for example `CDN-XXXX`)
-- `level` (`error` | `warning` | `info`)
+- `level` (`warning` | `info`)
 - `message` (human-readable)
 - `loc` (`{ file?, start, end }` — raw-file UTF-16 code-unit offsets, end-exclusive, per spec §14 Location Type; line/column presentation is derived by the reporting tool)
 - `recovery` (how parsing proceeded)
 
 ## Severity Rules
 
-- `error`: malformed or invalid input requiring fallback/recovery, but parser still returns AST.
 - `warning`: valid parse with potentially unintended author input.
 - `info`: non-problem metadata signals.
 
-The parser must not fail-fast on the first issue. It must continue with deterministic recovery and report all encountered diagnostics for the parse pass.
+There is no `error` level: every input is a valid document and the parser always returns an AST (§9). The parser must not stop at the first issue. It continues with deterministic recovery and reports all encountered diagnostics for the parse pass.
 
 ## Recovery Rules
 
@@ -47,7 +46,7 @@ The parser must not fail-fast on the first issue. It must continue with determin
 
 - Diagnostic `code` values are part of the language contract.
 - Changing meaning of an existing diagnostic code requires at least a `minor` policy review and migration note.
-- Removing a diagnostic code requires major-version justification.
+- A code that is no longer emitted is marked `deprecated` with its recovery history; its number stays reserved and is never reused.
 
 Diagnostic code definitions and lifecycle are governed by `./diagnostic-code-registry-policy.md`.
 
@@ -59,26 +58,10 @@ Conformance tests must assert:
 - expected diagnostic codes and levels,
 - expected recovery mode for malformed cases.
 
-## Silent-Drop Warning Cases
+## Codes
 
-The following spec-defined recovery behaviors MUST emit a `warning`-level diagnostic. See the Diagnostic Code Registry for full trigger/recovery definitions.
+Every code, with its level, trigger, and recovery, is defined in the [Diagnostic Code Registry](./diagnostic-code-registry.md). This policy does not repeat them.
 
-| Situation | Code | Recovery |
-|---|---|---|
-| Unclosed CodeBlock fence (` ``` `) | CDN-0001 | Content runs to end of document |
-| Unclosed MetaBlock fence (`~~~`) | CDN-0002 | Content runs to end of document |
-| Unclosed MathBlock fence (`$$$`) | CDN-0003 | Content runs to end of document |
-| Unclosed NamedBlock (`:::name`) | CDN-0004 | Content runs to end of document |
-| PageBreaker tail dropped | CDN-0016 | Everything after the leading `---` is discarded; page boundary takes effect |
-| Page separator inside block container | CDN-0017 | `---` line emitted as literal `Paragraph`; no page boundary |
-| Excess scope-chain `{...}` orphaned | CDN-0011 | Excess `{...}` at front of chain discarded; no AST output |
-| Heading level > 9 (10+ `=` signs) | CDN-0012 | Entire line emitted as literal `Text` |
-| `:::` not followed by `[ID_LITERAL]` (nameless opener) | CDN-0013 | Block candidate parsed as Paragraph; `:::` and `{attrs}` emitted as literal text |
-| Duplicate `id` token (`#id` or `id=` after first claim) | CDN-0020 | Duplicate dropped; first value kept |
-| `class=` alongside `.class` syntax | CDN-0021 | `class=` dropped; `.class` tokens kept |
-| Duplicate custom attribute key | CDN-0022 | Duplicate dropped; first value kept |
-| `~~~` fence inside a block container | CDN-0030 | Raw span (including fence lines) emitted as literal `Paragraph`; no `Meta` node created |
-| Crossed inline boundaries (`** __ … ** … __`) | CDN-0014 | Greedy parse unchanged; diagnostic only — span on the crossing closer |
-| `Mark` opener beyond nesting depth 8 | CDN-0031 | Opener degrades to literal `Text("::" + name)`; enclosing `Mark` nodes unaffected |
+## Tools
 
-Strict parser profiles (per `./parser-profile-policy.md`) MAY upgrade any `warning` to `error`.
+A tool MAY treat any warning as a failure of its own — a build gate or a linter, for example. The parse result does not change: the same input gives the same AST and the same diagnostics under every parser profile.

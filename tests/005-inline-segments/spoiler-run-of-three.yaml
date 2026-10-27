@@ -3,11 +3,13 @@ section: "5.12"
 description: "^^^ in inline context = ^^ (opener) + ^ (literal inside); closing ^^^ = ^^ (closer) + ^ (literal after)"
 
 input: |
-  ^^^x^^^
+  a ^^^x^^^
 
 ast:
   - _type: Paragraph
     children:
+      - _type: Text
+        value: "a "
       - _type: Spoiler
         children:
           - _type: Text

@@ -1,0 +1,26 @@
+id: quote-depth-change-splits-paragraph
+section: "4.6"
+description: "A change in > depth is a structural boundary: it closes the paragraph above and opens the quote at its own depth"
+
+input: |
+  > outer
+  >> inner
+  > outer again
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: outer
+      - _type: QuoteBlock
+        children:
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: inner
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: outer again

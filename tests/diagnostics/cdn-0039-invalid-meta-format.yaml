@@ -1,0 +1,18 @@
+id: cdn-0039-invalid-meta-format
+section: "4.3"
+description: "A Meta format word other than yaml, toml, or json falls back to yaml; CDN-0039 warning"
+
+input: |
+  ~~~xml
+  <a/>
+  ~~~
+
+pages:
+  - meta:
+      _type: Meta
+      format: yaml
+      raw: "<a/>\n"
+
+diagnostics:
+  - code: CDN-0039
+    level: warning
