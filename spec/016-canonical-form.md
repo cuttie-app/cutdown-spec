@@ -2,9 +2,9 @@
 
 The grammar accepts more than one spelling for the same meaning at a small number of points. Canonical Cutdown is the subset that uses exactly one of them.
 
-This section binds tools that **write** source — formatters, round-trip editors, generators. Two conforming writers given the same AST produce byte-identical source. It places no obligation on a parser: every non-canonical spelling in the table below remains valid input and MUST continue to parse to the same AST.
+This section binds writers (§18.3) — formatters, round-trip editors, generators. Two conforming writers given the same AST produce byte-identical source. It places no obligation on a parser: every non-canonical spelling in the table below remains valid input and MUST continue to parse to the same AST.
 
-Canonical form is not a compliance level (§18) and carries no diagnostic. A tool MAY report a non-canonical spelling as a lint; a parser MUST NOT.
+Canonical form is not a conformance class and carries no diagnostic. A tool MAY report a non-canonical spelling as a lint; a parser MUST NOT.
 
 The serialization of a parse *result* is a different subject, governed by [`policies/canonical-serialization-policy.md`](../policies/canonical-serialization-policy.md).
 

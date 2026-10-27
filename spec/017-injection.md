@@ -2,7 +2,7 @@
 
 An `InjectBlock` (§4.17) names another Cutdown document, or a folder of them, to be placed at its position. The parser cannot place it: parsing is a pure function from text to AST and reads no files. The parser emits the `InjectBlock` with `children: []`, and a **consumer** that has access to the files resolves it.
 
-This section fixes what a resolved `InjectBlock` contains, so that two consumers given the same files build the same tree. It does not govern how files are found, whether they exist, or what a consumer does when they cannot be read.
+This section fixes what a resolved `InjectBlock` contains, so that two consumers given the same files build the same tree (§18.4). It does not govern how files are found, whether they exist, or what a consumer does when they cannot be read.
 
 ### 17.1 Filling `children`
 

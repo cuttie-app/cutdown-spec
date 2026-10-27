@@ -1,6 +1,8 @@
 ## 1. Conventions
 
-The keywords **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **MAY** are used as defined in [RFC 2119].
+The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, **MAY**, and **OPTIONAL** in this specification are to be interpreted as described in BCP 14 ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals, as shown here. Each one binds a conformance class (§18): a parser, a writer, or a consumer.
+
+Every sequence of Unicode scalar values is a Cutdown document (§18.2). The rules of this specification say what each input means; none of them makes an input invalid.
 
 **Examples** are shown as:
 

@@ -831,7 +831,7 @@ interface NamedBlock {
 [^ref]: content
 ```
 
-MUST start at the beginning of a line.
+`[^ref]:` is a RefDefinition only at the start of a line, after any container prefix. Anywhere else it is inline content.
 
 **AST type:**
 
@@ -936,7 +936,7 @@ interface CommentBlock {
 - Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
 - `CommentBlock` takes no part in pagination (§9.3.2): only a `Meta` and a PageBreaker create Page boundaries.
-- Default render policy is **hidden**: conforming renderers SHOULD omit it. See §2.5.
+- Default render policy is **hidden** (§2.5, §18.4).
 - No `attributes` field.
 - **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 

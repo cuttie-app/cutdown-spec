@@ -17,7 +17,7 @@
 - **Conformance corpus governance:** [`policies/conformance-corpus-governance.md`](../policies/conformance-corpus-governance.md)
 - **Decision authority policy:** [`policies/decision-authority-policy.md`](../policies/decision-authority-policy.md)
 - **Profile source policy:** [`policies/profile-source-policy.md`](../policies/profile-source-policy.md)
-- **Compliance levels policy:** [`policies/compliance-levels-policy.md`](../policies/compliance-levels-policy.md)
+- **Compliance claims policy:** [`policies/compliance-claims-policy.md`](../policies/compliance-claims-policy.md)
 - **Compliance evidence freshness policy:** [`policies/compliance-evidence-freshness-policy.md`](../policies/compliance-evidence-freshness-policy.md)
 - **Compliance failure response policy:** [`policies/compliance-failure-response-policy.md`](../policies/compliance-failure-response-policy.md)
 - **Cross-implementation validation policy:** [`policies/cross-implementation-validation-policy.md`](../policies/cross-implementation-validation-policy.md)
@@ -55,6 +55,6 @@ It has no canonical HTML output — consuming applications interpret and render 
 15. [Streaming Conformance Profile](015-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
 16. [Canonical Form](016-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
 17. [Injection](017-injection.md) — what an InjectBlock means once a consumer resolves it
-18. [Name and Compliance](018-name-and-compliance.md)
+18. [Conformance](018-conformance.md) — parser, writer, and consumer classes; claims and the name
 
 ---

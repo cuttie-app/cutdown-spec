@@ -3,7 +3,7 @@ title: Cutdown Compliance Evidence Freshness Policy
 Status: Active
 Scope: Validity window rules for published compliance claims
 Related:
-  - ./compliance-levels-policy.md
+  - ./compliance-claims-policy.md
   - ./conformance-corpus-governance.md
 ---
 
@@ -25,8 +25,7 @@ There is no fixed time-based recertification requirement.
 
 - New language version release.
 - New conformance corpus snapshot.
-- Change in claimed compliance level.
-- Change in declared extension/profile coverage manifest.
+- Change in claimed conformance class or consumer clauses.
 
 ## Forbidden
 

@@ -13,7 +13,7 @@ Related:
   - ./conformance-corpus-governance.md
   - ./decision-authority-policy.md
   - ./profile-source-policy.md
-  - ./compliance-levels-policy.md
+  - ./compliance-claims-policy.md
   - ./compliance-evidence-freshness-policy.md
   - ./compliance-failure-response-policy.md
   - ./diagnostic-code-registry-policy.md
@@ -85,9 +85,9 @@ Every Cutdown proposal MUST include all of the following:
 13. Profile source declaration
    - Confirm whether behavior depends on external profile configuration.
    - If document-embedded hints exist, define non-authoritative handling per `./profile-source-policy.md`.
-14. Compliance-level impact declaration
-   - State whether the change affects Level 1/2/3 compliance definitions or evidence expectations.
-   - Update claim requirements per `./compliance-levels-policy.md`.
+14. Conformance impact declaration
+   - State whether the change affects a conformance class (`spec/018-conformance.md`) or evidence expectations.
+   - Update claim requirements per `./compliance-claims-policy.md`.
 15. Evidence freshness impact declaration
    - State whether the change introduces a new revalidation trigger.
    - Confirm version-triggered evidence rules per `./compliance-evidence-freshness-policy.md`.

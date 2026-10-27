@@ -334,10 +334,10 @@ interface ImageInline {
 }
 ```
 
-- `alt` is **parsed by inline rules**. Result is `Inline[]`. Despite  the `alt` context allows full inline syntax, it should be treated as technical possibility rather than a common use case. Consumers may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
+- `alt` is **parsed by inline rules**. Result is `Inline[]`. Full inline syntax in `alt` is a technical possibility rather than a common use case; a consumer may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
 - `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032.
 - A source beginning with literal `https://` makes the node an `EmbedImageInline` instead (§5.9.1).
-- An image names a file the consumer fetches and places (§9.2), so its source must be a path that names one. These sources are invalid — `src: null`, CDN-0032 — though the node keeps its type:
+- An image names a file the consumer fetches and places (§9.2), so its source is a path that names one. These sources are invalid — `src: null`, CDN-0032 — though the node keeps its type:
   - an empty `path`: `![x]()`, `![x](#a)`, `![x](?a=1)`;
   - a source beginning with an unescaped link sigil — `#`, `^`, `~`, `@` — which is reserved: `![x](~t)`, `![x](@k)`;
   - a source beginning with a URI scheme other than `https://`: `![x](tel:1)`, `![x](data:…)`, `![x](http://…)`.
@@ -451,7 +451,7 @@ interface Variable {
 }
 ```
 
-- `key` MUST use `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
+- `key` is a run of `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
 - Unclosed `{{` → literal text. Empty-key `{{}}` → literal text → warning CDN-0015.
 - Variables are only parsed in inline contexts where inline rules are active (not inside code/math/meta blocks).
 - Brace tie-break: `{{` is always matched before `{` (longest opener wins).
@@ -464,7 +464,7 @@ A variable can also stand inside a string property, where no `Variable` node can
 - **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
-- An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one left-to-right pass, together with the tokens: `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
+- An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one pass, in order from the start of the string, together with the tokens (§18.4): `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
 
 ```
 /a/\{{x}}     raw "/a/\{{x}}"     →  consumer: "/a/{{x}}"         (escaped token)
@@ -526,7 +526,7 @@ A `LineBreak` asserts an author-intended line break **within** a paragraph — t
 Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §15 — Cutdown has no canonical rendering.
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
-  - The `\` must be the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.
+  - The `\` is the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.
 
 **Line-ending summary:**
 

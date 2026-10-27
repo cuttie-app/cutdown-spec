@@ -173,7 +173,7 @@ Every path is read from the **project root**, which the consumer supplies. A pat
 After decomposition the parser normalizes `path`, in this order:
 
 1. If `path` does not begin with `/`, a `/` is prepended.
-2. `path` is split at every `/` into segments, which are read left to right:
+2. `path` is split at every `/` into segments, which are read in order from the start:
    - an empty segment is dropped: `/a//b` → `/a/b`;
    - a `.` segment is dropped: `/a/./b` → `/a/b`;
    - a `..` segment drops itself and the segment before it: `/a/b/../c` → `/a/c`. A `..` with no segment before it is dropped too, and it makes the path invalid (§9.2.5): `/../x`, `../intro`.
@@ -195,7 +195,7 @@ Every later rule reads the normalized `path`: whether a line is an `InjectBlock`
 
 A path is **invalid** when any of these holds:
 
-- `path` is empty before normalization — a path must name something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
+- `path` is empty before normalization — a path names something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
 - `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
 - a `..` segment climbs above the root (`/../x`, `../intro`, `/a/../../b`);
 - the normalized `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17), and in a `FileBlock` whose path is `/` itself (§4.11).

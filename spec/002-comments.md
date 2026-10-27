@@ -117,7 +117,7 @@ Only a `Meta` and a PageBreaker create Page boundaries.
 
 ### 2.5 Render policy
 
-`Reflection` entries and `CommentBlock` nodes are hidden by default. Conforming renderers (HTML, PDF, markdown round-trip) SHOULD omit them. Tooling renderers (formatter, IDE preview, comment-thread plumbing) MAY read and display them. The default is normative; the opt-in is implementation-defined.
+`Reflection` entries and `CommentBlock` nodes are hidden by default: a renderer omits them unless its user asks for them, and a tool that serves authors — a formatter, an IDE preview, a comment thread — may show them. The requirement is §18.4; how a user asks is implementation-defined.
 
 ### 2.6 Interaction with attributes
 

@@ -21,7 +21,7 @@ Token types inside `{}`:
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
 - `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array (RFC 8259), and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
   - Only objects and arrays are JSON. `key=123` and `key=true` stay strings (`"123"`, `"true"`).
-  - The JSON must be strict and on one line. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
+  - The JSON is strict RFC 8259 on one line; anything else degrades as described below. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
   - At most 4096 Unicode scalar values and a nesting depth of 8.
   - `id` and `class` take no JSON value.
   - JSON that is malformed, over a limit, or given to `id` or `class` violates the attribute grammar: the whole `{…}` slice becomes literal text (§6.1.3).
@@ -191,7 +191,7 @@ Orphan behaviour depends on position:
 
 `{` is always consumed as the start of an attribute scan, running to the matching `}` or end of line. If the content violates the attribute grammar or the `}` never arrives, the **entire slice** — braces included, when present — is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §9.1.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
-Authors who want a literal `{` SHOULD escape it with `\{` to make intent explicit:
+Writing `\{` makes a literal brace explicit:
 
 ```
 price is \{high\}  →  Text("price is {high}")

@@ -8,7 +8,7 @@ Related:
   - ./canonical-serialization-policy.md
   - ./compatibility-fallback-policy.md
   - ./conformance-corpus-governance.md
-  - ./compliance-levels-policy.md
+  - ./compliance-claims-policy.md
   - ./compliance-evidence-freshness-policy.md
   - ./compliance-failure-response-policy.md
   - ./cross-implementation-validation-policy.md
@@ -61,7 +61,7 @@ A release is conformant only if:
 
 Cross-implementation validation requirements are governed by `./cross-implementation-validation-policy.md`.
 
-Implementation compliance claims are governed by `./compliance-levels-policy.md`.
+Implementation compliance claims are governed by `./compliance-claims-policy.md`.
 
 ## Authoring Rule for New Features
 
