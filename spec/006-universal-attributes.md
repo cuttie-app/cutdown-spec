@@ -12,6 +12,7 @@
 
 Token types inside `{}`:
 - `#identifier` — the `#` (octothorpe) sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
+  An id value is an `ID_VALUE` (§1.2), whether written `#x` or `id=x`. A value outside it — `id="a b"`, `#a#b` — is kept as written and warning CDN-0037 is emitted; no id link can reach it (§5.5).
 - `.classname` and `class=value` — both add to one `class` entry, `{ key: "class", value: string[] }`. Every `.x` token and every `class=` value contribute in source order; a `class=` value is split on whitespace, so `class="b c"` adds `b` and `c`. A repeated class is dropped without a diagnostic; the first occurrence keeps its place. The entry sits at the position of the first contributing token. `class=""` contributes nothing, and with no contributions there is no `class` entry.
   ```
   {.a class="b c" .d .a}  →  [{ key: "class", value: ["a", "b", "c", "d"] }]

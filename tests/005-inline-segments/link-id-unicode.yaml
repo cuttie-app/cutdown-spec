@@ -1,0 +1,13 @@
+id: link-id-unicode
+section: "5.5"
+description: "An id link target uses the id character set: non-ASCII letters are valid"
+
+input: |
+  [x](#Установка)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: id
+        target: Установка

@@ -1,0 +1,17 @@
+id: cdn-0033-id-target-with-hash
+section: "5.5"
+description: "CDN-0033: an id link target holding a # is invalid; the Link keeps target as written"
+
+input: |
+  [x](#a#b)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: id
+        target: "a#b"
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

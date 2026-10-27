@@ -1,0 +1,19 @@
+id: cdn-0037-id-with-space
+section: "6.1.1"
+description: "CDN-0037: an id value with whitespace is kept as written"
+
+input: |
+  Text {id="a b"}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: id
+        value: "a b"
+
+diagnostics:
+  - code: CDN-0037
+    level: warning

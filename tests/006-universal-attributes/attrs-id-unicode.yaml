@@ -1,0 +1,15 @@
+id: attrs-id-unicode
+section: "6.1.1"
+description: "An id admits non-ASCII letters: {#Установка} is a valid id"
+
+input: |
+  Text {#Установка}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: id
+        value: Установка
