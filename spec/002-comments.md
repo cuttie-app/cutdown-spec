@@ -23,8 +23,8 @@ foo ## trailing comment
 - The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value **verbatim** — trailing whitespace inside the payload is preserved, since the payload is opaque (§12's trailing-space rule does not reach inside it).
 - **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.1.4.
 - **`##` boundaries are detected during Phase 2 preprocessing** (§9.1.2), before block classification. Block classification operates on the pre-`##` substring of each line. To find them, Phase 2 first recognizes escapes and `CodeInline` and `MathInline` spans (§11).
-- `##` is **not** recognized inside opaque block contexts: `CodeBlock`, `MathBlock`, `Meta` content, or `CommentBlock` content. For those blocks only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned. On a `Meta` or `CommentBlock` fence line, a `##` is part of the tail that the fence drops (§10.4.2).
-- `##` is **not** recognized inside inline opaque contexts: `CodeInline`, `MathInline`, and quoted attribute values. A `CodeInline` or `MathInline` protects a `##` only when its closer is found within the inline context; behind an opener that never closes, `##` is a comment and the opener degrades per its class (§9.1.4.1).
+- `##` is **not** recognized inside opaque content (§0.5). For a `CodeBlock`, `MathBlock`, `Meta`, or `CommentBlock` only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned. On a `Meta` or `CommentBlock` fence line, a `##` is part of the tail that the fence drops (§10.4.2).
+- Inline, a `CodeInline` or `MathInline` protects a `##` only when its closer is found within the inline context; behind an opener that never closes, `##` is a comment and the opener degrades per its class (§9.1.4.1).
 - A literal `##` in normal text is written `\##` or `#\#` (§8).
 
 **`##` does not produce an AST segment.** Instead, the comment payload is stored as a `Reflection` entry on the node that owns its line:
@@ -58,7 +58,7 @@ When `##` appears after content on a line that belongs to a block, the payload i
 
 #### Standalone `## comment` line
 
-A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It is neither content nor a blank line. Its indentation places it in a block scope (§1.6), and what it does depends on the line above it in that scope:
+A line whose pre-`##` content is empty or whitespace is a **standalone comment line**. It is neither content nor a blank line. Its indentation places it in a block scope (§1.5), and what it does depends on the line above it in that scope:
 
 - **Directly after content** (no blank line between): it attaches backwards to the owner of the preceding line, carrying its own `loc`. After a `List`, `Table`, or `FileGroup` that owner is the last `ListItem`/`TaskItem`, row, or `FileBlock` of that scope — `- a`, `  - b`, `## c` gives the comment to item `a`, not to the nested `b`. Consecutive comment lines attach to the same node in source order.
 - **After a blank line, after a `CommentBlock`, or with no preceding block in the scope** (an orphan): it produces `Paragraph { children: [], reflection: [{ loc, text }] }`. Consecutive comment lines fold into that one empty Paragraph. It is a block like any other.

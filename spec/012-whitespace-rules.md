@@ -17,7 +17,7 @@ Rows run from the line as a whole, through block structure, to inline content.
 | Blank lines inside meta fence | Passed through in `raw` string |
 | Trailing spaces | Collapsed to a single space. That space is **preserved before a soft break** — it becomes `Text(" ")` in the AST, serving as an explicit word-boundary separator — and **dropped at a block boundary** — a blank line, end of input, or the end of an inline context that ends at its line (a table cell, a caption line) |
 | Soft break (single newline in paragraph) | Folded to zero — no character emitted, no AST segment; lines concatenate directly |
-| Interior whitespace runs in inline text | Collapsed to one space, in every `Text` that follows §12.2. U+00A0 is never collapsed. Exempt segments (§12.2) keep their whitespace |
+| Interior whitespace runs in inline text | Collapsed to one space, in every `Text` that follows §12.2. Only whitespace (§0.4) collapses, so U+00A0 and U+3000 are kept. Exempt segments (§12.2) keep their whitespace |
 | `LineBreak` (`\` at line end) | Produces a `LineBreak` segment — a line break inside the paragraph, not a block boundary (§5.13) |
 | Whitespace immediately preceding a `{attr}` block that is **consumed** by an attribute slot (block-opener last-attr, inline attachment, or scope-chain) | Stripped from the preceding text value. Does NOT apply when `{...}` falls through to literal `Text("{...}")` per §6.1.3 (orphan). |
 
@@ -32,7 +32,7 @@ Rows run from the line as a whole, through block structure, to inline content.
 | Whitespace between last literal and closing delimiter | Consumed |
 | Whitespace between closing delimiter and next sibling opening delimiter | Preserved as `Text(" ")` |
 | Interior whitespace runs | Collapsed to one space |
-| Non-breaking space (`\u00A0`) | Always preserved, never collapsed |
+| Non-breaking space (`\u00A0`) and other space-like characters | Ordinary text (§0.4): always preserved, never collapsed |
 
 **Which segments follow them.** Every inline segment either follows the rules above, is exempt from them, or admits no whitespace at all:
 

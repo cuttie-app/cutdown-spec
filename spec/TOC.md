@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Version:** 0.11.0
 - **Date:** 2026-10-25
-- **Inspired by:** CommonMark, Djot, Carve
+- **Inspired by:** [COMMONMARK], [DJOT], [CARVE] (§0.6)
 - **Versioning policy:** [`policies/versioning-policy.md`](../policies/versioning-policy.md)
 - **Change publication policy:** [`policies/change-publication-policy.md`](../policies/change-publication-policy.md)
 - **Conformance policy:** [`policies/conformance-policy.md`](../policies/conformance-policy.md)
@@ -38,7 +38,8 @@ It has no canonical HTML output — consuming applications interpret and render 
 
 ## Table of Contents
 
-1. [Conventions](001-conventions.md) — Identifier charset, Segment, Block type, Inline type
+0. [Preliminaries](000-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references
+1. [Identifiers and AST Model](001-identifiers-and-ast-model.md) — Identifier charset, Segment, Block type, Inline type, Block scope
 2. [Comments](002-comments.md) — `##` line comment (Block.Reflection), CommentBlock (`###`)
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, PageBreaker, FileBlock, FileGroup, EmbedBlock, InjectBlock, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock

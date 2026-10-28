@@ -2,7 +2,7 @@
 
 ### 18.1 Classes
 
-This specification binds three classes of implementation. A requirement keyword (§1) always binds one of them.
+This specification binds three classes of implementation. A requirement keyword (§0.1) always binds one of them.
 
 | Class | Does | Bound by |
 |---|---|---|

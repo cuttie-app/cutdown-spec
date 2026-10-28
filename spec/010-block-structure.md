@@ -2,7 +2,7 @@
 
 ### 10.1 Block Boundaries
 
-Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace characters (under the interpretive rules of §7); consecutive blank lines act as one (§12.1).
+Blocks are separated by one or more **blank lines**. A blank line is a line containing only whitespace (§0.4); consecutive blank lines act as one (§12.1).
 
 A parser identifies block boundaries by scanning for blank line sequences. Each contiguous run of non-blank lines is classified by its first line (§9.1.3). A run does not always produce one block:
 
@@ -23,7 +23,7 @@ Any number of leading spaces (including none) are stripped before block classifi
 2. **List nesting uses it.** For a list marker, the parser records the marker's **original column** (before stripping) as separate metadata and feeds it to the nesting stack model (§10.5). The column is used during list parsing only.
 3. **Container padding removes it.** In a `NamedBlock` or `SpoilerBlock`, the first non-blank content line (after the edge-blank trim, §10.6) sets the base padding, and up to that many leading spaces are removed from every content line before its children are parsed. A line with fewer leading spaces loses all it has; no diagnostic is emitted. Relative indentation beyond the base survives, which keeps the shape of a `CodeBlock` body inside the container (§4.13, §4.15).
 
-Indented code blocks (as in CommonMark) are not supported.
+Indented code blocks (as in [COMMONMARK]) are not supported.
 
 Trailing spaces on a line collapse to one space. That space is kept as `Text(" ")` before a soft break, and dropped at a block boundary — a blank line, end of input, or the end of an inline context that ends at its line. §12.1 states the rule in full.
 
@@ -146,7 +146,7 @@ The list is loose because it absorbed a blank line. Only item two absorbed it, s
 
 ### 10.6 Container-Edge Blank Lines
 
-Leading and trailing **blank lines** (lines containing only whitespace per §10.1) are stripped from the body of non-opaque block containers before their children are parsed. No diagnostic is emitted.
+Leading and trailing **blank lines** (§0.4) are stripped from the body of non-opaque block containers before their children are parsed. No diagnostic is emitted.
 
 **Applies to:**
 - `NamedBlock` (§4.13)

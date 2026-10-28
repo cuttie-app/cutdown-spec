@@ -1,66 +1,46 @@
-## 1. Conventions
+## 1. Identifiers and AST Model
 
-The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHALL**, **SHALL NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, **NOT RECOMMENDED**, **MAY**, and **OPTIONAL** in this specification are to be interpreted as described in BCP 14 ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174)) when, and only when, they appear in all capitals, as shown here. Each one binds a conformance class (§18): a parser, a writer, or a consumer.
+This section defines the identifier character sets and the shape of the AST. The words and notation it uses are defined in §0.
 
-Every sequence of Unicode scalar values is a Cutdown document (§18.2). The rules of this specification say what each input means; none of them makes an input invalid.
-
-**Examples** are shown as:
-
-```
-Input:
-  <cutdown source>
-
-AST:
-  <segment representation>
-```
-
-**The arrow symbol (`→`)** separates a construct or condition from what it produces. In examples, the left side is Cutdown source and the right side is the AST notation defined in §14.
-
-**Naming characters.** A character used as a **noun** is named on first use in a numbered section, symbol first and name in parentheses — "a single `#` (octothorpe)", "the `^` (caret)" — and thereafter by symbol alone. One naming per section per character; do not repeat it. Multi-character markers (`##`, `~~~`, `:::`) are constructs, not characters, and are named by construct name. §13 is the register of names. This convention applies to the numbered sections only; `SYNTAX.md` and `README.md` are exempt.
-
-### 1.1 Streaming terms
-
-A **Unicode scalar value** is a Unicode code point other than a surrogate code point. It is the character unit used by the streaming conformance profile (§15). This does not change source locations: `loc` offsets remain UTF-16 code-unit offsets.
-
-An **input snapshot** is the complete decoded Cutdown source available to a parser at one instant. A parser MUST treat every input snapshot as an ordinary Cutdown document, including a snapshot that ends within unfinished markup.
-
-An **end of block** is a boundary inferred by the ordinary Cutdown grammar: a completed block boundary, a closing fence, or end of input. It is not a token or event in Cutdown source.
-
-### 1.2 Identifier Character Set
+### 1.1 Identifier Character Set
 
 Throughout this spec, `ID_LITERAL` refers to the following ASCII character class:
 
-```
-ID_LITERAL = [a-zA-Z0-9._-]
+```ebnf
+ID_LITERAL ::= [a-zA-Z0-9._-]
 ```
 
 This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only. Matching against `ID_LITERAL` is case-sensitive everywhere in this specification.
 
 `TAG_LITERAL` is the character class of one tag level in a tag link target (§5.5):
 
+```ebnf
+TAG_LITERAL ::= Char - ("/" | Control)
 ```
-TAG_LITERAL = any Unicode scalar value except / (slash) and the control characters U+0000–U+001F, U+007F, U+0080–U+009F
-```
+
+That is, any character except `/` (slash) and the control characters (§0.3).
 
 A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character. A level may not be `.` or `..`, and a tag is never normalized as a path is.
 
 `ID_VALUE` is the value of an `id` attribute (§6.1.1) and the target of an id link (§5.5). One rule serves both, so every id an author can write, a link can reach:
 
+```ebnf
+ID_VALUE ::= (Char - (UnicodeWhitespace | "#" | ")" | "}" | Control))+
 ```
-ID_VALUE = one or more Unicode scalar values except whitespace (the Unicode White_Space property), # (octothorpe), ) (right parenthesis), } (right brace), and the control characters U+0000–U+001F, U+007F, U+0080–U+009F
-```
+
+That is, one or more characters other than Unicode whitespace (§0.4), `#` (octothorpe), `)` (right parenthesis), `}` (right brace), and the control characters (§0.3).
 
 Unlike `ID_LITERAL`, it admits non-ASCII letters: `install-linux` and `Установка` are both ids. The parser converts every id value to Unicode Normalization Form C (NFC), wherever it is written, so the same letters always give the same id; no other change is made, and matching is case-sensitive.
 
 Paths are not identifiers. They are parsed as a `PathResourceLocator` (§9.2).
 
-### 1.3 Segment
+### 1.2 Segment
 
 A **segment** is any node in the Cutdown AST — Block or Inline. This term is used throughout the spec when no distinction between block and inline is needed.
 
 Every segment names its kind in the `_type` property. Property names that begin with `_` (underscore) are reserved for structural properties defined by this specification; content properties (`src`, `name`, `children`, `attributes`, …) never begin with `_`. The prefix keeps the discriminator from colliding with a property of the same name in consumer data.
 
-### 1.4 Block Type
+### 1.3 Block Type
 
 A **Block** segment is any node that occupies a full line-level slot in the document.
 
@@ -84,7 +64,7 @@ Block =
 
 Container blocks carry a `children` array — `Block[]` for block containers (`Section`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `InjectBlock`), `Inline[]` for blocks whose content is inline (`Paragraph`, `RefDefinition`), and `FileBlock[]` for `FileGroup`. A `FileBlock` is not a member of `Block`: it only ever appears inside a `FileGroup`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
 
-### 1.5 Inline Type
+### 1.4 Inline Type
 
 An **Inline** segment is any node parsed within inline content.
 
@@ -110,7 +90,7 @@ Container inlines carry `children: Inline[]`. Leaf inlines carry no children. Mo
 
 Wherever an AST node carries `Inline[]`, the content was produced by the inline parsing rules (§5). All inline contexts are explicitly marked "parsed by inline rules."
 
-### 1.6 Block Scope
+### 1.5 Block Scope
 
 A **block scope** is one flat sequence of sibling blocks. A document has one block scope at its root, and one inside the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
 

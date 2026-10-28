@@ -225,7 +225,7 @@ interface MathBlock {
 }
 ```
 
-- Content is **literal** — no inline parsing. Passed as raw string to the consumer (KaTeX or equivalent).
+- Content is **literal** — no inline parsing. Passed as raw string to the consumer ([KATEX] or equivalent).
 - The opener keeps `{attrs}` and a `## comment` (§2.2); the closer keeps a `## comment`. Any other text after the three `$` is dropped with CDN-0016.
 - Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
 - Unclosed fence: content runs to end of document → warning CDN-0003.
@@ -663,7 +663,7 @@ interface EmbedBlock {
 
 - `url` runs from the `h` of `https://` to the end of the line, after removing one trailing attribute sequence (whitespace followed by one or more `{…}` groups that close the line) and then trailing whitespace. It is a raw string: Cutdown does not parse, validate, or fetch it. `{{key}}` interpolation tokens stay in it verbatim (§5.11).
 - A `url` longer than 2048 Unicode scalar values is kept in full and still opens an `EmbedBlock`; warning CDN-0035 is emitted.
-- What an embed shows is the consumer's decision — for example, resolving an oEmbed snippet at render time and placing it in the page.
+- What an embed shows is the consumer's decision — for example, resolving an [OEMBED] snippet at render time and placing it in the page.
 - An `EmbedBlock` never joins a `FileGroup` (§4.12), and an `EmbedBlock` line ends an open `FileGroup`. Consecutive `EmbedBlock` lines are separate blocks.
 - Like every block opener, `https://` cannot interrupt a paragraph (§10.1): a URL line glued to paragraph text is paragraph content.
 - **Opener escape:** `\https://…` at line start → `Paragraph([Text("https://…")])`. See §8.2.
@@ -1003,7 +1003,7 @@ interface InjectBlock {
 - A path that normalizes to `/` is never an injection: `/`, `/#`, `/?a=1`, `/./`, and `/a/..` are `FileBlock`s (§4.11), not an injection of the root folder.
 - When the path ends with `.cutdown`, the `fragment` names an id and is converted to NFC, as in a page link (§5.5).
 - The parser always emits `children: []`. Cutdown's parser does no I/O; a consumer that resolves the injection fills `children` as §17 defines. An `InjectBlock` that no consumer resolves stays in the AST unchanged.
-- `children` is a block scope (§1.6), and Sections never cross its edge (§17).
+- `children` is a block scope (§1.5), and Sections never cross its edge (§17).
 - An `InjectBlock` never joins a `FileGroup`, and an `InjectBlock` line ends an open `FileGroup`.
 - `InjectBlock` is not captionable: a `^ ` line after it is orphaned (§6.2).
 - Legal wherever a `FileBlock` is: at Page scope and inside every block container.

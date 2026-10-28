@@ -32,7 +32,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 | 16 | Line terminator | LF | CRLF, lone CR | §7 |
 | 17 | Leading spaces on a continuation line | none beyond the container's padding (row 11) | any number | §12.1 |
 | 18 | Interior whitespace runs in inline text | one space | any run of spaces and tabs | §12.1 |
-| 19 | Id normalization | NFC | any Unicode normalization form | §1.2 |
+| 19 | Id normalization | NFC | any Unicode normalization form | §1.1 |
 | 20 | Line width | no wrapping: each inline context on one source line | the same content wrapped over several lines | §4.1, §12.1 |
 | 21 | Blank lines between blocks | exactly one | two or more | §12.1 |
 | 22 | Table cell padding | one space on each side of the content — `\| a \| b \|`; an empty cell is `\| \|` | any padding | §4.8 |

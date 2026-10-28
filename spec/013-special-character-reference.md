@@ -1,6 +1,6 @@
 ## 13. Special Character Reference
 
-This is the register of every character with a role in Cutdown syntax: its name (§1), what it does at the start of a line and at an inline position, and where it may be escaped. A run of N identical characters is written out where the length matters; the general rules behind the runs are in §10.4. Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block closer escapes).
+This is the register of every character with a role in Cutdown syntax: its name (§0.2), what it does at the start of a line and at an inline position, and where it may be escaped. A run of N identical characters is written out where the length matters; the general rules behind the runs are in §10.4. Escape rules: §8 (general), §8.2 (block-opener escapes), §8.3 (opaque-block closer escapes).
 
 "Line start" means the first non-whitespace content of a block candidate, after container-indent stripping (§10.2). A character with no line-start role reads there as it does inline.
 

@@ -8,6 +8,7 @@ Fixtures are organized by spec section. Each subdirectory maps to one section:
 
 ```
 tests/
+  000-preliminaries/
   002-comments/
   003-document-model/
   004-block-segments/

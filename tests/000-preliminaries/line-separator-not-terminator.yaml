@@ -1,0 +1,11 @@
+id: line-separator-not-terminator
+section: "0.4"
+description: "U+2028 is ordinary text, not a line terminator"
+
+input: "a b\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a b"

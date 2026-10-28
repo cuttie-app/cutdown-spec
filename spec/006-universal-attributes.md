@@ -12,16 +12,16 @@
 
 Token types inside `{}`:
 - `#identifier` — the `#` (octothorpe) sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
-  An id value is an `ID_VALUE` (§1.2), whether written `#x` or `id=x`. A value outside it — `id="a b"`, `#a#b` — is kept as written and warning CDN-0037 is emitted; no id link can reach it (§5.5). The value is converted to NFC (§1.2).
+  An id value is an `ID_VALUE` (§1.1), whether written `#x` or `id=x`. A value outside it — `id="a b"`, `#a#b` — is kept as written and warning CDN-0037 is emitted; no id link can reach it (§5.5). The value is converted to NFC (§1.1).
 - `.classname` and `class=value` — both add to one `class` entry, `{ key: "class", value: string[] }`. Every `.x` token and every `class=` value contribute in source order; a `class=` value is split on whitespace, so `class="b c"` adds `b` and `c`. A repeated class is dropped without a diagnostic; the first occurrence keeps its place. The entry sits at the position of the first contributing token. `class=""` contributes nothing, and with no contributions there is no `class` entry.
   ```
   {.a class="b c" .d .a}  →  [{ key: "class", value: ["a", "b", "c", "d"] }]
   ```
   At most 32 classes are kept. Further classes are dropped and CDN-0034 is emitted.
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
-- `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array (RFC 8259), and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
+- `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array [RFC8259], and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
   - Only objects and arrays are JSON. `key=123` and `key=true` stay strings (`"123"`, `"true"`).
-  - The JSON is strict RFC 8259 on one line; anything else degrades as described below. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
+  - The JSON is strict [RFC8259] on one line; anything else degrades as described below. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
   - At most 4096 Unicode scalar values and a nesting depth of 8.
   - `id` and `class` take no JSON value.
   - JSON that is malformed, over a limit, or given to `id` or `class` violates the attribute grammar: the whole `{…}` slice becomes literal text (§6.1.3).
@@ -247,7 +247,7 @@ Lines that emit no block are **transparent** — they are not "the immediately p
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2, so it orphans.
 
-The "preceding block" is always resolved within the current block scope (§1.6). A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
+The "preceding block" is always resolved within the current block scope (§1.5). A `^ ` line inside a `NamedBlock` binds to the last captionable child of that `NamedBlock`, not to anything outside it.
 
 **Captionable blocks and their AST fields:**
 

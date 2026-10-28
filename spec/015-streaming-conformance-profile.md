@@ -4,7 +4,7 @@
 
 The streaming profile is mandatory semantic conformance for every Cutdown parser. It does **not** require a streaming parser API, a renderer, or a transport protocol.
 
-A producer may expose source one Unicode scalar value at a time. After each value, the source available so far is an **input snapshot** (§1) and MUST parse according to the ordinary Cutdown grammar. Parsing that snapshot incrementally MUST produce exactly the AST and diagnostics produced by parsing it afresh.
+A producer may expose source one Unicode scalar value at a time. After each value, the source available so far is an **input snapshot** (§0.5) and MUST parse according to the ordinary Cutdown grammar. Parsing that snapshot incrementally MUST produce exactly the AST and diagnostics produced by parsing it afresh.
 
 ### 15.2 Input boundary
 
@@ -38,7 +38,7 @@ This profile defines no chunk envelope, completion event, retry, ordering, repla
 
 ### 15.6 Evidence
 
-A **prefix** of a fixture's `input` is its first *n* Unicode scalar values (§1.1), for every *n* from 0 — the empty prefix — up to the full length of `input`.
+A **prefix** of a fixture's `input` is its first *n* characters (§0.3), for every *n* from 0 — the empty prefix — up to the full length of `input`.
 
 For each fixture in `tests/015-streaming-conformance-profile/`, a conforming implementation MUST parse every prefix, and for every prefix:
 

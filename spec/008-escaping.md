@@ -14,7 +14,7 @@ A backslash before a **non-special** character emits both the backslash and the 
 
 The special characters, and where each may be escaped, are listed in the **Escapable** column of §13. A character marked "Yes" is escapable anywhere outside opaque content; the others only in the context the column names.
 
-Escaping inside opaque containers (CodeInline, CodeBlock, Meta, MathBlock, CommentBlock) follows narrow per-construct rules — see §8.3.
+Escaping inside opaque content (§0.5) follows narrow per-construct rules — see §8.3.
 
 ---
 

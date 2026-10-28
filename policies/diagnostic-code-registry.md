@@ -441,7 +441,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0037 |
 | title | Invalid id |
 | level | warning |
-| trigger | An `id` attribute value (`#x` or `id=x`, §6.1.1) holds a character outside `ID_VALUE` (§1.2): `{id="a b"}`, `{#a#b}` |
+| trigger | An `id` attribute value (`#x` or `id=x`, §6.1.1) holds a character outside `ID_VALUE` (§1.1): `{id="a b"}`, `{#a#b}` |
 | recovery | The `id` entry is kept with its value as written. No id link can reach it. `loc` spans the value |
 | introduced_in | 0.11.0 |
 | status | active |

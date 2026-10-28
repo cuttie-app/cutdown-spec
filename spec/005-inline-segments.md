@@ -76,7 +76,7 @@ _ text _     → Text("_ text _")             (single underscore = literal)
 
 **Syntax:** `**inline content**`
 
-Strong emphasis. `**` follows the dominant Markdown-family convention (CommonMark, GFM, Pandoc), where `**` marks strong emphasis.
+Strong emphasis. `**` follows the dominant Markdown-family convention ([COMMONMARK], GFM, Pandoc), where `**` marks strong emphasis.
 
 **AST type:**
 
@@ -166,11 +166,11 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 The sigils `#`, `^`, `~`, and `@` count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`.
 
 - **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
-- **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§9.2.4), then checked (§9.2.5); last, the parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§1.2). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
+- **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§9.2.4), then checked (§9.2.5); last, the parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§1.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
 - **Wiki:** an empty target makes the link text the target. `path.path` is `/`, then the **plain text** of the link text, then `.cutdown`: `[Getting started]()` → `path: "/Getting started.cutdown"`. The plain text is what a reader sees — the `value` of every `Text` and `CodeInline`, the `formula` of every `MathInline`, `{{key}}` for a `Variable`, and the plain text of the children (or `alt`) of every other inline, in order; delimiters and attributes contribute nothing. The built path is normalized and checked like any other (§9.2.4, §9.2.5), so `/` separates folders and `.` and `..` segments are structure: `[Guides/../FAQ]()` → `/FAQ.cutdown`, and a title that is only `.` or `..` names no page (`[..]()` is invalid). `?` and `#` are title characters, so `query` is `[]` and `fragment` is `''`. `raw` is `''`. A link with empty plain text names nothing, so `[]()` has `path: null` and emits CDN-0032. For a query or a fragment, write the target.
-- **Id:** `target` is the text after `#`, an `ID_VALUE` (§1.2) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#Установка)`.
-- **Ref:** `target` is the text after `^`, one `ID_LITERAL` run (§1.2). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
-- **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a run of `TAG_LITERAL` (§1.2): `[x](~Ціни/2026 Q1)` → `target: "Ціни/2026 Q1"`. A tag is a name, not a path: it is never normalized, and a level may not be `.` or `..`.
+- **Id:** `target` is the text after `#`, an `ID_VALUE` (§1.1) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#Установка)`.
+- **Ref:** `target` is the text after `^`, one `ID_LITERAL` run (§1.1). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
+- **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a run of `TAG_LITERAL` (§1.1): `[x](~Ціни/2026 Q1)` → `target: "Ціни/2026 Q1"`. A tag is a name, not a path: it is never normalized, and a level may not be `.` or `..`.
 - **Cite:** `target` is the text after `@`, any characters other than control characters.
 
 In `target`, escapes are resolved: `\)` gives `)`, `\\` gives `\`.
@@ -272,7 +272,7 @@ interface MathInline {
 ```
 
 - `$$` opener and closer. A single `$` is always literal text.
-- Content is **literal** — no inline parsing, and whitespace is kept exactly as written (§12.2). Passed as raw string to the consumer (KaTeX or equivalent).
+- Content is **literal** — no inline parsing, and whitespace is kept exactly as written (§12.2). Passed as raw string to the consumer ([KATEX] or equivalent).
 - Run of 3: `$$$` at inline position = `$$` (opener/closer) + `$` (literal).
 - Unclosed `$$` → `Text("$$")`. Same-type nesting not allowed.
 
@@ -389,7 +389,7 @@ interface Mark {
 }
 ```
 
-**Opener.** `::` followed immediately by a name — a **maximal `ID_LITERAL+` run** (§1.2). The character after the name decides what happens:
+**Opener.** `::` followed immediately by a name — a **maximal `ID_LITERAL+` run** (§1.1). The character after the name decides what happens:
 
 | Next character | Result |
 |----------------|--------|
