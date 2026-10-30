@@ -185,13 +185,7 @@ Cutdown files use the extension `.cutdown` and the media type `text/x-cutdown`; 
 
 ## For Contributors
 
-[See `CONTRIBUTION.md`](CONTRIBUTION.md)
-
----
-
-## Acknowledgements
-
-*Inspired by [CommonMark](https://commonmark.org), [Djot](https://djot.net), Carve.*
+See [`CONTRIBUTION.md`](CONTRIBUTION.md)
 
 ---
 
