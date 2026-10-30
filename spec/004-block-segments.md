@@ -253,6 +253,7 @@ interface QuoteBlock {
 2. second item
 
 - [ ] task item
+- [+] checked task
 - [x] checked task
 ```
 
