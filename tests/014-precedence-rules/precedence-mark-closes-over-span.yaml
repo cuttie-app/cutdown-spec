@@ -1,0 +1,21 @@
+id: precedence-mark-closes-over-span
+section: "14"
+description: "Source order: a Mark opened before a span closes at its own closer; the ** opener inside it is literal and CDN-0014 fires"
+
+input: |
+  ::m a **b:: c**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: m
+        children:
+          - _type: Text
+            value: "a **b"
+      - _type: Text
+        value: " c**"
+
+diagnostics:
+  - code: CDN-0014
+    level: warning

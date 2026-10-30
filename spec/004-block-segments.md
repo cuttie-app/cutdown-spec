@@ -13,7 +13,7 @@ Second paragraph line 2.
 
 A contiguous run of non-blank lines not matched by any other block type.
 
-**No block opens inside a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`, `###`) alike. No block opener is an exception, and none emits a diagnostic: to open a block, put a blank line before it.
+**No block opens inside a paragraph.** Once a run has been classified as a `Paragraph`, it continues to the next blank line (or the end of the enclosing container, or end of input). Every later line in the run is paragraph content regardless of how it begins — a heading marker, a list marker, a `---` separator, a table row, and every fence opener (`` ``` ``, `~~~`, `$$$`, `^^^`, `:::`) alike. None emits a diagnostic: to open a block, put a blank line before it.
 
 Container prefixes are not block openers either. A `>` line whose quote depth differs from the depth of the paragraph above it closes that paragraph and goes to the quote at its own depth (§4.6); at the same depth the rule above holds, so `> a` followed by `> - b` is one paragraph.
 
@@ -21,6 +21,8 @@ Two line forms are **not** block openers and are unaffected by this rule — the
 
 - a caption line (`^ `, §6.2);
 - an attribute-continuation line (`{…}`, §6.1).
+
+Comment lines emit no block either, and they end the paragraph instead: a standalone `##` line (§7.2) and a CommentBlock fence `###` (§4.16) close the run directly above them, so commented-out lines never become paragraph text.
 
 **Example 4-1** · [`fence-cannot-interrupt-paragraph`](../tests/011-block-structure/fence-cannot-interrupt-paragraph.yaml)
 
@@ -85,7 +87,7 @@ interface Section {
 
 - The marker is followed by whitespace or the end of the line; all whitespace after it is consumed. `=Title` is paragraph text. A marker alone on its line opens a heading with empty content: `=` gives `level: 1`, `heading: []`. To keep a line of `=` as text, escape it (§13.2).
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
-- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§7.2), or a `^ ` caption line (§6.2). The heading's base column is 2 at every level (§15.1): `= Title` followed by `content` is one heading reading `Titlecontent`, and followed by `   content` (three spaces) it reads `Title content`.
+- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§7.2), a CommentBlock fence (§4.16), or a `^ ` caption line (§6.2). The heading's base column is 2 at every level (§15.1): `= Title` followed by `content` is one heading reading `Titlecontent`, and followed by `   content` (three spaces) it reads `Title content`.
 - A `=` line that does not begin a run is paragraph content (§4.1): a heading opens only after a blank line, or as the first line of the document or a block container.
 - A run of ten or more `=` followed by whitespace or the end of the line opens a level-9 heading. The first nine `=` are the marker; the rest begin the heading content, so `========== Deep` gives `level: 9` and `heading: [Text("= Deep")]`. Warning CDN-0012 is emitted.
 - The **last `{...}` at the end of the heading** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
@@ -780,6 +782,7 @@ opaque content
 - Closing: the next line whose stripped content begins with three or more `#`, as for every other fence; its tail is dropped the same way. Indentation is not compared. To place a literal `###` line inside the body, escape it (§13.3).
 - `text` is the body lines joined with `\n`, with no trailing `\n`. An empty body gives `text: ""`.
 - Content is **opaque** — captured verbatim with no inline or block parsing.
+- The opener ends a paragraph or heading run directly above it; no blank line is needed (§4.1). It is the one fence that does.
 - A standalone `## comment` line directly after the closer is an orphan: it becomes a `SegmentReflection` of its own (§7.2).
 - Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`. Wherever it stands, its entry goes to the Page, and `before` records its place (§7.3).
 - Block parsing around it is unchanged; only its output moves out of `children`.

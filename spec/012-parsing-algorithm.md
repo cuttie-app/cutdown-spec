@@ -108,7 +108,7 @@ A Class 2 opener searches for its closer through the whole inline context, acros
 
 **Class 3 — bracket-matched, counted: `Mark`.**
 
-`::name … ::` (§5.10) is the only construct whose opener and closer are textually distinct, so the parser matches them by counting rather than by taking the first closer. The matching rule, the depth cap and CDN-0031 are defined in §5.10.
+`::name … ::` (§5.10) is the only construct whose opener and closer are textually distinct, so the parser matches them against each other by counting rather than by taking the first closer. Against every other inline construct a Mark takes part in source order (§14). The matching rule, the depth cap and CDN-0031 are defined in §5.10.
 
 An opener that never matches degrades per **Class 1**: the opener alone (`::` plus the name) is emitted as `Text` and parsing continues immediately after it, so following constructs parse normally.
 

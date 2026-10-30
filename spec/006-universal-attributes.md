@@ -205,7 +205,7 @@ Orphan behaviour depends on position:
 
 | Position | Behaviour | Example |
 |---|---|---|
-| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high}` → `Text("price is ")` + `Text("{high}")` |
+| Middle of inline content (no preceding attr-bearing segment, slots exhausted) | `Text("{...}")` emitted verbatim | `price is {high} today` → `Text("price is {high} today")` |
 | After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | dropped (no AST output), **CDN-0011** emitted | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
 

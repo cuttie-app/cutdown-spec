@@ -93,7 +93,7 @@ This table indexes every limit in the specification. Each rule is defined in the
 |---|---|---|---|
 | Link nesting | 1 | link text holds no link | §5.5 |
 | Image nesting | 1 | `alt` holds no link or image | §5.9 |
-| Inline depth | 28 | at most 6 span kinds per inline context, which never repeat in it; contexts chain at most root → link text → `alt`; `Mark` depth 8 across all three | §5, §5.10 |
+| Inline depth | 16 | `Mark` depth 8, 6 span kinds that never repeat at any depth, one Link, one image | §5, §5.10, §14 |
 
 **Host bounds** — the language sets none:
 

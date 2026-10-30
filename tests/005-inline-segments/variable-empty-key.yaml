@@ -1,6 +1,6 @@
 id: variable-empty-key
 section: "5.11"
-description: "{{}} with empty key is invalid; emitted as literal text"
+description: "{{}} with empty key is invalid; emitted as literal text with CDN-0015"
 
 input: |
   {{}}
@@ -10,3 +10,7 @@ ast:
     children:
       - _type: Text
         value: "{{}}"
+
+diagnostics:
+  - code: CDN-0015
+    level: warning

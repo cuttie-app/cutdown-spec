@@ -140,7 +140,7 @@ Every code is `CDN-` followed by four digits. A code is assigned once: it never 
 
 *warning · since 0.3.2*
 
-- **Trigger:** An inline element A closes via its delimiter while an opener of a **different** inline type B (one of `**`, `__`, `~~`, `^^`, `""`, `''`, `[`) was present inside A's content and emitted as literal text — and a closer for B exists in the inline stream after A's boundary. Span points to A's closing delimiter (the crossing closer).
+- **Trigger:** An inline element A closes via its delimiter while an opener of a **different** inline type B (one of `**`, `__`, `~~`, `^^`, `""`, `''`, `[`, `::name`) was present inside A's content and emitted as literal text — and a closer for B exists in the inline stream after A's boundary. Span points to A's closing delimiter (the crossing closer).
 - **Recovery:** Existing greedy left-to-right behavior applies unchanged. No AST change. The diagnostic is informational only.
 
 **Example 17-18** · [`cdn-0014-emphasis-strong-cross`](../tests/diagnostics/cdn-0014-emphasis-strong-cross.yaml)

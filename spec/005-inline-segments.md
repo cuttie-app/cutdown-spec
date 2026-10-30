@@ -58,7 +58,7 @@ interface Emphasis {
 - Run of 3: `___` = `__` (opener/closer) + `_` (literal).
 - Matching: greedy, in source order. First valid `__` closer wins.
 - Unclosed `__` → `Text("__")`.
-- Same-type nesting not allowed. Cross-type nesting allowed (e.g. `__**text**__`).
+- Same-type nesting not allowed, also through link text, `alt`, and Mark content: inside an open `__`, the next `__` closes it wherever it stands (§14). Cross-type nesting allowed (e.g. `__**text**__`).
 - Leading/trailing whitespace inside delimiters is stripped. See §15 for full whitespace rules.
 
 **Example 5-1** · [`emphasis-basic`](../tests/005-inline-segments/emphasis-basic.yaml)
@@ -422,6 +422,7 @@ MARK_CLOSE ::= "::"
 
 - Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§12.1.4.1, Class 3).
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
+- Counting matches a Mark against other Marks only. Against spans and links, a Mark follows source order like any other inline (§14): a span opened before the Mark closes at its first closer, inside the Mark content or not, and then the Mark does not form; a Mark opened before a span closes at its own closer, and the span opener inside it is literal (CDN-0014).
 - Children are **parsed by inline rules** (see the context table at the head of §5).
 - **Maximum nesting depth is 8.** The depth counts every enclosing `Mark`, through link text and `alt`. A `Mark` opener at depth 9 or deeper does not open; it degrades to literal `Text("::" + name)` and emits warning CDN-0031.
 - An unclosed opener degrades per Class 1 (§12.1.4.1): the opener alone is emitted as `Text` and parsing continues immediately after it. No diagnostic.

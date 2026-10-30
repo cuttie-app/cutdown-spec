@@ -47,7 +47,7 @@ A consumer that maps a path to storage treats it as `/`-separated segments under
 
 ### 21.6 Resource exhaustion
 
-Every structure that could grow without bound in a way that costs more than its input has a fixed limit, and every parser stops at the same point (§20.6): block depth 32, `Mark` depth 8, 32 entries and 32 classes per attribute group, 32 query pairs, JSON 4096 characters and depth 8. Inline depth is bounded by the grammar at 28. A conforming parser runs in time and memory linear in its input (§20.2 clause 7), so quadratic inputs — long runs of unclosed openers, deep brackets, many `##` cuts — cost no more than any other text.
+Every structure that could grow without bound in a way that costs more than its input has a fixed limit, and every parser stops at the same point (§20.6): block depth 32, `Mark` depth 8, 32 entries and 32 classes per attribute group, 32 query pairs, JSON 4096 characters and depth 8. Inline depth is bounded by the grammar at 16. A conforming parser runs in time and memory linear in its input (§20.2 clause 7), so quadratic inputs — long runs of unclosed openers, deep brackets, many `##` cuts — cost no more than any other text.
 
 The language does not bound document size: that is a policy each host sets. A host SHOULD bound its input before it calls the parser. Rows, columns, cells, blocks, and comments grow with the document and are bounded through it.
 

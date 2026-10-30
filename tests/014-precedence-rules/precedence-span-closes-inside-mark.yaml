@@ -1,0 +1,20 @@
+id: precedence-span-closes-inside-mark
+section: "14"
+description: "Mark content is transparent to spans: a ** opened before the Mark closes at the next **, inside the Mark content; the Mark never forms and CDN-0014 fires"
+
+input: |
+  **a ::m b** c:: d**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: "a ::m b"
+      - _type: Text
+        value: " c:: d**"
+
+diagnostics:
+  - code: CDN-0014
+    level: warning

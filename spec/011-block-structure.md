@@ -11,7 +11,7 @@ A parser identifies block boundaries by scanning for blank line sequences. Each 
 - A **`Paragraph`** consumes the whole run: it ends at the blank line that closes the run, and at no earlier line — not even one that would open a block if it began a run (see the no-interrupt rule below).
 - A **fenced block** consumes from its opener to its closer, which may lie past a blank line (§11.4.2).
 
-**Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
+**Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for every block opener, fences included, except a CommentBlock fence, which ends the run as a standalone `##` line does. See §4.1, which defines the rule.
 
 Comments (§7) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a CommentBlock fence; its body becomes a `SegmentReflection` on the Page, and no segment is produced. A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an orphan and becomes a `SegmentReflection` on the Page. See §7 for the full semantics and §B for every character's role.
 

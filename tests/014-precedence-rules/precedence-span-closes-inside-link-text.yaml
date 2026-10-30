@@ -1,0 +1,24 @@
+id: precedence-span-closes-inside-link-text
+section: "14"
+description: "Symmetric delimiters never repeat: an open ** stays open through link text, so the next ** closes it there; the link never forms and CDN-0014 fires"
+
+input: |
+  **Read [the **key** part](/guide) first.**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: "Read [the"
+      - _type: Text
+        value: "key"
+      - _type: Strong
+        children:
+          - _type: Text
+            value: "part](/guide) first."
+
+diagnostics:
+  - code: CDN-0014
+    level: warning
