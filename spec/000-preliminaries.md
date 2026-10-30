@@ -90,19 +90,20 @@ A **blank line** is a line whose content is only whitespace, or empty.
 
 - **[RFC2119]** Bradner, S., "Key words for use in RFCs to Indicate Requirement Levels", BCP 14, RFC 2119. <https://www.rfc-editor.org/rfc/rfc2119>
 - **[RFC8174]** Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words", BCP 14, RFC 8174. <https://www.rfc-editor.org/rfc/rfc8174>
-- **[UNICODE]** The Unicode Consortium, "The Unicode Standard", latest version, including UAX #15 "Unicode Normalization Forms". <https://www.unicode.org/versions/latest/> Cutdown uses only the White_Space property and NFC, which the Unicode stability policies keep stable across versions.
+- **[UNICODE]** The Unicode Consortium, "The Unicode Standard", latest version, including UAX #15 "Unicode Normalization Forms". <https://www.unicode.org/versions/latest/> Cutdown uses only the White_Space property, NFC, and the explicit directional formatting characters of UAX #9 "Unicode Bidirectional Algorithm", which the Unicode stability policies keep stable across versions.
 - **[RFC3629]** Yergeau, F., "UTF-8, a transformation format of ISO 10646", RFC 3629. <https://www.rfc-editor.org/rfc/rfc3629>
 - **[RFC8259]** Bray, T., "The JavaScript Object Notation (JSON) Data Interchange Format", RFC 8259. <https://www.rfc-editor.org/rfc/rfc8259>
 - **[RFC7493]** Bray, T., "The I-JSON Message Format", RFC 7493. <https://www.rfc-editor.org/rfc/rfc7493>
 - **[XML]** W3C, "Extensible Markup Language (XML) 1.0 (Fifth Edition)", §6 "Notation". <https://www.w3.org/TR/xml/#sec-notation>
+- **[YAML]** "YAML Ain't Markup Language, version 1.2". <https://yaml.org/spec/1.2.2/>
+- **[TOML]** "TOML v1.0.0". <https://toml.io/en/v1.0.0>
 
 #### 0.6.2 Informative references
 
+- **[UTS39]** The Unicode Consortium, "Unicode Security Mechanisms", Unicode Technical Standard #39. <https://www.unicode.org/reports/tr39/>
 - **[COMMONMARK]** "CommonMark Spec". <https://spec.commonmark.org/>
 - **[DJOT]** "Djot". <https://djot.net/>
 - **[CARVE]** "Carve". <https://markup-carve.github.io/carve/>
-- **[YAML]** "YAML Ain't Markup Language, version 1.2". <https://yaml.org/spec/1.2.2/>
-- **[TOML]** "TOML v1.0.0". <https://toml.io/en/v1.0.0>
 - **[LSP]** Microsoft, "Language Server Protocol Specification". <https://microsoft.github.io/language-server-protocol/>
 - **[KATEX]** "KaTeX". <https://katex.org/>
 - **[OEMBED]** "oEmbed". <https://oembed.com/>

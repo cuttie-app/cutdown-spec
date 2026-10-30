@@ -177,7 +177,7 @@ The first character chooses the kind; the production for that kind then says whe
 
 The sigils `#`, `^`, `~`, and `@`, and the colon that ends a scheme, count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`, and `[x](FAQ\:setup)` is a page link whose path is `FAQ:setup`. The scheme test uses no other heuristic: `[x](Intro: draft)` and `[x](C:/notes)` are external links. A scheme split over two lines is not a scheme, so `[t](ht` followed by `tps://x)` is a page link.
 
-- **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
+- **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer: one that renders to a medium where a link can run code checks `href` against a scheme allowlist (§18.4 clause 7, §19.1).
 - **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§9.2.4), then checked (§9.2.5); last, the parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§1.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
 - **Wiki:** an empty target makes the link text the target. `path.path` is `/`, then the **plain text** of the link text, then `.cutdown`: `[Getting started]()` → `path: "/Getting started.cutdown"`. The plain text is what a reader sees — the `value` of every `Text` and `CodeInline`, the `formula` of every `MathInline`, `{{key}}` for a `Variable`, and the plain text of the children (or `alt`) of every other inline, in order; delimiters and attributes contribute nothing. The built path is normalized and checked like any other (§9.2.4, §9.2.5), so `/` separates folders and `.` and `..` segments are structure: `[Guides/../FAQ]()` → `/FAQ.cutdown`, and a title that is only `.` or `..` names no page (`[..]()` is invalid). `?` and `#` are title characters, so `query` is `[]` and `fragment` is `''`. `raw` is `''`. A link with empty plain text names nothing, so `[]()` has `path: null` and emits CDN-0032. For a query or a fragment, write the target.
 - **Id:** `target` is the text after `#`, an `ID_VALUE` (§1.1) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#道具一式)`.
@@ -374,6 +374,7 @@ interface EmbedImageInline {
 ```
 
 - `EmbedImageInline` is to `ImageInline` what `EmbedBlock` (§4.9) is to `FileBlock`: a remote resource named by URL rather than a path.
+- Only literal `https://` opens it. That is a recognition rule, not a safety guarantee: the host may still be hostile, track the reader, or be an internal address (§19.7).
 - `url` runs to the first unbalanced `)`, as a path does (§9.2.1), and is kept as written. Cutdown does not decompose, validate, or fetch it, so it is never invalid. `{{key}}` interpolation tokens stay in it (§5.11.1). A `url` longer than 2048 Unicode scalar values is kept in full and emits CDN-0035.
 - `alt` and attributes follow `ImageInline`.
 - Every other scheme, `http://` included, is read as a path: `![](http://x.com/a.png)` is an `ImageInline` whose path is invalid, with `src: null` and CDN-0032.
@@ -497,6 +498,7 @@ A variable can also stand inside a string property, where no `Variable` node can
 
 - Inside a JSON attribute value the template is the decoded JSON string: `"\\{{x}}"` in JSON decodes to `\{{x}}`, an escaped token.
 - The parser emits no diagnostic for a token. Whether a key has a value is the consumer's concern.
+- A consumer checks the substituted value, not the token: scheme, attribute-key, and path checks run after substitution, and a substituted value is never parsed as Cutdown (§18.4 clause 1, §19.10).
 
 ---
 
@@ -516,6 +518,7 @@ interface Spoiler {
 
 - `^^` opener and closer. A single `^` is always literal text in inline context. (In a `(^ref)` link target and a `[^ref]:` definition, `^` is the reference sigil per §5.5 / §4.14 — those contexts are delimited and never reach the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
+- Hidden is not redacted: the content is in the source, in the AST, and in any output that hides it by presentation (§19.8).
 - Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy close in source order, unclosed `^^` → `Text("^^")`, no same-type nesting.
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, and `Link` is allowed.
 - Leading/trailing whitespace inside delimiters is stripped. See §12 for full whitespace rules.

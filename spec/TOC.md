@@ -57,5 +57,6 @@ It has no canonical HTML output — consuming applications interpret and render 
 16. [Canonical Form](016-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
 17. [Injection](017-injection.md) — what an InjectBlock means once a consumer resolves it
 18. [Conformance](018-conformance.md) — parser, writer, and consumer classes; claims and the name; limits
+19. [Security Considerations](019-security-considerations.md) — what a document can carry into its consumer, and the clause that handles each risk
 
 ---

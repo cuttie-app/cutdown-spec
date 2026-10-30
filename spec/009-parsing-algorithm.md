@@ -125,7 +125,7 @@ A **PathResourceLocator** is the parsed form of a path written in source. Four p
 - A **resource** is fetched by the consumer and placed in the document: `FileBlock`, `InjectBlock`, `ImageInline`, `EmbedImageInline`, `EmbedBlock`. Its source is a path, or — for the embed nodes only — a URL beginning with literal `https://`. Nothing else is admitted, because the consumer must be able to fetch and place it.
 - A **pointer** is followed, printed, or ignored by the consumer, never placed: `Link`. Its target is as wide as possible — every URI scheme, a page path, or an id, ref, tag, or cite target (§5.5).
 
-Cutdown filters no scheme. It cannot know its consumer: in an HTML page `javascript:` is a hazard, in a printed book it is ink. Filtering is the consumer's decision.
+Cutdown filters no scheme. It cannot know its consumer: in an HTML page `javascript:` is a hazard, in a printed book it is ink. Filtering is the consumer's decision, and §18.4 clause 7 makes it a duty for a consumer whose output can run a link (§19.1).
 
 A path never begins with `https://`. Where such a value stands in an image source, the node is an `EmbedImageInline` instead (§5.9.1). In a link target, any URI scheme makes an external `Link` (§5.5). Every URL is a plain string, kept as written and never decomposed.
 
@@ -236,7 +236,7 @@ images/a.png        → { path: "/images/a.png" }
 /chapters/.         → { path: "/chapters/" }
 ```
 
-Every later rule reads the normalized `path`: whether a line is an `InjectBlock` (§4.17), the validity rules below, and the `.cutdown` suffix of a page link (§5.5). Cutdown still resolves no path; it fixes how a path is read and spelled.
+Every later rule reads the normalized `path`: whether a line is an `InjectBlock` (§4.17), the validity rules below, and the `.cutdown` suffix of a page link (§5.5). Cutdown still resolves no path; it fixes how a path is read and spelled. A consumer that maps a path to storage confines it to the root after its own resolution (§18.4 clause 10, §19.5).
 
 #### 9.2.5 Validity
 

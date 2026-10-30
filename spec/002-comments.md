@@ -169,7 +169,7 @@ Only a `Meta` and a PageBreaker create Page boundaries. A comment never does.
 
 ### 2.5 Render policy
 
-`LineReflection` and `SegmentReflection` entries are hidden by default: a renderer omits them unless its user asks for them, and a tool that serves authors — a formatter, an IDE preview, a comment thread — may show them. The requirement is §18.4; how a user asks is implementation-defined.
+`LineReflection` and `SegmentReflection` entries are hidden by default: a renderer omits them unless its user asks for them, and a tool that serves authors — a formatter, an IDE preview, a comment thread — may show them. The requirement is §18.4; how a user asks is implementation-defined. Hidden is not removed: comments stay in the source and in the AST, and a consumer that sends either to a reader clears `reflections` first (§18.4 clause 6, §19.8).
 
 ### 2.6 Interaction with attributes
 

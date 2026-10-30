@@ -69,7 +69,7 @@ This makes line wrapping safe in every script. `よう\nこそ` renders as `よ�
 
 `<em>` in a Cutdown document is exactly four characters of content — not a tag, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
 
-The consequence for anyone rendering user-written content: there is nothing to sanitize, because there is no channel through which markup can smuggle executable output. The injection surface does not exist — not narrowed, not filtered: absent by construction.
+The consequence for anyone rendering user-written content: there is no raw-HTML channel. Markup cannot smuggle a tag, a script, or a style into the output. What remains is data the renderer chooses how to use — link schemes, attribute keys, paths, URLs — and the specification names each one and the check it needs ([Security Considerations](spec/019-security-considerations.md)). The attack surface is a short, closed list, not an open-ended HTML sanitizer.
 
 ### **Documents have pages.**
 
@@ -93,7 +93,7 @@ And a heading here is not a styled line. It opens a **Section** — a real conta
 
 ---
 
-If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. The specification is defined by prose rules and an executable conformance corpus; a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation, no post-processing sanitizers.
+If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. The specification is defined by prose rules and an executable conformance corpus; a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation and no HTML sanitizer; an allowlist for link schemes and attribute keys (§18.4).
 
 What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may occur. A reference [TypeScript parser](https://github.com/cuttie-app/cutdown-ts) exists and tracks the spec; production hardening is ongoing. If your workflow needs a settled standard today, the honest answer is that Cutdown is not there yet. If you are building a new content pipeline and want to start on a better foundation, the spec and conformance corpus are complete enough to build from.
 
@@ -144,7 +144,7 @@ The reason single symbols are literal is the doubling rule — see [**Doubled de
 
 | Path | Contents |
 |---|---|
-| [`spec/`](spec/) | Language specification §0–§18 |
+| [`spec/`](spec/) | Language specification §0–§19 |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`policies/`](policies/) | Governance and conformance policies |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference for tooling and AI agents |
@@ -173,7 +173,7 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 
 ## For implementors
 
-Start with the specification ([`spec/`](spec/), §0–§18) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
+Start with the specification ([`spec/`](spec/), §0–§19) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
 
 ---
 

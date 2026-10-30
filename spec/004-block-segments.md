@@ -148,6 +148,7 @@ interface Meta {
 
 - **Format word:** the run after `~~~` up to whitespace or end of line. `yaml`, `toml`, and `json` are recognized in any case and stored lowercased. No word, or a run of four or more `~`, gives `"yaml"`. Any other word gives `"yaml"` and warning CDN-0039. Text after the word is dropped with CDN-0016.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
+- The parser never reads the body. A consumer that does reads `yaml` as YAML 1.2 core, `json` as I-JSON, and `toml` as TOML 1.0.0 (§18.4 clause 11, §19.9).
 - Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§9.3.2). Never appears in `Page.children`.
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.
@@ -678,6 +679,7 @@ interface EmbedBlock {
 - `url` runs from the `h` of `https://` to the end of the line, after removing one trailing attribute sequence (whitespace followed by one or more `{…}` groups that close the line) and then trailing whitespace. It is a raw string: Cutdown does not parse, validate, or fetch it. `{{key}}` interpolation tokens stay in it verbatim (§5.11).
 - A `url` longer than 2048 Unicode scalar values is kept in full and still opens an `EmbedBlock`; warning CDN-0035 is emitted.
 - What an embed shows is the consumer's decision — for example, resolving an [OEMBED] snippet at render time and placing it in the page.
+- Only literal `https://` opens it. That is a recognition rule, not a safety guarantee: the host may still be hostile, track the reader, or be an internal address (§19.7).
 - An `EmbedBlock` never joins a `FileGroup` (§4.12), and an `EmbedBlock` line ends an open `FileGroup`. Consecutive `EmbedBlock` lines are separate blocks.
 - Like every block opener, `https://` cannot interrupt a paragraph (§10.1): a URL line glued to paragraph text is paragraph content.
 - **Opener escape:** `\https://…` at line start → `Paragraph([Text("https://…")])`. See §8.2.
@@ -893,6 +895,7 @@ interface SpoilerBlock {
 - Opening: a line that begins with three or more `^`. The opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
 - Closing: the next line that begins with three or more `^`. The closer keeps a `## comment`; any other text is dropped with CDN-0016.
 - Content is parsed as blocks. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, as for a NamedBlock (§4.13).
+- Hidden is not redacted: the content is in the source, in the AST, and in any output that hides it by presentation (§19.8).
 - **No nested SpoilerBlocks.** The first such line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
 - **Container padding:** same rule as `NamedBlock` (§4.13) — the first non-blank content line sets the base padding, and up to that many leading spaces are removed from every content line.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
@@ -945,7 +948,7 @@ opaque content
 - Block parsing around it is unchanged; only its output moves out of `children`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
 - A CommentBlock takes no part in pagination (§9.3.2): only a `Meta` and a PageBreaker create Page boundaries.
-- Default render policy is **hidden** (§2.5, §18.4).
+- Default render policy is **hidden** (§2.5, §18.4). Hidden is not removed: the text stays in the source and in `Page.reflections` (§19.8).
 - **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 
 **Example:**
