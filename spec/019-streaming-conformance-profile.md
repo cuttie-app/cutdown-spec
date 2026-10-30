@@ -30,7 +30,7 @@ Cutdown has no canonical rendering. A consumer that has the complete source snap
 
 An end of block is not a source token, a chunk boundary, or an external stream event. Deferred rendering MUST NOT change the AST or diagnostics required for any input snapshot.
 
-A table is a worked example. Its column count is fixed by the first content row (§4.8, *Table shape*), so `Table.columns` is settled the moment that row closes and is never revised as later rows arrive — it is **monotonic**. A consumer may therefore commit to a column count early. Under a `max()` rule it could not: a later wider row would retroactively change `columns`, so consecutive snapshots could legitimately disagree.
+A table is a worked example. Its column count is fixed by the first content row (§4.8, *Table shape*), so `Table.columns` is settled once a line terminator ends that row, and is never revised as later rows arrive — it is **monotonic**. Before that, the row is the last line of the snapshot: end of input closes it only for that snapshot, and a later scalar may still add cells. A consumer may therefore commit to a column count early. Under a `max()` rule it could not: a later wider row would retroactively change `columns`, so consecutive snapshots could legitimately disagree.
 
 ### 19.5 Exclusions
 

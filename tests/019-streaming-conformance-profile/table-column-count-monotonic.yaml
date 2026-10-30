@@ -1,6 +1,6 @@
 id: table-column-count-monotonic
 section: "19"
-description: "Table.columns is settled when the first content row closes and is never revised; a later wider row drops its surplus with CDN-0018 rather than growing the count"
+description: "Table.columns is settled once a line terminator ends the first content row and is never revised; until then a later scalar may still add cells; a later wider row drops its surplus with CDN-0018 rather than growing the count"
 
 input: "| A | B |\n| C | D | E |"
 
@@ -49,9 +49,10 @@ streaming:
             - _type: Column
               align: start
       diagnostics: []
-    # Prefix "| A | B |" — the first content row has closed. columns is now
-    # fixed at 2 and every later checkpoint must agree.
-    - at: 9
+    # Prefix "| A | B |\n" — a line terminator ends the first content row.
+    # columns is now fixed at 2 and every later checkpoint must agree. Before
+    # it, end of input closed the row only for that snapshot.
+    - at: 10
       ast:
         - _type: Table
           columns:

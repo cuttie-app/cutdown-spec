@@ -1,6 +1,6 @@
 # Cutdown conformance corpus
 
-This directory contains the golden test fixtures for the Cutdown language spec. A compliant parser must pass all of them.
+This directory contains the golden test fixtures for the Cutdown language spec. A conforming parser passes every fixture except those under `018-canonical-form/`, which a conforming writer passes (§20.2, §20.3).
 
 ## Structure
 

@@ -12,10 +12,10 @@ When multiple constructs compete for the same input, the following priority appl
 | 6 | Inline code \`\` `CodeInline`                                                   | Content literal |
 | 7 | Inline math `$$`                                                                | Matched before emphasis; content is literal |
 | 8 | Line comment `##`                                                               | No closer; runs to EOL. Payload stored as a `LineReflection` on the block that owns the line. Ends its line as a line end does: an open inline construct may still close on a later line, and one that never closes degrades per its class (§12.1.4.1) — a Class 2 opener emits the verbatim slice up to the `##` cut. Not recognized inside a CodeInline or MathInline that closes (both rank above it), nor — the one exception to this order — inside a quoted attribute value. See §7.2 |
-| 9 | Links and images `[...](...)`                                                   | Matched before emphasis runs |
-| 10 | Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` | Source order, greedy |
-| 11 | Mark `::name … ::`                                                              | Matched after emphasis. The name run is lexed before delimiter matching and is independent of this table — see *Name lexing* in §5.10 |
-| 12 | Variable `{{key}}` / Attributes `{...}`                                         | Longest opener wins (`{{` before `{`), then source order |
+| 9 | Links and images `[...](...)`, Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''`, Mark `::name … ::` | Source order: the earliest opener whose closer is found wins, greedy. A closer that crosses an opener inside its content wins, and the crossing emits CDN-0014 (§17). A Mark's name run is lexed before matching — see *Name lexing* in §5.10 |
+| 10 | Variable `{{key}}` / Attributes `{...}`                                         | Longest opener wins (`{{` before `{`), then source order |
+
+**Example 14-1** · [`precedence-link-emphasis-source-order`](../tests/014-precedence-rules/precedence-link-emphasis-source-order.yaml)
 
 Note: MathInline content is always literal (no inline parsing). MathBlock content is always literal.
 

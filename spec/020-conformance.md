@@ -26,7 +26,7 @@ A conforming parser:
 2. **Output.** MUST produce exactly the AST that §1–§16 define and exactly the diagnostics, by code and level, that §17 defines for that input — no others. Node kinds and property names are those of §A. Source locations remain optional (§A).
 3. **Determinism and purity.** MUST produce the same AST and diagnostics every time it parses the same input. It MUST NOT perform I/O: it resolves no path, link, injection, or variable, and every `InjectBlock` it emits has `children: []`.
 4. **Streaming.** MUST satisfy the streaming conformance profile (§19).
-5. **Corpus.** MUST pass every fixture of the conformance corpus ([`tests/`](../tests/)) for the language version it implements. The fixtures are normative examples. A disagreement among this text, its grammar blocks (§1.2), and a fixture is a defect in the specification, not a choice left to the parser.
+5. **Corpus.** MUST pass every **parser fixture** of the conformance corpus ([`tests/`](../tests/)) — every fixture outside `tests/018-canonical-form/` — for the language version it implements. The fixtures are normative examples. A disagreement among this text, its grammar blocks (§1.2), and a fixture is a defect in the specification, not a choice left to the parser.
 6. **Version.** MUST state the language version it implements.
 7. **Complexity.** MUST parse in time and memory linear in the length of the input, for every input.
 
@@ -39,6 +39,7 @@ A conforming writer:
 1. **Round-trip.** For every AST that a conforming parser can produce, MUST write source that a conforming parser parses back to the same AST. Source locations and diagnostics are not compared: a diagnostic records a recovery, which source cannot always carry. An AST that no parser can produce is outside this clause, and a writer MAY refuse it.
 2. **Canonical form.** MUST write canonical form (§18). Two conforming writers given the same AST therefore write byte-identical source. A writer that keeps the author's spelling where §18 names a canonical one does not conform.
 3. **Escaping.** MUST escape (§13) every character that would otherwise be read as syntax.
+4. **Corpus.** MUST pass every **writer fixture** of the conformance corpus ([`tests/018-canonical-form/`](../tests/018-canonical-form/)) for the language version it implements.
 
 ### 20.4 Consumer
 

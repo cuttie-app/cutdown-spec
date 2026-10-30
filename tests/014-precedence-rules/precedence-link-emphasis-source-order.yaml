@@ -1,0 +1,20 @@
+id: precedence-link-emphasis-source-order
+section: "14"
+description: "Links and delimiters match in source order: ** closes while the [ opened inside it is still open, so Strong wins and CDN-0014 fires at the crossing ** closer; the link never forms"
+
+input: |
+  **a [b** c](u)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: "a [b"
+      - _type: Text
+        value: " c](u)"
+
+diagnostics:
+  - code: CDN-0014
+    level: warning
