@@ -1,0 +1,19 @@
+id: link-tag-bidi-mark
+section: "5.5"
+description: "A tag level holding an implicit directional mark (U+200F RLM) is invalid like any bidi control: kept as written with CDN-0033"
+
+input: "[x](~a‏b)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: tag
+        target: "a‏b"
+        children:
+          - _type: Text
+            value: x
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

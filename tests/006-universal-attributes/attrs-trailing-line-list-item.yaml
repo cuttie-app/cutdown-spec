@@ -1,0 +1,27 @@
+id: attrs-trailing-line-list-item
+section: "6.1.2"
+description: "A {attrs} line directly after a list item continues that item and joins its scope chain; it is not a blank line, so the list stays one tight List"
+
+input: |
+  - item one
+  {.attrs}
+  - item two
+
+ast:
+  - _type: List
+    kind: "bullet"
+    loose: false
+    attributes: []
+    children:
+      - _type: ListItem
+        attributes:
+          - key: class
+            value: [attrs]
+        children:
+          - _type: Text
+            value: item one
+      - _type: ListItem
+        attributes: []
+        children:
+          - _type: Text
+            value: item two

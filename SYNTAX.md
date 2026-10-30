@@ -377,9 +377,9 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 - `{attrs}` on a caption line → literal text (CDN-0009).
 - Escape: `\^` at line start suppresses the opener.
 
-**Example 6-32** · [`caption-table-basic`](tests/006-universal-attributes/caption-table-basic.yaml)
+**Example 6-34** · [`caption-table-basic`](tests/006-universal-attributes/caption-table-basic.yaml)
 
-**Example 6-33** · [`caption-quoteblock`](tests/006-universal-attributes/caption-quoteblock.yaml)
+**Example 6-35** · [`caption-quoteblock`](tests/006-universal-attributes/caption-quoteblock.yaml)
 
 ---
 
@@ -413,7 +413,7 @@ Always **after** their target: on the same line, or on the next lines with no bl
 
 **Example 6-6** · [`attrs-scope-chain-list`](tests/006-universal-attributes/attrs-scope-chain-list.yaml)
 
-**Example 6-26** · [`attrs-escape-brace`](tests/006-universal-attributes/attrs-escape-brace.yaml)
+**Example 6-28** · [`attrs-escape-brace`](tests/006-universal-attributes/attrs-escape-brace.yaml)
 
 ---
 

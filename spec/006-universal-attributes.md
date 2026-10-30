@@ -187,20 +187,13 @@ Multiline equivalents (all produce identical AST):
   {.b}
 ```
 
-##### Trailing attr lines and loose-list detection
+##### Trailing attr lines in a list
 
-A line consisting solely of `{attrs}` immediately after a list item with no preceding blank line is a **trailing attr line**, not a blank line. Loose list detection ignores trailing attr lines.
+A line holding only `{attrs}` directly after a list item, with no blank line between, continues that item (§11.5), and its group joins the item's scope chain. It is not a blank line, so the list stays one `List`.
 
-```
-- item one
-{.attrs}         ← trailing attr line, NOT a blank line → list stays tight
-- item two
+**Example 6-26** · [`attrs-trailing-line-list-item`](../tests/006-universal-attributes/attrs-trailing-line-list-item.yaml)
 
-- item one
-
-{.attrs}         ← blank line precedes → list is loose; {.attrs} is orphaned (literal)
-- item two
-```
+**Example 6-27** · [`attrs-trailing-line-after-blank-literal`](../tests/006-universal-attributes/attrs-trailing-line-after-blank-literal.yaml)
 
 `{attrs}` may appear at the end of a Paragraph or ListItem either on the same line as the final content line, or on the immediately following line (no blank line between). A line consisting solely of `{attrs}` immediately after a paragraph (no blank line) is consumed as part of the paragraph's scope chain and does not start a new block.
 
@@ -220,15 +213,15 @@ Orphan behaviour depends on position:
 
 Writing `\{` makes a literal brace explicit:
 
-**Example 6-26** · [`attrs-escape-brace`](../tests/006-universal-attributes/attrs-escape-brace.yaml)
+**Example 6-28** · [`attrs-escape-brace`](../tests/006-universal-attributes/attrs-escape-brace.yaml)
 
 #### 6.1.4 Attribute Inside Link Text
 
 `{attrs}` appearing inside `[...]` follows paragraph rules: it attaches to the preceding inline element, or is dropped if no preceding inline element exists.
 
-**Example 6-27** · [`attrs-link-text`](../tests/006-universal-attributes/attrs-link-text.yaml)
+**Example 6-29** · [`attrs-link-text`](../tests/006-universal-attributes/attrs-link-text.yaml)
 
-**Example 6-28** · [`attrs-link-text-orphan`](../tests/006-universal-attributes/attrs-link-text-orphan.yaml)
+**Example 6-30** · [`attrs-link-text-orphan`](../tests/006-universal-attributes/attrs-link-text-orphan.yaml)
 
 ### 6.2 Caption
 
@@ -259,9 +252,9 @@ Lines that emit no block are **transparent** — they are not "the immediately p
 - a trailing `{attrs}` line (sets the block's attributes; emits no node);
 - a standalone `## comment` line directly after the block (attaches backwards, §7.2).
 
-**Example 6-29** · [`caption-attrs-own-line`](../tests/006-universal-attributes/caption-attrs-own-line.yaml)
+**Example 6-31** · [`caption-attrs-own-line`](../tests/006-universal-attributes/caption-attrs-own-line.yaml)
 
-**Example 6-30** · [`caption-comment-own-line-transparent`](../tests/006-universal-attributes/caption-comment-own-line-transparent.yaml)
+**Example 6-32** · [`caption-comment-own-line-transparent`](../tests/006-universal-attributes/caption-comment-own-line-transparent.yaml)
 
 **Single-line only.** A caption is exactly one line. A second consecutive `^ ` line fails condition 2, so it orphans.
 
@@ -284,7 +277,7 @@ All captionable blocks carry `caption: []` when no caption line binds. `FileGrou
 
 **`FileBlock` captions do not split the group.** A `^ ` line binds to the `FileBlock` above it, and the next `FileBlock` line stays in the same `FileGroup`:
 
-**Example 6-31** · [`caption-fileblock-does-not-split-group`](../tests/006-universal-attributes/caption-fileblock-does-not-split-group.yaml)
+**Example 6-33** · [`caption-fileblock-does-not-split-group`](../tests/006-universal-attributes/caption-fileblock-does-not-split-group.yaml)
 
 **Inline content.** The caption text is parsed by the full inline rule set:
 
@@ -294,8 +287,8 @@ All captionable blocks carry `caption: []` when no caption line binds. `FileGrou
 
 **Escaping.** `\^` at line start suppresses the caption opener → `Paragraph([Text("^ ...")])`. See §13.2.
 
-**Example 6-32** · [`caption-table-basic`](../tests/006-universal-attributes/caption-table-basic.yaml)
+**Example 6-34** · [`caption-table-basic`](../tests/006-universal-attributes/caption-table-basic.yaml)
 
-**Example 6-33** · [`caption-quoteblock`](../tests/006-universal-attributes/caption-quoteblock.yaml)
+**Example 6-35** · [`caption-quoteblock`](../tests/006-universal-attributes/caption-quoteblock.yaml)
 
 ---

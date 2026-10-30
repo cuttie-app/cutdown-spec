@@ -30,7 +30,7 @@ The risk moves to the consumer that merges a value into its own objects. A deep 
 
 ### 21.4 Bidi controls and look-alike characters
 
-The bidi controls U+202A–U+202E and U+2066–U+2069 change the order in which text is displayed without changing the text (CVE-2021-42574, "Trojan Source"). Inside a name they make one target look like another. Ids, tag levels, and paths therefore exclude them (§1.4, §2.1, §8.5): a target that holds one is invalid, keeps the text as written, and resolves to nothing. In prose they remain ordinary characters, because mixed-direction text needs them.
+The bidi controls (§1.4) — U+202A–U+202E, U+2066–U+2069, and the marks U+061C, U+200E, U+200F — change the order in which text is displayed without changing the text (CVE-2021-42574, "Trojan Source"). Inside a name they make one target look like another. Ids, tag levels, and paths therefore exclude them (§1.4, §2.1, §8.5): a target that holds one is invalid, keeps the text as written, and resolves to nothing. In prose they remain ordinary characters, because mixed-direction text needs them.
 
 Look-alike letters cannot be excluded by grammar: the Cyrillic `а` and the Latin `a` are both letters, and both are valid in an id or a path. A consumer that shows a target to a reader — a status bar, a link preview, a file name — SHOULD show it in a way that exposes mixed scripts and confusable characters ([UTS39], §20.4 clause 13).
 

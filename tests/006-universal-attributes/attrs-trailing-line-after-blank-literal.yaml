@@ -1,0 +1,33 @@
+id: attrs-trailing-line-after-blank-literal
+section: "6.1.3"
+description: "After a blank line a {attrs} line is its own block: the List has ended, nothing claims the group, and it stays literal text"
+
+input: |
+  - item one
+
+  {.attrs}
+
+  - item two
+
+ast:
+  - _type: List
+    kind: "bullet"
+    loose: false
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: item one
+  - _type: Paragraph
+    attributes: []
+    children:
+      - _type: Text
+        value: "{.attrs}"
+  - _type: List
+    kind: "bullet"
+    loose: false
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: item two

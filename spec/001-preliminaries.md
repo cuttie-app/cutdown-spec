@@ -59,10 +59,10 @@ UNICODE_WHITESPACE ::= [#x9-#xD] | #x20 | #x85 | #xA0 | #x1680 | [#x2000-#x200A]
 
 The production lists the White_Space property as the Unicode Standard defines it; where they differ, the property wins.
 
-A **bidi control** is one of the nine explicit directional formatting characters of the Unicode Bidirectional Algorithm ([UNICODE] UAX #9). In text it is an ordinary character. Ids (§2.1), tag levels (§2.1), and paths (§8.5) exclude it, because it changes how a name is displayed without changing what the name is.
+A **bidi control** is a character with the Unicode `Bidi_Control` property ([UNICODE] UAX #9): the nine explicit directional formatting characters and the three implicit marks ALM, LRM, and RLM. In text it is an ordinary character. Ids (§2.1), tag levels (§2.1), and paths (§8.5) exclude it, because it changes how a name is displayed without changing what the name is.
 
 ```ebnf
-BIDI_CONTROL ::= [#x202A-#x202E] | [#x2066-#x2069]
+BIDI_CONTROL ::= #x061C | #x200E | #x200F | [#x202A-#x202E] | [#x2066-#x2069]
 ```
 
 Every other character is ordinary text, including the space-like ones: U+00A0 (no-break space), U+3000 (ideographic space), U+2028 (line separator), U+2029 (paragraph separator), U+0085 (next line), U+000B (line tabulation), and U+000C (form feed). None of them ends a line, makes a line blank, or collapses.
