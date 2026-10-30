@@ -18,7 +18,5 @@ ast:
           - _type: Text
             value: "The Mystery at Thornfield"
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "Plot twist: the butler did it."
+      - _type: Text
+        value: "Plot twist: the butler did it."

@@ -1,0 +1,17 @@
+id: quote-marker-needs-separator
+section: "4.6"
+description: "A `>` must be followed by whitespace or end of line: `>quote` and `>> x` are paragraphs, a bare `>` opens a QuoteBlock"
+
+input: ">quote\n\n>> x\n\n>\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: ">quote"
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: ">> x"
+  - _type: QuoteBlock
+    children: []

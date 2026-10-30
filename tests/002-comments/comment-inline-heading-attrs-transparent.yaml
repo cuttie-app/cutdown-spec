@@ -13,7 +13,7 @@ ast:
         value: [c]
     heading:
       - _type: Text
-        value: "Heading "
+        value: "Heading"
     reflection:
       - loc: { start: 18, end: 22 }
         text: "note"

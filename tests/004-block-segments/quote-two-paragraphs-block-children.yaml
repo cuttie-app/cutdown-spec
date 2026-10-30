@@ -1,0 +1,17 @@
+id: quote-two-paragraphs-block-children
+section: "4.6"
+description: "A quote body with more than one paragraph holds blocks; a body of one paragraph would hold its inline content directly"
+
+input: "> a\n>\n> b\n"
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: a
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: b

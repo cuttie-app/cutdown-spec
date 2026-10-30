@@ -10,13 +10,9 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: alpha
+      - _type: Text
+        value: alpha
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: beta
+      - _type: Text
+        value: beta

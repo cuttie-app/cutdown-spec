@@ -10,7 +10,7 @@ ast:
   - _type: Table
     caption:
       - _type: Text
-        value: "Cap "
+        value: "Cap"
     rows:
       - _type: Row
         reflection:

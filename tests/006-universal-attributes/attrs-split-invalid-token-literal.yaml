@@ -1,0 +1,15 @@
+id: attrs-split-invalid-token-literal
+section: "6.1.1"
+description: "When the line after a break holds no valid token, the group fails; its dead slice ends at the opener's line and the rest is ordinary text"
+
+input: "**b**{key\n=v} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+      - _type: Text
+        value: "{key=v} end"

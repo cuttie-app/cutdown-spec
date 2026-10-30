@@ -3,7 +3,7 @@
 Cutdown's parsing model makes three testable guarantees:
 
 1. **Single pass.** Every character of an input snapshot is scanned a bounded number of times; parsing is linear time in snapshot length. Degradation emits verbatim substrings identified by source offset — committed text is never re-lexed or re-inline-parsed. A parser that records closer positions as it scans an inline context never rescans text to match an opener, so inline matching stays linear. An incremental implementation MAY retain an unresolved suffix between snapshots; its result for each snapshot MUST equal parsing that snapshot afresh (§15).
-2. **Bounded lookahead.** At most one line at block level. At inline level, a Class 1 or Class 3 opener (§9.1.4.1) looks ahead to the end of its inline context, which ends at the block's last line; a Class 2 opener looks ahead to the end of its line or the `##` cut.
+2. **Bounded lookahead.** At most one line at block level. At inline level, an opener (§9.1.4.1) looks ahead to the end of its inline context, which ends at the block's last line.
 3. **Deferred attachment.** A deferred structural decision attaches or regroups already-built nodes only; it never re-parses text. The deferral windows are: one-block emission latency (a caption line or attribute-continuation line may bind to the preceding block) and open-inline buffering until the end of the inline context.
 
 ### 9.1 Phases
@@ -16,7 +16,7 @@ Cutdown's parsing model makes three testable guarantees:
 #### 9.1.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside the body of a `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`; §0.5). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. A `CodeInline` or `MathInline` counts only when its closer is found within the inline context; escapes are recognized first (§11). If found: characters before `##` are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
+2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside the body of a `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`; §0.5). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. A `CodeInline` or `MathInline` counts only when its closer is found within the inline context; escapes are recognized first (§11). If found: characters before `##`, without trailing whitespace, are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate** (§0.5). A standalone comment line is neither blank nor content; §2.2 defines where it attaches and which runs it ends.
 4. Apply the fenced constructs that override blank-line boundaries — `` ``` ``, `~~~`, `:::`, `$$$`, `^^^` and `###`. Each opens until its closer or end of document; see §10.4.2 for the shared fence pattern and §4.3–§4.16 for each construct.
 
@@ -26,22 +26,24 @@ Each block candidate is classified by its first line:
 
 | First line matches | Block type |
 |-------------------|------------|
-| `^=+ ` | Heading → Section; ten or more `=` give level 9 (§4.2) |
+| `^=+` and a separator | Heading → Section; ten or more `=` give level 9 (§4.2) |
 | `^---` | PageBreaker (top level only; no node — §9.4) |
 | `^` ``` ` | CodeBlock |
 | `^~~~` | Meta |
 | `^:::` | NamedBlock |
 | `^\|` | Table |
-| `^>` | QuoteBlock |
-| `^- ` or `^- \[[ xX+]\] ` | List (unordered / task) |
-| `^[0-9]{1,5}\. ` | List (ordered) |
-| `^\[^[ID_LITERAL]` | RefDefinition |
+| `^>` and a separator | QuoteBlock |
+| `^-` and a separator, or `^- \[[ xX+]\]` and a separator | List (unordered / task) |
+| `^[0-9]{1,5}\.` and a separator | List (ordered) |
+| `^\[^[ID_LITERAL]+\]:` and a separator | RefDefinition |
 | `^\$\$\$` | MathBlock |
 | `^\^\^\^` | SpoilerBlock |
 | `^###` | CommentBlock |
 | `^/` | InjectBlock when the locator's `path` ends with `.cutdown` or `/` (§4.17); otherwise FileBlock, grouped into a FileGroup (§4.11, §4.12) |
 | `^https://` | EmbedBlock (§4.9) |
 | (anything else) | Paragraph |
+
+A **separator** is whitespace (§0.4) or the end of the line. A marker followed by anything else is not a marker, and the line is classified as if the marker were text: `-5 °C`, `3.14`, `=>`, `>quote`, and `[^a]:x` are paragraphs. U+3000 (ideographic space) is text, not a separator. A heading, list, or RefDefinition marker consumes all whitespace after it; a `>` consumes one whitespace character (§4.6).
 
 #### 9.1.4 Phase 4 — Inline Parsing
 
@@ -79,9 +81,9 @@ If no closer is found before the end of the inline context, the opener alone is 
 | `{{` | Variable |
 | `{` | attribute scan (§6) |
 
-An unresolved Class 2 opener causes the source from the opener to its terminator — end of line, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Emphasis` inside the dead slice does not exist.
+A Class 2 opener searches for its closer through the whole inline context, across soft breaks (§12.1). An unresolved Class 2 opener causes the source from the opener to the end of its own line — the line end, or the `##` cut (§2.2) — to be emitted as a single verbatim `Text` run, copied from the source by offset; the next line parses normally. The slice is never inline-parsed: closed constructs inside a dead slice are lost (they remain literal). Constructs committed *before* the opener are retained. `[a __b__ c` yields `Text("[a __b__ c")` — the `Emphasis` inside the dead slice does not exist.
 
-**Attribute braces.** `{` (left brace) opens an attribute scan running to the matching `}` (right brace) or end of line. If the content violates the attribute grammar (§6) or the `}` never arrives, the entire slice — braces included, when present — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
+**Attribute braces.** `{` (left brace) opens an attribute scan running to the matching `}` (right brace), which may stand on a later line of the inline context (§6.1.1). If the content violates the attribute grammar (§6) or the `}` never arrives, the slice — braces included, when present, and never past the end of the `{`'s own line — is emitted as verbatim `Text` and never inline-parsed. This is the intentional **literal-span idiom**: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
 **Class 3 — bracket-matched, counted: `Mark`.**
 
@@ -89,7 +91,7 @@ An unresolved Class 2 opener causes the source from the opener to its terminator
 
 An opener that never matches degrades per **Class 1**: the opener alone (`::` plus the name) is emitted as `Text` and parsing continues immediately after it, so following constructs parse normally.
 
-`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.1.2). The inline parser receives only the pre-`##` substring of each line. When that substring leaves an inline opener unclosed (e.g. `[text ` with no `]` (right bracket) because `##` swallowed it), the opener degrades per its class (§9.1.4.1) — for a Class 2 opener the `##` cut acts as the slice terminator. See §2.2 for examples.
+`##` boundaries are NOT re-scanned during Phase 4 — they were established in Phase 2 (§9.1.2). The inline parser receives only the pre-`##` content of each line, joined by soft breaks. The cut ends its line as a line end does: an opener before it may still close on a later line, and if it never closes it degrades per its class (§9.1.4.1) — for a Class 2 opener the `##` cut ends the slice. In `[text ## here](url)` with no later line, the `[` has no `]` (right bracket) and degrades. See §2.2 for examples.
 
 Id, ref, tag, and cite links (`[text](#id)`, `[text](^ref)`, `[text](~tag)`, `[text](@cite)`, including the empty-text forms such as `[](^ref)`) are emitted as `Link` nodes in place. Resolving them — against segment ids, `RefDefinition` segments, tags, or a bibliography — is the consumer's responsibility.
 
@@ -131,7 +133,7 @@ The construct that owns the path decides where it ends:
 | `ImageInline` `(…)` | the character after `(` | the first unbalanced `)` |
 | `Link` `(…)` | the character after `(` | the first unbalanced `)` |
 
-A link target is scanned this way whatever its kind; the kind is chosen after the extent is known (§5.5).
+A link target is scanned this way whatever its kind; the kind is chosen after the extent is known (§5.5). A `(…)` extent may cross a soft break: the scan continues on the next line of the inline context, and the line break folds under the base-column rule (§12.1), so whitespace beyond the base column becomes one space of the path.
 
 Brackets nest inside every path. A `(` or `[` opens a pair, and the closer that matches it is path content, not the end of the path: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. Parentheses and square brackets are counted separately. Escaped brackets are not counted.
 
@@ -147,6 +149,7 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 | `\(` `\)` `\[` `\]` | the bracket | not counted for nesting, never ends the path |
 | `\?` `\#` `\&` `\=` | the character | no query, fragment, or pair boundary |
 | `\^` `\~` `\@` | the character | in a link target, no ref, tag, or cite sigil (§5.5) |
+| `\:` | `:` | in a link target, no URI scheme (§5.5); elsewhere a plain colon |
 | `\{{` | `\{{`, unchanged | an escaped interpolation token, resolved by the consumer (§5.11.1) |
 | `\` before any other character | both characters | none |
 

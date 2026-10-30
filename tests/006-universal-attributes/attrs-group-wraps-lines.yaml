@@ -1,0 +1,20 @@
+id: attrs-group-wraps-lines
+section: "6.1.1"
+description: "An attribute group may cross a soft break; the line end separates tokens like whitespace"
+
+input: "**b**{#intro\n.wide} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+        attributes:
+          - key: id
+            value: intro
+          - key: class
+            value: [wide]
+      - _type: Text
+        value: " end"

@@ -1,6 +1,6 @@
 id: paragraph-multiline-trailing-space
 section: "4.1"
-description: A trailing space before a soft break is preserved as a word boundary; lines join with a space
+description: A trailing space before a soft break is dropped and the soft break adds nothing, so the lines join directly
 
 input: "First line \nsecond line\n"
 
@@ -8,4 +8,4 @@ ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: First line second line
+        value: First linesecond line

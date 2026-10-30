@@ -15,8 +15,10 @@ ast:
     children:
       - _type: ListItem
         children:
-          - _type: Text
-            value: "item one"
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: "item one"
           - _type: CommentBlock
             text: "todo\n"
       - _type: ListItem

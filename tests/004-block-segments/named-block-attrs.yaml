@@ -16,7 +16,5 @@ ast:
       - key: id
         value: note1
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: Content
+      - _type: Text
+        value: Content

@@ -1,0 +1,14 @@
+id: mark-name-split-by-line-end
+section: "5.10"
+description: "A line end ends a Mark name: a name split over two lines becomes a shorter name followed by content"
+
+input: "::na\nme b::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: na
+        children:
+          - _type: Text
+            value: "me b"

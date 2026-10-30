@@ -9,10 +9,8 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: To be, or not to be.
+      - _type: Text
+        value: To be, or not to be.
     caption:
       - _type: Text
         value: William Shakespeare

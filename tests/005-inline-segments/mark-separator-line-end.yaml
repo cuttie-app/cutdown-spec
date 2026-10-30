@@ -1,0 +1,14 @@
+id: mark-separator-line-end
+section: "5.10"
+description: "A line end after the Mark name separates it from the content; the next line is the content"
+
+input: "::a\nb::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: a
+        children:
+          - _type: Text
+            value: b

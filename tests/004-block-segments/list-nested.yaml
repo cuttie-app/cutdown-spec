@@ -14,8 +14,10 @@ ast:
     children:
       - _type: ListItem
         children:
-          - _type: Text
-            value: Item one
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: Item one
           - _type: List
             kind: "bullet"
             start: 1

@@ -4,7 +4,7 @@ description: "A change in > depth is a structural boundary: it closes the paragr
 
 input: |
   > outer
-  >> inner
+  > > inner
   > outer again
 
 ast:
@@ -16,10 +16,8 @@ ast:
             value: outer
       - _type: QuoteBlock
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: inner
+          - _type: Text
+            value: inner
       - _type: Paragraph
         children:
           - _type: Text

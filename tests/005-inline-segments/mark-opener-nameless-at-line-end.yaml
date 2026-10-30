@@ -1,0 +1,11 @@
+id: mark-opener-nameless-at-line-end
+section: "5.10"
+description: "`::` at a line end has no name on its line, so it is literal; the next line's `::` has nothing open and is literal too"
+
+input: "::\nname b::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "::name b::"

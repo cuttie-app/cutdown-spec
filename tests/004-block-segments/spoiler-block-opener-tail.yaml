@@ -13,10 +13,8 @@ ast:
       - key: class
         value: [nsfw]
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: body
+      - _type: Text
+        value: body
 
 diagnostics:
   - code: CDN-0016

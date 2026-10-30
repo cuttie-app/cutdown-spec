@@ -1,0 +1,20 @@
+id: attrs-value-split-empty
+section: "6.1.1"
+description: "`key=` at a line end gives an empty value; the next line's word is a separate flag"
+
+input: "**b**{key=\nv} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+        attributes:
+          - key: key
+            value: ""
+          - key: v
+            value: ""
+      - _type: Text
+        value: " end"

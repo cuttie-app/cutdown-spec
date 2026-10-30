@@ -1,0 +1,12 @@
+id: link-target-split-interpolation-token
+section: "5.11"
+description: "Inside a string field a token is read after line breaks fold: a `{{key}}` split over two lines is whole again in raw"
+
+input: "[t](/a/{{ke\ny}}/b)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "/a/{{key}}/b"

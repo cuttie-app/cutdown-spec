@@ -1,0 +1,11 @@
+id: soft-break-token-boundary
+section: "12.1"
+description: "A soft break folds to zero but no token crosses it: a `_` at line end and a `_` at the next line's start stay two single literal underscores"
+
+input: "x _\n_y__ z\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "x __y__ z"

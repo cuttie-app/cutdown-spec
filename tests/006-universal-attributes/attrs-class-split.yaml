@@ -1,0 +1,20 @@
+id: attrs-class-split
+section: "6.1.1"
+description: "A line end ends a class name: `.cl` and `ass` become a class and a flag"
+
+input: "**b**{.cl\nass} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+        attributes:
+          - key: class
+            value: [cl]
+          - key: ass
+            value: ""
+      - _type: Text
+        value: " end"

@@ -1,0 +1,12 @@
+id: heading-continuation-base-column
+section: "4.2"
+description: "A heading continues onto the next lines. Trailing spaces are dropped; leading whitespace up to the heading's base column (2) adds nothing, and whitespace beyond it becomes one space"
+
+input: "= Text_A  \n  Text_B\n   Text_C\n"
+
+ast:
+  - _type: Section
+    level: 1
+    heading:
+      - _type: Text
+        value: "Text_AText_B Text_C"

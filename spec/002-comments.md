@@ -21,7 +21,8 @@ foo ## trailing comment
 ```
 
 - The `##` and everything up to (but not including) the next `\n` is the **comment payload**. The `##` and one leading space (if present) are stripped; the remainder is the `text` value **verbatim** — trailing whitespace inside the payload is preserved, since the payload is opaque (§12's trailing-space rule does not reach inside it).
-- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An unclosed opener before `##` degrades to literal per §9.1.4.
+- **The cut ends the line.** The content before `##` is the line's content, and whitespace between that content and `##` is trailing whitespace: it is dropped (§12.1). `foo ## note` holds `Text("foo")`.
+- **Opaque to all other delimiters.** Once `##` is recognized, the parser consumes characters to `\n` blindly. It does NOT honour link-text `]` (right bracket), table cell `|` (pipe), attribute `}` (right brace), or any other inline construct's closer. An opener before `##` behaves as at any line end: a span may still close on a later line of the inline context, and a dead Class 2 opener's slice stops at the cut (§9.1.4.1).
 - **`##` boundaries are detected during Phase 2 preprocessing** (§9.1.2), before block classification. Block classification operates on the pre-`##` substring of each line. To find them, Phase 2 first recognizes escapes and `CodeInline` and `MathInline` spans (§11).
 - `##` is **not** recognized inside opaque content (§0.5). For a `CodeBlock`, `MathBlock`, `Meta`, or `CommentBlock` only the **opener line** (the first line of the fence) and the **closer line** (the closing fence) are scanned. On a `Meta` or `CommentBlock` fence line, a `##` is part of the tail that the fence drops (§10.4.2).
 - Inline, a `CodeInline` or `MathInline` protects a `##` only when its closer is found within the inline context; behind an opener that never closes, `##` is a comment and the opener degrades per its class (§9.1.4.1).
@@ -50,7 +51,7 @@ When `##` appears after content on a line that belongs to a block, the payload i
 | Table header separator line | the row before it in the table (§4.8) |
 | Table caption line | the table's last row |
 | List item line | that `ListItem` or `TaskItem` |
-| QuoteBlock opener | that `QuoteBlock` |
+| Line inside a `QuoteBlock` | the block that owns the content after the `>` markers — a `QuoteBlock` whose body is one paragraph owns it itself (§4.6) |
 | Opener or closer of a `CodeBlock`, `MathBlock`, `SpoilerBlock`, or `NamedBlock` | that block |
 | Fence line of a `Meta` or `CommentBlock` | none — dropped with the fence tail (§10.4.2) |
 | FileBlock line | that `FileBlock` |
@@ -73,19 +74,19 @@ Either way the comment line ends at its line terminator, and the next line opens
 
 ```
 ## foo                      →  no segment; preceding block gains { loc, text: "foo" }
-foo ## bar                  →  Text("foo ") — block gains { loc, text: "bar" }
+foo ## bar                  →  Text("foo") — block gains { loc, text: "bar" }
 ``code ## not``             →  CodeInline { value: "code ## not" }
 \## foo                     →  Text("## foo")
-foo ### at inline           →  Text("foo ") — block gains { loc, text: "# at inline" }
+foo ### at inline           →  Text("foo") — block gains { loc, text: "# at inline" }
 ### at line start          →  opens a CommentBlock (§4.16); the tail is dropped
 
 [text ## comment](url)
-  →  Text("[text ")  (the [ has no ] closer before the ## cut; the verbatim slice runs to the cut, §9.1.4.1)
+  →  Text("[text")  (the [ has no ] closer before the ## cut; the verbatim slice runs to the cut, §9.1.4.1)
      Paragraph.reflection += { loc, text: "comment](url)" }
 
 | Head ## comment | Next |
-  →  pre-## `| Head ` fails row grammar (no closing |).
-     Block becomes Paragraph([Text("| Head ")]).
+  →  pre-## `| Head` fails row grammar (no closing |).
+     Block becomes Paragraph([Text("| Head")]).
      Paragraph.reflection += { loc, text: "comment | Next |" }
 
 | AA | BB | ## row comment

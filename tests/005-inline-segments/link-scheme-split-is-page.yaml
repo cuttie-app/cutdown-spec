@@ -1,0 +1,13 @@
+id: link-scheme-split-is-page
+section: "5.5"
+description: "A SCHEME never crosses a line end: a scheme split over two lines is not a scheme, so the link is a page link"
+
+input: "[t](ht\ntps://x)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "https://x"
+        href: ""

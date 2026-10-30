@@ -73,7 +73,7 @@ Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted; trailing spaces before the break collapse to a single space, preserved as the explicit word separator; at a block boundary the space is dropped (§12). Runs of spaces inside the text collapse to one (U+00A0 excepted). `\` at line end → `LineBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted. Trailing whitespace is always dropped. A word boundary is written at the start of the next line: whitespace beyond the base column (0 for a paragraph, 2 for a heading or list item, 2 per quote level) becomes one space, so `one` then ` two` reads `one two` (§12). No token crosses a line end; spans and link targets do. Runs of spaces inside the text collapse to one (U+00A0 excepted). `\` at line end → `LineBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -89,7 +89,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
+The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
 
 Sections are not parsed — they are derived by a fold (§9.3.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
@@ -130,7 +130,7 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
   - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. Only the item that absorbed the blank line is block-promoted; the others keep inline children.
+Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). A marker is followed by whitespace or the line end: `-5 °C` and `3.14` are text, and `-` alone is an empty item. The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. An item whose body is one paragraph holds inline children; any other body holds blocks, never a mix.
 
 ### Files → `FileBlock`, `FileGroup`
 
@@ -168,10 +168,10 @@ Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInl
 ```
 > content
 > more content
->> nested quote
+> > nested quote
 ```
 
-The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `>` chars; a line at a new depth ends the paragraph above it, so `> a` then `>> b` nests without a blank line.
+Every `>` is followed by whitespace or the line end, and consumes one whitespace character: `>quote` and `>>` are text, a bare `>` is an empty quote line. The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `> ` markers; a line at a new depth ends the paragraph above it, so `> a` then `> > b` nests without a blank line. A body of one paragraph is held as inline children.
 
 ### Code Block → `CodeBlock`
 
@@ -247,7 +247,7 @@ Must start at line start. When the same `ref` is defined more than once in a doc
 Parsed in source order. An unclosed opener degrades by its class (§9.1.4.1):
 
 - **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
-- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the whole source from the opener to end of line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
+- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the closer is searched through the inline context, so link text, a link target, and an attribute group may wrap onto the next line (`{{key}}` may not). With no closer, the source from the opener to the end of its own line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
 - `::name … ::` (`Mark`) matches by counting, not by first closer. An unclosed opener emits the opener alone as `Text` and parsing continues; `::` without a valid name is literal text.
 
 Degradation to visible literal text is silent — no diagnostics.
@@ -359,7 +359,7 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 ```
 # literal hash, not a comment
 ## line comment       → stored as reflection on nearest block
-foo bar ## tail       → Text("foo bar ") + reflection entry on block
+foo bar ## tail       → Text("foo bar") + reflection entry on block
 
 ###
   opaque block — any content captured raw
@@ -368,13 +368,13 @@ foo bar ## tail       → Text("foo bar ") + reflection entry on block
 
 Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line directly after a `CommentBlock` is an orphan → empty `Paragraph`.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. An unclosed inline opener before `##` degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut terminates the verbatim slice. Example: `[text ## here](url)` → `Text("[text ")`, reflection entry `"here](url)"`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. Whitespace before `##` is trailing whitespace and is dropped. The cut ends the line as a line end does: an inline opener before it may still close on a later line, and one that never closes degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut ends the verbatim slice. Example: `[text ## here](url)` alone → `Text("[text")`, reflection entry `"here](url)"`.
 
-**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading ")], reflection: [{ loc, text: "note" }])`.
+**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading")], reflection: [{ loc, text: "note" }])`.
 
 **Standalone line comment.** `## comment` on its own line, directly after content, attaches to the owner of the line above (the last item, row, or file of a List, Table, or FileGroup) and does not split that run; it does end a Paragraph. After a blank line, or with no preceding block → empty `Paragraph { children: [], reflection: [...] }`. No blank line is needed after a comment line.
 
-**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`. `List`, `Table`, and `FileGroup` have no `reflection`. On a header separator it goes to the row above; a separator with no row above inserts an empty `Header` row. `{attrs}` on a header separator row claim the Table slot (§4.8).
+**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`; inside a quote, the block that owns the content — the `QuoteBlock` itself when its body is one paragraph. `List`, `Table`, and `FileGroup` have no `reflection`. On a header separator it goes to the row above; a separator with no row above inserts an empty `Header` row. `{attrs}` on a header separator row claim the Table slot (§4.8).
 
 ---
 

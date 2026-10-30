@@ -14,7 +14,5 @@ ast:
     children:
       - _type: QuoteBlock
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: qaqb
+          - _type: Text
+            value: qaqb

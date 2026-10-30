@@ -15,7 +15,5 @@ ast:
     children:
       - _type: SpoilerBlock
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: hidden inside callout
+          - _type: Text
+            value: hidden inside callout

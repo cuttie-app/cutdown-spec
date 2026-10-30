@@ -1,6 +1,6 @@
 id: cdn-0030-meta-block-inside-container
 section: "4.3"
-description: "~~~ fence inside a block container is illegal; raw span emitted as Paragraph; CDN-0030 warning emitted on the opening fence line"
+description: "~~~ fence inside a block container is illegal; the raw span is emitted as paragraph text; CDN-0030 warning emitted on the opening fence line"
 
 input: |
   :::note
@@ -13,10 +13,8 @@ ast:
   - _type: NamedBlock
     name: note
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "~~~yaml\ntitle: foo\n~~~"
+      - _type: Text
+        value: "~~~yaml\ntitle: foo\n~~~"
 
 diagnostics:
   - code: CDN-0030

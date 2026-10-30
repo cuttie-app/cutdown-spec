@@ -1,0 +1,14 @@
+id: quote-paragraph-attrs-hoisted
+section: "4.6"
+description: "When a one-paragraph body is held as inline content, the paragraph's attributes move to the QuoteBlock"
+
+input: "> text {.x}\n"
+
+ast:
+  - _type: QuoteBlock
+    attributes:
+      - key: class
+        value: [x]
+    children:
+      - _type: Text
+        value: text

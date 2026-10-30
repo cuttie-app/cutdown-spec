@@ -1,0 +1,14 @@
+id: code-block-spaced-word-dropped
+section: "4.4"
+description: "The language word must be glued to the fence: after a space there is no word, the default language applies, and the text is dropped as tail"
+
+input: "``` js\nx\n```\n"
+
+ast:
+  - _type: CodeBlock
+    language: text
+    raw: x
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

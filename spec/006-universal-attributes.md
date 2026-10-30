@@ -27,6 +27,7 @@ Token types inside `{}`:
   - JSON that is malformed, over a limit, or given to `id` or `class` violates the attribute grammar: the whole `{…}` slice becomes literal text (§6.1.3).
 - `key` (bare, with no `=` (equals sign)) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
 - Token order inside `{}` is preserved in the emitted `Attribute[]`.
+- Tokens are separated by whitespace. A group may cross a soft break (§12.1): the line end separates tokens as whitespace does, and no token crosses it. An id, class, key, quoted or unquoted value, or JSON value ends at the line end, so a token split over two lines becomes two tokens — `{.cl` followed by `ass}` holds the class `cl` and the flag `ass`, and `{key=` followed by `v}` holds `key=""` and the flag `v`. If the rest is not a token (`{key` followed by `=v}`), or a quoted value is still open at the line end, the group violates the grammar (§6.1.3).
 
 > **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target.
 
@@ -71,7 +72,7 @@ A sequence of `{attr}` blocks at the end of an inline context is distributed **r
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
-`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` (left brace) has no matching `}` (right brace) before end of inline context, the entire slice from `{` to end of line is emitted as one verbatim `Text` run (Class 2 degradation, §9.1.4.1; see §6.1.3).
+`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` (left brace) has no matching `}` (right brace) before end of inline context, the slice from `{` to the end of its own line is emitted as one verbatim `Text` run (Class 2 degradation, §9.1.4.1; see §6.1.3).
 
 **Scope slots by context:**
 
@@ -86,6 +87,8 @@ An empty `{}` is valid syntax. It claims its slot and assigns nothing to that se
 | Table row — last row, cell sealed | Table | Row | — |
 | FileBlock line | FileGroup | FileBlock | — |
 | QuoteBlock nesting (`> >`) | outermost QuoteBlock | … inner levels … | Paragraph → inline |
+
+The chain is computed on the parsed blocks. When a container then holds its one paragraph as inline content (§4.6, §4.7.1), whatever the paragraph claimed moves to the container.
 
 **List items.** Only the last item of a `List` reaches the `List`, as only the last row reaches the `Table`. Every other item's chain starts at its own `ListItem` or `TaskItem`, so each `List` has one claimant. Whether an item is last is known at the next line (one-block emission latency, §9). A nested item reaches only its own `List`.
 
@@ -189,7 +192,7 @@ Orphan behaviour depends on position:
 | After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | dropped (no AST output), **CDN-0011** emitted | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
 
-`{` is always consumed as the start of an attribute scan, running to the matching `}` or end of line. If the content violates the attribute grammar or the `}` never arrives, the **entire slice** — braces included, when present — is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §9.1.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
+`{` is always consumed as the start of an attribute scan, running to the matching `}`, which is searched for through the inline context. If the content violates the attribute grammar or the `}` never arrives, the **slice** from `{` — braces included, when present — to the `}` or to the end of the `{`'s own line, whichever comes first, is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §9.1.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
 Writing `\{` makes a literal brace explicit:
 
@@ -304,7 +307,7 @@ Input:
 AST:
   QuoteBlock {
     caption: [Text("William Shakespeare, "), Emphasis([Text("Hamlet")]), Text(", Act 3")],
-    children: [Paragraph([Text("To be, or not to be.")])],
+    children: [Text("To be, or not to be.")],
     attributes: []
   }
 ```

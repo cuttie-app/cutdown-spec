@@ -1,0 +1,27 @@
+id: line-opener-needs-separator
+section: "9.1.3"
+description: "A leaf opener glued to text is not an opener: each line stays a Paragraph. U+3000 after a marker is text, not a separator"
+
+input: "-5 °C overnight\n\n3.14 is close enough\n\n=> next\n\n[^a]:x\n\n-　項目\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "-5 °C overnight"
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "3.14 is close enough"
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "=> next"
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "[^a]:x"
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "-　項目"

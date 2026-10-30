@@ -12,7 +12,5 @@ ast:
     children:
       - _type: SpoilerBlock
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: hidden
+          - _type: Text
+            value: hidden

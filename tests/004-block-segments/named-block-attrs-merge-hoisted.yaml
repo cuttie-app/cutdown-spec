@@ -1,0 +1,15 @@
+id: named-block-attrs-merge-hoisted
+section: "4.13"
+description: "A hoisted paragraph's classes merge with the container's own, container first"
+
+input: ":::n {.a}\ntext {.b}\n:::\n"
+
+ast:
+  - _type: NamedBlock
+    name: n
+    attributes:
+      - key: class
+        value: [a, b]
+    children:
+      - _type: Text
+        value: text

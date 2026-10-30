@@ -10,7 +10,5 @@ input: |
 ast:
   - _type: SpoilerBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: Some content
+      - _type: Text
+        value: Some content

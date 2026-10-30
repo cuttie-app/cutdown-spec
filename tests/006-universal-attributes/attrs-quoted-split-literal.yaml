@@ -1,0 +1,15 @@
+id: attrs-quoted-split-literal
+section: "6.1.1"
+description: "A quoted value never crosses a line end: the group fails and is literal text"
+
+input: "**b**{k=\"a\nb\"} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+      - _type: Text
+        value: "{k=\"ab\"} end"

@@ -16,17 +16,13 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "{.callout}content 1"
+      - _type: Text
+        value: "{.callout}content 1"
 
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: content 2
+      - _type: Text
+        value: content 2
     attributes:
       - key: class
         value:
@@ -34,10 +30,8 @@ ast:
 
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: content 3
+      - _type: Text
+        value: content 3
     attributes:
       - key: class
         value:

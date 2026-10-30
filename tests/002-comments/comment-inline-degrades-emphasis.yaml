@@ -9,7 +9,7 @@ ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: "__bold "
+        value: "__bold"
     reflection:
       - loc: { start: 10, end: 14 }
         text: "tail"

@@ -150,12 +150,13 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 
 - `text` is **parsed by inline rules**. May be empty.
 - The target runs from the character after `(` to the first unbalanced `)`, by the path scan of §9.2.1 and §9.2.2: balanced parentheses stay in the target, and a backslash escapes the next character. The kind is chosen once the extent is known.
+- Text and target may cross a soft break: the `]` and `)` are searched for through the whole inline context. Inside the target the line break folds under the base-column rule (§12.1), so `[t](/gui` followed by `de)` has the target `/guide`. If no closer comes, the opener degrades as §9.1.4.1 says, and its slice ends at its own line.
 
 **Kind.** The first characters of the target choose the kind:
 
 | Target begins with | Kind | Field |
 |---|---|---|
-| a URI scheme: a letter, then letters, digits, `+`, `-`, or `.`, then `:` | `"external"` | `href` |
+| a URI scheme: a letter, then letters, digits, `+`, `-`, or `.`, then `:`, all on one line | `"external"` | `href` |
 | `#` (octothorpe) | `"id"` | `target` |
 | `^` (caret) | `"ref"` | `target` |
 | `~` (tilde) | `"tag"` | `target` |
@@ -163,7 +164,7 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 | nothing — the target is empty | `"page"`, a **wiki link** | `raw` (`''`), `path` |
 | anything else | `"page"` | `raw`, `path` |
 
-The sigils `#`, `^`, `~`, and `@` count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`.
+The sigils `#`, `^`, `~`, and `@`, and the colon that ends a scheme, count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`, and `[x](FAQ\:setup)` is a page link whose path is `FAQ:setup`. The scheme test uses no other heuristic: `[x](Intro: draft)` and `[x](C:/notes)` are external links. A scheme split over two lines is not a scheme, so `[t](ht` followed by `tps://x)` is a page link.
 
 - **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
 - **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§9.2.4), then checked (§9.2.5); last, the parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§1.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
@@ -240,7 +241,7 @@ interface CodeInline {
 - Content is **literal** — no inline parsing. **One escape sequence is processed**: `` \` `` → literal `` ` `` (does not close the span). Every other backslash is literal, including `\\` (two literal backslashes) and any other `\X` (per §8 non-special rule). See §8.3.
 - Unmatched '\`\`' → `Text("``")`. Single '\`' → `Text("`")`.
 - Triple backtick in inline context: \`\`\` = \`\` (opener) + \` (literal inside).
-- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside \`\`...\`\` is folded to zero. See §12 for full whitespace rules.
+- Whitespace collapsing does NOT apply to `CodeInline`. A soft break inside \`\`...\`\` is folded to zero, and the continuation line's leading whitespace follows the base-column rule. See §12 for full whitespace rules.
 
 **Examples:**
 
@@ -394,12 +395,12 @@ interface Mark {
 | Next character | Result |
 |----------------|--------|
 | `::` | empty `Mark`; the construct ends there |
-| space | container opener; content runs to the matching closer |
+| whitespace or a line end | container opener; content runs to the matching closer |
 | anything else | not a `Mark` — emit `Text("::" + name)` and continue parsing |
 
-The name is **required**. `::` not followed by at least one `ID_LITERAL` character is emitted as literal `Text("::")`. The space after the name is a delimiter and is not part of the content.
+The name is **required**. `::` not followed by at least one `ID_LITERAL` character on its own line is emitted as literal `Text("::")`. The whitespace character or line end after the name is the separator and is consumed; further whitespace before the content is consumed by §12.2. A line end always ends the name, so a name never continues on the next line: `::na` followed by `me b::` is a Mark named `na` with the content `me b`.
 
-**Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by `ID_LITERAL+` and then a space or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
+**Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by `ID_LITERAL+` and then whitespace, a line end, or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
 
 - Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.1.4.1, Class 3).
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
@@ -409,7 +410,7 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 - Attributes trail the closer, glued to it as for every other inline node: `::a b::{#x .y}`.
 - Whitespace inside the delimiters follows §12, as for any container inline.
 
-**Name lexing.** The name is a maximal `ID_LITERAL+` run and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_LITERAL` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` `` and space are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§11):
+**Name lexing.** The name is a maximal `ID_LITERAL+` run and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_LITERAL` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` ``, whitespace and the line end are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§11):
 
 ```
 ::a__b__::   → Mark { name: "a__b__" }              `_` is ID_LITERAL — the name swallows it, no Emphasis forms
@@ -453,6 +454,7 @@ interface Variable {
 
 - `key` is a run of `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
 - Unclosed `{{` → literal text. Empty-key `{{}}` → literal text → warning CDN-0015.
+- The token never crosses a line end: a `{{` with no `}}` on its own line is unclosed, so `{{ke` followed by `y}}` is the literal text `{{key}}`.
 - Variables are only parsed in inline contexts where inline rules are active (not inside code/math/meta blocks).
 - Brace tie-break: `{{` is always matched before `{` (longest opener wins).
 - May carry trailing attributes: `{{key}} {#id .class}`.
@@ -464,6 +466,7 @@ A variable can also stand inside a string property, where no `Variable` node can
 - **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
+- A string property holds no line breaks: a target wrapped over several lines is folded first (§12.1), and tokens are read from the folded string. A key split over two lines is therefore whole again for the consumer: `[t](/a/{{ke` followed by `y}}/b)` has `raw: "/a/{{key}}/b"`.
 - An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one pass, in order from the start of the string, together with the tokens (§18.4): `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
 
 ```
@@ -533,7 +536,8 @@ Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`
 | Line ending | Result                                                             |
 |-------------|--------------------------------------------------------------------|
 | `word\n`    | Soft break — folded to zero; lines concatenate directly            |
-| `word  \n`  | Trailing space collapsed to single space — `Text("word ")` emitted |
+| `word  \n`  | Trailing whitespace dropped — the same as `word\n`                 |
+| `word\n word` | Whitespace beyond the base column — one space: `Text("word word")` |
 | `word\\n`   | `LineBreak` segment — explicit line break inside the paragraph     |
 | `word\n\n`  | Blank line — ends the block; the next line starts a new `Paragraph` |
 

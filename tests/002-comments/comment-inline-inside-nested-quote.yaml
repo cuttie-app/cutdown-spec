@@ -1,0 +1,23 @@
+id: comment-inline-inside-nested-quote
+section: "2.2"
+description: "A trailing `##` inside a nested quote: whitespace before it is dropped, the span crosses the lazy line, and the comment goes to the innermost QuoteBlock, which holds the inline content directly"
+
+input: "> > __黒**猫**           ## black cat is a sacred name\n    が通りを横切っている__\n"
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: QuoteBlock
+        reflection:
+          - text: "black cat is a sacred name"
+        children:
+          - _type: Emphasis
+            children:
+              - _type: Text
+                value: 黒
+              - _type: Strong
+                children:
+                  - _type: Text
+                    value: 猫
+              - _type: Text
+                value: が通りを横切っている

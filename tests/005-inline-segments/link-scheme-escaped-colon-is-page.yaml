@@ -1,0 +1,13 @@
+id: link-scheme-escaped-colon-is-page
+section: "5.5"
+description: "An escaped `:` is not a scheme colon: [x](FAQ\\:setup) is a page link whose raw path is FAQ:setup"
+
+input: "[x](FAQ\\:setup)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "FAQ:setup"
+        href: ""

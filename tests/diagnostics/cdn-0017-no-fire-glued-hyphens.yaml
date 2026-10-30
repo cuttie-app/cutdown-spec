@@ -11,7 +11,5 @@ diagnostics: []
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "quoted---"
+      - _type: Text
+        value: "quoted---"

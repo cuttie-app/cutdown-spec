@@ -8,8 +8,6 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Strong
-          - _type: Text
-            value: " >"
+      - _type: Strong
+      - _type: Text
+        value: " >"

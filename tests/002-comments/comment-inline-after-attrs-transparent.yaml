@@ -12,7 +12,7 @@ ast:
         value: [p]
     children:
       - _type: Text
-        value: "some text "
+        value: "some text"
     reflection:
       - loc: { start: 18, end: 30 }
         text: "tail comment"

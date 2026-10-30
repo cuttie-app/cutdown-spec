@@ -1,13 +1,14 @@
 id: trailing-space-before-comment
 section: "12.1"
-description: "Trailing spaces before a trailing ## collapse to one and are preserved as the word boundary; the payload keeps its own trailing space verbatim"
+description: "Whitespace before a trailing ## is dropped like any trailing whitespace; the word boundary comes from the next line's leading whitespace; the payload keeps its own trailing space verbatim"
 
-input: "a   ## comment \nb\n"
+input: "a   ## comment \nb ## two\n c\n"
 
 ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: "a b"
+        value: "ab c"
     reflection:
       - text: "comment "
+      - text: "two"

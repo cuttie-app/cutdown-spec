@@ -1,8 +1,8 @@
 id: emphasis-spanning-lines
 section: "5.12"
-description: Soft break inside an inline block is folded to zero; trailing space before NL preserves word boundary inside inline blocks
+description: An inline span crosses a soft break, which folds to zero; leading whitespace on the continuation line marks the word boundary
 
-input: "__bold \ncontinuation__ and __nospace\ncontinuation__\n"
+input: "__bold\n continuation__ and __nospace\ncontinuation__\n"
 
 ast:
   - _type: Paragraph

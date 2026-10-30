@@ -16,7 +16,7 @@ A property a node does not admit is omitted, not emptied — `CommentBlock` has 
 
 ### 14.2 Block Segments
 
-All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it.
+All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it. `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `ListItem`, and `TaskItem` hold `Inline[]` when their body is exactly one paragraph and `Block[]` otherwise; one array never mixes the two (§4.7.1).
 
 | Segment         | Fields |
 |-----------------|--------|
@@ -24,14 +24,14 @@ All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry
 | `Section`       | `_type: "Section", level: 1..9, heading: Inline[], children: Block[], reflection, attributes` |
 | `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[], reflection, attributes` |
 | `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[], reflection, attributes` |
-| `QuoteBlock`    | `_type: "QuoteBlock", children: Block[], caption: Inline[], reflection, attributes` |
+| `QuoteBlock`    | `_type: "QuoteBlock", children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
 | `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: number = 1, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
 | `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], attributes` |
 | `FileGroup`     | `_type: "FileGroup", children: FileBlock[], attributes` |
 | `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflection, attributes` |
 | `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
-| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Block[], caption: Inline[], reflection, attributes` |
-| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Block[], caption: Inline[], reflection, attributes` |
+| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
+| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
 | `CommentBlock`  | `_type: "CommentBlock", text: string` — no `attributes`, no `reflection`. Hidden by default (§2.5). |
 | `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflection, attributes` |
 
@@ -59,8 +59,8 @@ All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
 | `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
-| `ListItem`      | `_type: "ListItem", children: (Block\|Inline)[], reflection, attributes` |
-| `TaskItem`      | `_type: "TaskItem", checked: bool, children: (Block\|Inline)[], reflection, attributes` |
+| `ListItem`      | `_type: "ListItem", children: Inline[]\|Block[], reflection, attributes` |
+| `TaskItem`      | `_type: "TaskItem", checked: bool, children: Inline[]\|Block[], reflection, attributes` |
 | `FileBlock`     | `_type: "FileBlock", raw: string, src: PathResourceLocator\|null, caption: Inline[], reflection, attributes` — only inside a `FileGroup` |
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
 | `Row`           | `_type: "Row"\|"Header", children: Cell[], reflection, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |

@@ -11,10 +11,8 @@ ast:
   - _type: NamedBlock
     name: callout
     children:
-      - _type: Paragraph
+      - _type: Mark
+        name: a
         children:
-          - _type: Mark
-            name: a
-            children:
-              - _type: Text
-                value: "b"
+          - _type: Text
+            value: "b"

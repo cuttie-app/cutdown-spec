@@ -1,0 +1,11 @@
+id: variable-key-split-literal
+section: "5.11"
+description: "A Variable key never crosses a line end: `{{` unclosed on its own line is literal text, with no diagnostic"
+
+input: "{{ke\ny}}\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "{{key}}"

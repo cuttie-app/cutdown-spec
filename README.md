@@ -61,9 +61,9 @@ This matters in practice. A content pipeline handling technical documentation, p
 
 ### **A newline inside a paragraph is nothing.**
 
-`word\nword` concatenates to `wordword`. Cutdown inserts no character at a line break — not a space, not anything. If a word boundary is wanted, the writer owns it: `word \nword` keeps the trailing space and yields `word word`.
+`word\nword` concatenates to `wordword`. Cutdown inserts no character at a line break — not a space, not anything. If a word boundary is wanted, the writer owns it, visibly, at the start of the next line: `word\n word` yields `word word`. Trailing spaces, which editors strip, carry no meaning.
 
-This makes line wrapping safe in every script. `よう\nこそ` renders as `ようこそ` — *welcome!* — wrapped mid-word and still intact, with no corrupting space injected between characters that carry their own spacing. Western prose keeps its boundaries, because words end in spaces. One rule, uniform inside inline spans and plain paragraph text alike, with no locale table and no heuristic.
+This makes line wrapping safe in every script. `よう\nこそ` renders as `ようこそ` — *welcome!* — wrapped mid-word and still intact, with no corrupting space injected between characters that carry their own spacing. Western prose keeps its boundaries by indenting the continuation line one column past its base. One rule, uniform inside inline spans and plain paragraph text alike, with no locale table and no heuristic.
 
 ### **Angle brackets are plain text.**
 

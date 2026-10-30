@@ -1,0 +1,20 @@
+id: attrs-id-split
+section: "6.1.1"
+description: "A line end ends an id: `#my` and `anchor` become an id and a flag"
+
+input: "**b**{#my\nanchor} end\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+        attributes:
+          - key: id
+            value: my
+          - key: anchor
+            value: ""
+      - _type: Text
+        value: " end"

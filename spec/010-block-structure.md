@@ -17,15 +17,16 @@ Comments (§2) are detected in Phase 2 before block boundary analysis. A line st
 
 ### 10.2 Leading and Trailing Whitespace
 
-Any number of leading spaces (including none) are stripped before block classification. A tab counts as one space (§7). Indentation has exactly three uses in Cutdown:
+Any number of leading spaces (including none) are stripped before block classification. A tab counts as one space (§7). Indentation has exactly four uses in Cutdown:
 
 1. **Block classification ignores it.** The stripped line determines the block type.
 2. **List nesting uses it.** For a list marker, the parser records the marker's **original column** (before stripping) as separate metadata and feeds it to the nesting stack model (§10.5). The column is used during list parsing only.
 3. **Container padding removes it.** In a `NamedBlock` or `SpoilerBlock`, the first non-blank content line (after the edge-blank trim, §10.6) sets the base padding, and up to that many leading spaces are removed from every content line before its children are parsed. A line with fewer leading spaces loses all it has; no diagnostic is emitted. Relative indentation beyond the base survives, which keeps the shape of a `CodeBlock` body inside the container (§4.13, §4.15).
+4. **Continuation lines measure it.** On a line that continues an inline context, whitespace up to the block's base column is layout and is dropped; whitespace beyond it becomes one space (§12.1).
 
 Indented code blocks (as in [COMMONMARK]) are not supported.
 
-Trailing spaces on a line collapse to one space. That space is kept as `Text(" ")` before a soft break, and dropped at a block boundary — a blank line, end of input, or the end of an inline context that ends at its line. §12.1 states the rule in full.
+Trailing whitespace on a line is always dropped, before a soft break and at a block boundary alike. §12.1 states the rule in full.
 
 ### 10.3 Block Classification
 
@@ -105,9 +106,9 @@ Depth-0 items (no parent on the stack) accept any non-blank non-marker line unco
 
 **Blank lines:**
 - Blank line followed by content at **col 0** → block boundary. The current `List` segment ends. If the next line is a list marker, a new `List` node begins.
-- Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item (`ListItem.children` becomes `Block[]`). The `List` is marked `loose: true`.
+- Blank line followed by content at **col > 0** → absorbed by the list parser. The stack persists. A list marker continues the list via the pop-then-push rule; a non-marker line becomes block content inside the current item, which then holds blocks (§4.7.1). The `List` is marked `loose: true`.
 
-**Style note:** Two spaces of indentation per nesting level is the canonical form (§16.1, row 11). The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
+**Style note:** Two spaces of indentation per nesting level is the canonical form (§16.1, row 10). The parser accepts any positive column delta as a valid nesting step; the stack model resolves all cases unambiguously.
 
 ```
 Input (standard):
@@ -119,7 +120,8 @@ Input (standard):
 AST:
   List { kind: "bullet", loose: false }
   ├── ListItem { Text("item 0.0") }
-  └── ListItem { Text("item 1.0") }
+  └── ListItem
+      ├── Paragraph { Text("item 1.0") }
       └── List { kind: "bullet", loose: false }
           ├── ListItem { Text("item 1.1") }
           └── ListItem { Text("item 1.2") }
@@ -142,7 +144,7 @@ AST:
       └── Paragraph("This starts a new paragraph inside item two.")
 ```
 
-The list is loose because it absorbed a blank line. Only item two absorbed it, so only item two is block-promoted (§4.7.1).
+The list is loose because it absorbed a blank line. Item one's body is one paragraph, so it holds inline content; item two's body is two paragraphs, so it holds blocks (§4.7.1).
 
 ### 10.6 Container-Edge Blank Lines
 
@@ -178,7 +180,7 @@ Input:
   :::
 
 AST:
-  NamedBlock { name: "note", children: [Paragraph([Text("content")])] }
+  NamedBlock { name: "note", children: [Text("content")] }
 ```
 
 ```

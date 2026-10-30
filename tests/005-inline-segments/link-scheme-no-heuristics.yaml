@@ -1,0 +1,17 @@
+id: link-scheme-no-heuristics
+section: "5.5"
+description: "Every SCHEME match is external: a space after the colon or a one-letter scheme changes nothing"
+
+input: "[a](Intro: draft) [b](C:/notes)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: "Intro: draft"
+      - _type: Text
+        value: " "
+      - _type: Link
+        kind: external
+        href: "C:/notes"

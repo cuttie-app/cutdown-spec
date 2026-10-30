@@ -8,10 +8,8 @@ ast:
   - _type: NamedBlock
     name: callout
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: Some content
+      - _type: Text
+        value: Some content
 
 diagnostics:
   - code: CDN-0004

@@ -1,6 +1,6 @@
 id: list-inline-hyphen-continuation
 section: "4.7"
-description: A continuation line at col > 0 is absorbed by the depth-0 (col 0) list item unconditionally; trailing space on first line preserves word boundary
+description: A continuation line at col > 0 is absorbed by the depth-0 (col 0) list item unconditionally; the trailing space is dropped and the indentation beyond the base column (2) gives one space
 
 input: "- - - nested item \n      continuation line\n"
 

@@ -9,7 +9,7 @@ ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: "foo bar "
+        value: "foo bar"
     reflection:
       - loc: { start: 11, end: 27 }
         text: "trailing comment"

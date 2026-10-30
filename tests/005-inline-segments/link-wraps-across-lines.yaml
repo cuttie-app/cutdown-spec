@@ -1,0 +1,15 @@
+id: link-wraps-across-lines
+section: "5.5"
+description: "Link text and target may cross a soft break; inside the target the break folds to zero under the base-column rule"
+
+input: "[wrapped\n text](/gui\nde)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: "/guide"
+        children:
+          - _type: Text
+            value: "wrapped text"

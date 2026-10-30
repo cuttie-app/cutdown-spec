@@ -9,7 +9,5 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: a- b
+      - _type: Text
+        value: a- b

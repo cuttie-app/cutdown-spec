@@ -1,0 +1,22 @@
+id: continuation-base-column-list
+section: "12.1"
+description: "A list item's base column is its marker column plus 2, whatever the marker's width"
+
+input: "- item\n  x\n   y\n\n10. ten\n    more\n"
+
+ast:
+  - _type: List
+    kind: bullet
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: "itemx y"
+  - _type: List
+    kind: numbered
+    start: 10
+    children:
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: "ten more"

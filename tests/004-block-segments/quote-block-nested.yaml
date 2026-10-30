@@ -1,16 +1,14 @@
 id: quote-block-nested
 section: "4.6"
-description: ">> produces a QuoteBlock nested inside an outer QuoteBlock (nesting depth = count of leading > chars)"
+description: "`> > ` produces a QuoteBlock nested inside an outer QuoteBlock (nesting depth = count of `>` markers, each followed by its separator)"
 
 input: |
-  >> Nested quote
+  > > Nested quote
 
 ast:
   - _type: QuoteBlock
     children:
       - _type: QuoteBlock
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: Nested quote
+          - _type: Text
+            value: Nested quote

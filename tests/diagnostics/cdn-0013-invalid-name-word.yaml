@@ -11,10 +11,8 @@ ast:
   - _type: NamedBlock
     name: ""
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: body
+      - _type: Text
+        value: body
 
 diagnostics:
   - code: CDN-0013

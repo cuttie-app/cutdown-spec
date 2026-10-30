@@ -1,0 +1,11 @@
+id: mark-ideographic-space-not-separator
+section: "5.10"
+description: "U+3000 after the Mark name is text, not a separator, so no Mark opens and the closer is literal"
+
+input: "::a　b::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "::a　b::"

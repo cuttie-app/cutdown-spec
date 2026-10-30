@@ -186,7 +186,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0012 |
 | title | Heading level out of range |
 | level | warning |
-| trigger | A line begins with 10 or more `=` characters followed by a space (would be heading level > 9) |
+| trigger | A line begins with 10 or more `=` characters followed by whitespace or the line end (would be heading level > 9) |
 | recovery | A level-9 Section is created. The first nine `=` are the marker; the surplus `=` begin the heading content (§4.2). `loc` spans the surplus |
 | introduced_in | 0.1.4 |
 | status | active |

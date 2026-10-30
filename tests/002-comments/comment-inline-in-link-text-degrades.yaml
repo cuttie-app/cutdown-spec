@@ -9,7 +9,7 @@ ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: "[text "
+        value: "[text"
     reflection:
       - loc: { start: 9, end: 19 }
         text: "here](url)"

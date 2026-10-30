@@ -8,10 +8,8 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: Hello world
+      - _type: Text
+        value: Hello world
     attributes:
       - key: class
         value:

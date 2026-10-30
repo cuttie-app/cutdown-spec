@@ -17,7 +17,5 @@ ast:
       - loc: { start: 22, end: 33 }
         text: "opener note"
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "content"
+      - _type: Text
+        value: "content"

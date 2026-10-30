@@ -15,7 +15,7 @@ ast:
             text: "note"
         children:
           - _type: Text
-            value: "a "
+            value: "a"
       - _type: ListItem
         reflection: []
         children:

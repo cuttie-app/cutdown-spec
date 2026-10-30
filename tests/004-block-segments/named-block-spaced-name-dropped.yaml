@@ -1,0 +1,18 @@
+id: named-block-spaced-name-dropped
+section: "4.13"
+description: "The name word must be glued to the fence: `::: note` opens a nameless NamedBlock and drops `note` as tail"
+
+input: "::: note\nx\n:::\n"
+
+ast:
+  - _type: NamedBlock
+    name: ""
+    children:
+      - _type: Text
+        value: x
+
+diagnostics:
+  - code: CDN-0013
+    level: warning
+  - code: CDN-0016
+    level: warning

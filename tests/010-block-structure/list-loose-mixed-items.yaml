@@ -1,6 +1,6 @@
 id: list-loose-mixed-items
 section: "10.5"
-description: "A loose list block-promotes only the item that absorbed the blank line; the continuation line folds into the first item with no separator"
+description: "In a loose list each item takes its own shape: a one-paragraph body holds inline content, a two-paragraph body holds blocks; the continuation line folds into the first item with no separator"
 
 input: |
   - First item

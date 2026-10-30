@@ -12,7 +12,5 @@ ast:
   - _type: NamedBlock
     name: note
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: firstsecond
+      - _type: Text
+        value: firstsecond

@@ -11,4 +11,4 @@ ast:
       - text: "tail](url)"
     children:
       - _type: Text
-        value: "[text "
+        value: "[text"

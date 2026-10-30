@@ -13,7 +13,5 @@ ast:
   - _type: NamedBlock
     name: note
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: content
+      - _type: Text
+        value: content

@@ -1,0 +1,14 @@
+id: mark-separator-tab
+section: "5.10"
+description: "A tab after the Mark name separates it from the content, like a space"
+
+input: "::a\tb::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: a
+        children:
+          - _type: Text
+            value: b

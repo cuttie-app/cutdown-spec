@@ -18,7 +18,5 @@ ast:
       - _type: NamedBlock
         name: inner
         children:
-          - _type: Paragraph
-            children:
-              - _type: Text
-                value: text
+          - _type: Text
+            value: text

@@ -1,6 +1,6 @@
 id: paragraph-continuation-leading-spaces
 section: "4.1"
-description: Leading spaces on paragraph continuation lines are stripped before inline parsing; they do not appear in output
+description: Leading whitespace on a paragraph continuation line beyond the base column (0) collapses to one space
 
 input: |
   First line
@@ -10,4 +10,4 @@ ast:
   - _type: Paragraph
     children:
       - _type: Text
-        value: First lineindented continuation
+        value: First line indented continuation

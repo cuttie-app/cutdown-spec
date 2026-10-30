@@ -10,17 +10,13 @@ input: |
 ast:
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "{.class} content"
+      - _type: Text
+        value: "{.class} content"
 
   - _type: QuoteBlock
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: content
+      - _type: Text
+        value: content
     attributes:
       - key: class
         value: [class]

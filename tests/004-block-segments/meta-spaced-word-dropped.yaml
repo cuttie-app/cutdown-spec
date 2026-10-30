@@ -1,0 +1,16 @@
+id: meta-spaced-word-dropped
+section: "4.3"
+description: "The format word must be glued to the fence: `~~~ toml` has no word, gives the default format, and drops `toml` as tail"
+
+input: "~~~ toml\na = 1\n~~~\n"
+
+pages:
+  - meta:
+      _type: Meta
+      format: yaml
+      raw: "a = 1\n"
+    children: []
+
+diagnostics:
+  - code: CDN-0016
+    level: warning

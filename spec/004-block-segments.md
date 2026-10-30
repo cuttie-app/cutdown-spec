@@ -48,7 +48,7 @@ interface Paragraph {
 
 - All lines are **parsed by inline rules** and concatenated. Result is `Inline[]`.
 - A single newline between lines is a **soft break** — folded to zero; lines concatenate directly with no character emitted.
-- Trailing spaces before the newline collapse to a single space, preserved as `Text(" ")` (explicit word boundary). At a block boundary the space is dropped. See §12.
+- Trailing whitespace is dropped. A word boundary between lines is written at the start of the continuation line: whitespace beyond the paragraph's base column becomes one space, so `First line` followed by ` second line` reads `First line second line` (§12.1).
 - A `\` (backslash) at line end produces a `LineBreak` segment (explicit line break).
 
 **Example:**
@@ -103,10 +103,11 @@ interface Section {
 | `======== Heading`  | 8     |
 | `========= Heading` | 9     |
 
+- The marker is followed by whitespace or the end of the line; all whitespace after it is consumed. `=Title` is paragraph text. A marker alone on its line opens a heading with empty content: `=` gives `level: 1`, `heading: []`. To keep a line of `=` as text, escape it (§8.2).
 - Heading content is **parsed by inline rules**. Result is `Inline[]`.
-- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§2.2), or a `^ ` caption line (§6.2). Soft breaks fold to zero, so `= Title` followed by `content` is one heading reading `Titlecontent` (§12.1).
+- The content continues over following lines under the paragraph continuation rules (§4.1): the run ends at a blank line, an attribute line, a standalone `##` line (§2.2), or a `^ ` caption line (§6.2). The heading's base column is 2 at every level (§12.1): `= Title` followed by `content` is one heading reading `Titlecontent`, and followed by `   content` (three spaces) it reads `Title content`.
 - A `=` line that does not begin a run is paragraph content (§4.1): a heading opens only after a blank line, or as the first line of the document or a block container.
-- A run of ten or more `=` followed by a space opens a level-9 heading. The first nine `=` are the marker; the rest begin the heading content, so `========== Deep` gives `level: 9` and `heading: [Text("= Deep")]`. Warning CDN-0012 is emitted.
+- A run of ten or more `=` followed by whitespace or the end of the line opens a level-9 heading. The first nine `=` are the marker; the rest begin the heading content, so `========== Deep` gives `level: 9` and `heading: [Text("= Deep")]`. Warning CDN-0012 is emitted.
 - The **last `{...}` at the end of the heading** is claimed by the Section (Last-Attr Rule). Earlier `{...}` attach to preceding inline elements. An explicit empty `{}` as the last token means the Section carries no attributes.
 - Sections nest by level. A level-2 heading inside a level-1 section creates a child section. A level-1 heading closes all open sections and opens a new one at the root.
 - Sections may appear inside block containers (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`). The fold runs independently inside each container, so a `Section` never crosses a container boundary (§9.3.1).
@@ -252,12 +253,12 @@ AST:
 
 ### 4.6 QuoteBlock
 
-**Syntax:** Lines prefixed with `>`.
+**Syntax:** Lines prefixed with `>` and a separator.
 
 ```
 > content
 > more content
->> nested quote
+> > nested quote
 ```
 
 **AST type:**
@@ -265,7 +266,7 @@ AST:
 ```typescript
 interface QuoteBlock {
   _type: "QuoteBlock"
-  children: Block[]
+  children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
   reflection: Reflection[]
@@ -273,10 +274,11 @@ interface QuoteBlock {
 ```
 
 - The `>` (greater-than sign) prefix opens the quote. It is required on the quote's first line.
-- **Lazy continuation.** A following line without `>` continues the quote. The line is handed to the quote's current child block and follows that block's own continuation rules — a `Paragraph` absorbs it as a continuation line (§4.1), a list item absorbs it per §10.5, a heading absorbs it as a continuation line (§4.2). This is the same continuation behaviour the line would have outside the quote.
+- **Separator.** Every `>` is followed by whitespace or the end of the line. Exactly one whitespace character is consumed with it; any further whitespace belongs to the content. A `>` followed by anything else is not a quote marker: `>quote` and `>> x` are paragraph text. A bare `>` is a quote line with empty content.
+- **Lazy continuation.** A following line without `>` continues the quote. The line is handed to the quote's current child block and follows that block's own continuation rules — a `Paragraph` absorbs it as a continuation line (§4.1), a list item absorbs it per §10.5, a heading absorbs it as a continuation line (§4.2). This is the same continuation behaviour the line would have outside the quote. Its leading whitespace is measured as if it carried the `>` markers of the open quotes: the first 2 columns per open quote level stand for them (§12.1).
 - The quote ends at a blank line, at the end of the enclosing block container, or at the end of the document. A `>` line after a blank line opens a new `QuoteBlock`.
-- The `>` prefix and one optional following space are stripped. Content is parsed as full block content.
-- Nesting: `>>` = blockquote inside blockquote. Both `>>` and `> >` are valid. Depth = count of leading `>` characters. A line whose depth differs from the line above is a structural boundary, not a block opener: it closes the open paragraph and goes to the quote at its own depth, opening or closing quotes as needed (§4.1). A lazy continuation line carries no `>`, so it does not change the current depth — it continues the innermost open quote.
+- Content is parsed as full block content. A body that parses to exactly one `Paragraph` is held as that paragraph's `Inline[]`, as in a list item (§4.7.1); any other body is `Block[]`.
+- Nesting: `> >` = blockquote inside blockquote. Depth = count of `>` markers, each with its separator. A line whose depth differs from the line above is a structural boundary, not a block opener: it closes the open paragraph and goes to the quote at its own depth, opening or closing quotes as needed (§4.1). A lazy continuation line carries no `>`, so it does not change the current depth — it continues the innermost open quote.
 - **Body edge-blank trim:** After `>` stripping, leading and trailing blank lines inside the quoted body are stripped before children are parsed. See §10.6.
 - **Opener escape:** `\>` at line start → `Paragraph([Text("> ...")])`. See §8.2.
 - **Supports caption line (§6.2).** A `^ text` line immediately after the closing line (no blank line) sets `caption: Inline[]` on this node.
@@ -287,25 +289,23 @@ interface QuoteBlock {
 Input:
   > Line 1
   > Line 2
-  > Line 3
+  >  Line 3
 
 AST:
-    QuoteBlock
-    └── Paragraph { children: [Text("Line 1Line 2Line 3")] }
+    QuoteBlock { children: [Text("Line 1Line 2 Line 3")] }
 ```
 
 ```
 Input:
   > Line 1
-  >>> Line 2
-  >> Line 3
+  > > > Line 2
+  > > Line 3
 
 AST:
     QuoteBlock
     ├── Paragraph { children: [Text("Line 1")] }
     └── QuoteBlock
-        ├── QuoteBlock
-        |   └──── Paragraph { children: [Text("Line 2")] }
+        ├── QuoteBlock { children: [Text("Line 2")] }
         └── Paragraph { children: [Text("Line 3")] }
 ```
 
@@ -313,13 +313,12 @@ AST:
 Input:
   > Line 1
   Line 2
-  Line 3
+     Line 3
 
   Line 4
 
 AST:
-    QuoteBlock
-    └─── Paragraph { children: [Text("Line 1Line 2Line 3")] }
+    QuoteBlock { children: [Text("Line 1Line 2 Line 3")] }
     Paragraph { children: [Text("Line 4")] }
 ```
 
@@ -363,11 +362,12 @@ interface List {
 }
 ```
 
-- Unordered marker: `-` (hyphen) followed by one space. Only `-` is supported.
-- Ordered marker: `{number}.` followed by one space, where `{number}` is 1–5 ASCII digits. A run of six or more digits is not a marker, so the line is not a list item. The first item's number sets `List.start`; every other item's number is ignored.
+- Unordered marker: `-` (hyphen). Only `-` is supported.
+- Ordered marker: `{number}.`, where `{number}` is 1–5 ASCII digits. A run of six or more digits is not a marker, so the line is not a list item. The first item's number sets `List.start`; every other item's number is ignored.
+- A marker is followed by whitespace or the end of the line; all whitespace after it is consumed. `-x` and `1.x` are paragraph text. A marker alone on its line opens an item with empty content: `-` gives a `ListItem` with `children: []`.
 - `kind` is determined by the **first item's marker**: `-` → `"bullet"`, `{n}.` → `"numbered"`, `- [ ]`/`- [x]`/`- [+]` → `"checklist"`.
 - `start` is always present. It is `1` for `kind: "bullet"` and `"checklist"`. For `"numbered"` it is the first item's number, except that `0` is coerced to `1`, silently.
-- **Tight vs loose:** A list is `loose: true` when it absorbs a blank line, between two items or inside one. `loose` is an advisory flag for consumers — the parser does not alter children based on it; block promotion is decided per item (§4.7.1).
+- **Tight vs loose:** A list is `loose: true` when it absorbs a blank line, between two items or inside one. `loose` is an advisory flag for consumers — the parser does not alter children based on it; each item's shape depends only on its own body (§4.7.1).
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment. A standalone `##` line directly after an item does not: it attaches to that item and the list continues (§2.2).
 - `List` has no `reflection`. A `## comment` on an item's line goes to that item.
 - **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.
@@ -391,14 +391,15 @@ interface List {
 ```typescript
 interface ListItem {
   _type: "ListItem"
-  children: (Block | Inline)[]
+  children: Inline[] | Block[]
   attributes: Attribute[]
   reflection: Reflection[]
 }
 ```
 
-- Content on the marker line is **parsed by inline rules**. Continuation lines at the same or deeper indentation are absorbed.
-- An item whose own body absorbs a blank line is block-promoted: its `children` become `Block[]` (e.g. `Paragraph`). Every other item of the same list keeps `Inline[]`, even when the list is loose.
+- Content on the marker line is **parsed by inline rules**. Continuation lines at the same or deeper indentation are absorbed. The item's base column is its marker's column plus 2, whatever the marker's width (§12.1).
+- **Shape.** An item whose body parses to exactly one `Paragraph` holds that paragraph's inline content: `children: Inline[]`. Any other body — two paragraphs, a paragraph and a nested list, a code block — is `children: Block[]`, with the first paragraph kept as a `Paragraph`. The two never mix.
+- When the paragraph is dropped, its `attributes` and `reflection` move to the item. Classes merge by the rule of §6.1.1, the item's own first.
 - Attributes follow the scope-chain rule (§6).
 
 ---
@@ -425,17 +426,17 @@ or
 interface TaskItem {
   _type: "TaskItem"
   checked: boolean
-  children: (Block | Inline)[]
+  children: Inline[] | Block[]
   attributes: Attribute[]
   reflection: Reflection[]
 }
 ```
 
-- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]`/`[+]` (checked), then one space and content. `[]` with no space is not a task marker — the item is an ordinary `ListItem` whose content begins `[]`. `[+]` is bidi-neutral; see §16 for which spelling a writer emits.
+- Marker: `- ` followed immediately by `[ ]` (unchecked) or `[x]`/`[X]`/`[+]` (checked), then whitespace or the end of the line, as for every list marker. `[]` with no space is not a task marker — the item is an ordinary `ListItem` whose content begins `[]`. `[+]` is bidi-neutral; see §16 for which spelling a writer emits.
 - Only `kind: "bullet"` list items may carry a checkbox. A `kind: "numbered"` list encountering a task marker closes and a new `kind: "checklist"` List segment opens.
 - A `List` with `kind: "checklist"` has `children: TaskItem[]` exclusively; `kind: "bullet"` and `kind: "numbered"` have `children: ListItem[]` exclusively.
 - Mix of item types introduces a new list boundary: the first item of the new type starts a new `List` segment.
-- Follows the same multiline and block-promotion rules as `ListItem`.
+- Follows the same multiline and shape rules as `ListItem`.
 
 **Example:**
 
@@ -795,7 +796,7 @@ AST:
 interface NamedBlock {
   _type: "NamedBlock"
   name: string
-  children: Block[]
+  children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
   reflection: Reflection[]
@@ -806,7 +807,7 @@ interface NamedBlock {
 - A missing name word, or one that is not wholly `ID_LITERAL` (`:::`, `::: x`, `:::c++`, `::::`), still opens a NamedBlock, with `name: ""` and warning CDN-0013. Its body is parsed as blocks like any other. An escaped opener (`\:::`, `:\::`, `::\:`) opens nothing and emits no warning. See §8.2.
 - After the name word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
 - Closing: inside an open NamedBlock, a line that begins with three or more `:` and carries a valid name word opens a nested NamedBlock; any other such line closes the innermost open one. The closer keeps a `## comment`; any other text after the three `:` is dropped with CDN-0016.
-- Content: any block content, including nested `:::` containers.
+- Content: any block content, including nested `:::` containers. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, and the paragraph's `attributes` and `reflection` move to the NamedBlock, as for a list item (§4.7.1).
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Container padding:** The first non-blank content line (after the edge-blank trim below) sets the base padding. Up to that many leading spaces are removed from every content line before parsing; a line with fewer leading spaces loses all it has, and nothing else. No diagnostic is emitted. A tab counts as one space (§7). The opener and closer may themselves be indented by any amount. See §10.2.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
@@ -847,7 +848,7 @@ interface RefDefinition {
 
 - `ref` uses `[ID_LITERAL]+` characters. Case-sensitive.
 - Empty `ref` (line starting with `[^]:`) is invalid state and produces string literal for whole line.
-- Empty content (`[^ref]:`) is valid and produces an empty `children` array.
+- The `:` is followed by whitespace or the end of the line; all whitespace after it is consumed. `[^ref]:x` is paragraph text. Empty content (`[^ref]:`) is valid and produces an empty `children` array.
 - Content is **parsed by inline rules**. Result is `Inline[]`.
 - Cutdown does not validate that every `[^ref]` link has a matching definition.
 - When the same `ref` is defined more than once in a document, resolution uses the last definition in source order (**last wins**). Resolution is the consumer's responsibility (§9.1.4).
@@ -869,7 +870,7 @@ interface RefDefinition {
 ```typescript
 interface SpoilerBlock {
   _type: "SpoilerBlock"
-  children: Block[]
+  children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
   reflection: Reflection[]
@@ -878,7 +879,7 @@ interface SpoilerBlock {
 
 - Opening: a line that begins with three or more `^`. The opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
 - Closing: the next line that begins with three or more `^`. The closer keeps a `## comment`; any other text is dropped with CDN-0016.
-- Content is parsed as blocks.
+- Content is parsed as blocks. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, as for a NamedBlock (§4.13).
 - **No nested SpoilerBlocks.** The first such line encountered inside an open SpoilerBlock always closes it. A second `^^^` opener on the next non-blank line starts a new sibling SpoilerBlock. Tiered reveals (a Spoiler inside a Spoiler) are out of scope; if a use case genuinely requires it, wrap the inner content in `:::spoiler` NamedBlock instead.
 - **Container padding:** same rule as `NamedBlock` (§4.13) — the first non-blank content line sets the base padding, and up to that many leading spaces are removed from every content line.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
@@ -968,7 +969,7 @@ Input:
 
 AST:
   List
-  ├── ListItem [Text("item one"), CommentBlock { text: "todo\n" }]
+  ├── ListItem [Paragraph([Text("item one")]), CommentBlock { text: "todo\n" }]
   └── ListItem [Text("item two")]
 ```
 

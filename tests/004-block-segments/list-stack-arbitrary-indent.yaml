@@ -13,8 +13,10 @@ ast:
     children:
       - _type: ListItem
         children:
-          - _type: Text
-            value: item A
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: item A
           - _type: List
             kind: "bullet"
             children:

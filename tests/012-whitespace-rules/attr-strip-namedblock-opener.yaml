@@ -14,7 +14,5 @@ ast:
       - key: class
         value: [warn]
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: content
+      - _type: Text
+        value: content

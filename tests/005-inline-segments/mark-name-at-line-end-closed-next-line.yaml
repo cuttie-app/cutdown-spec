@@ -1,0 +1,12 @@
+id: mark-name-at-line-end-closed-next-line
+section: "5.10"
+description: "A Mark opener at a line end is closed by a `::` on the next line, giving an empty Mark"
+
+input: "::name\n::\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: name
+        children: []

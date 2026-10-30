@@ -15,7 +15,5 @@ ast:
       - _type: Text
         value: "Box caption text"
     children:
-      - _type: Paragraph
-        children:
-          - _type: Text
-            value: "Some content here."
+      - _type: Text
+        value: "Some content here."
