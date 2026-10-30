@@ -12,7 +12,7 @@ ast:
     children:
       - _type: Text
         value: "First line"
-    reflection:
+    reflections:
       - loc: { start: 14, end: 29 }
         text: "comment between"
   - _type: Paragraph

@@ -1,6 +1,6 @@
 id: comment-inline-namedblock-opener
 section: "2.6"
-description: "Trailing `##` on a NamedBlock opener bubbles to NamedBlock.reflection; attrs claim the block; body is clean"
+description: "Trailing `##` on a NamedBlock opener bubbles to NamedBlock.reflections; attrs claim the block; body is clean"
 
 input: |
   :::callout {.warn} ## opener note
@@ -13,7 +13,7 @@ ast:
     attributes:
       - key: class
         value: [warn]
-    reflection:
+    reflections:
       - loc: { start: 22, end: 33 }
         text: "opener note"
     children:

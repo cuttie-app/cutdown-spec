@@ -11,7 +11,7 @@ ast:
   - _type: List
     children:
       - _type: ListItem
-        reflection:
+        reflections:
           - loc: { start: 7, end: 11 }
             text: "note"
         children:

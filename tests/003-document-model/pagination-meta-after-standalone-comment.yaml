@@ -1,6 +1,6 @@
 id: pagination-meta-after-standalone-comment
 section: "3"
-description: "A standalone ## comment above frontmatter produces an orphan empty Paragraph, which does not prevent the Meta from filling the Page's meta slot"
+description: "A standalone ## comment above frontmatter becomes a SegmentReflection, which does not prevent the Meta from filling the Page's meta slot"
 
 input: |
   ## SPDX-License-Identifier: CC-BY-4.0
@@ -16,9 +16,10 @@ pages:
       _type: Meta
       format: yaml
       raw: "title: One\n"
+    reflections:
+      - text: "SPDX-License-Identifier: CC-BY-4.0"
+        before: [0]
     children:
-      - _type: Paragraph
-        children: []
       - _type: Paragraph
         children:
           - _type: Text

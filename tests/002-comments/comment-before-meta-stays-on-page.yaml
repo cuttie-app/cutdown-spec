@@ -1,0 +1,42 @@
+id: comment-before-meta-stays-on-page
+section: "2.3"
+description: "A comment before a Meta that opens a new Page stays on the earlier Page, at its end"
+
+input: |
+  ~~~
+  title: A
+  ~~~
+
+  One
+
+  ###
+  note
+  ###
+
+  ~~~
+  title: B
+  ~~~
+
+  Two
+
+pages:
+  - meta:
+      _type: Meta
+      raw: "title: A\n"
+    reflections:
+      - text: note
+        before: [1]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: One
+  - meta:
+      _type: Meta
+      raw: "title: B\n"
+    reflections: []
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: Two

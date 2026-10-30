@@ -48,7 +48,7 @@ Every consumer obligation is conditional: a consumer that never does a thing is 
 3. **Streaming.** If it renders while source is still arriving, MUST NOT change the AST or diagnostics required for any input snapshot (§15.4).
 4. **Unknown properties.** MUST ignore an AST property it does not recognize, and MUST NOT fail on one.
 5. **Unknown node kinds.** MUST NOT fail on a node whose `_type` it does not recognize. If the node has a `children` array, the consumer SHOULD process those children in the node's place; otherwise it skips the node.
-6. **Hidden content.** A renderer SHOULD omit `Reflection` entries and `CommentBlock` nodes unless its user asks for them (§2.5). A tool that serves authors — a formatter, an IDE preview, a comment thread — MAY show them.
+6. **Hidden content.** A renderer SHOULD omit `LineReflection` and `SegmentReflection` entries unless its user asks for them (§2.5). A tool that serves authors — a formatter, an IDE preview, a comment thread — MAY show them.
 
 Clauses 4 and 5 exist because a minor release may add properties and node kinds ([versioning policy](../policies/versioning-policy.md)). A new node kind that holds text keeps it in `children`, so that an older consumer still shows it.
 

@@ -40,7 +40,7 @@ $$$
 
 [^...]: ...       RefDefinition
 
-###               CommentBlock (hidden by default)
+###               CommentBlock → Page.reflections (hidden by default)
   ...
 ###
 
@@ -273,7 +273,7 @@ Degradation to visible literal text is silent — no diagnostics.
 | `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
 | `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
 | `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
-| `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
+| `## … <EOL>`    | `LineReflection` on block | Line comment, runs to EOL. Payload stored in `block.reflections[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
 | `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
 
 Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
@@ -353,28 +353,28 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 | Form | Result | Notes |
 |------|--------|-------|
 | `#` | literal text | Single `#` does nothing — written exactly as typed. |
-| `## … <EOL>` | `Reflection` entry on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflection[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `CommentBlock` segment | Block comment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped (CDN-0016), so `### note` opens one. Opaque content (no parsing). No `attributes`, no `reflection`. |
+| `## … <EOL>` | `LineReflection` on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflections[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
+| `### … ###` | `SegmentReflection` on the Page | Block comment (CommentBlock), no segment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped (CDN-0016), so `### note` opens one. Opaque content (no parsing); `text` has no trailing newline. `before` is the child-index path of the block it stands before. |
 
 ```
 # literal hash, not a comment
-## line comment       → stored as reflection on nearest block
-foo bar ## tail       → Text("foo bar") + reflection entry on block
+## line comment       → stored in reflections of nearest block
+foo bar ## tail       → Text("foo bar") + reflections entry on block
 
 ###
   opaque block — any content captured raw
 ###
 ```
 
-Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line directly after a `CommentBlock` is an orphan → empty `Paragraph`.
+Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line after a blank line, after a CommentBlock, or at the start of a scope is an orphan → a `SegmentReflection` on the Page, like a CommentBlock.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. Whitespace before `##` is trailing whitespace and is dropped. The cut ends the line as a line end does: an inline opener before it may still close on a later line, and one that never closes degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut ends the verbatim slice. Example: `[text ## here](url)` alone → `Text("[text")`, reflection entry `"here](url)"`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. Whitespace before `##` is trailing whitespace and is dropped. The cut ends the line as a line end does: an inline opener before it may still close on a later line, and one that never closes degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut ends the verbatim slice. Example: `[text ## here](url)` alone → `Text("[text")`, reflections entry `"here](url)"`.
 
-**Transparent to attribute resolution.** `##` payloads are stored in `reflection`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading")], reflection: [{ loc, text: "note" }])`.
+**Transparent to attribute resolution.** `##` payloads are stored in `reflections`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading")], reflections: [{ loc, text: "note" }])`.
 
-**Standalone line comment.** `## comment` on its own line, directly after content, attaches to the owner of the line above (the last item, row, or file of a List, Table, or FileGroup) and does not split that run; it does end a Paragraph. After a blank line, or with no preceding block → empty `Paragraph { children: [], reflection: [...] }`. No blank line is needed after a comment line.
+**Standalone line comment.** `## comment` on its own line, directly after content, attaches to the owner of the line above (the last item, row, or file of a List, Table, or FileGroup) and does not split that run; it does end a Paragraph. After a blank line, or with no preceding block → empty `Paragraph { children: [], reflections: [...] }`. No blank line is needed after a comment line.
 
-**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`; inside a quote, the block that owns the content — the `QuoteBlock` itself when its body is one paragraph. `List`, `Table`, and `FileGroup` have no `reflection`. On a header separator it goes to the row above; a separator with no row above inserts an empty `Header` row. `{attrs}` on a header separator row claim the Table slot (§4.8).
+**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`; inside a quote, the block that owns the content — the `QuoteBlock` itself when its body is one paragraph. `List`, `Table`, and `FileGroup` have no `reflections`. On a header separator it goes to the row above; a separator with no row above inserts an empty `Header` row. `{attrs}` on a header separator row claim the Table slot (§4.8).
 
 ---
 
@@ -446,7 +446,7 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 5. Escape `\x` — an escaped character is never a delimiter or a `##`
 6. Inline code \`\` — content literal except `` \` ``
 7. Inline math `$$` — content literal
-8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflection`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
+8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflections`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
 9. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
 11. Named mark `::name … ::` — matched after emphasis; name run is lexical

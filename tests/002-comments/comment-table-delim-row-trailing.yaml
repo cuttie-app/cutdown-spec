@@ -11,7 +11,7 @@ ast:
   - _type: Table
     rows:
       - _type: Header
-        reflection:
+        reflections:
           - loc: { start: 23, end: 34 }
             text: "header note"
           - loc: { start: 58, end: 68 }
@@ -26,7 +26,7 @@ ast:
               - _type: Text
                 value: "Head B"
       - _type: Row
-        reflection: []
+        reflections: []
         children:
           - _type: Cell
             children:

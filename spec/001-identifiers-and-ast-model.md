@@ -56,7 +56,6 @@ Block =
     | InjectBlock
     | NamedBlock
     | SpoilerBlock
-    | CommentBlock
     | RefDefinition
 ```
 
@@ -92,7 +91,7 @@ Wherever an AST node carries `Inline[]`, the content was produced by the inline 
 
 A **block scope** is one flat sequence of sibling blocks. A document has one block scope at its root, and one inside the child list of every block container (`ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`).
 
-A rule described as resolved *within the current block scope* looks only at that sequence and never past its container boundary. This applies to reflection attachment (§2.2), caption binding (§6.2), and the sectionization fold (§9.3.1).
+A rule described as resolved *within the current block scope* looks only at that sequence and never past its container boundary. This applies to comment attachment (§2.2), caption binding (§6.2), and the sectionization fold (§9.3.1).
 
 `InjectBlock.children` is a block scope as well, though the parser always emits it empty: a consumer fills it (§17).
 

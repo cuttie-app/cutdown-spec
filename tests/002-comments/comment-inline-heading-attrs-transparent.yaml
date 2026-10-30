@@ -1,6 +1,6 @@
 id: comment-inline-heading-attrs-transparent
 section: "2.6"
-description: "`##` payload stored in Section.reflection; `{.c}` claims Section unaffected"
+description: "`##` payload stored in Section.reflections; `{.c}` claims Section unaffected"
 
 input: |
   = Heading {.c} ## note
@@ -14,7 +14,7 @@ ast:
     heading:
       - _type: Text
         value: "Heading"
-    reflection:
+    reflections:
       - loc: { start: 18, end: 22 }
         text: "note"
     children: []

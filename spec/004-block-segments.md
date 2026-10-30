@@ -42,7 +42,7 @@ interface Paragraph {
   _type: "Paragraph"
   children: Inline[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -87,7 +87,7 @@ interface Section {
   heading: Inline[]
   children: Block[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -189,7 +189,7 @@ interface CodeBlock {
   raw: string
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -222,7 +222,7 @@ interface MathBlock {
   raw: string
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -269,7 +269,7 @@ interface QuoteBlock {
   children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -369,7 +369,7 @@ interface List {
 - `start` is always present. It is `1` for `kind: "bullet"` and `"checklist"`. For `"numbered"` it is the first item's number, except that `0` is coerced to `1`, silently.
 - **Tight vs loose:** A list is `loose: true` when it absorbs a blank line, between two items or inside one. `loose` is an advisory flag for consumers — the parser does not alter children based on it; each item's shape depends only on its own body (§4.7.1).
 - A blank line followed by a col-0 marker ends the current list and starts a new `List` segment. A standalone `##` line directly after an item does not: it attaches to that item and the list continues (§2.2).
-- `List` has no `reflection`. A `## comment` on an item's line goes to that item.
+- `List` has no `reflections`. A `## comment` on an item's line goes to that item.
 - **Opener escape:** `\-` at line start → `Paragraph([Text("- ...")])`. See §8.2.
 
 ---
@@ -393,13 +393,13 @@ interface ListItem {
   _type: "ListItem"
   children: Inline[] | Block[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
 - Content on the marker line is **parsed by inline rules**. Continuation lines at the same or deeper indentation are absorbed. The item's base column is its marker's column plus 2, whatever the marker's width (§12.1).
 - **Shape.** An item whose body parses to exactly one `Paragraph` holds that paragraph's inline content: `children: Inline[]`. Any other body — two paragraphs, a paragraph and a nested list, a code block — is `children: Block[]`, with the first paragraph kept as a `Paragraph`. The two never mix.
-- When the paragraph is dropped, its `attributes` and `reflection` move to the item. Classes merge by the rule of §6.1.1, the item's own first.
+- When the paragraph is dropped, its `attributes` and `reflections` move to the item. Classes merge by the rule of §6.1.1, the item's own first.
 - Attributes follow the scope-chain rule (§6).
 
 ---
@@ -428,7 +428,7 @@ interface TaskItem {
   checked: boolean
   children: Inline[] | Block[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -486,7 +486,7 @@ interface Row {
   _type: "Row" | "Header"
   children: Cell[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 
 interface Cell {
@@ -640,9 +640,9 @@ For `| {.tbl}`: the row is the last content row and a single `{}` claims the Tab
 
 ---
 
-#### Reflection
+#### Reflections
 
-`Table` has no `reflection`. A trailing `## comment` on a content row goes to that row's `reflection`, carrying the payload's `loc`. On a header separator it goes to the row before the separator — the inserted empty `Header` row when the separator has no content row above it. On the caption line it goes to the last row. A standalone `##` line directly after a row goes to that row and does not end the table. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflection`.
+`Table` has no `reflections`. A trailing `## comment` on a content row goes to that row's `reflections`, carrying the payload's `loc`. On a header separator it goes to the row before the separator — the inserted empty `Header` row when the separator has no content row above it. On the caption line it goes to the last row. A standalone `##` line directly after a row goes to that row and does not end the table. See §2.2. A `##` appearing inside cell content (before the row's closing `|`) causes the pre-`##` cell fragment to fail the row grammar and fall back to a Paragraph; the payload then attaches to that Paragraph's `reflections`.
 
 ---
 
@@ -671,7 +671,7 @@ interface EmbedBlock {
   url: string
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -738,7 +738,7 @@ interface FileBlock {
   src: PathResourceLocator | null   // null when the path is invalid
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -768,7 +768,7 @@ interface FileGroup {
 - Every `FileBlock` is inside a `FileGroup`. A single `FileBlock` line forms a `FileGroup` with one child.
 - A blank line ends the group. The next `FileBlock` line starts a new `FileGroup`.
 - Any line that is not a `FileBlock` line also ends the group — an `EmbedBlock` or `InjectBlock` line included — except a caption line and a trailing `{attrs}` line, which emit no block (§6.2), and a standalone `## comment` line directly after a `FileBlock`, which attaches to it (§2.2).
-- `FileGroup` has no `reflection`. A `## comment` on a `FileBlock` line goes to that `FileBlock`.
+- `FileGroup` has no `reflections`. A `## comment` on a `FileBlock` line goes to that `FileBlock`.
 - The members need not be of one kind: `/a.png` and `/b.pdf` on consecutive lines share a group.
 - `FileGroup` takes no caption. Each member carries its own.
 - Attribute placement follows the scope-chain rule (§6.1.2).
@@ -812,7 +812,7 @@ interface NamedBlock {
   children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -820,7 +820,7 @@ interface NamedBlock {
 - A missing name word, or one that is not an `ID_NAME` (`:::`, `::: x`, `:::c++`, `::::`), still opens a NamedBlock, with `name: ""` and warning CDN-0013. Its body is parsed as blocks like any other. An escaped opener (`\:::`, `:\::`, `::\:`) opens nothing and emits no warning. See §8.2.
 - After the name word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
 - Closing: inside an open NamedBlock, a line that begins with three or more `:` and carries a valid name word opens a nested NamedBlock; any other such line closes the innermost open one. The closer keeps a `## comment`; any other text after the three `:` is dropped with CDN-0016.
-- Content: any block content, including nested `:::` containers. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, and the paragraph's `attributes` and `reflection` move to the NamedBlock, as for a list item (§4.7.1).
+- Content: any block content, including nested `:::` containers. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, and the paragraph's `attributes` and `reflections` move to the NamedBlock, as for a list item (§4.7.1).
 - Unclosed container: content runs to end of document → warning CDN-0004.
 - **Container padding:** The first non-blank content line (after the edge-blank trim below) sets the base padding. Up to that many leading spaces are removed from every content line before parsing; a line with fewer leading spaces loses all it has, and nothing else. No diagnostic is emitted. A tab counts as one space (§7). The opener and closer may themselves be indented by any amount. See §10.2.
 - **Body edge-blank trim:** Leading and trailing blank lines inside the body are stripped before children are parsed. See §10.6.
@@ -855,7 +855,7 @@ interface RefDefinition {
   ref: string
   children: Inline[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -886,7 +886,7 @@ interface SpoilerBlock {
   children: Inline[] | Block[]
   attributes: Attribute[]
   caption: Inline[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 
@@ -934,24 +934,18 @@ opaque content
 ###
 ```
 
-**AST type:**
-
-```typescript
-interface CommentBlock {
-  _type: "CommentBlock"
-  text: string  // content between opener and closer; lines joined with `\n`; single trailing `\n`
-}
-```
+**AST:** none. A CommentBlock produces no segment: its body becomes a `SegmentReflection` in `Page.reflections` (§2.3).
 
 - Opening: a line whose stripped content begins with three or more `#`. Nothing on the opener line is kept: surplus `#`, `{attrs}`, a `## comment`, and any other text are dropped with CDN-0016. `### note` and `####` both open a CommentBlock.
 - Closing: the next line whose stripped content begins with three or more `#`, as for every other fence; its tail is dropped the same way. Indentation is not compared. To place a literal `###` line inside the body, escape it (§8.3).
-- No `reflection`: the block is already opaque. A standalone `## comment` line directly after the closer is an orphan and produces an empty `Paragraph` (§2.2).
-- Content is **opaque** — captured verbatim with no inline or block parsing. Lines joined with `\n`; a single trailing `\n` is appended.
-- Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`.
+- `text` is the body lines joined with `\n`, with no trailing `\n`. An empty body gives `text: ""`.
+- Content is **opaque** — captured verbatim with no inline or block parsing.
+- A standalone `## comment` line directly after the closer is an orphan: it becomes a `SegmentReflection` of its own (§2.2).
+- Legal at Page scope AND inside `ListItem`, `TaskItem`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`. Wherever it stands, its entry goes to the Page, and `before` records its place (§2.3).
+- Block parsing around it is unchanged; only its output moves out of `children`.
 - Unclosed fence: content runs to end of document → warning CDN-0006. Same rule as `CodeBlock` (§4.4), `Meta` (§4.3), `MathBlock` (§4.5): opaque content has no parseable structure, so the enclosing container's boundary is not observable from inside the fence. An unclosed `###` opened inside a container therefore absorbs every following line, including content past the container.
-- `CommentBlock` takes no part in pagination (§9.3.2): only a `Meta` and a PageBreaker create Page boundaries.
+- A CommentBlock takes no part in pagination (§9.3.2): only a `Meta` and a PageBreaker create Page boundaries.
 - Default render policy is **hidden** (§2.5, §18.4).
-- No `attributes` field.
 - **Closer escape:** `\#` inside the body emits a literal `#` (consumes the `\`). A line `\###`, `#\##`, or `##\#` therefore does NOT close the fence. The rule does not look at run length — any `\#` escapes. All other `\X` sequences are literal. See §8.3. Opener escape: see §8.2.
 
 **Example:**
@@ -967,23 +961,13 @@ Input:
   next paragraph
 
 AST:
-  Paragraph([Text("intro paragraph")])
-  CommentBlock { text: "draft note — revise before publish\n" }
-  Paragraph([Text("next paragraph")])
-```
-
-```
-Input:
-  - item one
-    ###
-    todo
-    ###
-  - item two
-
-AST:
-  List
-  ├── ListItem [Paragraph([Text("item one")]), CommentBlock { text: "todo\n" }]
-  └── ListItem [Text("item two")]
+  Page {
+    reflections: [{ text: "draft note — revise before publish", before: [1] }]
+    children: [
+      Paragraph([Text("intro paragraph")])
+      Paragraph([Text("next paragraph")])
+    ]
+  }
 ```
 
 ---
@@ -1008,7 +992,7 @@ interface InjectBlock {
   src: PathResourceLocator | null   // null when the path is invalid
   children: Block[]
   attributes: Attribute[]
-  reflection: Reflection[]
+  reflections: LineReflection[]
 }
 ```
 

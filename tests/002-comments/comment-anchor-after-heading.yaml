@@ -1,0 +1,25 @@
+id: comment-anchor-after-heading
+section: "2.3"
+description: "A comment directly after a heading anchors to the first child of that Section"
+
+input: |
+  = Title
+
+  ###
+  note
+  ###
+
+  Body
+
+pages:
+  - reflections:
+      - text: note
+        before: [0, 0]
+    children:
+      - _type: Section
+        level: 1
+        children:
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: Body

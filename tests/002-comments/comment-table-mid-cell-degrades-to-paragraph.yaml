@@ -1,6 +1,6 @@
 id: comment-table-mid-cell-degrades-to-paragraph
 section: "4.8"
-description: "`##` mid-cell makes the pre-`##` substring fail row grammar (no closing `|`); block candidate falls back to Paragraph; payload stored in Paragraph.reflection"
+description: "`##` mid-cell makes the pre-`##` substring fail row grammar (no closing `|`); block candidate falls back to Paragraph; payload stored in Paragraph.reflections"
 
 input: |
   | Head ## comment | Next |
@@ -10,6 +10,6 @@ ast:
     children:
       - _type: Text
         value: "| Head"
-    reflection:
+    reflections:
       - loc: { start: 10, end: 26 }
         text: "comment | Next |"

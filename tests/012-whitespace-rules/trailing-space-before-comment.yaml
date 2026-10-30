@@ -9,6 +9,6 @@ ast:
     children:
       - _type: Text
         value: "ab c"
-    reflection:
+    reflections:
       - text: "comment "
       - text: "two"

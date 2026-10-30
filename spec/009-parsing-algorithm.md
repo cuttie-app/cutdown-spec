@@ -16,7 +16,7 @@ Cutdown's parsing model makes three testable guarantees:
 #### 9.1.2 Phase 2 — Block Identification
 
 1. Split input into lines.
-2. **Detect `##` boundaries and record Reflection payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside the body of a `CodeBlock`, `Meta`, `MathBlock`, or `CommentBlock`; §0.5). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. A `CodeInline` or `MathInline` counts only when its closer is found within the inline context; escapes are recognized first (§11). If found: characters before `##`, without trailing whitespace, are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later attached to the appropriate block as a `Reflection` entry (§2.2) — it does not enter the inline stream.
+2. **Detect `##` boundaries and record comment payloads.** Walk lines top-to-bottom, maintaining "opaque context" state (inside the body of a `CodeBlock`, `Meta`, `MathBlock`, or CommentBlock; §0.5). Within an opaque context, the opener line and the closer line are scanned; the body lines between them are not. On all other lines, scan in source order for the first un-escaped `##` not occurring inside `CodeInline` (`` `` ``), `MathInline` (`$$`), or a quoted attribute value. A `CodeInline` or `MathInline` counts only when its closer is found within the inline context; escapes are recognized first (§11). If found: characters before `##`, without trailing whitespace, are the line's structural content; characters from `##` to (but not including) `\n` are the comment payload. Block classification (Phase 3) operates on the pre-`##` substring. The payload is later stored as a `LineReflection` on the block that owns the line, or as a `SegmentReflection` on the Page for an orphan line (§2.2) — it does not enter the inline stream.
 3. Identify block boundaries: a sequence of non-blank (in pre-`##` content) lines bounded by blank lines (or document start/end) is a **block candidate** (§0.5). A standalone comment line is neither blank nor content; §2.2 defines where it attaches and which runs it ends.
 4. Apply the fenced constructs that override blank-line boundaries — `` ``` ``, `~~~`, `:::`, `$$$`, `^^^` and `###`. Each opens until its closer or end of document; see §10.4.2 for the shared fence pattern and §4.3–§4.16 for each construct.
 
@@ -59,7 +59,7 @@ EMBED_OPEN    ::= "https://"
 | `REFDEF_OPEN` | RefDefinition |
 | `MATH_FENCE` | MathBlock |
 | `SPOILER_FENCE` | SpoilerBlock |
-| `COMMENT_FENCE` | CommentBlock |
+| `COMMENT_FENCE` | CommentBlock — no segment; a `SegmentReflection` on the Page (§2.3) |
 | `FILE_OPEN` | InjectBlock when the locator's `path` ends with `.cutdown` or `/` (§4.17); otherwise FileBlock, grouped into a FileGroup (§4.11, §4.12) |
 | `EMBED_OPEN` | EmbedBlock (§4.9) |
 | (anything else) | Paragraph |
@@ -277,12 +277,12 @@ The sectionization fold applies independently to every flat block sequence (root
 
 The pagination fold applies **only to the root sequence** — blocks inside containers never affect pagination regardless of their type. Two items drive the fold: `Meta` blocks and PageBreakers (§9.4).
 
-1. The document begins with `Page[0]`, initially empty (`meta: null`, `children: []`).
+1. The document begins with `Page[0]`, initially empty (`meta: null`, `reflections: []`, `children: []`).
 2. A **PageBreaker** unconditionally closes the current Page — as a Ghost Page if it is empty — and opens a new empty Page. A PageBreaker also closes all open root-level Sections. Every PageBreaker produces a page boundary: a leading `---` at document start yields a leading Ghost Page; consecutive separators yield Ghost Pages.
 3. A **`Meta` block** whose current Page has `meta: null` fills that slot. No new Page is created, whatever content the Page already holds: a `Meta` after paragraphs, comments, or any other block still fills the Page those blocks are on, and a `Meta` after a PageBreaker fills the Page the PageBreaker opened.
 4. A **`Meta` block** whose current Page already has a `meta` closes that Page and opens a new Page carrying itself as `meta`.
-5. All other root blocks are appended to the current Page's `children`.
-6. Ghost Pages (`meta: null`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
+5. All other root blocks are appended to the current Page's `children`, and every segment comment the fold reaches — at root level or inside a root block — is appended to the current Page's `reflections` (§2.3).
+6. Ghost Pages (`meta: null`, `reflections: []`, `children: []`) are valid and emitted as-is. Consumers decide how to handle them.
 
 Steps 3 and 4 depend only on the current Page's `meta` slot, never on where the `Meta` stands among other blocks. Content before a `Meta` therefore never creates a Page boundary; only a PageBreaker or a second `Meta` does.
 

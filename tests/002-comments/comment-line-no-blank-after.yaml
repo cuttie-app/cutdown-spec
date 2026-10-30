@@ -6,15 +6,15 @@ input: |
   ## note
   - a
 
-ast:
-  - _type: Paragraph
-    children: []
-    reflection:
+pages:
+  - reflections:
       - loc: { start: 3, end: 7 }
         text: "note"
-  - _type: List
+        before: [0]
     children:
-      - _type: ListItem
+      - _type: List
         children:
-          - _type: Text
-            value: a
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: a

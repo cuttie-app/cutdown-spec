@@ -1,12 +1,14 @@
 id: cdn-0006-unclosed-commentblock
 section: "2.3"
-description: "Unclosed `###` opener; content runs to end of document as opaque CommentBlock text; CDN-0006 warning emitted"
+description: "Unclosed `###` opener; content runs to end of document as the comment's text; CDN-0006 warning emitted"
 
 input: "###\nsome notes\n"
 
-ast:
-  - _type: CommentBlock
-    text: "some notes\n"
+pages:
+  - reflections:
+      - text: some notes
+        before: [0]
+    children: []
 
 diagnostics:
   - code: CDN-0006

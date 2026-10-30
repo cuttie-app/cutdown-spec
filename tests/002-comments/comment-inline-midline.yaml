@@ -1,6 +1,6 @@
 id: comment-inline-midline
 section: "2.2"
-description: "`##` is recognized mid-line; preceding text stays in children, payload stored in block reflection"
+description: "`##` is recognized mid-line; preceding text stays in children, payload stored in block reflections"
 
 input: |
   foo bar ## trailing comment
@@ -10,6 +10,6 @@ ast:
     children:
       - _type: Text
         value: "foo bar"
-    reflection:
+    reflections:
       - loc: { start: 11, end: 27 }
         text: "trailing comment"

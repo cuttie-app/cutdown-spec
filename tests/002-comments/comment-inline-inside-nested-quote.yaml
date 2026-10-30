@@ -8,7 +8,7 @@ ast:
   - _type: QuoteBlock
     children:
       - _type: QuoteBlock
-        reflection:
+        reflections:
           - text: "black cat is a sacred name"
         children:
           - _type: Emphasis

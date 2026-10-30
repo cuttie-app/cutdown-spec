@@ -12,7 +12,7 @@ ast:
     kind: "numbered"
     children:
       - _type: ListItem
-        reflection:
+        reflections:
           - loc: { start: 10, end: 14 }
             text: "note"
         children:

@@ -1,6 +1,6 @@
 id: escape-commentblock-closer
 section: "8.3"
-description: "`\\#` inside CommentBlock body emits literal `#`; escaped triple-octothorpe line does NOT close the fence"
+description: "`\\#` inside a CommentBlock body emits literal `#`; the escaped triple-octothorpe line does NOT close the fence"
 
 input: |
   ###
@@ -9,6 +9,8 @@ input: |
   more notes
   ###
 
-ast:
-  - _type: CommentBlock
-    text: "notes\n###\nmore notes\n"
+pages:
+  - reflections:
+      - text: "notes\n###\nmore notes"
+        before: [0]
+    children: []

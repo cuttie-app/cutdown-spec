@@ -13,7 +13,7 @@ A parser identifies block boundaries by scanning for blank line sequences. Each 
 
 **Block elements cannot interrupt a paragraph.** Once a run has been classified as a `Paragraph`, every later line in it is paragraph content, whatever it looks like — this holds for **every** block opener without exception, fences included. See §4.1, which defines the rule.
 
-Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a `CommentBlock` fence (produces an AST node). A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an empty `Paragraph`. See §2 for the full semantics and §13 for every character's role.
+Comments (§2) are detected in Phase 2 before block boundary analysis. A line starting with `###` is a CommentBlock fence; its body becomes a `SegmentReflection` on the Page, and no segment is produced. A line starting with `##` (pre-`##` content empty) is a standalone comment line: directly after content it attaches its payload backwards and does not split a List, Table, or FileGroup; after a blank line it is an orphan and becomes a `SegmentReflection` on the Page. See §2 for the full semantics and §13 for every character's role.
 
 ### 10.2 Leading and Trailing Whitespace
 
@@ -65,7 +65,7 @@ A line that begins with three or more identical fence symbols opens a fence. The
   | Meta | format word | — |
   | CommentBlock | — | — |
 
-  A surplus fence symbol starts the tail, so it is never part of a word: four backticks open a CodeBlock with the default language, `~~~~` a Meta with the default format, and `::::` a NamedBlock with no valid name. A kept `## comment` goes to the block's `reflection` (§2.2).
+  A surplus fence symbol starts the tail, so it is never part of a word: four backticks open a CodeBlock with the default language, `~~~~` a Meta with the default format, and `::::` a NamedBlock with no valid name. A kept `## comment` goes to the block's `reflections` (§2.2).
 
   The kept parts are matched from the start of the tail, after the `##` cut (§2.2):
 
@@ -177,7 +177,7 @@ Leading and trailing **blank lines** (§0.4) are stripped from the body of non-o
 - `CodeBlock` (§4.4)
 - `Meta` (§4.3)
 - `MathBlock` (§4.5)
-- `CommentBlock` (§4.16)
+- CommentBlock (§4.16)
 
 **Pipeline order:**
 1. Document-edge blank-line strip (§7 step 6).

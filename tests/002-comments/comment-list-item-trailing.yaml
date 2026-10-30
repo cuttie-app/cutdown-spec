@@ -1,6 +1,6 @@
 id: comment-list-item-trailing
 section: "2.2"
-description: "A trailing `##` on a list item line goes to that ListItem; List has no reflection"
+description: "A trailing `##` on a list item line goes to that ListItem; List has no reflections"
 
 input: |
   - a ## note
@@ -10,14 +10,14 @@ ast:
   - _type: List
     children:
       - _type: ListItem
-        reflection:
+        reflections:
           - loc: { start: 7, end: 11 }
             text: "note"
         children:
           - _type: Text
             value: "a"
       - _type: ListItem
-        reflection: []
+        reflections: []
         children:
           - _type: Text
             value: b

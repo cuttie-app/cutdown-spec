@@ -1,15 +1,17 @@
 id: comment-block-four-hashes
 section: "4.16"
-description: "#### opens and closes a CommentBlock; the surplus # on each fence line is a dropped tail"
+description: "#### opens and closes a CommentBlock, which becomes a SegmentReflection; the surplus # on each fence line is a dropped tail"
 
 input: |
   ####
   body
   ####
 
-ast:
-  - _type: CommentBlock
-    text: "body\n"
+pages:
+  - reflections:
+      - text: body
+        before: [0]
+    children: []
 
 diagnostics:
   - code: CDN-0016

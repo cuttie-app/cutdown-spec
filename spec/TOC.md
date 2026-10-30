@@ -40,7 +40,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 
 0. [Preliminaries](000-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references
 1. [Identifiers and AST Model](001-identifiers-and-ast-model.md) — Identifier charset, Segment, Block type, Inline type, Block scope
-2. [Comments](002-comments.md) — `##` line comment (Block.Reflection), CommentBlock (`###`)
+2. [Comments](002-comments.md) — `##` line comment (`LineReflection`), CommentBlock `###` and orphan lines (`SegmentReflection` on the Page)
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, PageBreaker, FileBlock, FileGroup, EmbedBlock, InjectBlock, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
 5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Highlight, Spoiler, CodeInline, LineBreak, Link, ImageInline, EmbedImageInline, Mark, MathInline, Variable, QuoteInline

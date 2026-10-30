@@ -2,7 +2,7 @@
 
 Inline content is parsed in source order with no backtracking. When an opener has no valid matching closer before the end of the paragraph (or enclosing block), the opener is emitted as literal text.
 
-The `##` opener (§2.2) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule. The payload is stored as a `Reflection` entry on the enclosing block — it does not appear in the inline stream.
+The `##` opener (§2.2) is special: it has no closer and terminates at end-of-line. When `##` is encountered with one or more inline constructs open, those unclosed openers degrade to literal per the same rule. The payload is stored as a `LineReflection` on the block that owns the line — it does not appear in the inline stream.
 
 **Inline rules run in:**
 
@@ -484,7 +484,7 @@ VARIABLE ::= "{{" ID_NAME "}}"
 A variable can also stand inside a string property, where no `Variable` node can live. There the parser leaves `{{key}}` in the string exactly as written, and the consumer substitutes it. Such an occurrence is an **interpolation token**.
 
 - **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
-- **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
+- **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, and `Meta` content, comment text, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token matches `VARIABLE` (§5.11). Anything else between double braces is not a token and is never substituted.
 - A string property holds no line breaks: a target wrapped over several lines is folded first (§12.1), and tokens are read from the folded string. A key split over two lines is therefore whole again for the consumer: `[t](/a/{{ke` followed by `y}}/b)` has `raw: "/a/{{key}}/b"`.
 - An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one pass, in order from the start of the string, together with the tokens (§18.4): `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
@@ -549,7 +549,7 @@ A `LineBreak` asserts an author-intended line break **within** a paragraph — t
 Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`, a newline in plain text, a no-op in a single-line context). See §15 — Cutdown has no canonical rendering.
 
 - The `\` and the following newline are consumed. Inline parsing continues on the next line.
-  - The `\` is the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a reflection entry, §2.2), are ignored when making this test.
+  - The `\` is the last non-whitespace character on the line. Trailing whitespace, and a trailing `##` comment (which consumes the rest of the line as a comment payload, §2.2), are ignored when making this test.
 
 **Line-ending summary:**
 
@@ -567,12 +567,12 @@ Cutdown emits the AST node `LineBreak`; consumers choose the rendering (a `<br>`
 
 **Syntax:** `content ## trailing comment`
 
-Line Comment runs till the end of line (EOL). Payload captured as a `Reflection` on the node that owns the line, omitted by renderers by default (§2.5).
+Line Comment runs till the end of line (EOL). Payload captured as a `LineReflection` on the node that owns the line, omitted by renderers by default (§2.5).
 
 See §2.2 for the full normative semantics. Summary:
 
 - Recognized at line-start or mid-line; runs to EOL; opaque to all other delimiters.
-- Payload stored as `Reflection` entry on the node that owns the line — does not appear in the inline stream.
+- Payload stored as a `LineReflection` on the node that owns the line — does not appear in the inline stream.
 - A single `#` is always literal (see §13). `###` at inline position → `##` (comment opener) + trailing `#` in payload.
 - Not recognized inside `CodeInline`, `MathInline`, or quoted attribute values.
 - Escaped with `\##` or `#\#`.

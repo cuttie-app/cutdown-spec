@@ -14,7 +14,7 @@ ast:
         value: "Caption text"
     rows:
       - _type: Row
-        reflection:
+        reflections:
           - loc: { start: 11, end: 25 }
             text: "editorial note"
         children:

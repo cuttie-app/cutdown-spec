@@ -1,0 +1,12 @@
+id: orphan-comment-only-document
+section: "2.2"
+description: "A standalone `##` line at Page scope with no preceding block is an orphan; the Page holds it in reflections and has no children"
+
+input: "## just a comment\n"
+
+pages:
+  - reflections:
+      - loc: { start: 3, end: 17 }
+        text: "just a comment"
+        before: [0]
+    children: []

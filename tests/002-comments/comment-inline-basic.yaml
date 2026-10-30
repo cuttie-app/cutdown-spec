@@ -1,13 +1,13 @@
 id: comment-inline-basic
 section: "2.2"
-description: "A standalone `##` line with no preceding block is an orphan; produces empty Paragraph with reflection entry"
+description: "A standalone `##` line with no preceding block is an orphan; it becomes a SegmentReflection on the Page"
 
 input: |
   ## a whole-line comment
 
-ast:
-  - _type: Paragraph
-    children: []
-    reflection:
+pages:
+  - reflections:
       - loc: { start: 3, end: 23 }
         text: "a whole-line comment"
+        before: [0]
+    children: []

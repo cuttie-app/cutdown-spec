@@ -1,13 +1,13 @@
 id: link-comment-cut-slice
 section: "9.1.4.1"
-description: "The ## cut terminates the line before the ] closer; the dead [ opener emits the verbatim slice up to the cut, and the payload lands in reflection"
+description: "The ## cut terminates the line before the ] closer; the dead [ opener emits the verbatim slice up to the cut, and the payload lands in reflections"
 
 input: |
   [text ## tail](url)
 
 ast:
   - _type: Paragraph
-    reflection:
+    reflections:
       - text: "tail](url)"
     children:
       - _type: Text

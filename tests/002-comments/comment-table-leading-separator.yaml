@@ -10,14 +10,14 @@ ast:
   - _type: Table
     rows:
       - _type: Header
-        reflection:
+        reflections:
           - loc: { start: 9, end: 13 }
             text: "note"
         children:
           - _type: Cell
             children: []
       - _type: Row
-        reflection: []
+        reflections: []
         children:
           - _type: Cell
             children:

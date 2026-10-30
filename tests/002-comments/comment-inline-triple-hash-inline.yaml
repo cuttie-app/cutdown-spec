@@ -10,6 +10,6 @@ ast:
     children:
       - _type: Text
         value: "text"
-    reflection:
+    reflections:
       - loc: { start: 7, end: 22 }
         text: "# inline triple"

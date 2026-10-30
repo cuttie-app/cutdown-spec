@@ -1,6 +1,6 @@
 id: comment-block-in-list-item
 section: "2.3"
-description: "CommentBlock is recognized inside a ListItem, where container indentation is stripped before classification"
+description: "A CommentBlock inside a ListItem goes to the Page; the item body stays Inline[] and counts as one block, so the anchor is the item's end"
 
 input: |
   - item one
@@ -9,19 +9,19 @@ input: |
     ###
   - item two
 
-ast:
-  - _type: List
-    kind: bullet
+pages:
+  - reflections:
+      - text: todo
+        before: [0, 0, 1]
     children:
-      - _type: ListItem
+      - _type: List
+        kind: bullet
         children:
-          - _type: Paragraph
+          - _type: ListItem
             children:
               - _type: Text
                 value: "item one"
-          - _type: CommentBlock
-            text: "todo\n"
-      - _type: ListItem
-        children:
-          - _type: Text
-            value: "item two"
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: "item two"

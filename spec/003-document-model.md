@@ -31,12 +31,15 @@ A logical division within a document. Every document has at least one Page.
 interface Page {
   _type: "Page"
   meta: Meta | null
+  reflections: SegmentReflection[]
   children: Block[]
 }
 ```
 
+`reflections` holds the Page's segment comments — every CommentBlock and orphan `##` line on the Page, at any depth — in source order (§2.3).
+
 Pages are not parsed — they are **derived** from the root block sequence by the pagination fold, which is defined in §9.3.2. Two constructs drive it: `Meta` blocks (§4.3) and PageBreakers (§4.10).
 
-A **Ghost Page** is a Page with `meta: null` and `children: []`. Ghost Pages are valid and emitted as-is; consumers decide how to handle them.
+A **Ghost Page** is a Page with `meta: null`, `reflections: []`, and `children: []`. Ghost Pages are valid and emitted as-is; consumers decide how to handle them.
 
 ---

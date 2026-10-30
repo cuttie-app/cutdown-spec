@@ -9,10 +9,12 @@ input: |
 
   after
 
-ast:
-  - _type: CommentBlock
-    text: "note\n"
-  - _type: Paragraph
+pages:
+  - reflections:
+      - text: note
+        before: [0]
     children:
-      - _type: Text
-        value: after
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: after

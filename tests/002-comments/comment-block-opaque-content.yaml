@@ -9,6 +9,8 @@ input: |
   ``not code``
   ###
 
-ast:
-  - _type: CommentBlock
-    text: "= not a heading\n**not bold**\n``not code``\n"
+pages:
+  - reflections:
+      - text: "= not a heading\n**not bold**\n``not code``"
+        before: [0]
+    children: []

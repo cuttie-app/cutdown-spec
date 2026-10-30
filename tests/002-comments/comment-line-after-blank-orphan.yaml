@@ -1,0 +1,20 @@
+id: comment-line-after-blank-orphan
+section: "2.2"
+description: "A standalone `##` line after a blank line does not attach backwards; it is an orphan and becomes a SegmentReflection at the end of the Page"
+
+input: |
+  Para
+
+  ## note
+
+pages:
+  - reflections:
+      - loc: { start: 9, end: 13 }
+        text: "note"
+        before: [1]
+    children:
+      - _type: Paragraph
+        reflections: []
+        children:
+          - _type: Text
+            value: Para

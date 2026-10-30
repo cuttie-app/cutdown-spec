@@ -97,7 +97,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | title | Unclosed CommentBlock fence |
 | level | warning |
 | trigger | A `###` opening fence has no closing line (one beginning with `###`) before end of document |
-| recovery | Content from the opening fence to end of document is treated as `CommentBlock` text (opaque raw string). The same rule applies as for other opaque fences (CDN-0001, CDN-0002, CDN-0003) — container boundaries are not observable from inside an opaque block. |
+| recovery | Content from the opening fence to end of document becomes the CommentBlock's `SegmentReflection` text (opaque raw string). The same rule applies as for other opaque fences (CDN-0001, CDN-0002, CDN-0003) — container boundaries are not observable from inside an opaque block. |
 | introduced_in | 0.5.0 |
 | status | active |
 | owner | Language |

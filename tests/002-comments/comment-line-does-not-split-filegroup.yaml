@@ -11,8 +11,8 @@ ast:
   - _type: FileGroup
     children:
       - _type: FileBlock
-        reflection:
+        reflections:
           - loc: { start: 10, end: 14 }
             text: "note"
       - _type: FileBlock
-        reflection: []
+        reflections: []

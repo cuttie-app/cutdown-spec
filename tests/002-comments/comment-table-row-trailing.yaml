@@ -1,6 +1,6 @@
 id: comment-table-row-trailing
 section: "4.8"
-description: "Trailing `## comment` after a row's content goes to that Row's reflection; Table has no reflection"
+description: "Trailing `## comment` after a row's content goes to that Row's reflections; Table has no reflections"
 
 input: |
   | AA | BB | ## what is this?
@@ -9,7 +9,7 @@ ast:
   - _type: Table
     rows:
       - _type: Row
-        reflection:
+        reflections:
           - loc: { start: 15, end: 28 }
             text: "what is this?"
         children:

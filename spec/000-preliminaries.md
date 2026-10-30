@@ -74,7 +74,7 @@ A **blank line** is a line whose content is only whitespace, or empty.
 - **Inline context** — one run of text parsed by the inline rules and bounded by its owner: the text of a paragraph, heading, list item, or task item; a table cell; a caption; link text; image `alt`; Mark content. No inline construct crosses its edge.
 - **Soft break** — the line terminator between two lines of one inline context. It adds no character to the AST, but no token crosses it (§12.1).
 - **Base column** — the column against which the leading whitespace of a continuation line is measured (§12.1).
-- **Opaque content** — text captured verbatim, with no block or inline parsing and no escapes beyond the narrow ones its construct defines (§8.3, §6.1.1): the bodies of `CodeBlock`, `MathBlock`, `Meta`, and `CommentBlock`; `CodeInline` and `MathInline` content; quoted attribute values.
+- **Opaque content** — text captured verbatim, with no block or inline parsing and no escapes beyond the narrow ones its construct defines (§8.3, §6.1.1): the bodies of `CodeBlock`, `MathBlock`, and `Meta`, and of a CommentBlock; `CodeInline` and `MathInline` content; quoted attribute values.
 - **Input snapshot** — the complete decoded Cutdown source available to a parser at one instant. A parser MUST treat every input snapshot as an ordinary Cutdown document, including a snapshot that ends within unfinished markup (§15).
 - **End of block** — a boundary inferred by the ordinary Cutdown grammar: a completed block boundary, a closing fence, or end of input. It is not a token or event in Cutdown source.
 

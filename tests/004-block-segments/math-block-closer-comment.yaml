@@ -1,6 +1,6 @@
 id: math-block-closer-comment
 section: "4.5"
-description: "A ## comment on a MathBlock closer goes to the block's reflection"
+description: "A ## comment on a MathBlock closer goes to the block's reflections"
 
 input: |
   $$$
@@ -10,5 +10,5 @@ input: |
 ast:
   - _type: MathBlock
     raw: "x^2"
-    reflection:
+    reflections:
       - text: squared

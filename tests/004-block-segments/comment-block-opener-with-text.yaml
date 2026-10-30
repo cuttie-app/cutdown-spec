@@ -7,9 +7,11 @@ input: |
   body
   ###
 
-ast:
-  - _type: CommentBlock
-    text: "body\n"
+pages:
+  - reflections:
+      - text: body
+        before: [0]
+    children: []
 
 diagnostics:
   - code: CDN-0016

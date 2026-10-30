@@ -5,35 +5,34 @@
 - `Page.meta` is `null` when the Page has no `Meta` block. An empty `Meta` block is not `null`: it is a `Meta` whose `raw` is `''`.
 - A path locator — `FileBlock.src`, `InjectBlock.src`, `ImageInline.src`, `Link.path` — is `null` when the node holds no valid path: the path is invalid (§9.2.5), or the `Link` is not `kind: "page"`. The node's `raw` still holds the text as written.
 
-A property a node does not admit is omitted, not emptied — `CommentBlock` has no `attributes` property at all (§14.7).
+A property a node does not admit is omitted, not emptied — `Meta` has no `attributes` property at all (§14.7).
 
 ### 14.1 Root Segments
 
 | Segment    | Fields |
 |------------|--------|
 | `Document` | `_type: "Document", children: Page[]` |
-| `Page`     | `_type: "Page", meta: Meta\|null, children: Block[]` |
+| `Page`     | `_type: "Page", meta: Meta\|null, reflections: SegmentReflection[], children: Block[]` |
 
 ### 14.2 Block Segments
 
-All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry `reflection: Reflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it. `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `ListItem`, and `TaskItem` hold `Inline[]` when their body is exactly one paragraph and `Block[]` otherwise; one array never mixes the two (§4.7.1).
+All block segments except `List`, `Table`, and `FileGroup` carry `reflections: LineReflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §2.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it. `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `ListItem`, and `TaskItem` hold `Inline[]` when their body is exactly one paragraph and `Block[]` otherwise; one array never mixes the two (§4.7.1).
 
 | Segment         | Fields |
 |-----------------|--------|
-| `Paragraph`     | `_type: "Paragraph", children: Inline[], reflection, attributes` |
-| `Section`       | `_type: "Section", level: 1..9, heading: Inline[], children: Block[], reflection, attributes` |
-| `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[], reflection, attributes` |
-| `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[], reflection, attributes` |
-| `QuoteBlock`    | `_type: "QuoteBlock", children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
+| `Paragraph`     | `_type: "Paragraph", children: Inline[], reflections, attributes` |
+| `Section`       | `_type: "Section", level: 1..9, heading: Inline[], children: Block[], reflections, attributes` |
+| `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[], reflections, attributes` |
+| `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[], reflections, attributes` |
+| `QuoteBlock`    | `_type: "QuoteBlock", children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
 | `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: number = 1, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
 | `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], attributes` |
 | `FileGroup`     | `_type: "FileGroup", children: FileBlock[], attributes` |
-| `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflection, attributes` |
-| `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflection, attributes` — the parser emits `children: []` (§17) |
-| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
-| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Inline[]\|Block[], caption: Inline[], reflection, attributes` |
-| `CommentBlock`  | `_type: "CommentBlock", text: string` — no `attributes`, no `reflection`. Hidden by default (§2.5). |
-| `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflection, attributes` |
+| `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflections, attributes` |
+| `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflections, attributes` — the parser emits `children: []` (§17) |
+| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
+| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
+| `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflections, attributes` |
 
 ### 14.3 Inline Segments
 
@@ -59,11 +58,11 @@ All block segments except `List`, `Table`, `FileGroup`, and `CommentBlock` carry
 | Segment         | Fields                                                                          |
 |-----------------|---------------------------------------------------------------------------------|
 | `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
-| `ListItem`      | `_type: "ListItem", children: Inline[]\|Block[], reflection, attributes` |
-| `TaskItem`      | `_type: "TaskItem", checked: bool, children: Inline[]\|Block[], reflection, attributes` |
-| `FileBlock`     | `_type: "FileBlock", raw: string, src: PathResourceLocator\|null, caption: Inline[], reflection, attributes` — only inside a `FileGroup` |
+| `ListItem`      | `_type: "ListItem", children: Inline[]\|Block[], reflections, attributes` |
+| `TaskItem`      | `_type: "TaskItem", checked: bool, children: Inline[]\|Block[], reflections, attributes` |
+| `FileBlock`     | `_type: "FileBlock", raw: string, src: PathResourceLocator\|null, caption: Inline[], reflections, attributes` — only inside a `FileGroup` |
 | `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
-| `Row`           | `_type: "Row"\|"Header", children: Cell[], reflection, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |
+| `Row`           | `_type: "Row"\|"Header", children: Cell[], reflections, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |
 | `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
 | `PathResourceLocator` | `path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§9.2) |
 
@@ -86,16 +85,24 @@ interface Loc {
 - Blocks a consumer places in `InjectBlock.children` (§17) keep the `loc` of the document they were parsed from; `loc.file` names that document.
 - Diagnostics (CDN codes) carry a `loc` identifying the triggering source range.
 
-### 14.6 Reflection Type
+### 14.6 Reflection Types
 
 ```typescript
-interface Reflection {
-  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, see Location Type)
-  text: string   // ## payload with one leading space stripped, trailing whitespace preserved
+interface LineReflection {
+  loc: Loc          // source range of the ## payload (raw-file UTF-16 offsets, see Location Type)
+  text: string      // ## payload with one leading space stripped, trailing whitespace preserved
+}
+
+interface SegmentReflection {
+  loc: Loc          // the CommentBlock body, or the ## payload of an orphan line
+  text: string      // CommentBlock body lines joined with \n, no trailing \n; or the orphan payload
+  before: number[]  // child-index path to the block the comment stands before (§2.3)
 }
 ```
 
-Property `reflection`: is typed `Reflection[]`, and is `[]` when no `##` comment is present on or after the node's lines. See §2.2 for attachment rules.
+Property `reflections` on a block: is typed `LineReflection[]`, and is `[]` when no `##` comment is present on or after the node's lines. See §2.2 for attachment rules.
+
+Property `reflections` on a `Page`: is typed `SegmentReflection[]`, in source order, and is `[]` when the Page holds no CommentBlock and no orphan `##` line. See §2.3 for the anchor path.
 
 ### 14.7 Attributes Type
 
@@ -112,7 +119,7 @@ type JsonArray  = JsonValue[]
 
 A JSON attribute value (§6.1.1) is author data, so a JSON `null` may appear inside it. It never stands for an absent property.
 
-Property `attributes`: is typed `Attribute[]`. A block or inline node with no attributes carries an empty array, never `null`. Nodes that admit no attributes at all (`CommentBlock`, `Meta`, `Column`, `Cell`) omit the field entirely.
+Property `attributes`: is typed `Attribute[]`. A block or inline node with no attributes carries an empty array, never `null`. Nodes that admit no attributes at all (`Meta`, `Column`, `Cell`) omit the field entirely.
 
 Ordering: entries appear in **source order**. Deduplication rules (see §6.1.1) may drop entries before the array is emitted.
 

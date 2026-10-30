@@ -9,10 +9,10 @@ This section fixes what a resolved `InjectBlock` contains, so that two consumers
 A consumer resolves an `InjectBlock` by parsing the named document with the ordinary Cutdown parser and filling `children`:
 
 1. `children` receives the `children` of every Page of the injected document, concatenated in Page order.
-2. The injected document's `meta` values are dropped. They never reach the host document.
+2. The injected document's `meta` values and Page `reflections` are dropped. They never reach the host document: a `before` path names a place in the injected Page, which no longer exists. The `LineReflection` entries on injected blocks stay with their blocks.
 3. Page boundaries in the injected document do not split the host Page. The whole injection lives inside the one host Page that holds the `InjectBlock`.
 
-The `InjectBlock` itself stays in the tree. Its `src`, `attributes`, and `reflection` are unchanged.
+The `InjectBlock` itself stays in the tree. Its `src`, `attributes`, and `reflections` are unchanged.
 
 ### 17.2 Section boundary
 

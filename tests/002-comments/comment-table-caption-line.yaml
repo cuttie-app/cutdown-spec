@@ -13,7 +13,7 @@ ast:
         value: "Cap"
     rows:
       - _type: Row
-        reflection:
+        reflections:
           - loc: { start: 15, end: 19 }
             text: "note"
         children:

@@ -1,6 +1,6 @@
 id: comment-block-basic
 section: "2.3"
-description: "Bare `###` opener and bare `###` closer; content captured as opaque raw string with trailing newline"
+description: "Bare `###` opener and bare `###` closer; the body is captured as opaque text with no trailing newline, as a SegmentReflection on the Page"
 
 input: |
   ###
@@ -8,6 +8,8 @@ input: |
   TODO: revise
   ###
 
-ast:
-  - _type: CommentBlock
-    text: "draft note\nTODO: revise\n"
+pages:
+  - reflections:
+      - text: "draft note\nTODO: revise"
+        before: [0]
+    children: []

@@ -10,5 +10,5 @@ ast:
     children:
       - _type: Text
         value: "a ``b"
-    reflection:
+    reflections:
       - text: note

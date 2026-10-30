@@ -37,6 +37,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 | 21 | Table cell padding | one space on each side of the content — `\| a \| b \|`; an empty cell is `\| \|` | any padding | §4.8 |
 | 22 | Header separator cell | exactly three symbols — `---`, `:--`, `--:`, `:-:`, `--,`, `--.` | longer runs of `-` | §4.8 |
 | 23 | Trailing whitespace on a line | none — a blank line inside a quote is a bare `>` | any trailing spaces and tabs | §12.1 |
+| 24 | Segment comment | a bare `###` fence, body lines as `text` holds them, standing directly before the block `before` names — or at the end of its container — at that block's padding | an orphan `## text` line; a CommentBlock before the `Meta` that fills its Page | §2.3 |
 
 ### 16.2 Notes on individual rows
 
@@ -55,6 +56,8 @@ The table is closed. Every point at which two distinct inputs produce the same A
 **Rows 1 and 12 — the default is not written.** A writer omits a format or language word that equals the default, as it omits every other default.
 
 **Row 19 — no wrapping.** A soft break adds nothing (§12.1) and the AST keeps no wrap points, so a writer has nowhere to break a line. An editor may still wrap lines on screen; that is a view setting and never reaches the bytes.
+
+**Row 24 — placement.** A `SegmentReflection` carries no spelling and no offset, only its anchor (§2.3). A writer emits each one as a CommentBlock just before its anchor block, entries with the same anchor in `Page.reflections` order. A comment written before a `Meta` therefore comes back after it: the `Meta` is not in `children`, so no path can point before it. A body line that begins with `###` is escaped (§8.3).
 
 ### 16.3 What is not in the registry
 
