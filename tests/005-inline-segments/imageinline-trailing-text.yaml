@@ -1,0 +1,20 @@
+id: imageinline-trailing-text
+section: "5.9"
+description: "An image followed by text on its line is inline content like any other: a Paragraph holding the ImageInline and the text"
+
+input: "![a](b) trailing text\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        alt:
+          - _type: Text
+            value: "a"
+        raw: "b"
+        src:
+          path: "/b"
+          query: []
+          fragment: ""
+      - _type: Text
+        value: " trailing text"
