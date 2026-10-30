@@ -64,7 +64,7 @@ Every Cutdown proposal MUST include all of the following:
    - Justify why the proposal fits that bump level.
 6. Conformance payload
    - Add/updated conformance test vectors for happy path, malformed input, escape behavior, and precedence-neighbor interaction.
-   - Confirm spec text and tests are aligned per `./conformance-policy.md`.
+   - Confirm spec text, grammar blocks, and tests are aligned per `./conformance-policy.md`.
 7. Profile behavior declaration
    - State whether behavior requires a specific parser profile configuration per `./parser-profile-policy.md`.
 8. Diagnostics impact declaration

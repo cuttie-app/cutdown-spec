@@ -1,9 +1,9 @@
 id: attrs-id-unicode
 section: "6.1.1"
-description: "An id admits non-ASCII letters: {#Установка} is a valid id"
+description: "An id admits non-ASCII letters: {#道具一式} is a valid id"
 
 input: |
-  Text {#Установка}
+  Text {#道具一式}
 
 ast:
   - _type: Paragraph
@@ -12,4 +12,4 @@ ast:
         value: Text
     attributes:
       - key: id
-        value: Установка
+        value: 道具一式

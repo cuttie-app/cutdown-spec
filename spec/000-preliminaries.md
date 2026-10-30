@@ -10,7 +10,9 @@ Every sequence of characters (§0.3) is a Cutdown document (§18.2). The rules o
 
 ### 0.2 Notation
 
-**Grammar.** Grammar productions use the EBNF notation of [XML] §6: `Name ::= expression`, with `#xN` for a code point, `[a-z]` and `[^…]` for character classes, `A - B` for "A but not B", `"…"` for a literal that matches case-sensitively, and `?`, `*`, `+`, `( )` as usual. Productions stand in ```` ```ebnf ```` blocks next to the rule they formalise; each name is defined in exactly one block. The blocks, collected in the order they appear, are published for each version at `https://cutdownspec.org/<version>/cutdown.ebnf`. A grammar covers the lexical layer only — characters, identifiers, markers. Rules that depend on context, such as matching a fence closer to its opener, nesting, and inline precedence, are stated in prose.
+**Grammar.** Grammar productions use the EBNF notation of [XML] §6: `NAME ::= expression`, with `#xN` for a code point, `[a-z]` and `[^…]` for character classes, `A - B` for "A but not B", `"…"` for a literal that matches case-sensitively, and `?`, `*`, `+`, `( )` as usual. Production names are written in UPPER_SNAKE case and in code font, and each name is defined in exactly one block. Productions stand in ```` ```ebnf ```` blocks next to the rule they formalise. The blocks, collected in the order they appear, are published for each version at `https://cutdownspec.org/<version>/cutdown.ebnf`. A grammar covers the lexical layer only — characters, identifiers, markers. Rules that depend on context, such as matching a fence closer to its opener, nesting, and inline precedence, are stated in prose.
+
+A production defines what is **recognized**, not what is valid. Input that does not match a production is still a document (§18.2): the rule that uses the production says what it becomes instead — paragraph text, a degraded opener (§9.1.4.1), or literal attribute text (§6.1.3). Prose names a production rather than listing its characters again. Grammar blocks, prose, and the conformance corpus are all normative and equal; a disagreement among them is a defect in this specification.
 
 **Examples** are shown as:
 
@@ -31,11 +33,11 @@ AST:
 A **character** is a Unicode scalar value [UNICODE]: a code point other than a surrogate code point. Cutdown source is a sequence of characters, decoded from UTF-8 [RFC3629] before parsing (§7).
 
 ```ebnf
-Char    ::= [#x0-#xD7FF] | [#xE000-#x10FFFF]
-Control ::= [#x0-#x1F] | #x7F | [#x80-#x9F]
+CHAR    ::= [#x0-#xD7FF] | [#xE000-#x10FFFF]
+CONTROL ::= [#x0-#x1F] | #x7F | [#x80-#x9F]
 ```
 
-A **control character** is a `Control`.
+A **control character** is a `CONTROL`.
 
 **Units.** Every length and limit in this specification is counted in characters. Source locations are the one exception: `loc` offsets count UTF-16 code units (§14). A **column** is the number of characters from the start of a line, a tab counting as one.
 
@@ -44,19 +46,19 @@ A **control character** is a `Control`.
 ### 0.4 Lines and whitespace
 
 ```ebnf
-LineTerminator ::= #xD #xA | #xD | #xA
-Whitespace     ::= #x20 | #x9
+LINE_TERMINATOR ::= #xD #xA | #xD | #xA
+WHITESPACE      ::= #x20 | #x9
 ```
 
-A **line terminator** is a `LineTerminator`: `\r\n`, a lone `\r`, or `\n` (§7). A **line** is the characters between two line terminators, or between a line terminator and the start or end of input. **Line content** is a line without its terminator. **End of input** acts as a virtual line terminator after the last character; no text is added (§7).
+A **line terminator** is a `LINE_TERMINATOR`: `\r\n`, a lone `\r`, or `\n` (§7). A **line** is the characters between two line terminators, or between a line terminator and the start or end of input. **Line content** is a line without its terminator. **End of input** acts as a virtual line terminator after the last character; no text is added (§7).
 
-**Whitespace** is a `Whitespace` character: the space U+0020 or the tab U+0009, which reads as a space (§7). Every rule in this specification that speaks of whitespace — blank lines, leading and trailing spaces, collapsing runs, splitting class values — means this set.
+**Whitespace** is a `WHITESPACE` character: the space U+0020 or the tab U+0009, which reads as a space (§7). Every rule in this specification that speaks of whitespace — blank lines, leading and trailing spaces, collapsing runs, splitting class values — means this set.
 
 **Unicode whitespace** is a character with the Unicode White_Space property [UNICODE]. A rule uses it only where it names it; today that is `ID_VALUE` (§1.1).
 
 ```ebnf
-UnicodeWhitespace ::= [#x9-#xD] | #x20 | #x85 | #xA0 | #x1680 | [#x2000-#x200A]
-                    | #x2028 | #x2029 | #x202F | #x205F | #x3000
+UNICODE_WHITESPACE ::= [#x9-#xD] | #x20 | #x85 | #xA0 | #x1680 | [#x2000-#x200A]
+                     | #x2028 | #x2029 | #x202F | #x205F | #x3000
 ```
 
 The production lists the White_Space property as the Unicode Standard defines it; where they differ, the property wins.

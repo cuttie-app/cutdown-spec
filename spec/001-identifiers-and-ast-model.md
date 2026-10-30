@@ -4,33 +4,31 @@ This section defines the identifier character sets and the shape of the AST. The
 
 ### 1.1 Identifier Character Set
 
-Throughout this spec, `ID_LITERAL` refers to the following ASCII character class:
+`ID_CHAR` is one character of an identifier, and `ID_NAME` is an identifier:
 
 ```ebnf
-ID_LITERAL ::= [a-zA-Z0-9._-]
+ID_CHAR ::= [a-zA-Z0-9._-]
+ID_NAME ::= ID_CHAR+
 ```
 
-This charset is used for all identifier-like tokens: block names, mark names, code language tags, reference definition IDs, and variable keys. It is ASCII-only. Matching against `ID_LITERAL` is case-sensitive everywhere in this specification.
+`ID_NAME` is used for all identifier-like tokens: block names, mark names, code language words, reference definition ids, and variable keys. It is ASCII-only. Matching against it is case-sensitive everywhere in this specification.
 
-`TAG_LITERAL` is the character class of one tag level in a tag link target (§5.5):
+`TAG_LEVEL` is one level of a tag link target (§5.5):
 
 ```ebnf
-TAG_LITERAL ::= Char - ("/" | Control)
+TAG_CHAR  ::= CHAR - ("/" | CONTROL)
+TAG_LEVEL ::= TAG_CHAR+
 ```
 
-That is, any character except `/` (slash) and the control characters (§0.3).
-
-A tag target is `~` (tilde) followed by one or more `TAG_LITERAL` runs separated by `/`. Unlike `ID_LITERAL`, it admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character. A level may not be `.` or `..`, and a tag is never normalized as a path is.
+A tag target is `~` (tilde) followed by one or more `TAG_LEVEL`s separated by `/` (slash). Unlike `ID_NAME`, a level admits spaces and non-ASCII letters. It is scanned as a path is (§9.2.1): parentheses inside it are balanced, and a backslash escapes the next character. A level may not be `.` or `..`, and a tag is never normalized as a path is.
 
 `ID_VALUE` is the value of an `id` attribute (§6.1.1) and the target of an id link (§5.5). One rule serves both, so every id an author can write, a link can reach:
 
 ```ebnf
-ID_VALUE ::= (Char - (UnicodeWhitespace | "#" | ")" | "}" | Control))+
+ID_VALUE ::= (CHAR - (UNICODE_WHITESPACE | "#" | ")" | "}" | CONTROL))+
 ```
 
-That is, one or more characters other than Unicode whitespace (§0.4), `#` (octothorpe), `)` (right parenthesis), `}` (right brace), and the control characters (§0.3).
-
-Unlike `ID_LITERAL`, it admits non-ASCII letters: `install-linux` and `Установка` are both ids. The parser converts every id value to Unicode Normalization Form C (NFC), wherever it is written, so the same letters always give the same id; no other change is made, and matching is case-sensitive.
+Unlike `ID_NAME`, it admits non-ASCII letters: `install-linux` and `道具一式` are both ids. The parser converts every id value to Unicode Normalization Form C (NFC), wherever it is written, so the same letters always give the same id; no other change is made, and matching is case-sensitive.
 
 Paths are not identifiers. They are parsed as a `PathResourceLocator` (§9.2).
 

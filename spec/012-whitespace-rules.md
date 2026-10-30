@@ -41,6 +41,10 @@ A line inside a `QuoteBlock` is measured after its `>` markers, each with its on
      more       5 columns: one space           →  "nospaces more"
 ```
 
+```ebnf
+SOFT_BREAK ::= LINE_TERMINATOR WHITESPACE*    /* between two lines of one inline context, after container prefixes */
+```
+
 **Soft breaks and tokens.** A soft break adds no character, but no token crosses it: a delimiter run, a Mark name (§5.10), a Variable key (§5.11), an attribute token (§6.1.1), and a URI scheme (§5.5) each end at the line end. Spans do cross it: `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline`, `CodeInline`, `MathInline`, `Mark` content, link text and target, image `alt` and source, and an attribute group. So `x _` followed by `_y__ z` is the literal text `x __y__ z`: the two `_` never form a `__`.
 
 ### 12.2 Whitespaces in Inline Segments

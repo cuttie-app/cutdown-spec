@@ -22,28 +22,49 @@ Cutdown's parsing model makes three testable guarantees:
 
 #### 9.1.3 Phase 3 — Block Classification
 
-Each block candidate is classified by its first line:
+Each block candidate is classified by its first line, after container prefixes and leading whitespace are removed. The line is matched against these openers:
 
-| First line matches | Block type |
+```ebnf
+MARKER_END    ::= WHITESPACE | LINE_TERMINATOR    /* or the end of input */
+HEADING_OPEN  ::= "="+ MARKER_END
+PAGE_BREAK    ::= "---"
+CODE_FENCE    ::= "```"
+META_FENCE    ::= "~~~"
+NAMED_FENCE   ::= ":::"
+MATH_FENCE    ::= "$$$"
+SPOILER_FENCE ::= "^^^"
+COMMENT_FENCE ::= "###"
+TABLE_OPEN    ::= "|"
+QUOTE_MARKER  ::= ">" MARKER_END
+BULLET_OPEN   ::= "-" MARKER_END
+TASK_OPEN     ::= "-" WHITESPACE "[" (" " | "x" | "X" | "+") "]" MARKER_END
+ORDERED_OPEN  ::= DIGIT DIGIT? DIGIT? DIGIT? DIGIT? "." MARKER_END
+DIGIT         ::= [0-9]
+REFDEF_OPEN   ::= "[^" ID_NAME "]:" MARKER_END
+FILE_OPEN     ::= "/"
+EMBED_OPEN    ::= "https://"
+```
+
+| First line begins with | Block type |
 |-------------------|------------|
-| `^=+` and a separator | Heading → Section; ten or more `=` give level 9 (§4.2) |
-| `^---` | PageBreaker (top level only; no node — §9.4) |
-| `^` ``` ` | CodeBlock |
-| `^~~~` | Meta |
-| `^:::` | NamedBlock |
-| `^\|` | Table |
-| `^>` and a separator | QuoteBlock |
-| `^-` and a separator, or `^- \[[ xX+]\]` and a separator | List (unordered / task) |
-| `^[0-9]{1,5}\.` and a separator | List (ordered) |
-| `^\[^[ID_LITERAL]+\]:` and a separator | RefDefinition |
-| `^\$\$\$` | MathBlock |
-| `^\^\^\^` | SpoilerBlock |
-| `^###` | CommentBlock |
-| `^/` | InjectBlock when the locator's `path` ends with `.cutdown` or `/` (§4.17); otherwise FileBlock, grouped into a FileGroup (§4.11, §4.12) |
-| `^https://` | EmbedBlock (§4.9) |
+| `HEADING_OPEN` | Heading → Section; ten or more `=` give level 9 (§4.2) |
+| `PAGE_BREAK` | PageBreaker (top level only; no node — §9.4) |
+| `CODE_FENCE` | CodeBlock |
+| `META_FENCE` | Meta |
+| `NAMED_FENCE` | NamedBlock |
+| `TABLE_OPEN` | Table |
+| `QUOTE_MARKER` | QuoteBlock |
+| `TASK_OPEN` or `BULLET_OPEN` | List (task / unordered) |
+| `ORDERED_OPEN` | List (ordered) |
+| `REFDEF_OPEN` | RefDefinition |
+| `MATH_FENCE` | MathBlock |
+| `SPOILER_FENCE` | SpoilerBlock |
+| `COMMENT_FENCE` | CommentBlock |
+| `FILE_OPEN` | InjectBlock when the locator's `path` ends with `.cutdown` or `/` (§4.17); otherwise FileBlock, grouped into a FileGroup (§4.11, §4.12) |
+| `EMBED_OPEN` | EmbedBlock (§4.9) |
 | (anything else) | Paragraph |
 
-A **separator** is whitespace (§0.4) or the end of the line. A marker followed by anything else is not a marker, and the line is classified as if the marker were text: `-5 °C`, `3.14`, `=>`, `>quote`, and `[^a]:x` are paragraphs. U+3000 (ideographic space) is text, not a separator. A heading, list, or RefDefinition marker consumes all whitespace after it; a `>` consumes one whitespace character (§4.6).
+A marker followed by anything other than `MARKER_END` is not a marker, and the line is classified as if the marker were text: `-5 °C`, `3.14`, `=>`, `>quote`, and `[^a]:x` are paragraphs. U+3000 (ideographic space) is text, not a `MARKER_END`. A heading, list, or RefDefinition marker consumes all whitespace after it; a `>` consumes one whitespace character (§4.6). A run of six or more digits matches no `ORDERED_OPEN`, so the line is a paragraph (§4.7).
 
 #### 9.1.4 Phase 4 — Inline Parsing
 
@@ -139,6 +160,16 @@ Brackets nest inside every path. A `(` or `[` opens a pair, and the closer that 
 
 A `{…}` group belongs to the attribute sequence only when the sequence is preceded by whitespace and closes the line. `/a {draft}.png` and `/a/{draft}` are paths without attributes.
 
+```ebnf
+PAREN_EXTENT ::= (PATH_CHAR | PATH_ESCAPE | SOFT_BREAK | "(" PAREN_EXTENT ")")*
+PATH_CHAR    ::= CHAR - ("(" | ")" | "\" | LINE_TERMINATOR)
+PATH_ESCAPE  ::= "\" (CHAR - LINE_TERMINATOR)
+FILE_LINE    ::= FILE_PATH (WHITESPACE+ ATTR_GROUP (WHITESPACE* ATTR_GROUP)*)? WHITESPACE*
+FILE_PATH    ::= "/" ((CHAR - ("\" | LINE_TERMINATOR)) | PATH_ESCAPE)*
+```
+
+A `(…)` extent is a `PAREN_EXTENT` followed by the unbalanced `)`. In a `FILE_LINE` the attribute sequence is taken only when it closes the line, so where both readings match, the `{…}` groups are attributes.
+
 #### 9.2.2 Characters and escapes
 
 A path may contain any Unicode scalar value, the space included. A backslash escapes the next character:
@@ -159,6 +190,19 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 2. `path` is `raw` up to the first unescaped `?` or `#`, or all of `raw` if neither occurs.
 3. If an unescaped `?` comes first, the query text runs from after it to the first unescaped `#` or the end. It is split on `&`; each part is split at its first `=` into `key` and `value`. A part with no `=` has `value: ''`. Empty parts (`a&&b`) produce no pair. Pairs keep source order, and repeated keys are all kept. Nothing is percent-decoded: `%20` stays `%20`. At most 32 pairs are kept; any further pairs are dropped without a diagnostic.
 4. `fragment` is everything after the first unescaped `#`. A `?` after the `#` is fragment content.
+
+The parts are read from the extent as written, so an escaped `?`, `#`, `&`, or `=` is never a boundary:
+
+```ebnf
+LOCATOR       ::= PATH_PART ("?" QUERY_PART)? ("#" FRAGMENT_PART)?
+PATH_PART     ::= ((LOC_CHAR - ("?" | "#")) | PATH_ESCAPE)*
+QUERY_PART    ::= PAIR ("&" PAIR)*
+PAIR          ::= PAIR_KEY ("=" PAIR_VALUE)?
+PAIR_KEY      ::= ((LOC_CHAR - ("&" | "=" | "#")) | PATH_ESCAPE)*
+PAIR_VALUE    ::= ((LOC_CHAR - ("&" | "#")) | PATH_ESCAPE)*
+FRAGMENT_PART ::= (LOC_CHAR | PATH_ESCAPE)*
+LOC_CHAR      ::= CHAR - "\"
+```
 
 Absent parts are empty: `query: []`, `fragment: ''`.
 

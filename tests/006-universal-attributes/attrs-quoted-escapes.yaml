@@ -1,0 +1,14 @@
+id: attrs-quoted-escapes
+section: "6.1.1"
+description: "In a quoted value `\\\"` gives a quote; `\\\\` stays for the consumer as a template escape; any other backslash is literal"
+
+input: 'Text {title="say \"hi\" \\ ok \n"}'
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: title
+        value: 'say "hi" \\ ok \n'

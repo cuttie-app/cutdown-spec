@@ -1,0 +1,14 @@
+id: attrs-class-dotted-nonascii
+section: "6.1.1"
+description: "A class name may hold any letters and dots: `.a.b` is the one class `a.b`, and `.道具` is a class"
+
+input: "Text {.a.b .道具}\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: class
+        value: [a.b, 道具]

@@ -28,7 +28,7 @@ Reference parser authority and divergence handling are governed by `./reference-
 
 ## Divergence Rule
 
-If spec prose and conformance tests diverge:
+If any two of spec prose, grammar blocks (```` ```ebnf ````, §0.2), and conformance tests diverge:
 
 - Treat as a release blocker.
 - Do not ship until both are aligned.
@@ -56,8 +56,8 @@ For every new inline token or precedence change, these cases must be represented
 A release is conformant only if:
 
 1. Conformance tests pass on the reference parser.
-2. No unresolved spec-vs-test divergence exists.
-3. Any intentional behavior change includes updated spec text and updated tests in the same change.
+2. No unresolved divergence among prose, grammar blocks, and tests exists.
+3. Any intentional behavior change includes updated spec text, grammar blocks, and tests in the same change.
 
 Cross-implementation validation requirements are governed by `./cross-implementation-validation-policy.md`.
 

@@ -3,11 +3,11 @@ section: "5.5"
 description: "Tag levels accept any Unicode except / and control characters, spaces included"
 
 input: |
-  [prices](~Ціни/2026 Q1)
+  [prices](~価格/2026 Q1)
 
 ast:
   - _type: Paragraph
     children:
       - _type: Link
         kind: tag
-        target: "Ціни/2026 Q1"
+        target: "価格/2026 Q1"

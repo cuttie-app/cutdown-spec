@@ -3,11 +3,11 @@ section: "5.5"
 description: "An id link target uses the id character set: non-ASCII letters are valid"
 
 input: |
-  [x](#Установка)
+  [x](#道具一式)
 
 ast:
   - _type: Paragraph
     children:
       - _type: Link
         kind: id
-        target: Установка
+        target: 道具一式

@@ -1,6 +1,6 @@
 id: cdn-0015-invalid-variable-key
 section: "5.11"
-description: "{{...}} with non-ID_LITERAL characters emits as literal text; CDN-0015 warning emitted"
+description: "{{...}} with characters outside ID_CHAR emits as literal text; CDN-0015 warning emitted"
 
 input: |
   {{invalid key}}

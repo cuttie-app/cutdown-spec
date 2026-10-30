@@ -64,6 +64,30 @@ This rule applies only in block opening line context. In paragraph context all `
 - `Table`: see §4 for row and table attr placement.
 - `List / FileGroup / QuoteBlock / Paragraph`: scope-chain rule (Rule B) — see below.
 - `EmbedBlock`, `InjectBlock`: the last `{...}` on the line is claimed by the block; earlier groups have no slot and are dropped with CDN-0011.
+
+```ebnf
+ATTR_GROUP  ::= "{" ATTR_SEP* (ATTR_TOKEN (ATTR_SEP+ ATTR_TOKEN)*)? ATTR_SEP* "}"
+ATTR_SEP    ::= WHITESPACE | SOFT_BREAK
+ATTR_TOKEN  ::= ID_TOKEN | CLASS_TOKEN | KEY_VALUE | FLAG
+ID_TOKEN    ::= "#" (CHAR - (WHITESPACE | "}" | CONTROL))+
+CLASS_TOKEN ::= "." CLASS_NAME
+CLASS_NAME  ::= (CHAR - (UNICODE_WHITESPACE | CONTROL | "{" | "}" | '"' | "=" | "#"))+
+ATTR_KEY    ::= (ID_CHAR - ".") ID_CHAR*
+FLAG        ::= ATTR_KEY
+KEY_VALUE   ::= ATTR_KEY "=" (QUOTED | JSON_VALUE | UNQUOTED)?
+UNQUOTED    ::= (CHAR - (WHITESPACE | CONTROL | "{" | "[" | "}" | '"')) (CHAR - (WHITESPACE | CONTROL | "}" | '"'))*
+QUOTED      ::= '"' (QUOTED_CHAR | QUOTED_PAIR)* '"'
+QUOTED_CHAR ::= CHAR - (CONTROL | '"' | "\")
+QUOTED_PAIR ::= "\" (CHAR - CONTROL)
+JSON_VALUE  ::= object | array      /* [RFC8259] §4 and §5, on one line */
+```
+
+- A key is ASCII and never begins with `.`; a class name may hold any letters, and `.a.b` is the one class `a.b`.
+- An id token is recognized by its `#`; whether its value is an `ID_VALUE` (§1.1) is a separate test, and a value outside it is kept with CDN-0037.
+- In a quoted value a backslash pairs with the next character, so neither `\"` nor `\\` ends the value. `\"` gives `"`. `\\` is kept for the consumer, as in every template (§5.11.1). Every other pair is kept as written.
+- `key=` with nothing after the `=` gives the value `""`.
+- A group that matches no `ATTR_GROUP` violates the grammar (§6.1.3).
+
 - `Cell`, `Column`, `Page`, `Document`: no attributes supported.
 
 ##### Scope-chain rule (Rule B)

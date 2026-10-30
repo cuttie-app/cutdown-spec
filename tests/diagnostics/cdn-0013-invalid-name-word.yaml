@@ -1,6 +1,6 @@
 id: cdn-0013-invalid-name-word
 section: "4.13"
-description: "A name word that is not wholly ID_LITERAL gives name \"\", never a truncated name; CDN-0013 warning"
+description: "A name word that is not an ID_NAME gives name \"\", never a truncated name; CDN-0013 warning"
 
 input: |
   :::c++

@@ -156,7 +156,7 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 
 | Target begins with | Kind | Field |
 |---|---|---|
-| a URI scheme: a letter, then letters, digits, `+`, `-`, or `.`, then `:`, all on one line | `"external"` | `href` |
+| a `SCHEME`, on one line | `"external"` | `href` |
 | `#` (octothorpe) | `"id"` | `target` |
 | `^` (caret) | `"ref"` | `target` |
 | `~` (tilde) | `"tag"` | `target` |
@@ -164,15 +164,25 @@ A link is a **pointer**: the consumer follows it, prints it, or ignores it, and 
 | nothing — the target is empty | `"page"`, a **wiki link** | `raw` (`''`), `path` |
 | anything else | `"page"` | `raw`, `path` |
 
+```ebnf
+SCHEME      ::= [a-zA-Z] [a-zA-Z0-9+.-]* ":"
+ID_TARGET   ::= "#" ID_VALUE
+REF_TARGET  ::= "^" ID_NAME
+TAG_TARGET  ::= "~" TAG_LEVEL ("/" TAG_LEVEL)*
+CITE_TARGET ::= "@" (CHAR - CONTROL)+
+```
+
+The first character chooses the kind; the production for that kind then says whether the target is valid (see *Invalid targets* below).
+
 The sigils `#`, `^`, `~`, and `@`, and the colon that ends a scheme, count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`, and `[x](FAQ\:setup)` is a page link whose path is `FAQ:setup`. The scheme test uses no other heuristic: `[x](Intro: draft)` and `[x](C:/notes)` are external links. A scheme split over two lines is not a scheme, so `[t](ht` followed by `tps://x)` is a page link.
 
 - **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer.
 - **Page:** the target is a `PathResourceLocator` (§9.2). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§9.2.4), then checked (§9.2.5); last, the parser appends `.cutdown` to `path.path` when it does not already end with `.cutdown`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§1.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
 - **Wiki:** an empty target makes the link text the target. `path.path` is `/`, then the **plain text** of the link text, then `.cutdown`: `[Getting started]()` → `path: "/Getting started.cutdown"`. The plain text is what a reader sees — the `value` of every `Text` and `CodeInline`, the `formula` of every `MathInline`, `{{key}}` for a `Variable`, and the plain text of the children (or `alt`) of every other inline, in order; delimiters and attributes contribute nothing. The built path is normalized and checked like any other (§9.2.4, §9.2.5), so `/` separates folders and `.` and `..` segments are structure: `[Guides/../FAQ]()` → `/FAQ.cutdown`, and a title that is only `.` or `..` names no page (`[..]()` is invalid). `?` and `#` are title characters, so `query` is `[]` and `fragment` is `''`. `raw` is `''`. A link with empty plain text names nothing, so `[]()` has `path: null` and emits CDN-0032. For a query or a fragment, write the target.
-- **Id:** `target` is the text after `#`, an `ID_VALUE` (§1.1) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#Установка)`.
-- **Ref:** `target` is the text after `^`, one `ID_LITERAL` run (§1.1). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
-- **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a run of `TAG_LITERAL` (§1.1): `[x](~Ціни/2026 Q1)` → `target: "Ціни/2026 Q1"`. A tag is a name, not a path: it is never normalized, and a level may not be `.` or `..`.
-- **Cite:** `target` is the text after `@`, any characters other than control characters.
+- **Id:** `target` is the text after `#`, an `ID_VALUE` (§1.1) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#道具一式)`.
+- **Ref:** `target` is the text after `^`, one `ID_NAME` (§1.1). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
+- **Tag:** `target` is the text after `~`: one or more levels separated by `/` (slash), each a `TAG_LEVEL` (§1.1): `[x](~価格/2026 Q1)` → `target: "価格/2026 Q1"`. A tag is a name, not a path: it is never normalized, and a level may not be `.` or `..`.
+- **Cite:** `target` is the text after `@`, a `CITE_TARGET`.
 
 In `target`, escapes are resolved: `\)` gives `)`, `\\` gives `\`.
 
@@ -384,13 +394,13 @@ A named inline container that wraps a range of content as a hook for consumer po
 ```typescript
 interface Mark {
   _type: "Mark"
-  name: string        // non-empty ID_LITERAL run
+  name: string        // an ID_NAME
   children: Inline[]  // empty for the `::name::` form
   attributes: Attribute[]
 }
 ```
 
-**Opener.** `::` followed immediately by a name — a **maximal `ID_LITERAL+` run** (§1.1). The character after the name decides what happens:
+**Opener.** `::` followed immediately by a name — a **maximal `ID_NAME`** (§1.1). The character after the name decides what happens:
 
 | Next character | Result |
 |----------------|--------|
@@ -398,9 +408,15 @@ interface Mark {
 | whitespace or a line end | container opener; content runs to the matching closer |
 | anything else | not a `Mark` — emit `Text("::" + name)` and continue parsing |
 
-The name is **required**. `::` not followed by at least one `ID_LITERAL` character on its own line is emitted as literal `Text("::")`. The whitespace character or line end after the name is the separator and is consumed; further whitespace before the content is consumed by §12.2. A line end always ends the name, so a name never continues on the next line: `::na` followed by `me b::` is a Mark named `na` with the content `me b`.
+The name is **required**. `::` not followed by at least one `ID_CHAR` on its own line is emitted as literal `Text("::")`. The whitespace character or line end after the name is the separator and is consumed; further whitespace before the content is consumed by §12.2. A line end always ends the name, so a name never continues on the next line: `::na` followed by `me b::` is a Mark named `na` with the content `me b`.
 
-**Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by `ID_LITERAL+` and then whitespace, a line end, or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
+```ebnf
+MARK_OPEN  ::= "::" ID_NAME (WHITESPACE | LINE_TERMINATOR)
+MARK_EMPTY ::= "::" ID_NAME "::"
+MARK_CLOSE ::= "::"
+```
+
+**Closer.** A bare `::`. While scanning content, a `::` is a **nested opener** if it is followed by an `ID_NAME` and then whitespace, a line end, or `::`; otherwise it is the **closer**. A `::` encountered with no `Mark` open is literal text.
 
 - Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.1.4.1, Class 3).
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
@@ -410,10 +426,10 @@ The name is **required**. `::` not followed by at least one `ID_LITERAL` charact
 - Attributes trail the closer, glued to it as for every other inline node: `::a b::{#x .y}`.
 - Whitespace inside the delimiters follows §12, as for any container inline.
 
-**Name lexing.** The name is a maximal `ID_LITERAL+` run and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_LITERAL` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` ``, whitespace and the line end are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§11):
+**Name lexing.** The name is a maximal `ID_NAME` and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_CHAR` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` ``, whitespace and the line end are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§11):
 
 ```
-::a__b__::   → Mark { name: "a__b__" }              `_` is ID_LITERAL — the name swallows it, no Emphasis forms
+::a__b__::   → Mark { name: "a__b__" }              `_` is an ID_CHAR — the name swallows it, no Emphasis forms
 ::a**b**::   → Text("::a") + Strong([Text("b")]) + Text("::")   `*` is not — the name ends at `a`, the opener fails
 ```
 
@@ -452,7 +468,11 @@ interface Variable {
 }
 ```
 
-- `key` is a run of `ID_LITERAL` characters: `[a-zA-Z0-9._-]`. No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
+```ebnf
+VARIABLE ::= "{{" ID_NAME "}}"
+```
+
+- `key` is an `ID_NAME` (§1.1). No whitespace is allowed between the braces and the key: `{{ key }}` is literal text. A `{{...}}` with invalid key characters is emitted as literal text → warning CDN-0015.
 - Unclosed `{{` → literal text. Empty-key `{{}}` → literal text → warning CDN-0015.
 - The token never crosses a line end: a `{{` with no `}}` on its own line is unclosed, so `{{ke` followed by `y}}` is the literal text `{{key}}`.
 - Variables are only parsed in inline contexts where inline rules are active (not inside code/math/meta blocks).
@@ -465,7 +485,7 @@ A variable can also stand inside a string property, where no `Variable` node can
 
 - **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, `Meta`, and `CommentBlock` content, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
-- A token is `{{`, an `ID_LITERAL` key, and `}}`. Anything else between double braces is not a token and is never substituted.
+- A token matches `VARIABLE` (§5.11). Anything else between double braces is not a token and is never substituted.
 - A string property holds no line breaks: a target wrapped over several lines is folded first (§12.1), and tokens are read from the folded string. A key split over two lines is therefore whole again for the consumer: `[t](/a/{{ke` followed by `y}}/b)` has `raw: "/a/{{key}}/b"`.
 - An interpolated property is a **template**. The parser leaves two escapes in it, unresolved: `\\` and `\{{`. The consumer resolves them in one pass, in order from the start of the string, together with the tokens (§18.4): `\\` → `\`, `\{{` → a literal `{{`, `{{key}}` → the key's value; every other character is copied. A consumer that substitutes nothing still makes this pass, so no escape reaches the reader.
 

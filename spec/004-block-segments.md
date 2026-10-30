@@ -193,7 +193,7 @@ interface CodeBlock {
 }
 ```
 
-- **Language word:** the run after ```` ``` ```` up to whitespace, `{`, or end of line. A word of `[ID_LITERAL]+` is the language. No word, or a run of four or more backticks, gives `"text"`. Any other word (```` ```c++ ````) gives `"text"` and warning CDN-0038.
+- **Language word:** the run after ```` ``` ```` up to whitespace, `{`, or end of line. A word that is an `ID_NAME` is the language. No word, or a run of four or more backticks, gives `"text"`. Any other word (```` ```c++ ````) gives `"text"` and warning CDN-0038.
 - After the language word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016. The closer keeps only a `## comment`.
 - Content is **literal** — no inline parsing. Lines joined with `\n`; no trailing `\n` appended. Blank lines preserved verbatim.
 - No nesting: the next line that begins with three or more backticks closes the fence (§10.4.2).
@@ -508,7 +508,7 @@ interface Column {
 
 #### Header rows
 
-A row whose every cell consists solely of an alignment pattern (see Column alignment below) — optionally surrounded by spaces — is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `_type: "Header"`. All other content rows are `_type: "Row"`.
+A row that matches `SEPARATOR_ROW` (see Column alignment below) is a **header separator**. It marks the group of content rows immediately preceding it (since the previous separator row, or the start of the table) as `_type: "Header"`. All other content rows are `_type: "Row"`.
 
 ```
 | A | B |
@@ -541,6 +541,19 @@ Alignment is taken from the cell patterns of the **first header separator** in t
 | `---` | `"start"` (default) |
 
 Each pattern is at least **three symbols long, alignment marks included**, and contains at least one `-`. Any number of further `-` may be added: `:---` is the same pattern as `:--`. The minimum is a deliberate guard: a content row of one- or two-dash placeholder cells (`| - |`, `| -- |`) remains content, not a header separator.
+
+```ebnf
+SEPARATOR_ROW  ::= "|" SEPARATOR_CELL ("|" SEPARATOR_CELL)* ("|" (WHITESPACE* ATTR_GROUP)* WHITESPACE*)?
+SEPARATOR_CELL ::= WHITESPACE* ALIGN_PATTERN WHITESPACE*
+ALIGN_PATTERN  ::= ":" "-" "-"+          /* left */
+                 | "-" "-"+ ":"          /* right */
+                 | ":" "-"+ ":"          /* center */
+                 | "-" "-"+ ","          /* comma */
+                 | "-" "-"+ "."          /* decimal */
+                 | "-" "-" "-"+          /* start */
+```
+
+A row that matches `SEPARATOR_ROW`, after its `## comment` is cut (§2.2), is a header separator; any other row is content.
 
 A column with no corresponding position in the header separator, and every column of a table with no header separator, takes `"start"`.
 
@@ -803,8 +816,8 @@ interface NamedBlock {
 }
 ```
 
-- Opening: a line that begins with three or more `:` (§10.4.2). The **name word** runs from directly after the third `:` to whitespace, `{`, or end of line. A word of `[ID_LITERAL]+` is the `name`.
-- A missing name word, or one that is not wholly `ID_LITERAL` (`:::`, `::: x`, `:::c++`, `::::`), still opens a NamedBlock, with `name: ""` and warning CDN-0013. Its body is parsed as blocks like any other. An escaped opener (`\:::`, `:\::`, `::\:`) opens nothing and emits no warning. See §8.2.
+- Opening: a line that begins with three or more `:` (§10.4.2). The **name word** runs from directly after the third `:` to whitespace, `{`, or end of line. A word that is an `ID_NAME` is the `name`.
+- A missing name word, or one that is not an `ID_NAME` (`:::`, `::: x`, `:::c++`, `::::`), still opens a NamedBlock, with `name: ""` and warning CDN-0013. Its body is parsed as blocks like any other. An escaped opener (`\:::`, `:\::`, `::\:`) opens nothing and emits no warning. See §8.2.
 - After the name word the opener keeps `{attrs}` and a `## comment` (§2.2); any other text is dropped with CDN-0016.
 - Closing: inside an open NamedBlock, a line that begins with three or more `:` and carries a valid name word opens a nested NamedBlock; any other such line closes the innermost open one. The closer keeps a `## comment`; any other text after the three `:` is dropped with CDN-0016.
 - Content: any block content, including nested `:::` containers. A body that parses to exactly one `Paragraph` is held as its `Inline[]`, and the paragraph's `attributes` and `reflection` move to the NamedBlock, as for a list item (§4.7.1).
@@ -846,7 +859,7 @@ interface RefDefinition {
 }
 ```
 
-- `ref` uses `[ID_LITERAL]+` characters. Case-sensitive.
+- `ref` is an `ID_NAME` (§1.1). Case-sensitive.
 - Empty `ref` (line starting with `[^]:`) is invalid state and produces string literal for whole line.
 - The `:` is followed by whitespace or the end of the line; all whitespace after it is consumed. `[^ref]:x` is paragraph text. Empty content (`[^ref]:`) is valid and produces an empty `children` array.
 - Content is **parsed by inline rules**. Result is `Inline[]`.

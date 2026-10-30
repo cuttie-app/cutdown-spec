@@ -246,7 +246,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0013 |
 | title | NamedBlock without a valid name |
 | level | warning |
-| trigger | A NamedBlock opener (three or more `:` at the start of a line, outside an open NamedBlock) has no name word, or one that is not wholly `ID_LITERAL`: `:::`, `::: {.alert}`, `:::c++`, `::::` |
+| trigger | A NamedBlock opener (three or more `:` at the start of a line, outside an open NamedBlock) has no name word, or one that is not an `ID_NAME`: `:::`, `::: {.alert}`, `:::c++`, `::::` |
 | recovery | A NamedBlock is opened with `name: ""`; `{attrs}` and a `## comment` on the opener are kept, and the body is parsed as blocks (§4.13). An escaped opener (`\:::`) is not an opener and emits nothing |
 | introduced_in | 0.1.5 |
 | status | active |
@@ -276,7 +276,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0015 |
 | title | Invalid or empty Variable key |
 | level | warning |
-| trigger | A `{{...}}` token contains zero characters (empty key `{{}}`) or one or more characters that are not `[a-zA-Z0-9._-]` (non-`ID_LITERAL`) |
+| trigger | A `{{...}}` token contains zero characters (empty key `{{}}`) or one or more characters outside `ID_CHAR` |
 | recovery | The entire `{{...}}` span is emitted as literal `Text`; no `Variable` node is created |
 | introduced_in | 0.3.4 |
 | status | active |
@@ -456,7 +456,7 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | code | CDN-0038 |
 | title | Invalid language code |
 | level | warning |
-| trigger | A CodeBlock opener carries a language word that is not wholly `ID_LITERAL` (§4.4): ```` ```c++ ````, ```` ```C# ```` |
+| trigger | A CodeBlock opener carries a language word that is not an `ID_NAME` (§4.4): ```` ```c++ ````, ```` ```C# ```` |
 | recovery | `language` is `"text"`; the rest of the opener is read as usual. `loc` spans the word |
 | introduced_in | 0.11.0 |
 | status | active |

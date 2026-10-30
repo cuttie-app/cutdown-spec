@@ -1,6 +1,6 @@
 id: variable-id-literal
 section: "5.11"
-description: Variable key must use ID_LITERAL characters; a key containing non-ID_LITERAL characters is emitted as literal text
+description: Variable key must be an ID_NAME; a key containing other characters is emitted as literal text
 
 input: |
   {{valid-key}} {{invalid key}} {{also.valid_1}}

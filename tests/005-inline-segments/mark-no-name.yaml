@@ -1,6 +1,6 @@
 id: mark-no-name
 section: "5.10"
-description: ":: not followed by a valid [ID_LITERAL] name is emitted as literal Text(\"::\")"
+description: ":: not followed by a valid ID_NAME is emitted as literal Text(\"::\")"
 
 input: |
   hello :: world

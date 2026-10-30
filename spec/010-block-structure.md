@@ -66,6 +66,23 @@ A line that begins with three or more identical fence symbols opens a fence. The
   | CommentBlock | — | — |
 
   A surplus fence symbol starts the tail, so it is never part of a word: four backticks open a CodeBlock with the default language, `~~~~` a Meta with the default format, and `::::` a NamedBlock with no valid name. A kept `## comment` goes to the block's `reflection` (§2.2).
+
+  The kept parts are matched from the start of the tail, after the `##` cut (§2.2):
+
+  ```ebnf
+  WORD_END     ::= WHITESPACE | "{" | CONTROL
+  CODE_WORD    ::= (CHAR - ("`" | WORD_END)) (CHAR - WORD_END)*
+  NAME_WORD    ::= (CHAR - (":" | WORD_END)) (CHAR - WORD_END)*
+  META_WORD    ::= (CHAR - ("~" | WHITESPACE | CONTROL)) (CHAR - (WHITESPACE | CONTROL))*
+  FENCE_ATTRS  ::= WHITESPACE* ATTR_GROUP WHITESPACE*
+  CODE_OPEN    ::= CODE_FENCE CODE_WORD? FENCE_ATTRS?
+  NAMED_OPEN   ::= NAMED_FENCE NAME_WORD? FENCE_ATTRS?
+  MATH_OPEN    ::= MATH_FENCE FENCE_ATTRS?
+  SPOILER_OPEN ::= SPOILER_FENCE FENCE_ATTRS?
+  META_OPEN    ::= META_FENCE META_WORD?
+  ```
+
+  A word is glued to the fence: after a space there is no word, so ```` ``` js ```` has the default language and drops `js` with the rest of the tail. Whether a word is valid is a separate test — an `ID_NAME` for a language or a name (§4.4, §4.13), a known format for Meta (§4.3).
 - **Closer.** The next line that begins with three or more of the same symbol closes the fence. Its tail is treated as above. Inside an open NamedBlock a line with a valid name word opens a nested block instead (§4.13); no other fence nests.
 - **Escapes.** A body line that must begin with the fence symbols is written with a block-opener escape (§8.2) or, in opaque content, a closer escape (§8.3).
 

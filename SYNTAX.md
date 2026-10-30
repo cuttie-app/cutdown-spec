@@ -181,7 +181,7 @@ literal content — no inline parsing
 ```
 ````
 
-Language defaults to `"text"`; a word that is not `ID_LITERAL` (```` ```c++ ````) → `"text"` + warning CDN-0038. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed → warning CDN-0001.
+Language defaults to `"text"`; a word that is not an `ID_NAME` (```` ```c++ ````) → `"text"` + warning CDN-0038. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed → warning CDN-0001.
 
 ### Math Block → `MathBlock`
 
@@ -272,7 +272,7 @@ Degradation to visible literal text is silent — no diagnostics.
 | `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
 | `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
 | `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
-| `{{key}}`       | `Variable` | Key is `ID_LITERAL`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
+| `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
 | `## … <EOL>`    | Reflection entry on block | Line comment, runs to EOL. Payload stored in `block.reflection[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
 | `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
 
@@ -324,7 +324,7 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 {#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#Установка}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
+An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
 
 Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 
@@ -388,7 +388,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 - Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
-`ID_LITERAL = [a-zA-Z0-9._-]` — used for all identifier tokens (block names, mark names, language tags, reference IDs). ASCII-only, case-sensitive everywhere.
+`ID_CHAR ::= [a-zA-Z0-9._-]`, `ID_NAME ::= ID_CHAR+` — used for all identifier tokens (block names, mark names, language tags, reference IDs, variable keys). ASCII-only, case-sensitive everywhere.
 
 ---
 

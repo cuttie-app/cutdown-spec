@@ -26,7 +26,7 @@ A conforming parser:
 2. **Output.** MUST produce exactly the AST that §1–§14 define and exactly the diagnostics, by code and level, that the [diagnostic code registry](../policies/diagnostic-code-registry.md) defines for that input — no others. Node kinds and property names are those of §14. Source locations remain optional (§14).
 3. **Determinism and purity.** MUST produce the same AST and diagnostics every time it parses the same input. It MUST NOT perform I/O: it resolves no path, link, injection, or variable, and every `InjectBlock` it emits has `children: []`.
 4. **Streaming.** MUST satisfy the streaming conformance profile (§15).
-5. **Corpus.** MUST pass every fixture of the conformance corpus ([`tests/`](../tests/)) for the language version it implements. The fixtures are normative examples. A disagreement between this text and a fixture is a defect in the specification, not a choice left to the parser.
+5. **Corpus.** MUST pass every fixture of the conformance corpus ([`tests/`](../tests/)) for the language version it implements. The fixtures are normative examples. A disagreement among this text, its grammar blocks (§0.2), and a fixture is a defect in the specification, not a choice left to the parser.
 6. **Version.** MUST state the language version it implements.
 
 This specification does not yet bound input size or nesting depth. The limits it does state (heading level, Mark depth, class count, query pairs, JSON size and depth, list number width) are part of the output required by clause 2.
