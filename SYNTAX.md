@@ -1,6 +1,6 @@
 # Cutdown Syntax — Quick Reference
 
-Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§9). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§15).
+Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§12). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§19).
 
 ```
 ~~~               MetaBlock (Frontmatter) format=yaml
@@ -69,11 +69,11 @@ Document
 
 Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
 
-**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with CDN-0016, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§10.4.2).
+**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with CDN-0016, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§11.4.2).
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted. Trailing whitespace is always dropped. A word boundary is written at the start of the next line: whitespace beyond the base column (0 for a paragraph, 2 for a heading or list item, 2 per quote level) becomes one space, so `one` then ` two` reads `one two` (§12). No token crosses a line end; spans and link targets do. Runs of spaces inside the text collapse to one (U+00A0 excepted). `\` at line end → `LineBreak`.
+Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted. Trailing whitespace is always dropped. A word boundary is written at the start of the next line: whitespace beyond the base column (0 for a paragraph, 2 for a heading or list item, 2 per quote level) becomes one space, so `one` then ` two` reads `one two` (§15). No token crosses a line end; spans and link targets do. Runs of spaces inside the text collapse to one (U+00A0 excepted). `\` at line end → `LineBreak`.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -91,7 +91,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 
 The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
 
-Sections are not parsed — they are derived by a fold (§9.3.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
+Sections are not parsed — they are derived by a fold (§16.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
@@ -130,7 +130,7 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
   - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). A marker is followed by whitespace or the line end: `-5 °C` and `3.14` are text, and `-` alone is an empty item. The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§10.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. An item whose body is one paragraph holds inline children; any other body holds blocks, never a mix.
+Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). A marker is followed by whitespace or the line end: `-5 °C` and `3.14` are text, and `-` alone is an empty item. The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§11.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. An item whose body is one paragraph holds inline children; any other body holds blocks, never a mix.
 
 ### Files → `FileBlock`, `FileGroup`
 
@@ -140,7 +140,7 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ^ Caption for a.png
 ```
 
-Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` (§9.2): `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`); `src` is `null` when the path is invalid. Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. Every path is read from the project root and normalized: `/` is prepended when missing, `//` and `.` collapse, `..` removes the folder before it (above the root → invalid), and the result is NFC; `raw` keeps what was written. A path that normalizes to `/` — `/`, `/#`, `/?a=1`, `/./` — is a valid `FileBlock`, never a root-folder injection.
+Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` (§8): `path`, `query` (`?a=1&b` → pairs, no decoding), `fragment` (`#…`); `src` is `null` when the path is invalid. Brackets nest; `\` escapes. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. No media type or group is assigned. Every path is read from the project root and normalized: `/` is prepended when missing, `//` and `.` collapse, `..` removes the folder before it (above the root → invalid), and the result is NFC; `raw` keeps what was written. A path that normalizes to `/` — `/`, `/#`, `/?a=1`, `/./` — is a valid `FileBlock`, never a root-folder injection.
 
 ### Injection → `InjectBlock`
 
@@ -150,7 +150,7 @@ Line starting with `/`. The whole line, spaces included, is the path (minus a tr
 /chapters/
 ```
 
-A file line whose normalized `path` ends with `.cutdown` or `/` (folder). The parser emits `children: []`; the consumer fills it (§17): blocks of all injected Pages, `meta` dropped, Sections never cross the edge, ids/refs stay local, `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable.
+A file line whose normalized `path` ends with `.cutdown` or `/` (folder). The parser emits `children: []`; the consumer fills it (§9): blocks of all injected Pages, `meta` dropped, Sections never cross the edge, ids/refs stay local, `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable.
 
 ### Embed → `EmbedBlock`
 
@@ -244,7 +244,7 @@ Must start at line start. When the same `ref` is defined more than once in a doc
 
 ## Inline Elements
 
-Parsed in source order. An unclosed opener degrades by its class (§9.1.4.1):
+Parsed in source order. An unclosed opener degrades by its class (§12.1.4.1):
 
 - **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
 - **Bracket-like openers** (`[`, `![`, `{{`, `{`): the closer is searched through the inline context, so link text, a link target, and an attribute group may wrap onto the next line (`{{key}}` may not). With no closer, the source from the opener to the end of its own line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
@@ -369,7 +369,7 @@ foo bar ## tail       → Text("foo bar") + reflections entry on block
 
 Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line after a blank line, after a CommentBlock, or at the start of a scope is an orphan → a `SegmentReflection` on the Page, like a CommentBlock.
 
-**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. Whitespace before `##` is trailing whitespace and is dropped. The cut ends the line as a line end does: an inline opener before it may still close on a later line, and one that never closes degrades per its class (§9.1.4.1) — for bracket-like openers the `##` cut ends the verbatim slice. Example: `[text ## here](url)` alone → `Text("[text")`, reflections entry `"here](url)"`.
+**Opaque to other delimiters.** `##` consumes to `\n`, swallowing any `]`, `}`, `|`, or other closer in its path. Whitespace before `##` is trailing whitespace and is dropped. The cut ends the line as a line end does: an inline opener before it may still close on a later line, and one that never closes degrades per its class (§12.1.4.1) — for bracket-like openers the `##` cut ends the verbatim slice. Example: `[text ## here](url)` alone → `Text("[text")`, reflections entry `"here](url)"`.
 
 **Transparent to attribute resolution.** `##` payloads are stored in `reflections`, never in the inline stream. No scope-chain slot is consumed. `= Heading {.c} ## note` → `Section({class:"c"}, heading: [Text("Heading")], reflections: [{ loc, text: "note" }])`.
 
@@ -381,11 +381,11 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 ## Input
 
-- Input is decoded UTF-8 text. Transport bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§15). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
+- Input is decoded UTF-8 text. Transport bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§19). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
 - Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
-- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§7), not transforms.
+- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§10), not transforms.
 - Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
-- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§14). Conformance AST comparison ignores `loc`.
+- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§A). Conformance AST comparison ignores `loc`.
 - Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
@@ -397,7 +397,7 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-Special characters, and where each may be escaped: the register in §13.
+Special characters, and where each may be escaped: the register in §B.
 
 ### Block-opener escape (line start)
 
@@ -421,7 +421,7 @@ Special characters, and where each may be escaped: the register in §13.
 | `:::name` named block | `\:::name`, etc. | literal — **no CDN-0013** |
 | `^^^` spoiler | `\^^^`, etc. | literal |
 
-`##` line comment (mid-line) uses `\##` or `#\#` per §2.2.
+`##` line comment (mid-line) uses `\##` or `#\#` per §7.2.
 
 ### Opaque-block closer escape
 
@@ -438,7 +438,7 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 
 ---
 
-## Precedence (highest first, per §11)
+## Precedence (highest first, per §14)
 
 1. CodeBlock fence \`\`\` — content always literal
 2. MetaBlock fence `~~~` — content always literal
@@ -447,7 +447,7 @@ NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a cont
 5. Escape `\x` — an escaped character is never a delimiter or a `##`
 6. Inline code \`\` — content literal except `` \` ``
 7. Inline math `$$` — content literal
-8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflections`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§9.1.4.1)
+8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflections`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§12.1.4.1)
 9. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
 10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
 11. Named mark `::name … ::` — matched after emphasis; name run is lexical

@@ -1,0 +1,11 @@
+id: whitespace-paragraph-interior-collapse
+section: "15.1"
+description: "Runs of spaces in paragraph text collapse to one space; U+00A0 is kept"
+
+input: "a   b  c\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a b  c"

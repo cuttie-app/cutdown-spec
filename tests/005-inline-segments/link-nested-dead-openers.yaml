@@ -1,5 +1,5 @@
 id: link-nested-dead-openers
-section: "9.1.4.1"
+section: "12.1.4.1"
 description: "Nested unresolved Class 2 openers collapse into a single verbatim slice from the first dead opener to end of line"
 
 input: |

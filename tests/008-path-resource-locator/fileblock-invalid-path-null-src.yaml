@@ -1,0 +1,17 @@
+id: fileblock-invalid-path-null-src
+section: "8.5"
+description: "An invalid file path keeps the FileBlock with raw as written and src null"
+
+input: |
+  /../b.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /../b.png
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

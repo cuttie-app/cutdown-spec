@@ -1,0 +1,12 @@
+id: whitespace-empty-delimiter
+section: "15.2"
+description: "__ with only whitespace inside produces empty Emphasis after boundary stripping"
+
+input: |
+  __  __
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Emphasis
+        children: []

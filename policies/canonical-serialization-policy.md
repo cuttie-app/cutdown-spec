@@ -4,7 +4,7 @@ Status: Active
 Scope: Byte-stable canonical representation of parse results
 Related:
   - ./conformance-policy.md
-  - ./diagnostics-policy.md
+  - ../spec/017-diagnostics.md
 ---
 
 # Cutdown Canonical Serialization Policy

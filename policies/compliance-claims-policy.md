@@ -15,7 +15,7 @@ Related:
 
 Compliance claims must be evidence-based and scoped.
 
-The specification defines what conforms: one conformance class (parser, writer, or consumer) for one language version, with no levels (`spec/018-conformance.md`). This policy defines the evidence a published claim carries.
+The specification defines what conforms: one conformance class (parser, writer, or consumer) for one language version, with no levels (`spec/020-conformance.md`). This policy defines the evidence a published claim carries.
 
 ## Claim Requirements
 

@@ -1,0 +1,59 @@
+id: pagebreaker-boundary
+section: "19"
+description: "A completing PageBreaker line retroactively turns literal paragraph text into a page split"
+
+input: "First\n\n---\n\nSecond"
+
+pages:
+  - children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: First
+  - children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: Second
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 5
+      pages:
+        - children:
+            - _type: Paragraph
+              children:
+                - _type: Text
+                  value: First
+      diagnostics: []
+    - at: 9
+      pages:
+        - children:
+            - _type: Paragraph
+              children:
+                - _type: Text
+                  value: First
+            - _type: Paragraph
+              children:
+                - _type: Text
+                  value: "--"
+      diagnostics: []
+    - at: 10
+      pages:
+        - children:
+            - _type: Paragraph
+              children:
+                - _type: Text
+                  value: First
+        - {}
+      diagnostics: []
+    - at: 12
+      pages:
+        - children:
+            - _type: Paragraph
+              children:
+                - _type: Text
+                  value: First
+        - {}
+      diagnostics: []

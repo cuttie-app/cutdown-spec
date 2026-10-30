@@ -1,0 +1,20 @@
+id: heading-trailing-spaces-dropped
+section: "15.1"
+description: "Trailing spaces on a heading line are dropped, as trailing whitespace always is"
+
+input: |
+  = Title  
+
+  Body
+
+ast:
+  - _type: Section
+    level: 1
+    heading:
+      - _type: Text
+        value: Title
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: Body

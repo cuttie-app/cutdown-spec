@@ -1,0 +1,20 @@
+id: comment-block-closer-ignores-indentation
+section: "7.3"
+description: "An indented bare ### closes the block: the closer is matched on stripped content, and indentation is not compared to the opener"
+
+input: |
+  ###
+  note
+    ###
+
+  after
+
+pages:
+  - reflections:
+      - text: note
+        before: [0]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: after

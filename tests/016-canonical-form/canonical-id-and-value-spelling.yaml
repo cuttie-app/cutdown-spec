@@ -1,9 +1,0 @@
-id: canonical-id-and-value-spelling
-section: "16.1"
-description: "An id is written #x and a value is written bare where the bare form parses"
-
-input: |
-  Hello {id="intro" lang="en"}
-
-canonical: |
-  Hello {#intro lang=en}

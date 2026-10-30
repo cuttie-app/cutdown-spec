@@ -1,5 +1,5 @@
 id: cdn-0032-page-link-dot-last
-section: "9.2.5"
+section: "8.5"
 description: "CDN-0032: a page path ending in . normalizes to a trailing /, which is invalid in a link"
 
 input: |

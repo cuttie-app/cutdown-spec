@@ -1,0 +1,12 @@
+id: escape-ordered-list-opener-dot
+section: "13.2"
+description: "`\\` before the `.` of an ordered-list marker also suppresses it"
+
+input: |
+  2026\. A year to remember
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "2026. A year to remember"

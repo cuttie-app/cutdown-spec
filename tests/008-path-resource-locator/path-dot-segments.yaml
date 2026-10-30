@@ -1,0 +1,16 @@
+id: path-dot-segments
+section: "8.4"
+description: "The parser drops . segments and resolves .. segments in path; raw keeps what was written"
+
+input: |
+  /a/./b/../c.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /a/./b/../c.png
+        src:
+          path: /a/c.png
+          query: []
+          fragment: ""

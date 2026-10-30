@@ -1,0 +1,12 @@
+id: emphasis-single-underscore-literal
+section: "5.2"
+description: "A single _ is literal text; only the doubled __ delimits Emphasis"
+
+input: |
+  _ text _
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: _ text _

@@ -1,0 +1,20 @@
+id: named-block-with-quote
+section: "4.13"
+description: "A NamedBlock body holds blocks; the indented quote loses its padding and becomes a child QuoteBlock"
+
+input: |
+  :::callout {.warning}
+    > quoted text
+  :::
+
+ast:
+  - _type: NamedBlock
+    name: callout
+    attributes:
+      - key: class
+        value: [warning]
+    children:
+      - _type: QuoteBlock
+        children:
+          - _type: Text
+            value: quoted text

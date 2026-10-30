@@ -14,6 +14,10 @@ ast:
         alt:
           - _type: Text
             value: a cat
-        src: cat.jpg
+        raw: cat.jpg
+        src:
+          path: /cat.jpg
+          query: []
+          fragment: ''
       - _type: Text
         value: " here."

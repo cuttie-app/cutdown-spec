@@ -1,0 +1,27 @@
+id: comment-block-in-list-item
+section: "7.3"
+description: "A CommentBlock inside a ListItem goes to the Page; the item body stays Inline[] and counts as one block, so the anchor is the item's end"
+
+input: |
+  - item one
+    ###
+    todo
+    ###
+  - item two
+
+pages:
+  - reflections:
+      - text: todo
+        before: [0, 0, 1]
+    children:
+      - _type: List
+        kind: bullet
+        children:
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: "item one"
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: "item two"

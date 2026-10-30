@@ -1,0 +1,13 @@
+id: escape-commentblock-opener
+section: "13.2"
+description: "`\\###` at line start suppresses CommentBlock opener; line becomes Paragraph"
+
+input: |
+  \###
+  draft note
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "###draft note"

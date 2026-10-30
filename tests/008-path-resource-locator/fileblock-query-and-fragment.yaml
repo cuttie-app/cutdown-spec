@@ -1,0 +1,18 @@
+id: fileblock-query-and-fragment
+section: "8.3"
+description: The query runs to the first #; everything after # is the fragment, including a later ?
+
+input: |
+  /path/to/file.ext?q=value#section?x=1
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /path/to/file.ext?q=value#section?x=1
+        src:
+          path: /path/to/file.ext
+          query:
+            - key: q
+              value: value
+          fragment: section?x=1

@@ -1,0 +1,12 @@
+id: precedence-codeinline-over-emphasis
+section: "14"
+description: "Priority 6: CodeInline content is literal, so __ inside it delimits nothing"
+
+input: |
+  ``__a__``
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: CodeInline
+        value: "__a__"

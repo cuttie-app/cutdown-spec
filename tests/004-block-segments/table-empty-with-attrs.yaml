@@ -1,0 +1,16 @@
+id: table-empty-with-attrs
+section: "4.8"
+description: "A | line holding only {attrs} is an empty table that carries the attributes"
+
+input: |
+  | {.tbl}
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        children: []
+    columns: []
+    attributes:
+      - key: class
+        value: [tbl]

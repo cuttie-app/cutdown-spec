@@ -1,0 +1,32 @@
+id: table-attrs-mid-row-open-cell
+section: "4.8"
+description: "In a row that is not the last, an open last cell gives the chain two slots: the inline, then the Row"
+
+input: |
+  | AA | **BB** {.a}{.b}
+  | CC | DD |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: AA
+          - _type: Cell
+            children:
+              - _type: Strong
+                children:
+                  - _type: Text
+                    value: BB
+                attributes:
+                  - key: class
+                    value: [a]
+        attributes:
+          - key: class
+            value: [b]
+      - _type: Row
+        attributes: []
+    attributes: []

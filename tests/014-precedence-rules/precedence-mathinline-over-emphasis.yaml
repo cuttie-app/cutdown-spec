@@ -1,0 +1,12 @@
+id: precedence-mathinline-over-emphasis
+section: "14"
+description: "Priority 7: MathInline is matched before emphasis; __ inside it is formula text"
+
+input: |
+  $$__a__$$
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: MathInline
+        formula: "__a__"

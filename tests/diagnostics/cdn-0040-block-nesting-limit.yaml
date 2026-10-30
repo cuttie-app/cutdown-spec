@@ -1,5 +1,5 @@
 id: cdn-0040-block-nesting-limit
-section: "10.7"
+section: "11.7"
 description: "CDN-0040: a 33rd `>` opens no quote; it is text in the depth-32 QuoteBlock"
 
 input: |

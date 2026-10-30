@@ -1,0 +1,13 @@
+id: precedence-escape-before-comment
+section: "14"
+description: "Priority 5: an escaped # is resolved before the ## cut, so no comment starts"
+
+input: |
+  a \## b
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a ## b"
+    reflections: []

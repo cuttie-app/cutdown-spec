@@ -1,0 +1,31 @@
+id: line-opener-alone-opens-empty-block
+section: "12.1.3"
+description: "A marker alone on its line opens its block with empty content: end of line separates like whitespace"
+
+input: "=\n\n-\n\n1.\n\n- [ ]\n\n[^a]:\n"
+
+ast:
+  - _type: Section
+    level: 1
+    heading: []
+    children:
+      - _type: List
+        kind: bullet
+        children:
+          - _type: ListItem
+            children: []
+      - _type: List
+        kind: numbered
+        start: 1
+        children:
+          - _type: ListItem
+            children: []
+      - _type: List
+        kind: checklist
+        children:
+          - _type: TaskItem
+            checked: false
+            children: []
+      - _type: RefDefinition
+        ref: a
+        children: []

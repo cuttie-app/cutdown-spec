@@ -1,0 +1,17 @@
+id: whitespace-outside-span-kept
+section: "15.2"
+description: "Whitespace outside a span's delimiters is kept; only whitespace inside them is consumed"
+
+input: "a **b** c\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a "
+      - _type: Strong
+        children:
+          - _type: Text
+            value: b
+      - _type: Text
+        value: " c"

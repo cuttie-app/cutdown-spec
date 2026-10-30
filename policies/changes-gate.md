@@ -6,7 +6,6 @@ Related:
   - ./versioning-policy.md
   - ./conformance-policy.md
   - ./parser-profile-policy.md
-  - ./diagnostics-policy.md
   - ./capability-policy.md
   - ./canonical-serialization-policy.md
   - ./compatibility-fallback-policy.md
@@ -69,7 +68,7 @@ Every Cutdown proposal MUST include all of the following:
    - State whether behavior requires a specific parser profile configuration per `./parser-profile-policy.md`.
 8. Diagnostics impact declaration
    - Declare whether new/changed diagnostic codes are introduced.
-   - Define severity level and deterministic recovery behavior per `./diagnostics-policy.md`.
+   - Define severity level and deterministic recovery behavior in `spec/017-diagnostics.md`.
 9. Capability declaration
    - Declare required external capabilities (if any) per `./capability-policy.md`.
    - Define denied-capability fallback and diagnostic behavior.
@@ -86,7 +85,7 @@ Every Cutdown proposal MUST include all of the following:
    - Confirm whether behavior depends on external profile configuration.
    - If document-embedded hints exist, define non-authoritative handling per `./profile-source-policy.md`.
 14. Conformance impact declaration
-   - State whether the change affects a conformance class (`spec/018-conformance.md`) or evidence expectations.
+   - State whether the change affects a conformance class (`spec/020-conformance.md`) or evidence expectations.
    - Update claim requirements per `./compliance-claims-policy.md`.
 15. Evidence freshness impact declaration
    - State whether the change introduces a new revalidation trigger.
@@ -96,7 +95,7 @@ Every Cutdown proposal MUST include all of the following:
    - Align failure handling requirements per `./compliance-failure-response-policy.md`.
 17. Diagnostic code registry impact declaration
    - State whether new/deprecated/removed diagnostic codes are introduced.
-   - Update central code lifecycle records per `./diagnostic-code-registry-policy.md`.
+   - Update the code list in `spec/017-diagnostics.md` per `./diagnostic-code-registry-policy.md`.
 18. Publication lifecycle declaration
    - Assign change lifecycle state (`Draft`/`Accepted`/`Effective`) and target version.
    - Include effective date and migration publication plan per `./change-publication-policy.md`.

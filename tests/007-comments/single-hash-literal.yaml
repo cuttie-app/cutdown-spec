@@ -1,0 +1,13 @@
+id: single-hash-literal
+section: "7.1"
+description: A single `#` is literal text in all positions; no comment recognition
+
+input: |
+  # not a comment
+  foo # also literal
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "# not a commentfoo # also literal"

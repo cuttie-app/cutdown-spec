@@ -1,0 +1,16 @@
+id: code-inline-run-of-three
+section: "5.6"
+description: "In a run of three backticks the first two open; the third is content, and the closing run gives `` plus a literal `"
+
+input: |
+  a ```text``` z
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a "
+      - _type: CodeInline
+        value: "`text"
+      - _type: Text
+        value: "` z"

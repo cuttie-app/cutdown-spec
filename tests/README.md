@@ -8,19 +8,22 @@ Fixtures are organized by spec section. Each subdirectory maps to one section:
 
 ```
 tests/
-  000-preliminaries/
-  002-comments/
+  001-preliminaries/
   003-document-model/
   004-block-segments/
   005-inline-segments/
   006-universal-attributes/
-  007-input-interpretation/
-  008-escaping/
-  009-parsing-algorithm/
-  010-block-structure/
-  012-whitespace-rules/
-  015-streaming-conformance-profile/   ← may add `streaming` checkpoints
-  016-canonical-form/                  ← writer fixtures; assert `canonical`, not `ast`
+  007-comments/
+  008-path-resource-locator/
+  009-injection/                       ← parser output only: InjectBlock with `children: []`
+  010-input-interpretation/
+  011-block-structure/
+  012-parsing-algorithm/
+  013-escaping/
+  014-precedence-rules/
+  015-whitespace-rules/
+  018-canonical-form/                  ← writer fixtures; assert `canonical`, not `ast`
+  019-streaming-conformance-profile/   ← may add `streaming` checkpoints
   diagnostics/                         ← one fixture per CDN-xxxx diagnostic code
 ```
 
@@ -57,9 +60,9 @@ ast:
 | `ast` | — | Expected children of the first page (see [Assertions](#assertions)) |
 | `pages` | — | Expected full `Document.children` array; use when the fixture spans multiple pages. Overrides `ast` when present |
 | `diagnostics` | — | Expected diagnostics (see [Assertions](#assertions)); if omitted, the parser must emit zero diagnostics |
-| `canonical` | — | Expected canonical source (§16). Used only by fixtures under `016-canonical-form/` |
+| `canonical` | — | Expected canonical source (§18). Used only by fixtures under `018-canonical-form/` |
 
-Exactly ONE OF `ast` or `pages` MUST be present, except under `016-canonical-form/`, where `canonical` is present instead.
+Exactly ONE OF `ast` or `pages` MUST be present, except under `018-canonical-form/`, where `canonical` is present instead.
 
 ### Assertions
 
@@ -74,7 +77,7 @@ This means a minimal fixture only needs to assert the fields it cares about — 
 
 ### Streaming-profile assertions
 
-Fixtures under `015-streaming-conformance-profile/` use the ordinary final-input assertions above and MAY add a `streaming` object:
+Fixtures under `019-streaming-conformance-profile/` use the ordinary final-input assertions above and MAY add a `streaming` object:
 
 ```yaml
 streaming:
@@ -119,7 +122,7 @@ pages:
 
 ## Canonical-form fixtures
 
-Fixtures under `016-canonical-form/` test a **writer**, not a parser. `input` is valid source in some spelling; `canonical` is the source a conforming writer emits for the same AST (§16). A runner parses `input`, writes the result back out, and compares to `canonical` byte for byte. Parsing `canonical` MUST yield the same AST as parsing `input` — that equality is what makes the pair an alias.
+Fixtures under `018-canonical-form/` test a **writer**, not a parser. `input` is valid source in some spelling; `canonical` is the source a conforming writer emits for the same AST (§18). A runner parses `input`, writes the result back out, and compares to `canonical` byte for byte. Parsing `canonical` MUST yield the same AST as parsing `input` — that equality is what makes the pair an alias.
 
 A parser-only implementation skips this directory. Nothing here is a parser obligation.
 

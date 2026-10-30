@@ -1,0 +1,14 @@
+id: precedence-commentblock-over-codeblock
+section: "14"
+description: "Priority 4: a ``` line inside a CommentBlock is comment text and opens no CodeBlock"
+
+input: |
+  ###
+  ```
+  ###
+
+pages:
+  - reflections:
+      - text: "```"
+        before: [0]
+    children: []

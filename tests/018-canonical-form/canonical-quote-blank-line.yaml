@@ -1,0 +1,11 @@
+id: canonical-quote-blank-line
+section: "18.1"
+description: "Trailing whitespace is never written: a blank line inside a quote is a bare `>`, and each nesting level is `> `"
+
+input: "> a\n>   \n> b\n> > c  \n"
+
+canonical: |
+  > a
+  >
+  > b
+  > > c

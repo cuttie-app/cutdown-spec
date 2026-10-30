@@ -1,0 +1,16 @@
+id: path-nfc
+section: "8.4"
+description: "path is converted to NFC: a decomposed letter becomes one code point; raw keeps the decomposed form"
+
+input: |
+  /Café.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: "/Cafe\u0301.png"
+        src:
+          path: "/Caf\u00e9.png"
+          query: []
+          fragment: ""

@@ -1,0 +1,25 @@
+id: comment-inline-heading-scope-chain
+section: "7.6"
+description: "A trailing ## is transparent to the heading's scope chain: {.a} attaches to Strong, the last {.b} claims the Section"
+
+input: |
+  == Heading **bb** {.a}{.b} ## trailing comment
+
+ast:
+  - _type: Section
+    level: 2
+    heading:
+      - _type: Text
+        value: "Heading "
+      - _type: Strong
+        children:
+          - _type: Text
+            value: bb
+        attributes:
+          - key: class
+            value: [a]
+    attributes:
+      - key: class
+        value: [b]
+    reflections:
+      - text: trailing comment

@@ -1,0 +1,14 @@
+id: precedence-meta-over-comment
+section: "14"
+description: "Priority 2: inside a Meta block a ## line is part of the raw payload"
+
+input: |
+  ~~~
+  title: x ## not a comment
+  ~~~
+
+pages:
+  - meta:
+      _type: Meta
+      format: yaml
+      raw: "title: x ## not a comment\n"

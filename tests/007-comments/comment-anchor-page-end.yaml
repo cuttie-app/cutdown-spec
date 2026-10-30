@@ -1,0 +1,25 @@
+id: comment-anchor-page-end
+section: "7.3"
+description: "A comment with no block after it anchors at the end of Page.children, even when the last block sits inside a Section"
+
+input: |
+  = Title
+
+  Body
+
+  ###
+  closing note
+  ###
+
+pages:
+  - reflections:
+      - text: closing note
+        before: [1]
+    children:
+      - _type: Section
+        level: 1
+        children:
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: Body

@@ -1,0 +1,12 @@
+id: escape-heading-opener
+section: "13.2"
+description: "`\\=` at line start suppresses heading formation at any level; backslash consumed"
+
+input: |
+  \== Not a heading
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "== Not a heading"

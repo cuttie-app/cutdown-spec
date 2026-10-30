@@ -1,5 +1,5 @@
 id: cdn-0032-invalid-path
-section: "9.2.5"
+section: "8.5"
 description: "CDN-0032: paths are read from the project root, so a leading .. climbs above it; the Link is kept with raw as written and path null"
 
 input: |

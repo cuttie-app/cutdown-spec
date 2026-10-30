@@ -1,0 +1,34 @@
+id: spoiler-block-mixed-body
+section: "4.15"
+description: "A SpoilerBlock body of a paragraph and a list holds Block[]; inline formatting is parsed inside it"
+
+input: |
+  ^^^ {.nsfw}
+  Plot twist: __the butler__ did it.
+
+  - and so did the gardener
+  ^^^
+
+ast:
+  - _type: SpoilerBlock
+    attributes:
+      - key: class
+        value: [nsfw]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: "Plot twist: "
+          - _type: Emphasis
+            children:
+              - _type: Text
+                value: the butler
+          - _type: Text
+            value: " did it."
+      - _type: List
+        kind: bullet
+        children:
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: and so did the gardener

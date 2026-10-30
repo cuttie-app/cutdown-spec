@@ -1,0 +1,16 @@
+id: trim-spoilerblock-edge-blanks
+section: "11.6"
+description: "Leading and trailing blank lines inside a SpoilerBlock body are stripped before children are parsed"
+
+input: |
+  ^^^
+
+  hidden content
+
+  ^^^
+
+ast:
+  - _type: SpoilerBlock
+    children:
+      - _type: Text
+        value: hidden content

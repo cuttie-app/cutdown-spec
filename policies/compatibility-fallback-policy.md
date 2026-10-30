@@ -4,7 +4,7 @@ Status: Active
 Scope: Contract behavior for unknown/unsupported syntax under active profile/version
 Related:
   - ./parser-profile-policy.md
-  - ./diagnostics-policy.md
+  - ../spec/017-diagnostics.md
 ---
 
 # Cutdown Compatibility Fallback Policy

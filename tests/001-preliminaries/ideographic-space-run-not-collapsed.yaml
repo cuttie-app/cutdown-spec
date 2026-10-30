@@ -1,0 +1,11 @@
+id: ideographic-space-run-not-collapsed
+section: "1.4"
+description: "Only space and tab collapse; a run of U+3000 is kept"
+
+input: "a　　b\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a　　b"

@@ -1,0 +1,11 @@
+id: canonical-ordered-list-start-zero
+section: "18.1"
+description: "A first number of 0 parses as start 1 and is written 1"
+
+input: |
+  0. a
+  0. b
+
+canonical: |
+  1. a
+  2. b

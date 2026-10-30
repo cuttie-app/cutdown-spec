@@ -1,0 +1,15 @@
+id: comment-block-basic
+section: "7.3"
+description: "Bare `###` opener and bare `###` closer; the body is captured as opaque text with no trailing newline, as a SegmentReflection on the Page"
+
+input: |
+  ###
+  draft note
+  TODO: revise
+  ###
+
+pages:
+  - reflections:
+      - text: "draft note\nTODO: revise"
+        before: [0]
+    children: []

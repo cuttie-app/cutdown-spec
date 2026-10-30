@@ -1,0 +1,20 @@
+id: fileblock-spaces-in-path
+section: "8.1"
+description: "Spaces are path content; the path runs to end of line minus a trailing whitespace-led attribute sequence"
+
+input: |
+  /My Docs/Q3 report.pdf {.a}{.b}
+
+ast:
+  - _type: FileGroup
+    attributes:
+      - key: class
+        value: [b]
+    children:
+      - _type: FileBlock
+        raw: /My Docs/Q3 report.pdf
+        src:
+          path: /My Docs/Q3 report.pdf
+        attributes:
+          - key: class
+            value: [a]

@@ -1,0 +1,27 @@
+id: table-attrs-open-cell-single
+section: "4.8"
+description: "On the last row, a single {} after an open last cell claims the Table slot"
+
+input: |
+  | AA | **BB** {.a}
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: AA
+          - _type: Cell
+            children:
+              - _type: Strong
+                children:
+                  - _type: Text
+                    value: BB
+                attributes: []
+        attributes: []
+    attributes:
+      - key: class
+        value: [a]

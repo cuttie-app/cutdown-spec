@@ -1,0 +1,16 @@
+id: comment-line-inside-math-inline
+section: "7.2"
+description: "A ## inside a MathInline that closes is formula content, not a comment"
+
+input: |
+  a $$x ## y$$ b
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a "
+      - _type: MathInline
+        formula: "x ## y"
+      - _type: Text
+        value: " b"

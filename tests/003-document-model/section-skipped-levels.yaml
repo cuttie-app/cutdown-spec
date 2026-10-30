@@ -1,5 +1,5 @@
 id: section-skipped-levels
-section: "9.3.1"
+section: "16.1"
 description: A skipped heading level (= then ===) nests under the nearest shallower open Section; written level preserved; no intermediate Section synthesized; a following == closes the level-3 Section and nests under level 1
 
 input: |

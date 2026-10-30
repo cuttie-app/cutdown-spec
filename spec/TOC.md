@@ -3,14 +3,12 @@
 - **Status:** Draft
 - **Version:** 0.11.0
 - **Date:** 2026-10-25
-- **Inspired by:** [COMMONMARK], [DJOT], [CARVE] (§0.6)
+- **Inspired by:** [COMMONMARK], [DJOT], [CARVE] (§1.6)
 - **Versioning policy:** [`policies/versioning-policy.md`](../policies/versioning-policy.md)
 - **Change publication policy:** [`policies/change-publication-policy.md`](../policies/change-publication-policy.md)
 - **Conformance policy:** [`policies/conformance-policy.md`](../policies/conformance-policy.md)
 - **Parser profile policy:** [`policies/parser-profile-policy.md`](../policies/parser-profile-policy.md)
-- **Diagnostics policy:** [`policies/diagnostics-policy.md`](../policies/diagnostics-policy.md)
 - **Diagnostic code registry policy:** [`policies/diagnostic-code-registry-policy.md`](../policies/diagnostic-code-registry-policy.md)
-- **Diagnostic code registry:** [`policies/diagnostic-code-registry.md`](../policies/diagnostic-code-registry.md)
 - **Capability policy:** [`policies/capability-policy.md`](../policies/capability-policy.md)
 - **Canonical serialization policy:** [`policies/canonical-serialization-policy.md`](../policies/canonical-serialization-policy.md)
 - **Compatibility fallback policy:** [`policies/compatibility-fallback-policy.md`](../policies/compatibility-fallback-policy.md)
@@ -38,25 +36,30 @@ It has no canonical HTML output — consuming applications interpret and render 
 
 ## Table of Contents
 
-0. [Preliminaries](000-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references
-1. [Identifiers and AST Model](001-identifiers-and-ast-model.md) — Identifier charset, Segment, Block type, Inline type, Block scope
-2. [Comments](002-comments.md) — `##` line comment (`LineReflection`), CommentBlock `###` and orphan lines (`SegmentReflection` on the Page)
+1. [Preliminaries](001-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references
+2. [Identifiers and AST Model](002-identifiers-and-ast-model.md) — Identifier charset, Segment, Block type, Inline type, Block scope
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, PageBreaker, FileBlock, FileGroup, EmbedBlock, InjectBlock, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
 5. [Inline Segments](005-inline-segments.md) — Text, Emphasis, Strong, Highlight, Spoiler, CodeInline, LineBreak, Link, ImageInline, EmbedImageInline, Mark, MathInline, Variable, QuoteInline
 6. [Universal Attributes](006-universal-attributes.md)
-7. [Input Interpretation](007-input-interpretation.md)
-8. [Escaping](008-escaping.md)
-9. [Parsing Algorithm](009-parsing-algorithm.md) — Phases, PathResourceLocator, derived structure
-10. [Block Structure and Block Boundaries](010-block-structure.md) — boundaries, fences, list indentation, nesting limit
-11. [Precedence Rules](011-precedence-rules.md)
-12. [Whitespace Rules](012-whitespace-rules.md)
-13. [Special Character Reference](013-special-character-reference.md)
-14. [AST Node (Segment) Reference](014-ast-node-reference.md)
-15. [Streaming Conformance Profile](015-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
-16. [Canonical Form](016-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
-17. [Injection](017-injection.md) — what an InjectBlock means once a consumer resolves it
-18. [Conformance](018-conformance.md) — parser, writer, and consumer classes; claims and the name; limits
-19. [Security Considerations](019-security-considerations.md) — what a document can carry into its consumer, and the clause that handles each risk
+7. [Comments](007-comments.md) — `##` line comment (`LineReflection`), CommentBlock `###` and orphan lines (`SegmentReflection` on the Page)
+8. [PathResourceLocator](008-path-resource-locator.md) — extent, escapes, decomposition, normalization, validity, equivalence
+9. [Injection](009-injection.md) — what an InjectBlock means once a consumer resolves it
+10. [Input Interpretation](010-input-interpretation.md)
+11. [Block Structure and Block Boundaries](011-block-structure.md) — boundaries, fences, list indentation, nesting limit
+12. [Parsing Algorithm](012-parsing-algorithm.md) — phases, degradation classes, incremental availability
+13. [Escaping](013-escaping.md)
+14. [Precedence Rules](014-precedence-rules.md)
+15. [Whitespace Rules](015-whitespace-rules.md)
+16. [Derived Structure](016-derived-structure.md) — sectionization and pagination folds, PageBreaker
+17. [Diagnostics](017-diagnostics.md) — the diagnostic object and every CDN code with its trigger and recovery
+18. [Canonical Form](018-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
+19. [Streaming Conformance Profile](019-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
+20. [Conformance](020-conformance.md) — parser, writer, and consumer classes; claims and the name; limits
+21. [Security Considerations](021-security-considerations.md) — what a document can carry into its consumer, and the clause that handles each risk
 
+Appendices
+
+- A. [AST Node (Segment) Reference](appendix-a-ast-node-reference.md)
+- B. [Special Character Reference](appendix-b-special-character-reference.md)
 ---

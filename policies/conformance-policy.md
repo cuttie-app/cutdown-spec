@@ -3,7 +3,6 @@ title: Cutdown Conformance Policy
 Status: Active
 Scope: Defines normative sources and release conformance requirements
 Related:
-  - ./diagnostics-policy.md
   - ./diagnostic-code-registry-policy.md
   - ./canonical-serialization-policy.md
   - ./compatibility-fallback-policy.md
@@ -28,7 +27,7 @@ Reference parser authority and divergence handling are governed by `./reference-
 
 ## Divergence Rule
 
-If any two of spec prose, grammar blocks (```` ```ebnf ````, §0.2), and conformance tests diverge:
+If any two of spec prose, grammar blocks (```` ```ebnf ````, §1.2), and conformance tests diverge:
 
 - Treat as a release blocker.
 - Do not ship until both are aligned.

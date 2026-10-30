@@ -1,0 +1,30 @@
+id: comment-block-between-lists
+section: "7.3"
+description: "A CommentBlock between two Lists anchors to the second List"
+
+input: |
+  - a
+
+  ###
+  note
+  ###
+
+  - b
+
+pages:
+  - reflections:
+      - text: note
+        before: [1]
+    children:
+      - _type: List
+        children:
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: a
+      - _type: List
+        children:
+          - _type: ListItem
+            children:
+              - _type: Text
+                value: b

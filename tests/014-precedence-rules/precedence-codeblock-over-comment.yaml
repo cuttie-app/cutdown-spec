@@ -1,0 +1,14 @@
+id: precedence-codeblock-over-comment
+section: "14"
+description: "Priority 1: inside a CodeBlock a ## line and a ### line are content, not comments"
+
+input: |
+  ```
+  ## not a comment
+  ###
+  ```
+
+ast:
+  - _type: CodeBlock
+    language: text
+    raw: "## not a comment\n###"

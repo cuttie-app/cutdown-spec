@@ -1,5 +1,5 @@
 id: math-inline-whitespace-preserved
-section: "12.2"
+section: "15.2"
 description: "MathInline is exempt from whitespace collapsing; interior runs are kept as written"
 
 input: |

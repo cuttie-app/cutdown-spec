@@ -1,0 +1,21 @@
+id: fileblock-braces-in-path
+section: "8.1"
+description: "A {...} group that is not preceded by whitespace, or does not close the line, is path content"
+
+input: |
+  /a {draft}.png
+  /img/{{lang}}/hero.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /a {draft}.png
+        src:
+          path: /a {draft}.png
+        attributes: []
+      - _type: FileBlock
+        raw: /img/{{lang}}/hero.png
+        src:
+          path: /img/{{lang}}/hero.png
+        attributes: []

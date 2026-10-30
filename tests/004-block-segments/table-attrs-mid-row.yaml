@@ -1,0 +1,27 @@
+id: table-attrs-mid-row
+section: "4.8"
+description: "A {} after the closer of a row that is not the last has one slot: the Row"
+
+input: |
+  | td1 | td2 | {.a}
+  | td3 | td4 |
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Row
+        children:
+          - _type: Cell
+            children:
+              - _type: Text
+                value: td1
+          - _type: Cell
+            children:
+              - _type: Text
+                value: td2
+        attributes:
+          - key: class
+            value: [a]
+      - _type: Row
+        attributes: []
+    attributes: []

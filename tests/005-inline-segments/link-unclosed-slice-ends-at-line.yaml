@@ -1,5 +1,5 @@
 id: link-unclosed-slice-ends-at-line
-section: "9.1.4.1"
+section: "12.1.4.1"
 description: "An unclosed `[` searches the whole inline context, but its dead slice ends at its own line; the next line parses normally"
 
 input: "[a __x__\nb __y__\n"

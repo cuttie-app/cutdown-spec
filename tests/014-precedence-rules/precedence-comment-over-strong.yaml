@@ -1,0 +1,16 @@
+id: precedence-comment-over-strong
+section: "14"
+description: "Priority 8: ## ranks above Strong, so a span after the cut is comment payload, not markup"
+
+input: |
+  **a** ## **b**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: a
+    reflections:
+      - text: "**b**"

@@ -1,0 +1,23 @@
+id: heading-last-attr-glued-to-link
+section: "4.2"
+description: "The last {} on a heading line claims the Section even when it is glued to a Link; the Link keeps no attributes"
+
+input: |
+  = H1 [link](https://example.com){.link-class}
+
+ast:
+  - _type: Section
+    level: 1
+    heading:
+      - _type: Text
+        value: "H1 "
+      - _type: Link
+        kind: external
+        href: https://example.com
+        children:
+          - _type: Text
+            value: link
+        attributes: []
+    attributes:
+      - key: class
+        value: [link-class]

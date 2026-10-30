@@ -1,0 +1,25 @@
+id: injectblock-in-section
+section: "4.17"
+description: "An InjectBlock under a heading sits in that Section; the parser decomposes src and leaves children empty"
+
+input: |
+  == Setup
+
+  /parts/install.cutdown?arch=arm64#linux
+
+ast:
+  - _type: Section
+    level: 2
+    heading:
+      - _type: Text
+        value: Setup
+    children:
+      - _type: InjectBlock
+        raw: /parts/install.cutdown?arch=arm64#linux
+        src:
+          path: /parts/install.cutdown
+          query:
+            - key: arch
+              value: arm64
+          fragment: linux
+        children: []

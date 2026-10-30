@@ -1,0 +1,15 @@
+id: comment-inline-degrades-emphasis
+section: "7.2"
+description: "`##` is opaque to other delimiters; an unclosed `__` opener before it degrades to literal text; payload stored in reflections"
+
+input: |
+  __bold ## tail
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "__bold"
+    reflections:
+      - loc: { start: 10, end: 14 }
+        text: "tail"

@@ -1,0 +1,11 @@
+id: form-feed-line-not-blank
+section: "1.4"
+description: "A line holding only U+000C is not blank: the three lines form one paragraph"
+
+input: "a\n\f\nb\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "a\fb"

@@ -1,5 +1,5 @@
 id: attrs-id-bidi-control
-section: "1.1"
+section: "2.1"
 description: "An id holding a bidi control is outside ID_VALUE: kept as written with CDN-0037"
 
 input: "Text {#a\u202Eb}\n"

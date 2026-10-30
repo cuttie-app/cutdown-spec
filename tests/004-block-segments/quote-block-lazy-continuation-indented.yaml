@@ -1,0 +1,20 @@
+id: quote-block-lazy-continuation-indented
+section: "4.6"
+description: "Lazy lines continue the quote paragraph; an indented lazy line folds with one space; a blank line ends the quote"
+
+input: |
+  > Line 1
+  Line 2
+     Line 3
+
+  Line 4
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Text
+        value: Line 1Line 2 Line 3
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Line 4

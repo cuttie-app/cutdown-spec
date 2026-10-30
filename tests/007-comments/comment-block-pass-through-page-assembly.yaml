@@ -1,0 +1,27 @@
+id: comment-block-pass-through-page-assembly
+section: "7.4"
+description: "A CommentBlock at Page scope does NOT consume the Meta slot of the current Page; it anchors before the first child, after the Meta"
+
+input: |
+  ###
+  preamble note
+  ###
+  ~~~yaml
+  title: doc
+  ~~~
+
+  content
+
+pages:
+  - meta:
+      _type: Meta
+      format: yaml
+      raw: "title: doc\n"
+    reflections:
+      - text: preamble note
+        before: [0]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: "content"

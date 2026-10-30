@@ -1,0 +1,12 @@
+id: escape-non-special
+section: "13"
+description: Backslash before non-special character emits both characters literally
+
+input: |
+  \a
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '\a'

@@ -1,0 +1,33 @@
+id: link-bracket-suffix
+section: "19"
+description: "An unresolved bracket opener keeps its current line suffix literal until a complete link arrives"
+
+input: "[draft](https://example.com)"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: https://example.com
+        children:
+          - _type: Text
+            value: draft
+
+streaming:
+  unit: unicode-scalar
+  checkpoints:
+    - at: 6
+      ast:
+        - _type: Paragraph
+          children:
+            - _type: Text
+              value: "[draft"
+      diagnostics: []
+    - at: 8
+      ast:
+        - _type: Paragraph
+          children:
+            - _type: Text
+              value: "[draft]("
+      diagnostics: []

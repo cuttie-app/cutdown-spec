@@ -1,0 +1,15 @@
+id: comment-inline-in-link-text-degrades
+section: "7.2"
+description: "`##` inside link text swallows `](url)` to EOL; `[` opener has no closer and degrades to literal; payload stored in reflections"
+
+input: |
+  [text ## here](url)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "[text"
+    reflections:
+      - loc: { start: 9, end: 19 }
+        text: "here](url)"

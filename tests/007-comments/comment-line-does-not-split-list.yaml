@@ -1,0 +1,23 @@
+id: comment-line-does-not-split-list
+section: "7.2"
+description: "A standalone `##` line directly after a list item attaches to that item and the list continues"
+
+input: |
+  - a
+  ## note
+  - b
+
+ast:
+  - _type: List
+    children:
+      - _type: ListItem
+        reflections:
+          - loc: { start: 7, end: 11 }
+            text: "note"
+        children:
+          - _type: Text
+            value: a
+      - _type: ListItem
+        children:
+          - _type: Text
+            value: b

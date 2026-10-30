@@ -1,0 +1,10 @@
+id: canonical-container-padding
+section: "18.1"
+description: "NamedBlock bodies are padded with 2 spaces per level; no tabs"
+
+input: ":::note\n\tbody\n:::\n"
+
+canonical: |
+  :::note
+    body
+  :::

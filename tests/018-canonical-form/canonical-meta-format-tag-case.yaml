@@ -1,0 +1,13 @@
+id: canonical-meta-format-tag-case
+section: "18.1"
+description: "A Meta format word other than the default is written lowercase"
+
+input: |
+  ~~~TOML
+  title = "One"
+  ~~~
+
+canonical: |
+  ~~~toml
+  title = "One"
+  ~~~

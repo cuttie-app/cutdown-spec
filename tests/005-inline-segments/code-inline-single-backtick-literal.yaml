@@ -1,0 +1,12 @@
+id: code-inline-single-backtick-literal
+section: "5.6"
+description: "A single backtick is literal text; only the doubled `` delimits CodeInline"
+
+input: |
+  `not code`
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "`not code`"

@@ -1,0 +1,18 @@
+id: link-empty-text-page
+section: "5.5"
+description: "A page link with empty text keeps children empty; the target is still read as a page path"
+
+input: |
+  [](target)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        children: []
+        raw: target
+        path:
+          path: /target.cutdown
+          query: []
+          fragment: ''

@@ -1,5 +1,5 @@
 id: cdn-0035-long-path
-section: "9.2.5"
+section: "8.5"
 description: "CDN-0035: a path longer than 2048 characters is kept in full and decomposed; it is not invalid"
 
 input: |

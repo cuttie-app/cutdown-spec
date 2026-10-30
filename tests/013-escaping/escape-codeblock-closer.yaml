@@ -1,0 +1,15 @@
+id: escape-codeblock-closer
+section: "13.3"
+description: "`\\`` inside CodeBlock body emits literal backtick; escaped triple-backtick line does NOT close the fence"
+
+input: |
+  ```text
+  before
+  \```
+  after
+  ```
+
+ast:
+  - _type: CodeBlock
+    language: "text"
+    raw: "before\n```\nafter"

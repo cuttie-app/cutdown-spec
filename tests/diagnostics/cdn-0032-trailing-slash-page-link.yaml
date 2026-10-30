@@ -1,5 +1,5 @@
 id: cdn-0032-trailing-slash-page-link
-section: "9.2.5"
+section: "8.5"
 description: "CDN-0032: a trailing / is invalid outside an InjectBlock; a page link has no folder index"
 
 input: |

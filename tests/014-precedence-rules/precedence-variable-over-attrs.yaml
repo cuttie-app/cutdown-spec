@@ -1,0 +1,14 @@
+id: precedence-variable-over-attrs
+section: "14"
+description: "Priority 12: the longer opener {{ wins over {, so {{key}} is a Variable, not an attribute group"
+
+input: |
+  x {{a}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: "x "
+      - _type: Variable
+        key: a

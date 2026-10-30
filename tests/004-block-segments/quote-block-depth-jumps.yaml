@@ -1,0 +1,26 @@
+id: quote-block-depth-jumps
+section: "4.6"
+description: "A depth jump from 1 to 3 opens the missing level; returning to depth 2 continues the depth-2 quote with a new paragraph"
+
+input: |
+  > Line 1
+  > > > Line 2
+  > > Line 3
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: Line 1
+      - _type: QuoteBlock
+        children:
+          - _type: QuoteBlock
+            children:
+              - _type: Text
+                value: Line 2
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: Line 3

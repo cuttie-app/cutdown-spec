@@ -1,0 +1,14 @@
+id: quote-block-fold-extra-space
+section: "4.6"
+description: "Quote lines fold with nothing between them; a line indented past the base column after > folds with one space"
+
+input: |
+  > Line 1
+  > Line 2
+  >  Line 3
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Text
+        value: Line 1Line 2 Line 3

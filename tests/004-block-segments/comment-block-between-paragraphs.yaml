@@ -1,0 +1,26 @@
+id: comment-block-between-paragraphs
+section: "4.16"
+description: "A CommentBlock between two paragraphs produces no node; its body goes to Page.reflections, anchored before the second paragraph"
+
+input: |
+  intro paragraph
+
+  ###
+  draft note — revise before publish
+  ###
+
+  next paragraph
+
+pages:
+  - reflections:
+      - text: draft note — revise before publish
+        before: [1]
+    children:
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: intro paragraph
+      - _type: Paragraph
+        children:
+          - _type: Text
+            value: next paragraph

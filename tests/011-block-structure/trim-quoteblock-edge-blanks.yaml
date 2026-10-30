@@ -1,0 +1,14 @@
+id: trim-quoteblock-edge-blanks
+section: "11.6"
+description: "After `>` stripping, leading and trailing blank lines (empty quoted lines) inside the QuoteBlock body are stripped before children are parsed"
+
+input: |
+  >
+  > quoted
+  >
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: Text
+        value: quoted

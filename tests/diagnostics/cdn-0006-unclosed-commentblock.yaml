@@ -1,5 +1,5 @@
 id: cdn-0006-unclosed-commentblock
-section: "2.3"
+section: "7.3"
 description: "Unclosed `###` opener; content runs to end of document as the comment's text; CDN-0006 warning emitted"
 
 input: "###\nsome notes\n"

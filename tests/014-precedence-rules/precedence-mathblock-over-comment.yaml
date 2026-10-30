@@ -1,0 +1,12 @@
+id: precedence-mathblock-over-comment
+section: "14"
+description: "Priority 3: inside a MathBlock a ## is formula content"
+
+input: |
+  $$$
+  a ## b
+  $$$
+
+ast:
+  - _type: MathBlock
+    raw: "a ## b"

@@ -1,0 +1,16 @@
+id: comment-block-opaque-content
+section: "7.3"
+description: "CommentBlock content is opaque; inline markup, headings, and code-like text inside are NOT parsed"
+
+input: |
+  ###
+  = not a heading
+  **not bold**
+  ``not code``
+  ###
+
+pages:
+  - reflections:
+      - text: "= not a heading\n**not bold**\n``not code``"
+        before: [0]
+    children: []

@@ -1,0 +1,28 @@
+id: comment-line-nested-list-root-scope
+section: "7.2"
+description: "A col-0 `##` line after a nested list is in the root scope: it attaches to the last top-level item, not to the nested one"
+
+input: |
+  - a
+    - b
+  ## note
+
+ast:
+  - _type: List
+    children:
+      - _type: ListItem
+        reflections:
+          - loc: { start: 13, end: 17 }
+            text: "note"
+        children:
+          - _type: Paragraph
+            children:
+              - _type: Text
+                value: a
+          - _type: List
+            children:
+              - _type: ListItem
+                reflections: []
+                children:
+                  - _type: Text
+                    value: b

@@ -1,0 +1,16 @@
+id: whitespace-nested-boundary
+section: "15.2"
+description: "Space between adjacent opening delimiters ** and __ is collapsed to zero — nested inline with no space in output"
+
+input: |
+  ** __ bb __**
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Emphasis
+            children:
+              - _type: Text
+                value: bb

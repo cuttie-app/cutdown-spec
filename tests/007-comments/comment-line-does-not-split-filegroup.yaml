@@ -1,0 +1,18 @@
+id: comment-line-does-not-split-filegroup
+section: "7.2"
+description: "A standalone `##` line directly after a file line attaches to that FileBlock and the FileGroup continues"
+
+input: |
+  /a.png
+  ## note
+  /b.png
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        reflections:
+          - loc: { start: 10, end: 14 }
+            text: "note"
+      - _type: FileBlock
+        reflections: []
