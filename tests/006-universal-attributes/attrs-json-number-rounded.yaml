@@ -1,0 +1,18 @@
+id: attrs-json-number-rounded
+section: "6.1.1"
+description: "A number with a fraction or exponent is kept as the nearest double; the 2^53 integer range applies only to integers written without either"
+
+input: |
+  Hello {n=[9007199254740993.0,0.1,2e3]}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: n
+        value:
+          - 9007199254740992.0
+          - 0.1
+          - 2000.0

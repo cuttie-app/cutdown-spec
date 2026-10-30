@@ -1,0 +1,18 @@
+id: imageinline-alt-no-link
+section: "5.9"
+description: "alt holds no link and no image: a [..](..) inside alt is literal text"
+
+input: |
+  ![see [docs](d) now](/a.png)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: ImageInline
+        alt:
+          - _type: Text
+            value: see [docs](d) now
+        src:
+          path: /a.png
+          query: []
+          fragment: ''

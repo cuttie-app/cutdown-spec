@@ -149,6 +149,7 @@ interface Link {
 A link is a **pointer**: the consumer follows it, prints it, or ignores it, and never places the resource it names. So a link accepts every kind of target, where an image, which the consumer fetches and places, accepts only a path or an `https://` URL (§9.2).
 
 - `text` is **parsed by inline rules**. May be empty.
+- **Links do not nest.** The text runs from `[` to its matching `]`: brackets inside it are counted, as parentheses are in the target, and an escaped bracket is not counted. Inside link text a `[…](…)` is not a link — its brackets are literal text — so `[a [b](u) c](v)` is one link whose text is `a [b](u) c`. An image may stand in link text: `[![CI](/ci.svg)](https://ci.example)` is a link around an image.
 - The target runs from the character after `(` to the first unbalanced `)`, by the path scan of §9.2.1 and §9.2.2: balanced parentheses stay in the target, and a backslash escapes the next character. The kind is chosen once the extent is known.
 - Text and target may cross a soft break: the `]` and `)` are searched for through the whole inline context. Inside the target the line break folds under the base-column rule (§12.1), so `[t](/gui` followed by `de)` has the target `/guide`. If no closer comes, the opener degrades as §9.1.4.1 says, and its slice ends at its own line.
 
@@ -345,7 +346,7 @@ interface ImageInline {
 }
 ```
 
-- `alt` is **parsed by inline rules**. Result is `Inline[]`. Full inline syntax in `alt` is a technical possibility rather than a common use case; a consumer may choose to restrict or ignore certain inline features in `alt` (e.g. links, images, formatting) or strip it down to plain text. `alt` may be empty.
+- `alt` is **parsed by inline rules**, except that it holds no link and no image: inside `alt` a `[…](…)` or `![…](…)` is literal text, and brackets are counted as in link text (§5.5). Result is `Inline[]`. A consumer may restrict formatting in `alt` or strip it down to plain text. `alt` may be empty.
 - `src` is a `PathResourceLocator` (§9.2), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032.
 - A source beginning with literal `https://` makes the node an `EmbedImageInline` instead (§5.9.1).
 - An image names a file the consumer fetches and places (§9.2), so its source is a path that names one. These sources are invalid — `src: null`, CDN-0032 — though the node keeps its type:
@@ -421,7 +422,7 @@ MARK_CLOSE ::= "::"
 - Because the opener (`::name `) is textually distinct from the closer (`::`), `Mark` is **bracket-matched by counting**, not by greedy first-closer. This makes it the only inline construct in the language that permits **same-type nesting** — including nesting a `Mark` of the same name (§9.1.4.1, Class 3).
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `Spoiler`, `QuoteInline` and `Link` is allowed in both directions.
 - Children are **parsed by inline rules** (see the context table at the head of §5).
-- **Maximum nesting depth is 8.** A `Mark` opener at depth 9 or deeper does not open; it degrades to literal `Text("::" + name)` and emits warning CDN-0031.
+- **Maximum nesting depth is 8.** The depth counts every enclosing `Mark`, through link text and `alt`. A `Mark` opener at depth 9 or deeper does not open; it degrades to literal `Text("::" + name)` and emits warning CDN-0031.
 - An unclosed opener degrades per Class 1 (§9.1.4.1): the opener alone is emitted as `Text` and parsing continues immediately after it. No diagnostic.
 - Attributes trail the closer, glued to it as for every other inline node: `::a b::{#x .y}`.
 - Whitespace inside the delimiters follows §12, as for any container inline.

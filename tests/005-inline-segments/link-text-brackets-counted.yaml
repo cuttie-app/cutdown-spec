@@ -1,0 +1,16 @@
+id: link-text-brackets-counted
+section: "5.5"
+description: "Brackets in link text are counted, so a bracketed word stays in the text"
+
+input: |
+  [see [1] here](notes)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: notes
+        children:
+          - _type: Text
+            value: see [1] here

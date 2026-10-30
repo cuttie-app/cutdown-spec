@@ -1,0 +1,16 @@
+id: link-text-no-nested-link
+section: "5.5"
+description: "Links do not nest: inside link text a [..](..) is literal text, and brackets are counted"
+
+input: |
+  [a [b](u) c](v)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: v
+        children:
+          - _type: Text
+            value: a [b](u) c

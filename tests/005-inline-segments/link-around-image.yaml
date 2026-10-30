@@ -1,0 +1,22 @@
+id: link-around-image
+section: "5.5"
+description: "An image may stand in link text: a clickable image"
+
+input: |
+  [![CI](/ci.svg)](https://ci.example)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: external
+        href: https://ci.example
+        children:
+          - _type: ImageInline
+            alt:
+              - _type: Text
+                value: CI
+            src:
+              path: /ci.svg
+              query: []
+              fragment: ''

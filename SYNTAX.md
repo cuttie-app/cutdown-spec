@@ -267,9 +267,10 @@ Degradation to visible literal text is silent — no diagnostics.
 | `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. `/` splits folders and `.`/`..` are normalized; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
 | `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
 | `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
-| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/` and controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
+| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/`, controls, and bidi controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
 | `[text](@cite)` | `Link(cite)` | `target`; resolved by the consumer's citation logic |
 | `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
+| `[a [b](u) c](v)` | one `Link` | Links do not nest: brackets in link text are counted and a `[…](…)` inside is literal. An image may stand in link text (`[![CI](/ci.svg)](https://ci)`); `alt` holds no link or image |
 | `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
 | `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
 | `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
@@ -324,7 +325,7 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 {#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line JSON, parsed (≤4096 chars, depth ≤8); invalid JSON → the whole `{…}` is literal text.
+An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line I-JSON, parsed (≤4096 chars, depth ≤8; no repeated names, no lone surrogates, integers within ±(2⁵³−1)); invalid JSON → the whole `{…}` is literal text. At most 32 entries per group (CDN-0041).
 
 Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 

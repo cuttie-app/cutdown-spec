@@ -1,0 +1,88 @@
+id: inline-depth-derived-bound
+section: "18.6"
+description: "The deepest inline tree the grammar allows: 8 Marks, then 6 span kinds in each of the root, link-text, and alt contexts, with a Link and an ImageInline between them — depth 28"
+
+input: |
+  ::m ::m ::m ::m ::m ::m ::m ::m **__~~^^""''[**__~~^^""''![**__~~^^""''x''""^^~~__**](/i.png)''""^^~~__**](u)''""^^~~__** :: :: :: :: :: :: :: ::
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Mark
+        name: m
+        children:
+          - _type: Mark
+            name: m
+            children:
+              - _type: Mark
+                name: m
+                children:
+                  - _type: Mark
+                    name: m
+                    children:
+                      - _type: Mark
+                        name: m
+                        children:
+                          - _type: Mark
+                            name: m
+                            children:
+                              - _type: Mark
+                                name: m
+                                children:
+                                  - _type: Mark
+                                    name: m
+                                    children:
+                                      - _type: Strong
+                                        children:
+                                          - _type: Emphasis
+                                            children:
+                                              - _type: Highlight
+                                                children:
+                                                  - _type: Spoiler
+                                                    children:
+                                                      - _type: QuoteInline
+                                                        kind: double
+                                                        children:
+                                                          - _type: QuoteInline
+                                                            kind: single
+                                                            children:
+                                                              - _type: Link
+                                                                kind: page
+                                                                raw: u
+                                                                children:
+                                                                  - _type: Strong
+                                                                    children:
+                                                                      - _type: Emphasis
+                                                                        children:
+                                                                          - _type: Highlight
+                                                                            children:
+                                                                              - _type: Spoiler
+                                                                                children:
+                                                                                  - _type: QuoteInline
+                                                                                    kind: double
+                                                                                    children:
+                                                                                      - _type: QuoteInline
+                                                                                        kind: single
+                                                                                        children:
+                                                                                          - _type: ImageInline
+                                                                                            alt:
+                                                                                              - _type: Strong
+                                                                                                children:
+                                                                                                  - _type: Emphasis
+                                                                                                    children:
+                                                                                                      - _type: Highlight
+                                                                                                        children:
+                                                                                                          - _type: Spoiler
+                                                                                                            children:
+                                                                                                              - _type: QuoteInline
+                                                                                                                kind: double
+                                                                                                                children:
+                                                                                                                  - _type: QuoteInline
+                                                                                                                    kind: single
+                                                                                                                    children:
+                                                                                                                      - _type: Text
+                                                                                                                        value: x
+                                                                                            src:
+                                                                                              path: /i.png
+                                                                                              query: []
+                                                                                              fragment: ''

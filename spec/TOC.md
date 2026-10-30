@@ -48,7 +48,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 7. [Input Interpretation](007-input-interpretation.md)
 8. [Escaping](008-escaping.md)
 9. [Parsing Algorithm](009-parsing-algorithm.md) — Phases, PathResourceLocator, derived structure
-10. [Block Structure and Block Boundaries](010-block-structure.md)
+10. [Block Structure and Block Boundaries](010-block-structure.md) — boundaries, fences, list indentation, nesting limit
 11. [Precedence Rules](011-precedence-rules.md)
 12. [Whitespace Rules](012-whitespace-rules.md)
 13. [Special Character Reference](013-special-character-reference.md)
@@ -56,6 +56,6 @@ It has no canonical HTML output — consuming applications interpret and render 
 15. [Streaming Conformance Profile](015-streaming-conformance-profile.md) — decoded-character snapshots, end-of-block semantics, and profile evidence
 16. [Canonical Form](016-canonical-form.md) — the one spelling a writer emits where the grammar accepts several
 17. [Injection](017-injection.md) — what an InjectBlock means once a consumer resolves it
-18. [Conformance](018-conformance.md) — parser, writer, and consumer classes; claims and the name
+18. [Conformance](018-conformance.md) — parser, writer, and consumer classes; claims and the name; limits
 
 ---

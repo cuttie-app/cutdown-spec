@@ -1,0 +1,78 @@
+id: cdn-0040-block-nesting-limit
+section: "10.7"
+description: "CDN-0040: a 33rd `>` opens no quote; it is text in the depth-32 QuoteBlock"
+
+input: |
+  > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > x
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: QuoteBlock
+        children:
+          - _type: QuoteBlock
+            children:
+              - _type: QuoteBlock
+                children:
+                  - _type: QuoteBlock
+                    children:
+                      - _type: QuoteBlock
+                        children:
+                          - _type: QuoteBlock
+                            children:
+                              - _type: QuoteBlock
+                                children:
+                                  - _type: QuoteBlock
+                                    children:
+                                      - _type: QuoteBlock
+                                        children:
+                                          - _type: QuoteBlock
+                                            children:
+                                              - _type: QuoteBlock
+                                                children:
+                                                  - _type: QuoteBlock
+                                                    children:
+                                                      - _type: QuoteBlock
+                                                        children:
+                                                          - _type: QuoteBlock
+                                                            children:
+                                                              - _type: QuoteBlock
+                                                                children:
+                                                                  - _type: QuoteBlock
+                                                                    children:
+                                                                      - _type: QuoteBlock
+                                                                        children:
+                                                                          - _type: QuoteBlock
+                                                                            children:
+                                                                              - _type: QuoteBlock
+                                                                                children:
+                                                                                  - _type: QuoteBlock
+                                                                                    children:
+                                                                                      - _type: QuoteBlock
+                                                                                        children:
+                                                                                          - _type: QuoteBlock
+                                                                                            children:
+                                                                                              - _type: QuoteBlock
+                                                                                                children:
+                                                                                                  - _type: QuoteBlock
+                                                                                                    children:
+                                                                                                      - _type: QuoteBlock
+                                                                                                        children:
+                                                                                                          - _type: QuoteBlock
+                                                                                                            children:
+                                                                                                              - _type: QuoteBlock
+                                                                                                                children:
+                                                                                                                  - _type: QuoteBlock
+                                                                                                                    children:
+                                                                                                                      - _type: QuoteBlock
+                                                                                                                        children:
+                                                                                                                          - _type: QuoteBlock
+                                                                                                                            children:
+                                                                                                                              - _type: QuoteBlock
+                                                                                                                                children:
+                                                                                                                                  - _type: Text
+                                                                                                                                    value: '> x'
+
+diagnostics:
+  - code: CDN-0040
+    level: warning

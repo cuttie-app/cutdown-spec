@@ -1,0 +1,12 @@
+id: attrs-json-integer-out-of-range-literal
+section: "6.1.1"
+description: "An integer written without fraction or exponent beyond 2^53-1 is out of range: the whole group is literal text"
+
+input: |
+  {id=[9007199254740993]}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{id=[9007199254740993]}'

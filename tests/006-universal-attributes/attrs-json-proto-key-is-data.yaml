@@ -1,0 +1,17 @@
+id: attrs-json-proto-key-is-data
+section: "6.1.1"
+description: "Object names are data: __proto__ and constructor are ordinary keys in the AST"
+
+input: |
+  Hello {cfg={"__proto__":1,"constructor":2}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: cfg
+        value:
+          __proto__: 1
+          constructor: 2

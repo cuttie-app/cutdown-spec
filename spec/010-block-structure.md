@@ -212,4 +212,12 @@ AST:
 
 For `QuoteBlock`, a "blank line in the body" is a line whose `>`-stripped content is empty (e.g., `> ` alone, or `>` alone). Such lines at the leading or trailing edge of the quoted body are stripped before child parsing.
 
+### 10.7 Nesting Limit
+
+Block containers nest: a `QuoteBlock`, `ListItem`, `TaskItem`, `NamedBlock`, or `SpoilerBlock` may hold another. The **block depth** of a container is the number of these containers that enclose its body, itself included: in `- > :::note`, the `NamedBlock` has depth 3. A `List` is not counted — its items are — and neither is a `Section`, whose depth the heading levels bound.
+
+**The block depth is at most 32.** A container opener that would open a container at depth 33 does not open: its line is classified as if the marker were text, inside the depth-32 container, and warning CDN-0040 is emitted with the `loc` of the marker. A `>` beyond the 32nd quote level is text: the line `>` repeated 33 times followed by `x` is a quote at depth 32 holding `Paragraph([Text("> x")])`. A fence opener that does not open is paragraph text, and a later closer line is matched against the containers that are open.
+
+The limit protects every consumer that walks the tree recursively. §18.6 lists it with the other limits.
+
 ---

@@ -1,0 +1,12 @@
+id: attrs-json-lone-surrogate-literal
+section: "6.1.1"
+description: "I-JSON: an escape that leaves a lone surrogate makes the JSON malformed, so the whole group is literal text"
+
+input: |
+  {data=["\uD800"]}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{data=["\uD800"]}'

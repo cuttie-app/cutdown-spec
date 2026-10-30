@@ -1,0 +1,19 @@
+id: link-tag-bidi-control
+section: "5.5"
+description: "A tag level holding a bidi control is invalid: kept as written with CDN-0033"
+
+input: "[x](~a\u202Eb)\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: tag
+        target: "a\u202Eb"
+        children:
+          - _type: Text
+            value: x
+
+diagnostics:
+  - code: CDN-0033
+    level: warning

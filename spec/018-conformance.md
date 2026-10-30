@@ -28,8 +28,9 @@ A conforming parser:
 4. **Streaming.** MUST satisfy the streaming conformance profile (§15).
 5. **Corpus.** MUST pass every fixture of the conformance corpus ([`tests/`](../tests/)) for the language version it implements. The fixtures are normative examples. A disagreement among this text, its grammar blocks (§0.2), and a fixture is a defect in the specification, not a choice left to the parser.
 6. **Version.** MUST state the language version it implements.
+7. **Complexity.** MUST parse in time and memory linear in the length of the input, for every input.
 
-This specification does not yet bound input size or nesting depth. The limits it does state (heading level, Mark depth, class count, query pairs, JSON size and depth, list number width) are part of the output required by clause 2.
+Every limit this specification states is part of the output required by clause 2: a parser stops at the same point as every other and recovers the same way. §18.6 lists them. The language does not bound the size of a document; a host bounds its input before it calls the parser.
 
 ### 18.3 Writer
 
@@ -59,3 +60,36 @@ Everything else this specification leaves to the consumer — following links, f
 A conformance claim names the class and the language version: "a conforming Cutdown 0.11 parser". A consumer's claim also lists the conditional clauses of §18.4 it implements: interpolation, injection, streaming. The evidence a claim needs is governed by the [compliance claims policy](../policies/compliance-claims-policy.md).
 
 An implementation that does not conform MUST NOT be called a Cutdown parser, writer, or consumer without a qualifier that says so, such as "Cutdown-derived" or "Cutdown-compatible". A modified or extended version of this specification is named the same way.
+
+### 18.6 Limits
+
+This table indexes every limit in the specification. Each rule is defined in the section named; where the two disagree, that is a defect (§0.2).
+
+**Fixed limits** — every parser stops at the same point:
+
+| Limit | Value | Past the limit | Diagnostic | Defined in |
+|---|---|---|---|---|
+| Block depth (`QuoteBlock`, `ListItem`, `TaskItem`, `NamedBlock`, `SpoilerBlock`) | 32 | the opener is text in the depth-32 container | CDN-0040 | §10.7 |
+| `Mark` depth | 8 | the opener is literal text | CDN-0031 | §5.10 |
+| Heading level | 9 | ten or more `=` give level 9; the rest is heading text | CDN-0012 | §4.2 |
+| Entries per attribute group | 32 | later entries are dropped | CDN-0041 | §6.1.1 |
+| Classes per attribute group | 32 | later classes are dropped | CDN-0034 | §6.1.1 |
+| JSON attribute value | 4096 characters, depth 8 | the group is literal text | none | §6.1.1 |
+| Query pairs per locator | 32 | later pairs are dropped | CDN-0042 | §9.2.3 |
+| Path, URL, or `href` length | 2048 characters | kept in full | CDN-0035 | §9.2.5 |
+| Ordered list number | 5 digits | not recognized: a longer run is text | none | §4.7 |
+
+**Derived bounds** — they follow from the grammar and need no counter:
+
+| Bound | Value | Why | Defined in |
+|---|---|---|---|
+| Link nesting | 1 | link text holds no link | §5.5 |
+| Image nesting | 1 | `alt` holds no link or image | §5.9 |
+| Inline depth | 28 | at most 6 span kinds per inline context, which never repeat in it; contexts chain at most root → link text → `alt`; `Mark` depth 8 across all three | §5, §5.10 |
+
+**Host bounds** — the language sets none:
+
+| Quantity | Bounded by |
+|---|---|
+| Document size | the host, before parsing (clause 7 makes cost linear in it) |
+| Rows, columns, and cells per table; blocks per document; `reflections` entries per node | the document size |

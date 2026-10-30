@@ -478,3 +478,48 @@ All codes use the prefix `CDN-`. Codes are permanently assigned — retired code
 | owner | Language |
 
 ---
+
+### CDN-0040 — Block nesting limit exceeded
+
+| Field | Value |
+|---|---|
+| code | CDN-0040 |
+| title | Block nesting limit exceeded |
+| level | warning |
+| trigger | A `QuoteBlock`, `ListItem`, `TaskItem`, `NamedBlock`, or `SpoilerBlock` opener would open a container at block depth 33 (§10.7) |
+| recovery | The opener does not open; its line is classified as if the marker were text, inside the depth-32 container. `loc` spans the marker |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0041 — Attribute entry limit exceeded
+
+| Field | Value |
+|---|---|
+| code | CDN-0041 |
+| title | Attribute entry limit exceeded |
+| level | warning |
+| trigger | One `{...}` group produces more than 32 entries; the `id` entry and the merged `class` entry count one each (§6.1.1) |
+| recovery | The first 32 entries are kept in source order; the rest are dropped. `loc` spans the first dropped token |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---
+
+### CDN-0042 — Query pair limit exceeded
+
+| Field | Value |
+|---|---|
+| code | CDN-0042 |
+| title | Query pair limit exceeded |
+| level | warning |
+| trigger | The query of a `PathResourceLocator` holds more than 32 pairs (§9.2.3) |
+| recovery | The first 32 pairs are kept in source order; the rest are dropped. `loc` spans the first dropped pair |
+| introduced_in | 0.11.0 |
+| status | active |
+| owner | Language |
+
+---

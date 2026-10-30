@@ -1,0 +1,83 @@
+id: cdn-0042-query-pair-limit
+section: "9.2.3"
+description: "CDN-0042: a locator keeps at most 32 query pairs; the 33rd is dropped"
+
+input: "/data.csv?a1=1&a2=2&a3=3&a4=4&a5=5&a6=6&a7=7&a8=8&a9=9&a10=10&a11=11&a12=12&a13=13&a14=14&a15=15&a16=16&a17=17&a18=18&a19=19&a20=20&a21=21&a22=22&a23=23&a24=24&a25=25&a26=26&a27=27&a28=28&a29=29&a30=30&a31=31&a32=32&a33=33\n"
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: /data.csv?a1=1&a2=2&a3=3&a4=4&a5=5&a6=6&a7=7&a8=8&a9=9&a10=10&a11=11&a12=12&a13=13&a14=14&a15=15&a16=16&a17=17&a18=18&a19=19&a20=20&a21=21&a22=22&a23=23&a24=24&a25=25&a26=26&a27=27&a28=28&a29=29&a30=30&a31=31&a32=32&a33=33
+        src:
+          path: /data.csv
+          query:
+            - key: a1
+              value: '1'
+            - key: a2
+              value: '2'
+            - key: a3
+              value: '3'
+            - key: a4
+              value: '4'
+            - key: a5
+              value: '5'
+            - key: a6
+              value: '6'
+            - key: a7
+              value: '7'
+            - key: a8
+              value: '8'
+            - key: a9
+              value: '9'
+            - key: a10
+              value: '10'
+            - key: a11
+              value: '11'
+            - key: a12
+              value: '12'
+            - key: a13
+              value: '13'
+            - key: a14
+              value: '14'
+            - key: a15
+              value: '15'
+            - key: a16
+              value: '16'
+            - key: a17
+              value: '17'
+            - key: a18
+              value: '18'
+            - key: a19
+              value: '19'
+            - key: a20
+              value: '20'
+            - key: a21
+              value: '21'
+            - key: a22
+              value: '22'
+            - key: a23
+              value: '23'
+            - key: a24
+              value: '24'
+            - key: a25
+              value: '25'
+            - key: a26
+              value: '26'
+            - key: a27
+              value: '27'
+            - key: a28
+              value: '28'
+            - key: a29
+              value: '29'
+            - key: a30
+              value: '30'
+            - key: a31
+              value: '31'
+            - key: a32
+              value: '32'
+          fragment: ''
+
+diagnostics:
+  - code: CDN-0042
+    level: warning

@@ -1,0 +1,12 @@
+id: attrs-json-duplicate-name-literal
+section: "6.1.1"
+description: "I-JSON: a repeated object name makes the JSON malformed, so the whole group is literal text"
+
+input: |
+  {data={"a":1,"a":2}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{data={"a":1,"a":2}}'

@@ -1,0 +1,81 @@
+id: cdn-0041-attribute-entry-limit
+section: "6.1.1"
+description: "CDN-0041: one attribute group keeps at most 32 entries; the 33rd is dropped"
+
+input: |
+  Hello {k1 k2 k3 k4 k5 k6 k7 k8 k9 k10 k11 k12 k13 k14 k15 k16 k17 k18 k19 k20 k21 k22 k23 k24 k25 k26 k27 k28 k29 k30 k31 k32 k33}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: k1
+        value: ''
+      - key: k2
+        value: ''
+      - key: k3
+        value: ''
+      - key: k4
+        value: ''
+      - key: k5
+        value: ''
+      - key: k6
+        value: ''
+      - key: k7
+        value: ''
+      - key: k8
+        value: ''
+      - key: k9
+        value: ''
+      - key: k10
+        value: ''
+      - key: k11
+        value: ''
+      - key: k12
+        value: ''
+      - key: k13
+        value: ''
+      - key: k14
+        value: ''
+      - key: k15
+        value: ''
+      - key: k16
+        value: ''
+      - key: k17
+        value: ''
+      - key: k18
+        value: ''
+      - key: k19
+        value: ''
+      - key: k20
+        value: ''
+      - key: k21
+        value: ''
+      - key: k22
+        value: ''
+      - key: k23
+        value: ''
+      - key: k24
+        value: ''
+      - key: k25
+        value: ''
+      - key: k26
+        value: ''
+      - key: k27
+        value: ''
+      - key: k28
+        value: ''
+      - key: k29
+        value: ''
+      - key: k30
+        value: ''
+      - key: k31
+        value: ''
+      - key: k32
+        value: ''
+
+diagnostics:
+  - code: CDN-0041
+    level: warning

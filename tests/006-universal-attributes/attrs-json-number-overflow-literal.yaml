@@ -1,0 +1,12 @@
+id: attrs-json-number-overflow-literal
+section: "6.1.1"
+description: "A number that rounds to no finite double is out of range: the whole group is literal text"
+
+input: |
+  {n=[1e400]}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{n=[1e400]}'

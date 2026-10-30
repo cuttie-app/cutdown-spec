@@ -16,7 +16,7 @@ ID_NAME ::= ID_CHAR+
 `TAG_LEVEL` is one level of a tag link target (§5.5):
 
 ```ebnf
-TAG_CHAR  ::= CHAR - ("/" | CONTROL)
+TAG_CHAR  ::= CHAR - ("/" | CONTROL | BIDI_CONTROL)
 TAG_LEVEL ::= TAG_CHAR+
 ```
 
@@ -25,7 +25,7 @@ A tag target is `~` (tilde) followed by one or more `TAG_LEVEL`s separated by `/
 `ID_VALUE` is the value of an `id` attribute (§6.1.1) and the target of an id link (§5.5). One rule serves both, so every id an author can write, a link can reach:
 
 ```ebnf
-ID_VALUE ::= (CHAR - (UNICODE_WHITESPACE | "#" | ")" | "}" | CONTROL))+
+ID_VALUE ::= (CHAR - (UNICODE_WHITESPACE | "#" | ")" | "}" | CONTROL | BIDI_CONTROL))+
 ```
 
 Unlike `ID_NAME`, it admits non-ASCII letters: `install-linux` and `道具一式` are both ids. The parser converts every id value to Unicode Normalization Form C (NFC), wherever it is written, so the same letters always give the same id; no other change is made, and matching is case-sensitive.

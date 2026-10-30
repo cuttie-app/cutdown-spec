@@ -1,0 +1,18 @@
+id: attrs-id-bidi-control
+section: "1.1"
+description: "An id holding a bidi control is outside ID_VALUE: kept as written with CDN-0037"
+
+input: "Text {#a\u202Eb}\n"
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: id
+        value: "a\u202Eb"
+
+diagnostics:
+  - code: CDN-0037
+    level: warning

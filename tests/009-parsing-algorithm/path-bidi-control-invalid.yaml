@@ -1,0 +1,16 @@
+id: path-bidi-control-invalid
+section: "9.2.5"
+description: "A path holding a bidi control is invalid: the FileBlock keeps raw as written and src is null"
+
+input: "/docs/\u202Etxt.exe\n"
+
+ast:
+  - _type: FileGroup
+    children:
+      - _type: FileBlock
+        raw: "/docs/\u202Etxt.exe"
+        src: null
+
+diagnostics:
+  - code: CDN-0032
+    level: warning

@@ -1,0 +1,74 @@
+id: block-depth-32-accepted
+section: "10.7"
+description: "Thirty-two nested quotes are within the block depth limit; no diagnostic"
+
+input: |
+  > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > > x
+
+ast:
+  - _type: QuoteBlock
+    children:
+      - _type: QuoteBlock
+        children:
+          - _type: QuoteBlock
+            children:
+              - _type: QuoteBlock
+                children:
+                  - _type: QuoteBlock
+                    children:
+                      - _type: QuoteBlock
+                        children:
+                          - _type: QuoteBlock
+                            children:
+                              - _type: QuoteBlock
+                                children:
+                                  - _type: QuoteBlock
+                                    children:
+                                      - _type: QuoteBlock
+                                        children:
+                                          - _type: QuoteBlock
+                                            children:
+                                              - _type: QuoteBlock
+                                                children:
+                                                  - _type: QuoteBlock
+                                                    children:
+                                                      - _type: QuoteBlock
+                                                        children:
+                                                          - _type: QuoteBlock
+                                                            children:
+                                                              - _type: QuoteBlock
+                                                                children:
+                                                                  - _type: QuoteBlock
+                                                                    children:
+                                                                      - _type: QuoteBlock
+                                                                        children:
+                                                                          - _type: QuoteBlock
+                                                                            children:
+                                                                              - _type: QuoteBlock
+                                                                                children:
+                                                                                  - _type: QuoteBlock
+                                                                                    children:
+                                                                                      - _type: QuoteBlock
+                                                                                        children:
+                                                                                          - _type: QuoteBlock
+                                                                                            children:
+                                                                                              - _type: QuoteBlock
+                                                                                                children:
+                                                                                                  - _type: QuoteBlock
+                                                                                                    children:
+                                                                                                      - _type: QuoteBlock
+                                                                                                        children:
+                                                                                                          - _type: QuoteBlock
+                                                                                                            children:
+                                                                                                              - _type: QuoteBlock
+                                                                                                                children:
+                                                                                                                  - _type: QuoteBlock
+                                                                                                                    children:
+                                                                                                                      - _type: QuoteBlock
+                                                                                                                        children:
+                                                                                                                          - _type: QuoteBlock
+                                                                                                                            children:
+                                                                                                                              - _type: QuoteBlock
+                                                                                                                                children:
+                                                                                                                                  - _type: Text
+                                                                                                                                    value: x

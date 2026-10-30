@@ -188,7 +188,7 @@ A path may contain any Unicode scalar value, the space included. A backslash esc
 
 1. `raw` is the extent with escapes resolved, except the two template escapes `\\` and `\{{`, which stay for the consumer (§5.11.1). In a `FileBlock` or `InjectBlock` line, leading and trailing whitespace is removed first.
 2. `path` is `raw` up to the first unescaped `?` or `#`, or all of `raw` if neither occurs.
-3. If an unescaped `?` comes first, the query text runs from after it to the first unescaped `#` or the end. It is split on `&`; each part is split at its first `=` into `key` and `value`. A part with no `=` has `value: ''`. Empty parts (`a&&b`) produce no pair. Pairs keep source order, and repeated keys are all kept. Nothing is percent-decoded: `%20` stays `%20`. At most 32 pairs are kept; any further pairs are dropped without a diagnostic.
+3. If an unescaped `?` comes first, the query text runs from after it to the first unescaped `#` or the end. It is split on `&`; each part is split at its first `=` into `key` and `value`. A part with no `=` has `value: ''`. Empty parts (`a&&b`) produce no pair. Pairs keep source order, and repeated keys are all kept. Nothing is percent-decoded: `%20` stays `%20`. At most 32 pairs are kept; any further pairs are dropped and warning CDN-0042 is emitted, with the `loc` of the first dropped pair.
 4. `fragment` is everything after the first unescaped `#`. A `?` after the `#` is fragment content.
 
 The parts are read from the extent as written, so an escaped `?`, `#`, `&`, or `=` is never a boundary:
@@ -244,6 +244,7 @@ A path is **invalid** when any of these holds:
 
 - `path` is empty before normalization — a path names something (an image source `![x]()` or `![x](#a)`; §5.9 adds the image-only rules);
 - `raw` contains a control character: U+0000–U+001F, U+007F, or U+0080–U+009F;
+- `raw` contains a bidi control (`BIDI_CONTROL`, §0.4), such as U+202E (right-to-left override);
 - a `..` segment climbs above the root (`/../x`, `../intro`, `/a/../../b`);
 - the normalized `path` ends with `/`, except in an `InjectBlock`, where a trailing `/` names a folder (§4.17), and in a `FileBlock` whose path is `/` itself (§4.11).
 
