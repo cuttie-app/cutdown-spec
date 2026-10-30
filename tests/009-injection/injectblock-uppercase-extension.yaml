@@ -1,0 +1,17 @@
+id: injectblock-uppercase-extension
+section: "4.17"
+description: "The Cutdown extension is matched ASCII case-insensitively; /a.CUTDOWN is an InjectBlock and its path keeps the case as written"
+
+input: |
+  /a.CUTDOWN
+
+ast:
+  - _type: InjectBlock
+    raw: /a.CUTDOWN
+    src:
+      path: /a.CUTDOWN
+      query: []
+      fragment: ''
+    children: []
+    attributes: []
+    reflections: []

@@ -120,7 +120,7 @@ After decomposition the parser normalizes `path`, in this order:
 
 **Example 8-8** · [`injectblock-folder-dot`](../tests/009-injection/injectblock-folder-dot.yaml)
 
-Every later rule reads the normalized `path`: whether a line is an `InjectBlock` (§4.17), the validity rules below, and the `.cutdown` suffix of a page link (§5.5). Cutdown still resolves no path; it fixes how a path is read and spelled. A consumer that maps a path to storage confines it to the root after its own resolution (§20.4 clause 10, §21.5).
+Every later rule reads the normalized `path`: whether a line is an `InjectBlock` (§4.17), the validity rules below, and the Cutdown extension of a page link (§1.7, §5.5). Cutdown still resolves no path; it fixes how a path is read and spelled. A consumer that maps a path to storage confines it to the root after its own resolution (§20.4 clause 10, §21.5).
 
 **Equivalence.** Two locators name the same resource when their normalized `path` values are equal, code point for code point. The normalization steps above are the only equivalences: letters that differ in case are different names (`/A.png` and `/a.png`), and a percent escape is not its character (`/a%20b` and `/a b`). `query` and `fragment` do not change which resource is named; they travel with it to the consumer, as a page link's `#id` picks a segment of the same document. A consumer that compares locators — a link checker, or the cycle check of §20.4 clause 2 — compares `path` and nothing else.
 

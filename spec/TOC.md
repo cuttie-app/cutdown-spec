@@ -36,7 +36,7 @@ It has no canonical HTML output — consuming applications interpret and render 
 
 ## Table of Contents
 
-1. [Preliminaries](001-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references
+1. [Preliminaries](001-preliminaries.md) — requirement keywords, notation, characters, lines and whitespace, terms, references, media type and file extension
 2. [Identifiers and AST Model](002-identifiers-and-ast-model.md) — Identifier charset, Segment, Block type, Inline type, Block scope
 3. [Document Model](003-document-model.md) — Document, Page
 4. [Block Segments](004-block-segments.md) — Paragraph, Section, Meta, CodeBlock, MathBlock, QuoteBlock, List, ListItem, TaskItem, Table, PageBreaker, FileBlock, FileGroup, EmbedBlock, InjectBlock, NamedBlock, RefDefinition, SpoilerBlock, CommentBlock
@@ -62,4 +62,5 @@ Appendices
 
 - A. [AST Node (Segment) Reference](appendix-a-ast-node-reference.md)
 - B. [Special Character Reference](appendix-b-special-character-reference.md)
+- C. [Rationale](appendix-c-rationale.md) — informative: why each major decision was made, and what it costs
 ---

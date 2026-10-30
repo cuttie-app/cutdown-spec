@@ -1,0 +1,17 @@
+id: link-page-extension-any-case
+section: "5.5"
+description: "A page path whose extension is .cutdown in any ASCII case is not extended again, and keeps its case"
+
+input: |
+  [x](guide/Intro.CUTDOWN)
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Link
+        kind: page
+        raw: guide/Intro.CUTDOWN
+        path:
+          path: /guide/Intro.CUTDOWN
+          query: []
+          fragment: ""

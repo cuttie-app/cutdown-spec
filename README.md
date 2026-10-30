@@ -101,7 +101,7 @@ What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may oc
 
 ## What Cutdown doesn't do
 
-**No kitchen sink.**
+**No feature for its own sake.**
 
 Cutdown has headings, paragraphs, lists, tables, quotes, code, links, emphasis, spoilers, images, file references, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools.
 
@@ -144,7 +144,7 @@ The reason single symbols are literal is the doubling rule — see [**Doubled de
 
 | Path | Contents |
 |---|---|
-| [`spec/`](spec/) | Language specification §1–§21 and Appendices A–B |
+| [`spec/`](spec/) | Language specification §1–§21 and Appendices A–C |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`policies/`](policies/) | Governance and conformance policies |
 | [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference for tooling and AI agents |
@@ -173,17 +173,13 @@ No official tooling yet. If you build something — an editor plugin, linter, or
 
 ## For implementors
 
-Start with the specification ([`spec/`](spec/), §1–§21 and Appendices A–B) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
+Start with the specification ([`spec/`](spec/), §1–§21 and Appendices A–C) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
 
 ---
 
-## File extension
+## File extension and media type
 
-`.cutdown` is the recommended extension for Cutdown documents.
-
-## MIME type
-
-The media type is `text/cutdown`. It is not yet registered with IANA; registration is intended. 
+Cutdown files use the extension `.cutdown` and the media type `text/x-cutdown`; readers also accept `text/cutdown`. See §1.7 of the [specification](spec/001-preliminaries.md).
 
 ---
 

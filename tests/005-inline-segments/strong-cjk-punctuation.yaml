@@ -1,0 +1,16 @@
+id: strong-cjk-punctuation
+section: "5.3"
+description: "A doubled delimiter needs no flanking whitespace: Strong closes after CJK punctuation and before a letter"
+
+input: |
+  **テスト。**テスト
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Strong
+        children:
+          - _type: Text
+            value: テスト。
+      - _type: Text
+        value: テスト

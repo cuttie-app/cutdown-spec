@@ -39,7 +39,7 @@ The locator's fragment and query carry meaning for an `InjectBlock`:
 
 A `src` whose `path` ends with `/` names a folder. One `InjectBlock` stands for the whole folder:
 
-- the folder's files whose names end with `.cutdown` are injected; subfolders are not entered;
+- the folder's files that have the Cutdown extension (§1.7) are injected; subfolders are not entered;
 - they are taken in ascending order of file name, compared by Unicode code point;
 - each file is filled as §9.1 describes, and the results are concatenated into the one `children` array;
 - §9.2 and §9.3 apply to each file as a separate document.

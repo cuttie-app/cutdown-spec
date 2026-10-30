@@ -41,7 +41,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 
 ### 18.2 Notes on individual rows
 
-**Row 3 — why `[+]`.** The letter `x` is a strong left-to-right character, so `[x]` opens a directional run inside the brackets and renders incorrectly in right-to-left source. `[+]` inherits the surrounding direction and is intact in any script. `[x]` and `[X]` stay valid input because they are what a Markdown document pasted into Cutdown carries.
+**Row 3 — why `[+]`.** `[+]` is neutral in bidirectional text, where `[x]` is not; the rationale is in §C.13.
 
 **Row 3 — preservation is not available.** `TaskItem.checked` is a boolean and carries no spelling. A writer cannot reproduce the input marker from the AST, so it MUST emit the canonical one.
 

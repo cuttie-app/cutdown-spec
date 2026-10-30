@@ -30,7 +30,7 @@ Token types inside `{}`:
 - **At most 32 entries per group.** The `id` entry and the merged `class` entry count one each, however many tokens fed them. Entries after the 32nd are dropped and warning CDN-0041 is emitted, with the `loc` of the first dropped token. A token that only adds to an existing entry — another class, a repeated key that CDN-0022 drops — adds no entry.
 - Tokens are separated by whitespace. A group may cross a soft break (§15.1): the line end separates tokens as whitespace does, and no token crosses it. An id, class, key, quoted or unquoted value, or JSON value ends at the line end, so a token split over two lines becomes two tokens — `{.cl` followed by `ass}` holds the class `cl` and the flag `ass`, and `{key=` followed by `v}` holds `key=""` and the flag `v`. If the rest is not a token (`{key` followed by `=v}`), or a quoted value is still open at the line end, the group violates the grammar (§6.1.3).
 
-> **Philosophy:** Universal Attributes are semantic hints for consumers — they are not one-to-one mappings to HTML attributes. A bare `{banner}` does not mean `<div banner>`; it means "this element has the semantic role 'banner'." The consuming application decides how to expand, map, or ignore any attribute token. Cutdown makes no assumption about the rendering target. A consumer that maps attributes onto HTML or another active medium uses an allowlist of keys (§20.4 clause 8, §21.2).
+Attributes are semantic hints for the consumer, not HTML attributes; see §C.10 for the rationale.
 
 #### 6.1.2 Placement
 

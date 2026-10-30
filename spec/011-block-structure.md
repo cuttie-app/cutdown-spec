@@ -36,7 +36,7 @@ Each block candidate is classified by its first line (see §12.1.3 for the full 
 
 Cutdown uses two structural patterns for delimiters:
 
-> **Philosophy:** because the delimiter is always a *doubled* symbol, every **single** symbol stays literal. The single `_` (underscore) in `snake_case` and `a_b`, the single `'` (single quote) in "don't", and the single `*` (asterisk) in `2*3` need no escaping in ordinary prose. A reader who knows this can predict the rest of the grammar instead of memorising it: one symbol is text, two open an inline segment, three open a block.
+Because every delimiter is at least doubled, a single symbol stays literal: one symbol is text, two open an inline segment, three open a block. Rationale: §C.3.
 
 #### 11.4.1 Doubled-symbol inline delimiter
 
