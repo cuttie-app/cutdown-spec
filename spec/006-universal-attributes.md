@@ -14,8 +14,10 @@ Token types inside `{}`:
 - `#identifier` — the `#` (octothorpe) sets the `id` attribute. Emits `{ key: "id", value: "identifier" }`. First `#` wins; any subsequent `#id` or `id=` token is dropped and CDN-0020 is emitted.
   An id value is an `ID_VALUE` (§2.1), whether written `#x` or `id=x`. A value outside it — `id="a b"`, `#a#b` — is kept as written and warning CDN-0037 is emitted; no id link can reach it (§5.5). The value is converted to NFC (§2.1).
 - `.classname` and `class=value` — both add to one `class` entry, `{ key: "class", value: string[] }`. Every `.x` token and every `class=` value contribute in source order; a `class=` value is split on whitespace, so `class="b c"` adds `b` and `c`. A repeated class is dropped without a diagnostic; the first occurrence keeps its place. The entry sits at the position of the first contributing token. `class=""` contributes nothing, and with no contributions there is no `class` entry.
-**Example 6-1** · [`attrs-class-merge-mixed-forms`](../tests/006-universal-attributes/attrs-class-merge-mixed-forms.yaml)
   At most 32 classes are kept. Further classes are dropped and CDN-0034 is emitted.
+
+  **Example 6-1** · [`attrs-class-merge-mixed-forms`](../tests/006-universal-attributes/attrs-class-merge-mixed-forms.yaml)
+
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
 - `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array [RFC8259], and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
   - Only objects and arrays are JSON. `key=123` and `key=true` stay strings (`"123"`, `"true"`).

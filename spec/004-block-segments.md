@@ -241,6 +241,7 @@ interface QuoteBlock {
 **Example 4-10** · [`quote-block-lazy-continuation-indented`](../tests/004-block-segments/quote-block-lazy-continuation-indented.yaml)
 
 **Example 4-11** · [`quote-block-lazy-continuation-into-list`](../tests/004-block-segments/quote-block-lazy-continuation-into-list.yaml)
+
 ---
 
 ### 4.7 List
