@@ -4,25 +4,26 @@ You write structure. You write content.
 
 **Cutdown** is a lightweight markup language with a closed, finite syntax, parsed in a single forward pass so a document renders as it arrives rather than after it ends. Two identical characters wrap inline text; three open a block. Thus, the parser resolves every construct when it is first encountered.
 
-Cutdown derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree — pages, sections, paragraphs, lists, blocks — that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
+Cutdown derives from Markdown. The name is literal: *cut* from the wide variety *of Markdown* syntax features down to what content actually needs. It produces a structured document tree (pages, sections, paragraphs, lists, blocks) that an application interprets and renders. There is no canonical visual output. No rendering opinions baked in. Some things work the same as Markdown. Some were changed deliberately. Each change has a reason.
 
 ---
 
 ## Markup example
 
-```
+```cutdown
 == Hello **world**
 ```
 
-```json
-{
-  "_type": "Section",
-  "level": 2,
-  "heading": [
-    { "_type": "Text", "value": "Hello " },
-    { "_type": "Strong", "children": [{ "_type": "Text", "value": "world" }] }
-  ]
-}
+```yaml
+_type: Section
+level: 2
+heading:
+  - _type: Text
+    value: "Hello "
+  - _type: Strong
+    children:
+      - _type: Text
+        value: "world"
 ```
 
 [Quick reference → `SYNTAX.md`](SYNTAX.md) · [Full spec → `spec/TOC.md`](spec/TOC.md)
@@ -33,69 +34,61 @@ Cutdown derives from Markdown. The name is literal: *cut* from the wide variety 
 
 ### **Plain text separated by a blank line is a paragraph.**
 
-That single rule is what made Markdown worth learning. No extra syntax. No delimiters. No toolbar. Two blocks of text separated by a double Enter are structurally paragraphs — you think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
+That single rule is what made Markdown worth learning. No extra syntax. No delimiters. Two blocks of text separated by a double Enter are structurally paragraphs. You think, you write, you press Enter twice. This is a brilliant invention, and Cutdown preserves it carefully and completely. It is the foundation everything else is built on.
 
 ### **Any plain text is already a valid document.**
 
-The parser is a total function. There is no error state, no invalid input, no rejection path. Text that carries no markup is a document of paragraphs; text that carries markup is a document with structure; there is nothing in between and nothing outside.
+The parser is a total function. There is no error state, no invalid input, no rejection path. Text that carries no markup is a document of paragraphs; text that carries markup is a document with structure; there is nothing in between and nothing outside. It still reports warnings for ambiguous input, through a separate diagnostics channel.
 
 For a pipeline, this is a load-bearing guarantee: parsing cannot fail, so there is no error-recovery branch to write and no malformed-document queue to drain. Every decoded Unicode text sequence in, exactly one tree out — the same tree, from every conforming implementation. This applies to every character prefix while text is arriving; unfinished ordinary markup follows its normal degradation rule. UTF-8 decoding belongs to the input boundary, not to Cutdown syntax.
 
 ### **Doubled delimiters only. Single characters are plain text.**
 
-Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, ` ``code`` `, `~~highlight~~`, `$$math$$`. Within a line, a single character is always plain text.
+Cutdown uses doubled or tripled characters for all inline spans: `**bold**`, `~~highlight~~`, `$$math$$`, ` ``code`` `. Within a line, a single character is always plain text.
 
-Consider ordinary prose: `$50,000`, `they gathered ~100,000 people`, `your salary = hours * rate`. In a language where a single `$`, `~`, or `=` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span; a single one is text, with no flanking rules to learn. Block markers are the one place a single character carries meaning, and only as the first thing on a line — `= heading`, `- item`, `> quote`, `/path`. Inside a line, there is nothing to escape in normal writing.
+Consider ordinary prose: `your salary = hours * rate`, `they gathered ~100,000 people`, `$50,000`. In a language where a single `*`, `~`, or `$` could open a span, these require escaping or careful placement. In Cutdown, they do not. A doubled delimiter opens a span; a single one is text, with no flanking rules to learn. Block markers are the one place a single character carries meaning, and only as the first thing on a line (e.g. `= heading`, `- item`, `> quote`, `/path`). Inside a line, there is nothing to escape in normal writing.
 
-### **Markup that doesn't resolve becomes plain text.**
-
-An opener with no closer does not poison the line, does not reach backward, does not get repaired by guesswork. It degrades to exactly the characters that were typed, in the order they were typed. Which characters depends on the opener: a doubled delimiter like `**` emits the opener alone and keeps parsing, so later constructs on the line still work; a bracket-like opener such as `[` emits everything from the opener to the end of the line as one literal run.
-
-Both rules are stated up front and neither guesses. A writer can predict the output of any line by reading it once, the same way the parser does. A developer gets determinism where markup languages are traditionally at their most creative: the handling of imperfect input.
+Another benefit: a delimiter can go anywhere — mid-word, at the edges of a phrase, or in scripts written without spaces, such as Japanese.
 
 ### **What you type is what is stored.**
 
-Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation happens in the renderer — configured by locale, applied consistently. In source, your text is exactly what you typed.
+Cutdown performs no typographic substitution. Straight quotes `"` stay straight. `--` stays `--`. `...` stays `...`. Nothing is silently transformed. If your output needs typographic quotes, that transformation belongs to the renderer, where it can be configured per locale and applied consistently. In source, your text is exactly what you typed.
 
 This matters in practice. A content pipeline handling technical documentation, pricing, or any mix of prose and code needs predictable literal characters. Silent substitution is a class of bugs that appears only at render time, varies by parser, and is hard to trace back to source.
 
 ### **A newline inside a paragraph is nothing.**
 
-`word\nword` concatenates to `wordword`. Cutdown inserts no character at a line break — not a space, not anything. If a word boundary is wanted, the writer owns it, visibly, at the start of the next line: `word\n word` yields `word word`. Trailing spaces, which editors strip, carry no meaning.
+`word\nword` concatenates to `wordword`. Cutdown inserts no character at a line break: not a space, not a carriage return, not anything. If a word boundary is wanted, the writer owns it, visibly, at the start of the next line: `word\n word` yields `word word`. Trailing spaces, which editors strip, carry no meaning.
 
-This makes line wrapping safe in every script. `よう\nこそ` renders as `ようこそ` — *welcome!* — wrapped mid-word and still intact, with no corrupting space injected between characters that carry their own spacing. Western prose keeps its boundaries by indenting the continuation line one column past its base. One rule, uniform inside inline spans and plain paragraph text alike, with no locale table and no heuristic.
+This makes line wrapping safe in every script. `よう\nこそ` renders as `ようこそ` ("welcome") wrapped mid-word and still intact, with no corrupting space injected between characters that carry their own spacing. Western prose keeps its boundaries by indenting the continuation line one column past its base. One rule, uniform inside inline spans and plain paragraph text alike, with no locale table and no heuristic.
+
+A hard break, for the rhythm of a poem, is still available: end the line with a backslash (§5.13).
 
 ### **Angle brackets are plain text.**
 
-`<em>` in a Cutdown document is exactly four characters of content — not a tag, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
+`<em>` in a Cutdown document is exactly four characters of content. It's not a tag, not a link, not an escape hatch, not a passthrough. Angle brackets carry no meaning anywhere in the language.
 
 The consequence for anyone rendering user-written content: there is no raw-HTML channel. Markup cannot smuggle a tag, a script, or a style into the output. What remains is data the renderer chooses how to use — link schemes, attribute keys, paths, URLs — and the specification names each one and the check it needs ([Security Considerations](spec/021-security-considerations.md)). The attack surface is a short, closed list, not an open-ended HTML sanitizer.
 
 ### **Documents have pages.**
 
-A `---` line cuts a page. A Meta block fills the current page or opens the next one. Sections nest inside pages, and all of it is in the tree: `Document → Page[] → Section → …`. Nothing is inferred by the renderer; pagination and outline are parser output, not post-processing.
+Each `---` line cuts a page. A Meta block fills the current page or opens the next one. Sections nest inside pages, and all of it is in the tree: `Document → Page[] → Section → …`. Nothing is inferred by the renderer; pagination and outline are parser output, not post-processing.
 
-Slide decks, paginated articles, per-page metadata — structures that other formats reconstruct downstream with heuristics are first-class nodes here. If your application doesn't need pages, a document is simply one page; the model costs nothing when unused.
+Slide decks, paginated articles, per-page metadata: structures that other formats reconstruct downstream with heuristics are first-class nodes here. If your application doesn't need pages, a document is simply one page; the model costs nothing when unused.
 
-Multiple Meta blocks are valid in one document — a comment or a license notice above frontmatter is ordinary content, not a violation. Meta blocks belong at page scope; inside a block container the span is ordinary text and a diagnostic is emitted.
+Multiple Meta blocks are valid in a single document. Even prose, a comment, or a license notice above frontmatter is ordinary content, not a violation. Meta blocks belong at page scope; inside a block container the span is ordinary text and a diagnostic is emitted.
 
 ### **`##` for author comments, `###` for block comments.**
 
-Finally, markup has a legal way to place a comment — a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
+Finally, markup has a legal way to place a comment: a part of the source that is hidden from rendering by default. It is not something you reach for in every document. But when you need it, you discover how useful it is: annotations, draft notes, TODO markers, editorial reminders that belong to the source and nowhere else.
 
 `## comment` is a single-line comment (line-start or mid-line; runs to end of line). `### ... ###` brackets a block. The syntax is family-aligned with C++/JS `//`, Python `#`, and YAML `#` — a familiar shape from any keyboard. Comments are kept in the AST (`reflections` on each block and on each Page) so that formatters, IDE folding, and comment-thread tools can round-trip them; the default render policy is hidden.
 
 ### **`=` instead of `#` for headings.**
 
-`=` is reachable as a single keypress on effectively every keyboard layout, carries no meaning in prose or code, and has precedent: AsciiDoc and Typst use the same convention. Depth is the count — `=` is level one, `==` is level two. Consistent everywhere.
+`=` is reachable on effectively every keyboard layout, carries no meaning in prose, and has precedent: AsciiDoc and Typst use the same convention. An `=` at the start of a line marks a heading. Depth is the count: `=` is level one, `==` is level two.
 
-And a heading here is not a styled line. It opens a **Section** — a real container in the tree, spanning until the next heading of the same or higher level. The outline you see is the AST you get.
-
----
-
-If your team is already familiar with Markdown and evaluating whether Cutdown fits an existing content workflow, the changes above address specific, documented problems in Markdown-based pipelines: parser inconsistency across implementations, HTML injection surface, typographic substitution producing unexpected characters in technical content, and the absence of structured output for programmatic processing. The specification is defined by prose rules and an executable conformance corpus; a compliant parser produces identical output regardless of implementation language. AST output means your application controls rendering completely — no HTML string manipulation and no HTML sanitizer; an allowlist for link schemes and attribute keys (§20.4).
-
-What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may occur. A reference [TypeScript parser](https://github.com/cuttie-app/cutdown-ts) exists and tracks the spec; production hardening is ongoing. If your workflow needs a settled standard today, the honest answer is that Cutdown is not there yet. If you are building a new content pipeline and want to start on a better foundation, the spec and conformance corpus are complete enough to build from.
+And a heading here is not a styled line. It opens a **Section**: a real container in the tree, spanning until the next heading of the same or higher level. Cutdown gives you the outline for free, from the AST.
 
 ---
 
@@ -106,37 +99,6 @@ What Cutdown cannot yet promise: the spec is pre-1.0 and breaking changes may oc
 Cutdown has headings, paragraphs, lists, tables, quotes, code, links, emphasis, spoilers, images, file references, and named blocks. Nothing else. Every construct earned its place because content needs it, not because it was possible to add. A smaller syntax is a more learnable syntax, a more implementable parser, and a more consistent authoring experience across tools.
 
 The syntax is closed. Application-specific vocabulary lives in named blocks, marks, and attributes — the set of *names* grows with your application; the set of *rules* does not.
-
----
-
-## If you know Markdown
-
-Cutdown is not a Markdown dialect. Most of it will feel familiar, but these differ — and they differ **silently**, producing a valid document rather than an error:
-
-| You write | CommonMark/GFM gives you | Cutdown gives you |
-|---|---|---|
-| `# Title` | Heading | **Comment** — headings are `= Title` |
-| `__text__` | Strong | **Emphasis** — `**text**` is Strong |
-| `~~text~~` | Strikethrough | **Highlight** — no deletion semantics |
-| `---` | Thematic break (`<hr>`) | **PageBreaker** — a document structure boundary |
-| `*text*`, `_text_` | Emphasis | **Literal text** — single symbols are never delimiters |
-| four-space indent | Code block | **Nothing** — indented code blocks are not supported |
-
-`__text__` is the one to watch: it produces Emphasis where you meant Strong, with no diagnostic and nothing visibly wrong in the source.
-
-Cutdown also has constructs absent from CommonMark and GFM, though several will be familiar from the wider Markdown family — Pandoc and Djot both have fenced divs and attribute syntax, and Djot is credited below as an inspiration:
-
-| Cutdown | Closest prior art |
-|---|---|
-| `{#id .class key=value}` attributes on anything | Pandoc attribute blocks; Djot attributes; kramdown / PHP Markdown Extra attribute lists |
-| `:::name` named blocks | Pandoc and Djot fenced divs |
-| `::name … ::` marks | Pandoc bracketed spans; Djot inline spans |
-| `^ caption` lines | Pandoc image captions (narrower — Cutdown captions bind to any captionable block) |
-| `^^spoilers^^` | no common equivalent |
-
-What is unusual is not the individual constructs but that they are **built into one closed syntax** rather than supplied by extensions that vary per implementation.
-
-The reason single symbols are literal is the doubling rule — see [**Doubled delimiters only**](#doubled-delimiters-only-single-characters-are-plain-text) above. It is why `snake_case`, `2*3`, and apostrophes need no escaping.
 
 ---
 
@@ -161,19 +123,9 @@ The spec is under active development. Breaking changes may occur before 1.0.0.
 
 ## Implementations
 
-- **cutdown-ts** — TypeScript parser and AST generator. [GitHub](https://github.com/cuttie-app/cutdown-ts), [npm](https://www.npmjs.com/package/cutdown-parser), [npmx.dev](https://npmx.dev/package/cutdown-parser)
+- **[cutdown-ts](https://github.com/cuttie-app/cutdown-ts)** — TypeScript parser and AST generator. [npm](https://www.npmjs.com/package/cutdown-parser), [npmx.dev](https://npmx.dev/package/cutdown-parser)
 
 The spec ([`spec/`](spec/)) and conformance corpus ([`tests/`](tests/)) are the starting point for building one. The corpus provides golden YAML tests covering all spec sections and all diagnostic codes.
-
-## Tooling
-
-No official tooling yet. If you build something — an editor plugin, linter, or renderer — open a PR to list it here.
-
----
-
-## For implementors
-
-Start with the specification ([`spec/`](spec/), §1–§21 and Appendices A–C) and the conformance corpus ([`tests/`](tests/)) — golden YAML covering every section and every CDN code. [`SYNTAX.md`](SYNTAX.md) is the condensed reference.
 
 ---
 
@@ -191,4 +143,4 @@ See [`CONTRIBUTION.md`](CONTRIBUTION.md)
 
 ## License
 
-[CC BY 4.0](LICENSE) — Anton Huz, Cuttie App
+[CC BY 4.0](LICENSE), crafted by Anton Huz at Cuttie App

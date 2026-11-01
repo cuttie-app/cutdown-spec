@@ -546,6 +546,17 @@ interface Spoiler {
 
 **Syntax:** `\<EOL>`, backslash as the last character of a line (before `\n`). The construct is the **LineBreaker**; it produces the `LineBreak` node, as `PageBreaker` (§4.10) produces a page boundary.
 
+```cutdown
+A word is dead\
+When it is said,\
+Some say.\
+I say it just\
+Begins to live\
+That day.
+```
+
+The first five lines end in a `LineBreak`; all six stay one `Paragraph`. (Emily Dickinson, “A word is dead”.)
+
 **AST type:**
 
 ```typescript
