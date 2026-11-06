@@ -14,8 +14,6 @@ Markup is never an error. An unfinished `**` or `[` stays as plain text, exactly
 
 ## Inline Elements
 
-Doubled symbols mark up text; a single `*`, `_`, `~`, `^`, `` ` ``, `$`, `"`, or `'` is plain text.
-
 | You type | You get |
 |---|---|
 | `__text__` | **Emphasis**, usually italic. Not bold, unlike Markdown. |
@@ -30,10 +28,10 @@ Doubled symbols mark up text; a single `*`, `_`, `~`, `^`, `` ` ``, `$`, `"`, or
 | `[text](path/to/page)` | **Link to a page** in this project. `.cutdown` is optional; `#id` at the end points into that page. |
 | `[Page title]()` | **Wiki link**: links to the page named by the text. |
 | `[text](#id)` | **Link within this document**, to the element marked `{#id}`. |
-| `[text](^ref)` | **Reference link** to a `[^ref]: …` definition in this document. `[](^ref)` shows the marker only. |
+| `[text](^ref)` | **Reference link** to a `[^ref]: …` definition in this document. `[](^ref)` has no text; the app decides what to show. |
 | `[text](~tag)` | **Tag link**. Levels split by `/`: `~lang/japanese`. |
 | `[text](@cite)` | **Citation**, resolved by the app. |
-| `[](target)` | **Link with no text**: the app shows the target itself. |
+| `[](target)` | **Link with no text** is allowed, for any kind of link; the app decides what to show instead. |
 | `[a [b](u) c](v)` | Links do not nest: the inner one is plain text. An image may be the link text: `[![CI](/ci.svg)](https://ci)`. |
 | `![alt](src)` | **ImageInline** inside text. For a captioned or grouped image, put `/image.png` on its own line. |
 | `::name content::`, `::name::` | **Mark**, a named span your app defines. Marks may nest. |
