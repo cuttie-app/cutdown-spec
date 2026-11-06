@@ -37,13 +37,13 @@ These look familiar but mean something else. None is an error, and most give no 
 
 | You type | You get |
 |---|---|
-| `__text__` | **Emphasis**, usually italic. Not bold, unlike Markdown. |
+| `__text__` | **Emphasis**, usually italic. |
 | `**text**` | **Strong**, usually bold. |
-| `~~text~~` | **Highlight**, marked text. Not strikethrough. |
+| `~~text~~` | **Highlight**, marked text. |
 | `^^text^^` | **Spoiler**, usually hidden until the reader reveals it. Add `{.nsfw}` or similar for a variant. |
 | \`\`code\`\` | **CodeInline**, kept exactly as typed. Write `` \` `` for a backtick inside. |
 | `$$formula$$` | **MathInline** (LaTeX), kept exactly as typed. |
-| `""text""` | **QuoteInline**, double. The renderer picks the quote marks. |
+| `""text""` | **QuoteInline**, double. The app picks the quote marks. |
 | `''text''` | **QuoteInline**, single. |
 | `[text](https://…)`, `[text](mailto:…)` | **External link**. Any scheme works: `https:`, `mailto:`, `tel:`, … |
 | `[text](path/to/page)` | **Link to a page** in this project. `.cutdown` is optional; `#id` at the end points into that page. |
@@ -75,21 +75,21 @@ These look familiar but mean something else. None is an error, and most give no 
 ## Block Elements
 
 ````
-~~~                 MetaBlock (Frontmatter): page metadata, YAML by default
+~~~                 Meta (Frontmatter): page metadata, YAML by default
   ...
 ~~~
 
 == ...              Section (Heading), level 2 (one = per level)
 
-- ...               List item
+- ...               ListItem
 
-1. ...              Numbered list item
+1. ...              ListItem (ordered)
 
-- [+] ...           Task item, done (- [ ] when not done)
+- [+] ...           TaskItem, done (- [ ] when not done)
 
-/path.png           File; consecutive file lines form a group
+/path.png           FileBlock (in a FileGroup)
 
-/doc.cutdown        Injected document (also /folder/)
+/doc.cutdown        InjectBlock (also /folder/)
 
 https://...         EmbedBlock: video, post, map, …
 
@@ -116,16 +116,16 @@ $$$
 
 [^...]: ...         RefDefinition
 
----                 PageBreak
+---                 PageBreaker: a new page (no node)
 
 ###                 CommentBlock, hidden
   ...
 ###
 ````
 
-Blocks are separated by **blank lines**. Nothing interrupts a paragraph: a heading, list marker, or fence on the next line is still paragraph text. Leave a blank line before every new block.
+Blocks are separated by **blank lines**. Nothing interrupts a paragraph: a heading, list marker, or fence on the next line is still paragraph text. Leave a blank line before every new block (inside a quote, a change of depth is enough).
 
-**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): three or more symbols at the start of a line open a block; the next line starting with three or more of the same symbol closes it. On the opening line, only a language, format, or name word, `{attrs}`, and a `## comment` are kept; anything else is dropped with a warning.
+**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): three or more symbols at the start of a line open a block; the next line starting with three or more of the same symbol closes it (`:::name` nests instead; see Named Block). On the opening line, only a language, format, or name word, `{attrs}`, and a `## comment` are kept; anything else is dropped with a warning.
 
 ### Paragraph → `Paragraph`
 
@@ -142,12 +142,12 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 ```
 = Level 1
 == Level 2
-=== Level 3        (up to =========  level 9)
+=== Level 3        (up to ========= level 9)
 ```
 
-The `=` run needs a space after it: `=Title` is text. A heading continues onto the next lines until a blank line, so `= Title` followed by `more` is one heading, `Titlemore`. More than nine `=` count as level 9, with a warning.
+The `=` run needs a space or the line end after it: `=Title` is text. A heading continues onto the next lines until a blank line, so `= Title` followed by `more` is one heading, `Titlemore`. More than nine `=` count as level 9, with a warning.
 
-A heading opens a `Section` that runs to the next heading of the same or a higher level, or to the end of its container (a named block, quote, or list item). Levels may be skipped. Attributes go at the end of the heading line:
+A heading opens a `Section` that runs to the next heading of the same or a shallower level (as many `=` or fewer), or to the end of its container (a named block, quote, or list item). Levels may be skipped. Attributes go at the end of the heading line:
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
@@ -279,7 +279,7 @@ Holds any blocks, like a `NamedBlock`. Spoilers do **not** nest: the next `^^^` 
 | Alice  |    42 |           ← body row
 ```
 
-Every row starts with `|`; the closing `|` is optional. Cells hold inline markup. A separator row, each cell at least three symbols, turns the rows above it into the header. Alignment: `:--` left, `--:` right, `:-:` center, `--,` on the comma, `--.` on the decimal point, `---` default, following the text direction. The first row sets the column count: shorter rows are padded, extra cells are dropped with a warning.
+Every row starts with `|`; the closing `|` is optional. Cells hold inline markup. A separator row, with at least three symbols in each cell, turns the rows above it into the header. Alignment: `:--` left, `--:` right, `:-:` center, `--,` on the comma, `--.` on the decimal point, `---` default, following the text direction. The first row sets the column count: shorter rows are padded, extra cells are dropped with a warning.
 
 ### Reference Definition → `RefDefinition`
 
@@ -354,7 +354,7 @@ Comments are hidden by default.
 |---|---|
 | `#` | Plain text. A single `#` does nothing. |
 | `## …` | **Line comment** (`LineReflection`) to the end of the line, at the start or in the middle of a line. |
-| `###` … `###` | **CommentBlock** (`SegmentReflection`), kept as typed. Anything after `###` on its own lines is dropped. |
+| `###` … `###` | **CommentBlock** (`SegmentReflection`), kept as typed. Anything after `###` on the opening and closing lines is dropped. |
 
 ```
 # literal hash, not a comment
@@ -379,13 +379,13 @@ Document
     └── children: Block[]
 ```
 
-A document is a list of pages, always at least one. A new page starts at each top-level `---`, and at a Meta block when the current page already has one; text before the first Meta block belongs to its page. Empty pages are valid.
+A document is a list of pages, always at least one. A new page starts at each top-level `---`, and at a Meta block when the current page already has one; text before the first Meta block belongs to the same page as that Meta block. Empty pages are valid.
 
 ---
 
 ## Input
 
-- Files are UTF-8 unless they declare another encoding.
+- Files are UTF-8, unless the `charset` they come with names another encoding.
 - Any line ending works: `\r\n`, `\r`, or `\n`. A tab reads as one space, except inside fences.
 - Blank lines at the start and end of the document are ignored, and so are those of a named block, spoiler, quote, or list item. Code, math, Meta, and comment blocks keep theirs.
 - HTML entities are not decoded: `&amp;` is five characters of text.
@@ -395,10 +395,10 @@ A document is a list of pages, always at least one. A new page starts at each to
 
 ## Escaping
 
-Put `\` before a symbol to type it as text: `\**` is two asterisks. At the start of a line, it stops a block from opening: `\- not a list`, `\= not a heading`, `\---` not a page break. Before a letter or other ordinary character, the `\` stays as typed. Every escapable symbol: §B.
+Put `\` before a symbol to type it as text: `\**` is two asterisks. At the start of a line, it stops a block from opening: `\- not a list`, `\= not a heading`, `\--- not a page break`. Before a letter or other ordinary character, the `\` stays as typed. Every escapable symbol: [§B](spec/appendix-b-special-character-reference.md).
 
 ---
 
 ## Precedence
 
-Which construct wins when two compete for the same text (fences, escapes, code, comments, links, spans): §14.
+Which construct wins when two compete for the same text (fences, escapes, code, comments, links, spans): [§14](spec/014-precedence-rules.md).
