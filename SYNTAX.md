@@ -2,6 +2,51 @@
 
 Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§12). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§19).
 
+---
+
+## Inline Elements
+
+| Syntax          | Node | Notes                                                                                                                                                                                                 |
+|-----------------|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `__text__`      | `Emphasis` | Single `_` = literal                                                                                                                                                                                  |
+| `**text**`      | `Strong` | Single `*` = literal                                                                                                                                                                                  |
+| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                                                                                                                  |
+| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                                                                                                                     |
+| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                                                                                                            |
+| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                                                                                                                |
+| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
+| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
+| `[text](https://…)`, `[text](mailto:…)` | `Link(external)` | `href` as written. Any URI scheme (a letter, then letters, digits, `+` `-` `.`, then `:`) makes an external link; Cutdown filters none — that is the consumer's call |
+| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); read from the project root and normalized (`guide/./intro` → `/guide/intro`), then the parser appends `.cutdown` unless the path already has it, in any ASCII case. `#id` fragment = any segment with that id there (NFC). Invalid path, `..` above the root included → CDN-0032 |
+| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. `/` splits folders and `.`/`..` are normalized; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
+| `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
+| `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
+| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/`, controls, and bidi controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
+| `[text](@cite)` | `Link(cite)` | `target`; resolved by the consumer's citation logic |
+| `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
+| `[a [b](u) c](v)` | one `Link` | Links do not nest: brackets in link text are counted and a `[…](…)` inside is literal. An image may stand in link text (`[![CI](/ci.svg)](https://ci)`); `alt` holds no link or image |
+| `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
+| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
+| `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
+| `## … <EOL>`    | `LineReflection` on block | Line comment, runs to EOL. Payload stored in `block.reflections[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
+| `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
+
+Parsed in source order. An unclosed opener degrades by its class (§12.1.4.1):
+
+- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
+- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the closer is searched through the inline context, so link text, a link target, and an attribute group may wrap onto the next line (`{{key}}` may not). With no closer, the source from the opener to the end of its own line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
+- `::name … ::` (`Mark`) matches by counting, not by first closer. An unclosed opener emits the opener alone as `Text` and parsing continues; `::` without a valid name is literal text.
+
+Degradation to visible literal text is silent — no diagnostics.
+
+Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
+
+Inside an inline context, a run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (line comment, runs to EOL) + the trailing `#` becomes the first character of the payload text.
+
+---
+
+## Block Elements
+
 ```
 ~~~               MetaBlock (Frontmatter) format=yaml
   ...
@@ -15,7 +60,7 @@ Cutdown is a markup language that produces an AST. There is no HTML output. Pars
 
 - [+] ...         TaskItem (checklist) checked=true
 
-/path             FileBlock (in a FileGroup)
+/path.png         FileBlock (in a FileGroup)
 
 /doc.cutdown      InjectBlock (also /folder/)
 
@@ -46,27 +91,6 @@ $$$
 
 ```
 
-## Document Model
-
-Each Cutdown file produces a `Document` with `Pages`. So it has at least one Page, even if empty. Pages contain blocks and inline elements. PageBreakers `---` at top level and Meta fences `~~~` produce Page boundaries.
-
-```
-Document
-└── Page[]
-    ├── meta: Meta | null
-    └── children: Block[]
-```
-
-- Every document has ≥ 1 Page.
-- `---` → always closes the current Page (Ghost Page if empty) and opens a new one. Produces no node.
-- `Meta` block → fills the current Page's `meta` slot; if that slot is already set, closes the Page and opens a new one carrying it as `meta`. Content before a `Meta` never creates a Page.
-- Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
-
-
----
-
-## Block Elements
-
 Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
 
 **Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with CDN-0016, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§11.4.2).
@@ -74,12 +98,6 @@ Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once
 ### Paragraph → `Paragraph`
 
 Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted. A word boundary is written at the start of the next line: whitespace beyond the base column becomes one space, so `one` then ` two` reads `one two`. `\` at line end → `LineBreak`. Trailing and repeated whitespace: §15.
-
-**Example 4-2** · [`paragraph-multiline`](tests/004-block-segments/paragraph-multiline.yaml)
-
-**Example 4-3** · [`paragraph-linebreak`](tests/004-block-segments/paragraph-linebreak.yaml)
-
-**Example 4-1** · [`fence-cannot-interrupt-paragraph`](tests/011-block-structure/fence-cannot-interrupt-paragraph.yaml)
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -97,8 +115,6 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 
 The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
 
-**Example 4-5** · [`heading-last-attr-rule`](tests/004-block-segments/heading-last-attr-rule.yaml)
-
 Sections are not parsed — they are derived by a fold (§16.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
 ```
@@ -109,14 +125,12 @@ Sections are not parsed — they are derived by a fold (§16.1): a Section spans
 ### Meta Block (Frontmatter) → `Meta`
 
 ```
-~~~yaml
-key: value
+~~~
+title: The Surprising Reason a Classical Computer Beat a Quantum Computer at Its Own Game
 ~~~
 ```
 
 Formats: `yaml` (default), `toml`, `json`, any case. Any other word → `yaml` + warning CDN-0039. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
-
-**Example 4-6** · [`meta-block-yaml`](tests/004-block-segments/meta-block-yaml.yaml)
 
 ### PageBreaker → new Page (no node)
 
@@ -125,10 +139,6 @@ Formats: `yaml` (default), `toml`, `json`, any case. Any other word → `yaml` +
 ```
 
 A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a diagnostic (CDN-0016). Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, CDN-0017). Cutdown defines no thematic-break (horizontal-rule) element.
-
-**Example 4-32** · [`pagebreaker-basic`](tests/004-block-segments/pagebreaker-basic.yaml)
-
-**Example 4-33** · [`cdn-0016-pagebreaker-tail-dropped`](tests/diagnostics/cdn-0016-pagebreaker-tail-dropped.yaml)
 
 ### Lists → `List` / `ListItem` / `TaskItem`
 
@@ -146,12 +156,6 @@ A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if
 
 Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). A marker is followed by whitespace or the line end: `-5 °C` and `3.14` are text, and `-` alone is an empty item. The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§11.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. An item whose body is one paragraph holds inline children; any other body holds blocks, never a mix.
 
-**Example 11-1** · [`list-nested`](tests/004-block-segments/list-nested.yaml)
-
-**Example 11-2** · [`list-loose-mixed-items`](tests/011-block-structure/list-loose-mixed-items.yaml)
-
-**Example 4-13** · [`task-item-checked-plus`](tests/004-block-segments/task-item-checked-plus.yaml)
-
 ### Files → `FileBlock`, `FileGroup`
 
 ```
@@ -161,12 +165,6 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ```
 
 Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` with `path`, `query`, and `fragment`; `src` is `null` when the path is invalid. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. Every path is read from the project root and normalized; `raw` keeps what was written. Normalization and validity: §8.
-
-**Example 8-1** · [`fileblock-spaces-in-path`](tests/008-path-resource-locator/fileblock-spaces-in-path.yaml)
-
-**Example 4-35** · [`filegroup-blank-line-splits`](tests/004-block-segments/filegroup-blank-line-splits.yaml)
-
-**Example 4-34** · [`caption-fileblock-does-not-split-group`](tests/006-universal-attributes/caption-fileblock-does-not-split-group.yaml)
 
 ### Injection → `InjectBlock`
 
@@ -178,12 +176,6 @@ Line starting with `/`. The whole line, spaces included, is the path (minus a tr
 
 A file line whose normalized `path` has the extension `.cutdown`, in any ASCII case, or ends with `/` (folder). The parser emits `children: []`; the consumer fills it: `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable. What a consumer does: §9.
 
-**Example 4-39** · [`injectblock-in-section`](tests/009-injection/injectblock-in-section.yaml)
-
-**Example 8-4** · [`injectblock-query`](tests/009-injection/injectblock-query.yaml)
-
-**Example 8-8** · [`injectblock-folder-dot`](tests/009-injection/injectblock-folder-dot.yaml)
-
 ### Embed → `EmbedBlock`
 
 ```
@@ -192,8 +184,6 @@ https://youtu.be/dQw4w9WgXcQ {attrs}
 ```
 
 Line starting with literal `https://`. `url` is raw; the consumer decides what to show (e.g. oEmbed). Captionable; never in a `FileGroup`.
-
-**Example 4-31** · [`embedblock-basic`](tests/004-block-segments/embedblock-basic.yaml)
 
 Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInline` for an `https://` source), even alone on a line. Use a `FileBlock` for a captioned or grouped image.
 
@@ -206,10 +196,6 @@ Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInl
 ```
 
 Every `>` is followed by whitespace or the line end, and consumes one whitespace character: `>quote` and `>>` are text, a bare `>` is an empty quote line. The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `> ` markers; a line at a new depth ends the paragraph above it, so `> a` then `> > b` nests without a blank line. A body of one paragraph is held as inline children.
-
-**Example 4-9** · [`quote-block-depth-jumps`](tests/004-block-segments/quote-block-depth-jumps.yaml)
-
-**Example 4-10** · [`quote-block-lazy-continuation-indented`](tests/004-block-segments/quote-block-lazy-continuation-indented.yaml)
 
 ### Code Block → `CodeBlock`
 
@@ -231,8 +217,6 @@ $$$
 
 Content is literal. Unclosed → warning CDN-0003.
 
-**Example 4-7** · [`math-block-attrs`](tests/004-block-segments/math-block-attrs.yaml)
-
 ### Named Block → `NamedBlock`
 
 ```
@@ -243,10 +227,6 @@ Content is literal. Unclosed → warning CDN-0003.
 
 A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a NamedBlock with `name: ""` and warning CDN-0013. Inside an open block, a `:::` line with a valid name opens a nested block; any other `:::` line closes. Unclosed → warning CDN-0004. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
 
-**Example 4-36** · [`named-block-with-quote`](tests/004-block-segments/named-block-with-quote.yaml)
-
-**Example 11-3** · [`trim-namedblock-edge-blanks`](tests/011-block-structure/trim-namedblock-edge-blanks.yaml)
-
 ### Spoiler Block → `SpoilerBlock`
 
 ```
@@ -256,8 +236,6 @@ A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a Named
 ```
 
 Content is **parsed as blocks**, like `NamedBlock`; code, meta, math, and comment fences are literal. The next `^^^` line closes it: SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
-
-**Example 4-37** · [`spoiler-block-mixed-body`](tests/004-block-segments/spoiler-block-mixed-body.yaml)
 
 ### Tables → `Table`
 
@@ -277,69 +255,15 @@ A table opens with a line starting with `|`; every row starts with `|`. A header
 
 **Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped (CDN-0018).
 
-**Example 4-16** · [`table-simple`](tests/004-block-segments/table-simple.yaml)
-
-**Example 4-14** · [`table-pipe`](tests/004-block-segments/table-pipe.yaml)
-
-**Example 4-15** · [`table-opens-with-header-separator`](tests/004-block-segments/table-opens-with-header-separator.yaml)
-
-
 ### Reference Definition → `RefDefinition`
 
 ```
+A reference link points to a definition in the current document: [see later](^ref-id).
+
 [^ref-id]: inline content
 ```
 
 Must start at line start. When the same `ref` is defined more than once in a document, resolution uses the last definition (**last wins**).
-
----
-
-## Inline Elements
-
-Parsed in source order. An unclosed opener degrades by its class (§12.1.4.1):
-
-- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
-- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the closer is searched through the inline context, so link text, a link target, and an attribute group may wrap onto the next line (`{{key}}` may not). With no closer, the source from the opener to the end of its own line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
-- `::name … ::` (`Mark`) matches by counting, not by first closer. An unclosed opener emits the opener alone as `Text` and parsing continues; `::` without a valid name is literal text.
-
-Degradation to visible literal text is silent — no diagnostics.
-
-**Example 5-3** · [`emphasis-unclosed`](tests/005-inline-segments/emphasis-unclosed.yaml)
-
-**Example 5-32** · [`quote-inline-unclosed`](tests/005-inline-segments/quote-inline-unclosed.yaml)
-
-| Syntax          | Node | Notes                                                                                                                                                                                                 |
-|-----------------|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `__text__`      | `Emphasis` | Single `_` = literal                                                                                                                                                                                  |
-| `**text**`      | `Strong` | Single `*` = literal                                                                                                                                                                                  |
-| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                                                                                                                  |
-| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                                                                                                                     |
-| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                                                                                                            |
-| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                                                                                                                |
-| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
-| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
-| `[text](https://…)`, `[text](mailto:…)` | `Link(external)` | `href` as written. Any URI scheme (a letter, then letters, digits, `+` `-` `.`, then `:`) makes an external link; Cutdown filters none — that is the consumer's call |
-| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); read from the project root and normalized (`guide/./intro` → `/guide/intro`), then the parser appends `.cutdown` unless the path already has it, in any ASCII case. `#id` fragment = any segment with that id there (NFC). Invalid path, `..` above the root included → CDN-0032 |
-| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. `/` splits folders and `.`/`..` are normalized; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
-| `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
-| `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
-| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/`, controls, and bidi controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
-| `[text](@cite)` | `Link(cite)` | `target`; resolved by the consumer's citation logic |
-| `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
-| `[a [b](u) c](v)` | one `Link` | Links do not nest: brackets in link text are counted and a `[…](…)` inside is literal. An image may stand in link text (`[![CI](/ci.svg)](https://ci)`); `alt` holds no link or image |
-| `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
-| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
-| `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
-| `## … <EOL>`    | `LineReflection` on block | Line comment, runs to EOL. Payload stored in `block.reflections[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
-| `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
-
-Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
-
-**Example 5-12** · [`link-wiki-basic`](tests/005-inline-segments/link-wiki-basic.yaml)
-
-**Example 5-37** · [`mark-basic`](tests/005-inline-segments/mark-basic.yaml)
-
-Inside inline context run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (line comment, runs to EOL) + the trailing `#` becomes the first character of the payload text.
 
 ---
 
@@ -372,15 +296,6 @@ code here
 
 Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`. No caption → `caption: []`.
 
-- Blank line between block and `^ ` → no binding; `^ ` becomes a `Paragraph` (CDN-0008).
-- Second `^ ` line (slot already filled) → `Paragraph` (CDN-0008).
-- `{attrs}` on a caption line → literal text (CDN-0009).
-- Escape: `\^` at line start suppresses the opener.
-
-**Example 6-34** · [`caption-table-basic`](tests/006-universal-attributes/caption-table-basic.yaml)
-
-**Example 6-35** · [`caption-quoteblock`](tests/006-universal-attributes/caption-quoteblock.yaml)
-
 ---
 
 ## Attributes
@@ -408,12 +323,6 @@ Always **after** their target: on the same line, or on the next lines with no bl
 `{{` always matched before `{` (longest opener wins).
 
 **Literal-span idiom.** `{` opens an attribute scan to the matching `}` or end of line. Invalid attr grammar or no `}` → the entire slice (braces included) is one verbatim `Text` run, never inline-parsed: `{a **b**}` → `Text("{a **b**}")`. Note: extending the attribute grammar later is a breaking change for text using this idiom.
-
-**Example 6-1** · [`attrs-class-merge-mixed-forms`](tests/006-universal-attributes/attrs-class-merge-mixed-forms.yaml)
-
-**Example 6-6** · [`attrs-scope-chain-list`](tests/006-universal-attributes/attrs-scope-chain-list.yaml)
-
-**Example 6-28** · [`attrs-escape-brace`](tests/006-universal-attributes/attrs-escape-brace.yaml)
 
 ---
 
@@ -445,21 +354,31 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 **Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`. The full table of owners: §7.
 
-**Example 7-3** · [`comment-inline-midline`](tests/007-comments/comment-inline-midline.yaml)
+---
 
-**Example 7-1** · [`single-hash-literal`](tests/007-comments/single-hash-literal.yaml)
+## Document Model
 
-**Example 7-12** · [`comment-block-in-list-item`](tests/007-comments/comment-block-in-list-item.yaml)
+Each Cutdown file produces a `Document` of `Page` nodes, always at least one, even if empty. Pages contain blocks and inline elements. PageBreakers `---` at top level and Meta fences `~~~` produce Page boundaries.
+
+```
+Document
+└── Page[]
+    ├── meta: Meta | null
+    └── children: Block[]
+```
+
+- Every document has ≥ 1 Page.
+- `---` → always closes the current Page (Ghost Page if empty) and opens a new one. Produces no node.
+- `Meta` block → fills the current Page's `meta` slot; if that slot is already set, closes the Page and opens a new one carrying it as `meta`. Content before a `Meta` never creates a Page.
+- Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
 
 ---
 
 ## Input
 
 - Input is decoded Unicode text, from UTF-8 or the encoding its `charset` names (§1.7). Bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§19). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
-- Leading BOM skipped (first content offset = 1). Null bytes → U+FFFD in emitted `Text` values.
 - `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§10), not transforms.
 - Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
-- Every node may carry `loc: { file?, start, end }` — UTF-16 code-unit offsets into the raw file, end-exclusive (§A). Conformance AST comparison ignores `loc`.
 - Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
 - HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
 
@@ -471,64 +390,10 @@ Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006
 
 `\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
 
-**Example 13-1** · [`escape-special-char`](tests/013-escaping/escape-special-char.yaml)
-
-**Example 13-2** · [`escape-backslash`](tests/013-escaping/escape-backslash.yaml)
-
-**Example 13-3** · [`escape-non-special`](tests/013-escaping/escape-non-special.yaml)
-
 Special characters, and where each may be escaped: the register in §B.
-
-### Block-opener escape (line start)
-
-`\` before any one char of a block marker suppresses the opener; line becomes a Paragraph with marker chars as literal text.
-
-| Marker | Escape (any of) | Result |
-|---|---|---|
-| `=` ... `=========` heading | `\=`, `\==`, ... | literal |
-| `- ` list | `\- item` | literal |
-| `{n}. ` ordered list | `\2026. A year`, `2026\. A year` | literal |
-| `> ` quote | `\> text` | literal |
-| `---` PageBreaker | `\---`, `-\--`, `--\-` | literal; no Page boundary occurs |
-| `/path` file / injection | `\/path` | literal |
-| `https://` embed | `\https://…` | literal |
-| `\|` pipe row / header separator | `\\| cell \|` | literal |
-| `^ ` caption | `\^ text` | literal |
-| `` ``` `` code fence | `` \``` ``, etc. | literal (residual backticks still parse inline) |
-| `~~~` meta | `\~~~`, `~\~~`, `~~\~` | literal |
-| `$$$` math | `\$$$`, `$\$$`, `$$\$` | literal |
-| `###` comment block | `\###`, `#\##`, `##\#` | literal |
-| `:::name` named block | `\:::name`, etc. | literal — **no CDN-0013** |
-| `^^^` spoiler | `\^^^`, etc. | literal |
-
-`##` line comment (mid-line) uses `\##` or `#\#` per §7.2.
-
-### Opaque-block closer escape
-
-Narrow per-block escape; all other `\X` inside opaque content is literal.
-
-| Block | Escape | Notes |
-|---|---|---|
-| CodeInline / CodeBlock | `` \` `` | three backticks in row → `` \`\`\` `` |
-| Meta | `\~` | any one of three closer chars |
-| CommentBlock | `\#` | always escapes `#`, no run-length check |
-| MathBlock | — | **no escape** (LaTeX owns `\`); literal `$$$` line unsupported |
-
-NamedBlock and SpoilerBlock are not opaque — use block-opener escape on a content line.
 
 ---
 
-## Precedence (highest first, per §14)
+## Precedence
 
-1. CodeBlock fence \`\`\` — content always literal
-2. MetaBlock fence `~~~` — content always literal
-3. MathBlock `$$$` — content always literal
-4. CommentBlock `###` — content always literal (opaque)
-5. Escape `\x` — an escaped character is never a delimiter or a `##`
-6. Inline code \`\` — content literal except `` \` ``
-7. Inline math `$$` — content literal
-8. Line comment `##` — no closer, runs to EOL; payload stored in block `reflections`; not recognized inside a closed CodeInline or MathInline, or a quoted attribute value; acts as the terminator for open inline constructs, which degrade per their class (§12.1.4.1)
-9. Links `[...](...)` and images `![...](...)` — matched before emphasis runs
-10. Strong `**`, Emphasis `__`, Highlight `~~`, Spoiler `^^`, QuoteInline `""` `''` — source order, greedy
-11. Named mark `::name … ::` — matched after emphasis; name run is lexical
-12. Variable `{{key}}` / Attributes `{...}` — longest opener wins (`{{` before `{`), then source order
+Which construct wins when two compete for the same text (fences, escapes, code, comments, links, spans): §14.
