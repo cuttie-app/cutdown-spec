@@ -121,7 +121,7 @@ content
 
 - **Format word:** the run after `~~~` up to whitespace or end of line. `yaml`, `toml`, and `json` are recognized in any case and stored lowercased. No word, or a run of four or more `~`, gives `"yaml"`. Any other word gives `"yaml"` and warning CDN-0039. Text after the word is dropped with CDN-0016.
 - Content is a raw string passed as-is to the consumer. Lines joined with `\n`; a single trailing `\n` is appended.
-- The parser never reads the body. A consumer that does reads `yaml` as YAML 1.2 core, `json` as I-JSON, and `toml` as TOML 1.0.0 (§20.4 clause 10, §21.8).
+- The parser never reads the body. A consumer that does reads `yaml` as YAML 1.2 core [YAML], `json` as I-JSON [RFC7493], the strict profile of JSON [RFC8259], and `toml` as TOML 1.0.0 [TOML] (§20.4 clause 10, §21.8).
 - Fills the current `Page.meta`; if that slot is already set, opens a new Page first (§16.2). Never appears in `Page.children`.
 - Only valid at Page scope. Inside block containers, the entire span is emitted as a `Paragraph` → warning CDN-0030.
 - Unclosed fence → warning CDN-0002.

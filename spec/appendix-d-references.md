@@ -9,6 +9,7 @@
 - **[UNICODE]** The Unicode Consortium, "The Unicode Standard", latest version, including UAX #15 "Unicode Normalization Forms". <https://www.unicode.org/versions/latest/> Cutdown uses only the White_Space property, NFC, and the explicit directional formatting characters of UAX #9 "Unicode Bidirectional Algorithm", which the Unicode stability policies keep stable across versions.
 - **[RFC3629]** Yergeau, F., "UTF-8, a transformation format of ISO 10646", RFC 3629. <https://www.rfc-editor.org/rfc/rfc3629>
 - **[RFC6838]** Freed, N., Klensin, J., and T. Hansen, "Media Type Specifications and Registration Procedures", BCP 13, RFC 6838. <https://www.rfc-editor.org/rfc/rfc6838>
+- **[RFC8259]** Bray, T., "The JavaScript Object Notation (JSON) Data Interchange Format", RFC 8259. <https://www.rfc-editor.org/rfc/rfc8259>
 - **[RFC7493]** Bray, T., "The I-JSON Message Format", RFC 7493. <https://www.rfc-editor.org/rfc/rfc7493>
 - **[XML]** W3C, "Extensible Markup Language (XML) 1.0 (Fifth Edition)", §6 "Notation". <https://www.w3.org/TR/xml/#sec-notation>
 - **[YAML]** "YAML Ain't Markup Language, version 1.2". <https://yaml.org/spec/1.2.2/>
