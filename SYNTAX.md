@@ -6,30 +6,32 @@ Cutdown is a markup language that produces an AST. There is no HTML output. Pars
 
 ## Inline Elements
 
-| Syntax          | Node | Notes                                                                                                                                                                                                 |
-|-----------------|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `__text__`      | `Emphasis` | Single `_` = literal                                                                                                                                                                                  |
-| `**text**`      | `Strong` | Single `*` = literal                                                                                                                                                                                  |
-| `~~text~~`      | `Highlight` | Single `~` = literal                                                                                                                                                                                  |
-| `^^text^^`      | `Spoiler` | Single `^` = literal. Variants via `{.nsfw}` etc.                                                                                                                                                     |
-| \`\`code\`\`    | `CodeInline` | Single \` = literal. Content literal except `` \` `` → \`.                                                                                                                                            |
-| `$$formula$$`   | `MathInline` | Single `$` = literal. Content literal.                                                                                                                                                                |
-| `""text""`      | `QuoteInline(double)` | Single `"` = literal                                                                                                                                                                                  |
-| `''text''`      | `QuoteInline(single)` | Single `'` = literal                                                                                                                                                                                  |
-| `[text](https://…)`, `[text](mailto:…)` | `Link(external)` | `href` as written. Any URI scheme (a letter, then letters, digits, `+` `-` `.`, then `:`) makes an external link; Cutdown filters none — that is the consumer's call |
-| `[text](path/to/page)` | `Link(page)` | `raw` + `path` (a `PathResourceLocator`, `null` if invalid); read from the project root and normalized (`guide/./intro` → `/guide/intro`), then the parser appends `.cutdown` unless the path already has it, in any ASCII case. `#id` fragment = any segment with that id there (NFC). Invalid path, `..` above the root included → CDN-0032 |
-| `[Page title]()` | `Link(page)` | Wiki link: `path.path` = `/` + the text as a reader sees it + `.cutdown` → `/Page title.cutdown`. `/` splits folders and `.`/`..` are normalized; `?` and `#` are title characters. `raw: ''`. `[]()` → `path: null` + CDN-0032 |
-| `[text](#id)`   | `Link(id)` | `target`; the segment with that id in this document |
-| `[text](^ref)`  | `Link(ref)` | `target`; footnote: the `[^ref]: …` definition. `[](^ref)` = bare footnote marker |
-| `[text](~tag)`  | `Link(tag)` | `target`; levels split by `/`, any Unicode except `/`, controls, and bidi controls; balanced `()` allowed; never normalized, a `.` or `..` level → CDN-0033 |
-| `[text](@cite)` | `Link(cite)` | `target`; resolved by the consumer's citation logic |
-| `[](target)`    | `Link`, `children: []` | any kind; the consumer shows the target itself — Cutdown's `<https://…>`. Empty or bad id/ref/tag/cite target → CDN-0033. `[text][target]` is not a link: literal text + CDN-0036 |
-| `[a [b](u) c](v)` | one `Link` | Links do not nest: brackets in link text are counted and a `[…](…)` inside is literal. An image may stand in link text (`[![CI](/ci.svg)](https://ci)`); `alt` holds no link or image |
-| `![alt](src)`   | `ImageInline` | `raw` + `src` (a `PathResourceLocator`, `null` if invalid). Balanced `()` stay in the path. `![alt](https://…)` → `EmbedImageInline { url }`, never invalid. Invalid (`src: null`, CDN-0032): an empty path (`![x]()`, `![x](#a)`), a leading sigil `#` `^` `~` `@` (reserved), any scheme but `https://`                                                                                                 |
-| `::name <content>::` / `::name::` | `Mark` | Nests (incl. same name), max depth 8. Attrs after closer. `::` without name = literal.                                                                                                                |
-| `{{key}}`       | `Variable` | Key is an `ID_NAME`, no inner spaces. Empty/invalid key → literal text + CDN-0015. In string properties (paths, `href`, `url`, attribute values) `{{key}}` stays verbatim for the consumer (§5.11.1). |
-| `## … <EOL>`    | `LineReflection` on block | Line comment, runs to EOL. Payload stored in `block.reflections[]`. Single `#` = literal. Literal `##` = `\##`.                                                                                        |
-| `\` at line end | `LineBreak` |                                                                                                                                                                                                       |
+Doubled symbols mark up text; a single `*`, `_`, `~`, `^`, `` ` ``, `$`, `"`, or `'` is plain text.
+
+| You type | You get |
+|---|---|
+| `__text__` | **Emphasis**, usually italic. Not bold, unlike Markdown. |
+| `**text**` | **Strong**, usually bold. |
+| `~~text~~` | **Highlight**, marked text. Not strikethrough. |
+| `^^text^^` | **Spoiler**, usually hidden until the reader reveals it. Add `{.nsfw}` or similar for a variant. |
+| \`\`code\`\` | **CodeInline**, kept exactly as typed. Write `` \` `` for a backtick inside. |
+| `$$formula$$` | **MathInline** (LaTeX), kept exactly as typed. |
+| `""text""` | **QuoteInline**, double. The renderer picks the quote marks. |
+| `''text''` | **QuoteInline**, single. |
+| `[text](https://…)`, `[text](mailto:…)` | **External link**. Any scheme works: `https:`, `mailto:`, `tel:`, … |
+| `[text](path/to/page)` | **Link to a page** in this project. `.cutdown` is optional; `#id` at the end points into that page. |
+| `[Page title]()` | **Wiki link**: links to the page named by the text. |
+| `[text](#id)` | **Link within this document**, to the element marked `{#id}`. |
+| `[text](^ref)` | **Reference link** to a `[^ref]: …` definition in this document. `[](^ref)` shows the marker only. |
+| `[text](~tag)` | **Tag link**. Levels split by `/`: `~lang/japanese`. |
+| `[text](@cite)` | **Citation**, resolved by the app. |
+| `[](target)` | **Link with no text**: the app shows the target itself. |
+| `[a [b](u) c](v)` | Links do not nest: the inner one is plain text. An image may be the link text: `[![CI](/ci.svg)](https://ci)`. |
+| `![alt](src)` | **ImageInline** inside text. For a captioned or grouped image, put `/image.png` on its own line. |
+| `::name content::`, `::name::` | **Mark**, a named span your app defines. Marks may nest. |
+| `{{key}}` | **Variable**, filled in by the app. Name: letters, digits, `.` `_` `-`; no spaces. |
+| `## …` | **Comment** to the end of the line, hidden. A single `#` is plain text. |
+| `\` at line end | **Line break**; the next line stays in the same paragraph. |
 
 Parsed in source order. An unclosed opener degrades by its class (§12.1.4.1):
 
@@ -47,49 +49,54 @@ Inside an inline context, a run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`
 
 ## Block Elements
 
-```
-~~~               MetaBlock (Frontmatter) format=yaml
+````
+~~~                 MetaBlock (Frontmatter): page metadata, YAML by default
   ...
 ~~~
 
-== ...            Heading (Section) Level 2
+== ...              Section (Heading), level 2 (one = per level)
 
-- ...             ListItem (unordered)
+- ...               List item
 
-1. ...            ListItem (ordered)
+1. ...              Numbered list item
 
-- [+] ...         TaskItem (checklist) checked=true
+- [+] ...           Task item, done (- [ ] when not done)
 
-/path.png         FileBlock (in a FileGroup)
+/path.png           File; consecutive file lines form a group
 
-/doc.cutdown      InjectBlock (also /folder/)
+/doc.cutdown        Injected document (also /folder/)
 
-https://...       EmbedBlock
+https://...         EmbedBlock: video, post, map, …
 
-> ...             QuoteBlock
+> ...               QuoteBlock
 
-$$$               MathBlock
+```js               CodeBlock
+  ...
+```
+
+$$$                 MathBlock
   ...
 $$$
 
-:::div            NamedBlock name=div
+:::div              NamedBlock: a container your app defines
   ...
 :::
 
-^^^               SpoilerBlock
+^^^                 SpoilerBlock
   ...
 ^^^
 
-| AA | BB |       Table
-^ ...             Caption (no node)
+| AA | BB |         Table
+^ ...               Caption for the block above
 
-[^...]: ...       RefDefinition
+[^...]: ...         RefDefinition
 
-###               CommentBlock → Page.reflections (hidden by default)
+---                 PageBreak
+
+###                 CommentBlock, hidden
   ...
 ###
-
-```
+````
 
 Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
 
