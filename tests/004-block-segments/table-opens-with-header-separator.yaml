@@ -11,5 +11,19 @@ ast:
   - _type: Table
     rows:
       - _type: Header
-        children: []
-    columns: []
+        children:
+          - _type: Cell
+            row: 0
+            column: 0
+            children: []
+          - _type: Cell
+            row: 0
+            column: 1
+            children: []
+
+
+    columns:
+      - _type: Column
+        align: left
+      - _type: Column
+        align: start
