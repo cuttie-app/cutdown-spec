@@ -39,17 +39,15 @@ Markup is never an error. An unfinished `**` or `[` stays as plain text, exactly
 | `## …` | **Comment** to the end of the line, hidden. A single `#` is plain text. |
 | `\` at line end | **Line break**; the next line stays in the same paragraph. |
 
-Parsed in source order. An unclosed opener degrades by its class (§12.1.4.1):
+**Nesting.** Different kinds nest: `**__text__**`. The same kind does not: `**a **b** c**` closes at the second `**`. `Mark` is the exception and may nest, even with the same name.
 
-- **Symmetric doubled delimiters** (`**` `__` `~~` `^^` `` ` `` `$$` `""` `''`): the opener alone becomes `Text`; parsing continues — constructs after it survive. `**a __b__ c` → `Text("**a ")` + `Emphasis(b)` + `Text(" c")`.
-- **Bracket-like openers** (`[`, `![`, `{{`, `{`): the closer is searched through the inline context, so link text, a link target, and an attribute group may wrap onto the next line (`{{key}}` may not). With no closer, the source from the opener to the end of its own line (or the `##` cut) becomes one verbatim `Text` run — closed constructs inside the dead slice are lost. `[a __b__ c` → `Text("[a __b__ c")`.
-- `::name … ::` (`Mark`) matches by counting, not by first closer. An unclosed opener emits the opener alone as `Text` and parsing continues; `::` without a valid name is literal text.
+**Unfinished markup** stays plain text, with no warning:
 
-Degradation to visible literal text is silent — no diagnostics.
+- An unclosed doubled symbol stays as typed, and the rest of the line still works: `**a __b__ c` → `**a ` + `Emphasis(b)` + ` c`. The same holds for an unclosed `::name`.
+- An unclosed `[`, `![`, `{{`, or `{` keeps the rest of its line as typed, markup included: `[a __b__ c` stays exactly that.
+- Link text, a link target, and a `{…}` group may continue on the next line; `{{key}}` may not.
 
-Cross-type nesting allowed (e.g. `**__text__**`). Same-type nesting is not allowed for the doubled-delimiter constructs — they close greedily at the first closer. `Mark` is the exception: it matches by counting and nests, including same-name (§5.10).
-
-Inside an inline context, a run of 3 (`***`, `___`, `~~~`, `^^^`, ` ``` `, `$$$`, `"""`, `'''`) = 2-delimiter opener + 1 literal. For `###` at inline position: `##` (line comment, runs to EOL) + the trailing `#` becomes the first character of the payload text.
+**Three in a row** inside a line (`***`, `___`, `~~~`, …) is the doubled opener plus one plain symbol. `###` mid-line starts a `##` comment whose text begins with `#`.
 
 ---
 
