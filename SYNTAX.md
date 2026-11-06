@@ -12,27 +12,6 @@ Markup is never an error. An unfinished `**` or `[` stays as plain text, exactly
 
 ---
 
-## Coming from Markdown
-
-These look familiar but mean something else. None is an error, and most give no warning.
-
-| You type | Markdown gives | Cutdown gives |
-|---|---|---|
-| `# Title` | Heading | Plain text. Headings are `= Title`. |
-| `__text__` | Strong | `Emphasis`. Strong is `**text**`. |
-| `*text*`, `_text_` | Emphasis | Plain text. Single symbols never mark up. |
-| `~~text~~` | Strikethrough | `Highlight`. |
-| `---` | Horizontal rule | A new page, at the top level. |
-| `* item`, `+ item` | List item | Plain text. Bullets are `- item`. |
-| `one` / `two` on two lines | `one two` | `onetwo`. Start the second line with a space. |
-| Four-space indent | Code block | Not code. Use a ```` ``` ```` fence. |
-| `<b>text</b>` | HTML | Plain text. |
-| `[text][id]` | Reference link | Plain text. Write `[text](^id)`. |
-| `[[Page name]]` | Wiki link (Obsidian, wikis) | Plain text. Write `[Page name]()`, or `[](Page name)` to let the app choose the wording. |
-| `[[Page name\|Custom wording]]` | Wiki link with its own wording | Plain text. Write `[Custom wording](Page name)`. |
-
----
-
 ## Inline Elements
 
 | You type | You get |
@@ -62,7 +41,7 @@ These look familiar but mean something else. None is an error, and most give no 
 
 **Nesting.** Different kinds nest: `**__text__**`. The same kind does not: `**a **b** c**` closes at the second `**`. `Mark` is the exception and may nest, even with the same name.
 
-**Unfinished markup** stays plain text, with no warning:
+**Unfinished markup** within paragraph stays plain text, with no warning:
 
 - An unclosed doubled symbol stays as typed, and the rest of the line still works: `**a __b__ c` → `**a ` + `Emphasis(b)` + ` c`. The same holds for an unclosed `::name`.
 - An unclosed `[`, `![`, `{{`, or `{` keeps the rest of its line as typed, markup included: `[a __b__ c` stays exactly that.
@@ -402,3 +381,24 @@ Put `\` before a symbol to type it as text: `\**` is two asterisks. At the start
 ## Precedence
 
 Which construct wins when two compete for the same text (fences, escapes, code, comments, links, spans): [§14](spec/014-precedence-rules.md).
+
+---
+
+## Coming from Markdown
+
+These look familiar but mean something else. None is an error, and most give no warning.
+
+| You type | Markdown gives | Cutdown gives |
+|---|---|---|
+| `# Title` | Heading | Plain text. Headings are `= Title`. |
+| `__text__` | Strong | `Emphasis`. Strong is `**text**`. |
+| `*text*`, `_text_` | Emphasis | Plain text. Single symbols never mark up. |
+| `~~text~~` | Strikethrough | `Highlight`. |
+| `---` | Horizontal rule | A new page, at the top level. |
+| `* item`, `+ item` | List item | Plain text. Bullets are `- item`. |
+| `one` / `two` on two lines | `one two` | `onetwo`. Start the second line with a space. |
+| Four-space indent | Code block | Not code. Use a ```` ``` ```` fence. |
+| `<b>text</b>` | HTML | Plain text. |
+| `[text][id]` | Reference link | Plain text. Write `[text](^id)`. |
+| `[[Page name]]` | Wiki link (Obsidian, wikis) | Plain text. Write `[Page name]()`, or `[](Page name)` to let the app choose the wording. |
+| `[[Page name\|Custom wording]]` | Wiki link with its own wording | Plain text. Write `[Custom wording](Page name)`. |
