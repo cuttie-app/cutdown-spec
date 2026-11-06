@@ -102,13 +102,13 @@ $$$
 ###
 ````
 
-Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
+Blocks are separated by **blank lines**. Nothing interrupts a paragraph: a heading, list marker, or fence on the next line is still paragraph text. Leave a blank line before every new block.
 
-**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with a warning, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§11.4.2).
+**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): three or more symbols at the start of a line open a block; the next line starting with three or more of the same symbol closes it. On the opening line, only a language, format, or name word, `{attrs}`, and a `## comment` are kept; anything else is dropped with a warning.
 
 ### Paragraph → `Paragraph`
 
-Any non-blank lines not matching another block. A soft break (single newline) is folded to zero — lines concatenate directly, no character emitted. A word boundary is written at the start of the next line: whitespace beyond the base column becomes one space, so `one` then ` two` reads `one two`. `\` at line end → `LineBreak`. Trailing and repeated whitespace: §15.
+Any lines that are not another block. Lines join with nothing between them: start the next line with a space to keep a word gap, so `one` then ` two` reads `one two`. End a line with `\` for a line break inside the paragraph.
 
 ```
 Modern computers are remarkably powerful, but certain classes of problems remain difficult. For example, simulating molecular interactions or solving large optimization tasks may require enormous computational resources.
@@ -124,9 +124,9 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with a warning.
+The `=` run needs a space after it: `=Title` is text. A heading continues onto the next lines until a blank line, so `= Title` followed by `more` is one heading, `Titlemore`. More than nine `=` count as level 9, with a warning.
 
-Sections are not parsed — they are derived by a fold (§16.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
+A heading opens a `Section` that runs to the next heading of the same or a higher level, or to the end of its container (a named block, quote, or list item). Levels may be skipped. Attributes go at the end of the heading line:
 
 ```
 = Quantum Computing                      {id="quantum-intro" category="science"}
@@ -141,7 +141,7 @@ title: The Surprising Reason a Classical Computer Beat a Quantum Computer at Its
 ~~~
 ```
 
-Formats: `yaml` (default), `toml`, `json`, any case. Any other word reads as `yaml`, with a warning. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed: runs to the end of the document, with a warning.
+Page metadata, kept as raw text for the app. YAML by default; write `~~~toml` or `~~~json` for the others. Top level only, never inside another block. A second Meta block on the same page starts a new page. Unclosed: runs to the end of the document, with a warning.
 
 ### PageBreaker → new Page (no node)
 
@@ -149,23 +149,23 @@ Formats: `yaml` (default), `toml`, `json`, any case. Any other word reads as `ya
 ---
 ```
 
-A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a warning. Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, with a warning). Cutdown defines no thematic-break (horizontal-rule) element.
+`---` at the start of a top-level line starts a new page. Anything after it on the line is dropped with a warning. Inside a list, quote, or other container, `---` is plain text. Cutdown has no horizontal rule.
 
 ### Lists → `List` / `ListItem` / `TaskItem`
 
 ```
-- unordered item          ← (marker: '- ')
-  - nested (2-space indent per level)
+- unordered item
+  - nested item (indent 2 spaces per level)
 
-1. ordered item           ← (marker: '{n}. ')
+1. ordered item
 2. second item
 
-- [ ] task item           ← (marker: '- [{x / X / + / space}] ')
-  - [x] nest task item    ← ({ checked: true})
-  - [+] rtl-safe task     ← ({ checked: true}, bidi-neutral marker)
+- [ ] task item, not done
+  - [x] done                ← also [X]
+  - [+] done                ← reads the same in right-to-left text
 ```
 
-Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digits (six or more → no list). A marker is followed by whitespace or the line end: `-5 °C` and `3.14` are text, and `-` alone is an empty item. The first number sets `start` (`0` → `1`); later numbers are ignored. Nesting is **stack-based and column-relative** (§11.5): any positive indent delta opens a child; 2 spaces per level is the canonical style. Blank line + col-0 content ends the list; blank line + indented content is absorbed → `loose: true`. An item whose body is one paragraph holds inline children; any other body holds blocks, never a mix.
+Bullets use `-` only; numbered items use a number of up to five digits and `.`. The marker needs a space after it: `-5 °C` and `3.14` stay text. The first number sets where the numbering starts; later numbers are ignored. Indent to nest. A blank line followed by unindented text ends the list; a blank line followed by indented text continues the item.
 
 ### Files → `FileBlock`, `FileGroup`
 
@@ -175,7 +175,7 @@ Only `-` for unordered; only `{number}.` delimiter for ordered, with 1–5 digit
 ^ Caption for a.png
 ```
 
-Line starting with `/`. The whole line, spaces included, is the path (minus a trailing ` {attrs}`), kept as `raw` and parsed into `src`, a `PathResourceLocator` with `path`, `query`, and `fragment`; `src` is `null` when the path is invalid. Consecutive file lines form one `FileGroup`, like list items form a `List`; a blank line splits it. A `^ ` caption binds to the file above and does not split the group. Every path is read from the project root and normalized; `raw` keeps what was written. Normalization and validity: §8.
+A line starting with `/` is a file, read from the project root. The whole line is the path, spaces included; `{attrs}` may follow at the end. Consecutive file lines form one `FileGroup`, as list items form a `List`; a blank line splits it. A `^ ` caption under a file belongs to that file and does not split the group.
 
 ### Injection → `InjectBlock`
 
@@ -185,7 +185,7 @@ Line starting with `/`. The whole line, spaces included, is the path (minus a tr
 /chapters/
 ```
 
-A file line whose normalized `path` has the extension `.cutdown`, in any ASCII case, or ends with `/` (folder). The parser emits `children: []`; the consumer fills it: `#id` picks one Section, `?k=v` binds `{{k}}`, a folder injects its `.cutdown` files in code-point order. Not captionable. What a consumer does: §9.
+A file line ending in `.cutdown`, or a folder ending in `/`, inserts other documents. The app does the inserting: `#pricing` picks one section, `?name=Ann` fills `{{name}}` inside the inserted document, and a folder inserts its `.cutdown` files sorted by name. No caption.
 
 ### Embed → `EmbedBlock`
 
@@ -194,9 +194,9 @@ https://youtu.be/dQw4w9WgXcQ {attrs}
 ^ Caption
 ```
 
-Line starting with literal `https://`. `url` is raw; the consumer decides what to show (e.g. oEmbed). Captionable; never in a `FileGroup`.
+A line starting with `https://` embeds that address; the app decides what to show. Takes a caption; never part of a `FileGroup`.
 
-Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInline` for an `https://` source), even alone on a line. Use a `FileBlock` for a captioned or grouped image.
+Images have no block form: `![alt](src)` alone on a line is still an `ImageInline`. For a captioned or grouped image, use a file line: `/image.png`.
 
 ### Quote Block → `QuoteBlock`
 
@@ -206,7 +206,7 @@ Images have no block form: `![alt](src)` is always `ImageInline` (`EmbedImageInl
 > > nested quote
 ```
 
-Every `>` is followed by whitespace or the line end, and consumes one whitespace character: `>quote` and `>>` are text, a bare `>` is an empty quote line. The `>` prefix is required on the first line only; a following line without `>` continues the quote (lazy continuation), which ends at a blank line or the end of the enclosing container. Nesting by counting `> ` markers; a line at a new depth ends the paragraph above it, so `> a` then `> > b` nests without a blank line. A body of one paragraph is held as inline children.
+Each `>` needs a space after it: `>quote` is text. Only the first line needs the `>`; the lines after it continue the quote until a blank line. Nest with `> >`; a change of depth needs no blank line.
 
 ### Code Block → `CodeBlock`
 
@@ -216,7 +216,7 @@ literal content — no inline parsing
 ```
 ````
 
-Language defaults to `"text"`; a word that is not an `ID_NAME` (```` ```c++ ````) reads as `"text"`, with a warning. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed: runs to the end of the document, with a warning.
+The language word is optional; without one it is `text`. Content is kept exactly as typed. To write a line starting with backticks inside, escape it: `` \``` ``. Unclosed: runs to the end of the document, with a warning.
 
 ### Math Block → `MathBlock`
 
@@ -226,7 +226,7 @@ $$$ {attrs}
 $$$
 ```
 
-Content is literal. Unclosed: runs to the end of the document, with a warning.
+LaTeX, kept exactly as typed. Unclosed: runs to the end of the document, with a warning.
 
 ### Named Block → `NamedBlock`
 
@@ -236,7 +236,7 @@ Content is literal. Unclosed: runs to the end of the document, with a warning.
 :::
 ```
 
-A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a NamedBlock with `name: ""` and a warning. Inside an open block, a `:::` line with a valid name opens a nested block; any other `:::` line closes. Unclosed: runs to the end of the document, with a warning. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
+A container your app defines by name. Names use letters, digits, `.`, `_`, and `-`; a missing or invalid name still opens the block, with a warning. Inside, `:::name` (the name right after the colons) opens a nested block; any other `:::` line closes. Content may be indented: the first content line's indent is removed from every line. Unclosed: runs to the end of the document, with a warning.
 
 ### Spoiler Block → `SpoilerBlock`
 
@@ -246,25 +246,19 @@ A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a Named
 ^^^
 ```
 
-Content is **parsed as blocks**, like `NamedBlock`; code, meta, math, and comment fences are literal. The next `^^^` line closes it: SpoilerBlocks do **not** nest. Unclosed: runs to the end of the document or of its parent container, with a warning. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+Holds any blocks, like a `NamedBlock`. Spoilers do **not** nest: the next `^^^` line closes. Variants via attributes: `{.nsfw}`, `{.redacted}`, and so on. Unclosed: runs to the end of the document or of its parent container, with a warning.
 
 ### Tables → `Table`
 
-A table opens with a line starting with `|`; every row starts with `|`. A header separator row sets alignments: each cell needs at least three symbols (marks included), and `--,` / `--.` add comma and decimal alignment.
-
 ```
-| Cell A | Cell B |          ← no header, all rows _type: "Row"
+| Cell A | Cell B |          ← a table with no header
 
-| Name   | Score |           ← table with header
-|:-------|------:|           ← header separator; also sets alignment
-| Alice  |    42 |           ← _type: "Row"
+| Name   | Score |           ← header row
+|:-------|------:|           ← separator: marks the header, sets alignment
+| Alice  |    42 |           ← body row
 ```
 
-**Header separator:** A row whose every cell is an alignment pattern (≥ 3 symbols, marks included; the minimum keeps `| - |` and `| -- |` placeholder rows as content) marks the preceding rows as `_type: "Header"`. Alignment taken from the first header separator only.
-
-**Alignment patterns:** `:--` left, `--:` right, `:-:` center, `--,` comma, `--.` decimal, `---` start (default — follows text direction; not the same as left). Extra `-` are allowed.
-
-**Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped with a warning.
+Every row starts with `|`; the closing `|` is optional. Cells hold inline markup. A separator row, each cell at least three symbols, turns the rows above it into the header. Alignment: `:--` left, `--:` right, `:-:` center, `--,` on the comma, `--.` on the decimal point, `---` default, following the text direction. The first row sets the column count: shorter rows are padded, extra cells are dropped with a warning.
 
 ### Reference Definition → `RefDefinition`
 
@@ -274,7 +268,7 @@ A reference link points to a definition in the current document: [see later](^re
 [^ref-id]: inline content
 ```
 
-Must start at line start. When the same `ref` is defined more than once in a document, resolution uses the last definition (**last wins**).
+A line starting with `[^id]:` defines what `[text](^id)` points to. If the same id is defined twice, the last one wins.
 
 ---
 
