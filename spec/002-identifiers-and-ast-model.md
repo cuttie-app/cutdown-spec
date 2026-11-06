@@ -38,7 +38,7 @@ A **segment** is any node in the Cutdown AST — Block or Inline. This term is u
 
 Every segment names its kind in the `_type` property. Property names that begin with `_` (underscore) are reserved for structural properties defined by this specification; content properties (`src`, `name`, `children`, `attributes`, …) never begin with `_`. The prefix keeps the discriminator from colliding with a property of the same name in consumer data.
 
-### 2.3 Block Type
+### 2.3 Block Segment Type
 
 A **Block** segment is any node that occupies a full line-level slot in the document.
 
@@ -61,7 +61,7 @@ Block =
 
 Container blocks carry a `children` array — `Block[]` for block containers (`Section`, `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `InjectBlock`), `Inline[]` for blocks whose content is inline (`Paragraph`, `RefDefinition`), and `FileBlock[]` for `FileGroup`. A `FileBlock` is not a member of `Block`: it only ever appears inside a `FileGroup`. Leaf blocks carry no children. Most blocks carry `attributes: Attribute[]`.
 
-### 2.4 Inline Type
+### 2.4 Inline Segment Type
 
 An **Inline** segment is any node parsed within inline content.
 
