@@ -1,6 +1,14 @@
 # Cutdown Syntax — Quick Reference
 
-Cutdown is a markup language that produces an AST. There is no HTML output. Parsing a complete input snapshot is single-pass with bounded lookahead (≤ one line at block level, ≤ end of line at inline level); committed text is never re-lexed or re-inline-parsed (§12). A streaming implementation may retain an unresolved suffix, but every decoded Unicode-scalar prefix follows the same ordinary Cutdown rules (§19).
+Cutdown is a markup language for structured text. A parser turns a document into a tree of named elements, the AST (`Paragraph`, `Section`, `Strong`, …), and your app decides how they look. Every rule in full: [the specification](spec/TOC.md).
+
+Three rules cover most writing:
+
+1. A blank line separates paragraphs.
+2. Doubled symbols mark up text (`**bold**`); a single symbol is plain text.
+3. A line break inside a paragraph adds nothing: `よう` and `こそ` on two lines read `ようこそ`. To keep a space between words, start the next line with a space.
+
+Markup is never an error. An unfinished `**` or `[` stays as plain text, exactly as typed.
 
 ---
 
@@ -100,7 +108,7 @@ $$$
 
 Blocks are separated by **blank lines**. Nothing interrupts a paragraph — once a run is a `Paragraph`, every later line in it is paragraph content, fence openers included (§4.1). A change in `>` depth is not an opener: it ends the paragraph and moves to the quote at its depth.
 
-**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with CDN-0016, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§11.4.2).
+**Fences** (`` ``` `` `~~~` `$$$` `:::` `^^^` `###`): a line beginning with three or more fence symbols opens the fence; the next line beginning with three or more of the same symbol closes it. Three symbols are consumed; the rest of the line is dropped with a warning, except what the construct keeps — a language, format, or name word, `{attrs}`, a `## comment` (§11.4.2).
 
 ### Paragraph → `Paragraph`
 
@@ -120,7 +128,7 @@ Researchers once believed that some shortcuts would dramatically reduce computat
 === Level 3        (up to =========  level 9)
 ```
 
-The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with warning CDN-0012.
+The `=` run is followed by whitespace or the line end (`=Title` is text; `=` alone is an empty heading). Like every block, a heading cannot interrupt a paragraph — it must begin a block candidate (§4.1). Inline content allowed. The heading continues over the following lines as a paragraph does, so `= Title` followed by `more` is one heading `Titlemore`; it ends at a blank line. Ten or more `=` give level 9, the surplus `=` beginning the heading text, with a warning.
 
 Sections are not parsed — they are derived by a fold (§16.1): a Section spans from its heading to the next heading of level ≤ its own within the same container, or the container's end. Section scope never crosses a container boundary (NamedBlock, QuoteBlock, ListItem). Skipped levels (`=` then `===`) nest under the nearest shallower open Section; the written level is preserved, no intermediate Sections are synthesized, no diagnostic.
 
@@ -137,7 +145,7 @@ title: The Surprising Reason a Classical Computer Beat a Quantum Computer at Its
 ~~~
 ```
 
-Formats: `yaml` (default), `toml`, `json`, any case. Any other word → `yaml` + warning CDN-0039. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed → warning CDN-0002.
+Formats: `yaml` (default), `toml`, `json`, any case. Any other word reads as `yaml`, with a warning. Content is raw string. Fills `Page.meta`. No attributes. Used only on top level. Unclosed: runs to the end of the document, with a warning.
 
 ### PageBreaker → new Page (no node)
 
@@ -145,7 +153,7 @@ Formats: `yaml` (default), `toml`, `json`, any case. Any other word → `yaml` +
 ---
 ```
 
-A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a diagnostic (CDN-0016). Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, CDN-0017). Cutdown defines no thematic-break (horizontal-rule) element.
+A top-level line beginning exactly `---`. Closes the current Page (Ghost Page if empty), opens a new one, and produces no AST node. Everything after the leading `---` — surplus hyphens, `{attrs}`, text — is dropped with a warning. Inside block containers a blank-line-surrounded `---` is a literal paragraph (`Paragraph(Text("---"))`, with a warning). Cutdown defines no thematic-break (horizontal-rule) element.
 
 ### Lists → `List` / `ListItem` / `TaskItem`
 
@@ -212,7 +220,7 @@ literal content — no inline parsing
 ```
 ````
 
-Language defaults to `"text"`; a word that is not an `ID_NAME` (```` ```c++ ````) → `"text"` + warning CDN-0038. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed → warning CDN-0001.
+Language defaults to `"text"`; a word that is not an `ID_NAME` (```` ```c++ ````) reads as `"text"`, with a warning. No nesting: write a body line that begins with backticks as `` \``` ``. Unclosed: runs to the end of the document, with a warning.
 
 ### Math Block → `MathBlock`
 
@@ -222,7 +230,7 @@ $$$ {attrs}
 $$$
 ```
 
-Content is literal. Unclosed → warning CDN-0003.
+Content is literal. Unclosed: runs to the end of the document, with a warning.
 
 ### Named Block → `NamedBlock`
 
@@ -232,7 +240,7 @@ Content is literal. Unclosed → warning CDN-0003.
 :::
 ```
 
-A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a NamedBlock with `name: ""` and warning CDN-0013. Inside an open block, a `:::` line with a valid name opens a nested block; any other `:::` line closes. Unclosed → warning CDN-0004. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
+A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a NamedBlock with `name: ""` and a warning. Inside an open block, a `:::` line with a valid name opens a nested block; any other `:::` line closes. Unclosed: runs to the end of the document, with a warning. First non-blank content line sets the base padding; up to that many leading spaces are removed from every line (tab = 1 space).
 
 ### Spoiler Block → `SpoilerBlock`
 
@@ -242,7 +250,7 @@ A `:::` opener with no valid name (`:::`, `::: x`, `:::c++`) still opens a Named
 ^^^
 ```
 
-Content is **parsed as blocks**, like `NamedBlock`; code, meta, math, and comment fences are literal. The next `^^^` line closes it: SpoilerBlocks do **not** nest. Unclosed → warning CDN-0005. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
+Content is **parsed as blocks**, like `NamedBlock`; code, meta, math, and comment fences are literal. The next `^^^` line closes it: SpoilerBlocks do **not** nest. Unclosed: runs to the end of the document or of its parent container, with a warning. Base padding as for `NamedBlock`. Semantic variants via attributes (`{.nsfw}`, `{.redacted}`, etc.).
 
 ### Tables → `Table`
 
@@ -260,7 +268,7 @@ A table opens with a line starting with `|`; every row starts with `|`. A header
 
 **Alignment patterns:** `:--` left, `--:` right, `:-:` center, `--,` comma, `--.` decimal, `---` start (default — follows text direction; not the same as left). Extra `-` are allowed.
 
-**Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped (CDN-0018).
+**Cells:** Each `|` line is one row. Cell content is `Inline[]`. Leading `|` required; trailing `|` optional. Column count is fixed by the first content row — later rows are padded (no diagnostic) or have surplus cells dropped with a warning.
 
 ### Reference Definition → `RefDefinition`
 
@@ -311,13 +319,13 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 {#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept with CDN-0037. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped, max 32 → CDN-0034). `key={…}` / `key=[…]` holds strict one-line I-JSON, parsed (≤4096 chars, depth ≤8; no repeated names, no lone surrogates, integers within ±(2⁵³−1)); invalid JSON → the whole `{…}` is literal text. At most 32 entries per group (CDN-0041).
+An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept, with a warning. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped; past 32, the rest are dropped with a warning). `key={…}` / `key=[…]` holds strict one-line I-JSON, parsed (≤4096 chars, depth ≤8; no repeated names, no lone surrogates, integers within ±(2⁵³−1)); invalid JSON → the whole `{…}` is literal text. At most 32 entries per group; the rest are dropped with a warning.
 
 Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
 
 **Block opening lines (headings, named blocks):** last `{...}` on the line → claimed by the block. Earlier `{...}` attach to preceding inline elements. Empty `{}` as last token = no attrs on block.
 
-**Scope-chain (Rule B):** trailing `{...}` sequence at end of inline context distributed right-to-left through the node hierarchy. Last `{}` → outermost container; preceding `{}` → next inner level. Excess front `{}` silently dropped (warning CDN-0011).
+**Scope-chain (Rule B):** trailing `{...}` sequence at end of inline context distributed right-to-left through the node hierarchy. Last `{}` → outermost container; preceding `{}` → next inner level. Excess front `{}` are dropped with a warning.
 
 ```
 - item {.a}{.b}   →  List({.b}, ListItem({.a}, Text("item")))
@@ -341,7 +349,7 @@ Cutdown has two comment constructs. Both are hidden by renderers by default.
 |------|--------|-------|
 | `#` | literal text | Single `#` does nothing — written exactly as typed. |
 | `## … <EOL>` | `LineReflection` on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflections[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `SegmentReflection` on the Page | Block comment (CommentBlock), no segment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped (CDN-0016), so `### note` opens one. Opaque content (no parsing); `text` has no trailing newline. `before` is the child-index path of the block it stands before. |
+| `### … ###` | `SegmentReflection` on the Page | Block comment (CommentBlock), no segment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped, so `### note` opens one. Opaque content (no parsing); `text` has no trailing newline. `before` is the child-index path of the block it stands before. |
 
 ```
 # literal hash, not a comment
@@ -353,7 +361,7 @@ foo bar ## tail       → Text("foo bar") + reflections entry on block
 ###
 ```
 
-Literal `##` in normal text: `\##` or `#\#`. Unclosed `###` → warning CDN-0006. A `## comment` line after a blank line, after a CommentBlock, or at the start of a scope is an orphan → a `SegmentReflection` on the Page, like a CommentBlock.
+Literal `##` in normal text: `\##` or `#\#`. An unclosed `###` hides everything to the end of the document, with a warning. A `## comment` line after a blank line, after a CommentBlock, or at the start of a scope is an orphan → a `SegmentReflection` on the Page, like a CommentBlock.
 
 **Opaque to other delimiters.** `##` consumes to the line end, swallowing any `]`, `}`, `|`, or other closer in its path: `[text ## here](url)` alone → `Text("[text")`, reflections entry `"here](url)"`. A comment takes no attribute slot. Details: §7.2.
 
