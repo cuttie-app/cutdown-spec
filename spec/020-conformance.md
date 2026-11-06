@@ -23,7 +23,7 @@ One program may belong to several classes; it conforms in each class separately.
 A conforming parser:
 
 1. **Totality.** MUST accept every sequence of Unicode scalar values as a Cutdown document. It MUST NOT reject input, fail, or stop early; every input yields a `Document`.
-2. **Output.** MUST produce exactly the AST that §1–§16 define and exactly the diagnostics, by code and level, that §17 defines for that input — no others. Node kinds and property names are those of §A. Source locations remain optional (§A).
+2. **Output.** MUST produce exactly the AST that §1–§16 define and exactly the diagnostics, by code and level, that §17 defines for that input — no others. Node kinds and property names are those of the interfaces in §3–§8, indexed in §A. Source locations remain optional (§A).
 3. **Determinism and purity.** MUST produce the same AST and diagnostics every time it parses the same input. It MUST NOT perform I/O: it resolves no path, link, injection, or variable, and every `InjectBlock` it emits has `children: []`.
 4. **Streaming.** MUST satisfy the streaming conformance profile (§19).
 5. **Corpus.** MUST pass every **parser fixture** of the conformance corpus ([`tests/`](../tests/)) — every fixture outside `tests/018-canonical-form/` — for the language version it implements. The fixtures are normative examples. A disagreement among this text, its grammar blocks (§1.2), and a fixture is a defect in the specification, not a choice left to the parser.

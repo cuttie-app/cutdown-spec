@@ -23,16 +23,16 @@ The `##` opener (§7.2) is special: it has no closer and terminates at end-of-li
 
 ### 5.1 Text
 
-**Syntax:** Any sequence of characters not matched by another inline rule.
-
-**AST type:**
-
 ```typescript
 interface Text {
   _type: "Text"
   value: string
 }
 ```
+
+Plain characters: everything no other inline rule claims.
+
+**Syntax:** Any sequence of characters not matched by another inline rule.
 
 Consecutive text tokens MUST be merged into a single `Text` segment by the parser.
 
@@ -42,10 +42,6 @@ Text segments are **literal** — no inline parsing, no escape processing. A `\`
 
 ### 5.2 Emphasis
 
-**Syntax:** `__inline content__`
-
-**AST type:**
-
 ```typescript
 interface Emphasis {
   _type: "Emphasis"
@@ -53,6 +49,10 @@ interface Emphasis {
   attributes: Attribute[]
 }
 ```
+
+A span of emphasized text.
+
+**Syntax:** `__inline content__`
 
 - `__` opener and closer. A single `_` (underscore) is always literal text.
 - Run of 3: `___` = `__` (opener/closer) + `_` (literal).
@@ -73,12 +73,6 @@ interface Emphasis {
 
 ### 5.3 Strong
 
-**Syntax:** `**inline content**`
-
-Strong emphasis. `**` follows the dominant Markdown-family convention ([COMMONMARK], GFM, Pandoc), where `**` marks strong emphasis.
-
-**AST type:**
-
 ```typescript
 interface Strong {
   _type: "Strong"
@@ -86,6 +80,12 @@ interface Strong {
   attributes: Attribute[]
 }
 ```
+
+A span of strongly emphasized text.
+
+**Syntax:** `**inline content**`
+
+`**` follows the dominant Markdown-family convention ([COMMONMARK], GFM, Pandoc), where `**` marks strong emphasis.
 
 - `**` opener and closer. A single `*` (asterisk) is always literal text.
 - Same rules as `Emphasis`: run of 3, greedy, unclosed = literal, no same-type nesting.
@@ -95,12 +95,6 @@ interface Strong {
 
 ### 5.4 Highlight
 
-**Syntax:** `~~inline content~~`
-
-Marks a span of text as highlighted — visually emphasized as important, like a marker pen. Highlight carries no deletion semantics; Cutdown defines no strikethrough element.
-
-**AST type:**
-
 ```typescript
 interface Highlight {
   _type: "Highlight"
@@ -109,6 +103,12 @@ interface Highlight {
 }
 ```
 
+A span of text marked as highlighted, like a marker pen.
+
+**Syntax:** `~~inline content~~`
+
+Highlight carries no deletion semantics; Cutdown defines no strikethrough element.
+
 - `~~` opener and closer. A single `~` (tilde) is always literal text (not a meta fence in inline context).
 - Same rules as `Emphasis`: greedy, unclosed = literal, no same-type nesting.
 - Cross-nesting with `Emphasis` and `Strong` allowed.
@@ -116,26 +116,6 @@ interface Highlight {
 ---
 
 ### 5.5 Link
-
-**Syntax:** `[text](target)`. The target selects the link kind.
-
-**Example 5-5** · [`link-external`](../tests/005-inline-segments/link-external.yaml)
-
-**Example 5-6** · [`link-scheme-any-is-external`](../tests/005-inline-segments/link-scheme-any-is-external.yaml)
-
-**Example 5-7** · [`link-page`](../tests/005-inline-segments/link-page.yaml)
-
-**Example 5-8** · [`link-id`](../tests/005-inline-segments/link-id.yaml)
-
-**Example 5-9** · [`link-ref`](../tests/005-inline-segments/link-ref.yaml)
-
-**Example 5-10** · [`link-tag`](../tests/005-inline-segments/link-tag.yaml)
-
-**Example 5-11** · [`link-cite`](../tests/005-inline-segments/link-cite.yaml)
-
-**Example 5-12** · [`link-wiki-basic`](../tests/005-inline-segments/link-wiki-basic.yaml)
-
-**AST type:**
 
 ```typescript
 interface Link {
@@ -149,6 +129,10 @@ interface Link {
   attributes: Attribute[]
 }
 ```
+
+A reference from text to a target: an external URL, a page, an id, a ref, a tag, or a citation.
+
+**Syntax:** `[text](target)`. The target selects the link kind.
 
 A link is a **pointer**: the consumer follows it, prints it, or ignores it, and never places the resource it names. So a link accepts every kind of target, where an image, which the consumer fetches and places, accepts only a path or an `https://` URL (§8).
 
@@ -182,7 +166,7 @@ The first character chooses the kind; the production for that kind then says whe
 The sigils `#`, `^`, `~`, and `@`, and the colon that ends a scheme, count only when written unescaped: `[x](\#x)` is a page link whose path is `#x`, and `[x](FAQ\:setup)` is a page link whose path is `FAQ:setup`. The scheme test uses no other heuristic: `[x](Intro: draft)` and `[x](C:/notes)` are external links. A scheme split over two lines is not a scheme, so `[t](ht` followed by `tps://x)` is a page link.
 
 - **External:** `href` is the target as written, scheme included. Every scheme counts — `https:`, `http:`, `mailto:`, `tel:`, and any other — and Cutdown neither validates nor filters it. Whether a scheme is safe depends on the consumer: `javascript:` is a hazard in an HTML page and plain text in a printed book. Filtering belongs to the consumer: one that renders to a medium where a link can run code checks `href` against a scheme allowlist (§20.4 clause 7, §21.1).
-- **Page:** the target is a `PathResourceLocator` (§8). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§8.4), then checked (§8.5); last, the parser appends `.cutdown` to `path.path` when it does not already have the Cutdown extension (§1.7), so `[x](guide/Intro.CUTDOWN)` keeps `path: "/guide/Intro.CUTDOWN"`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§2.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
+- **Page:** the target is a `PathResourceLocator` (§8). Spaces and non-ASCII letters are path content: `[x](Guides/Getting started)`. The path is read from the project root and normalized (§8.4), then checked (§8.5); last, the parser appends `.cutdown` to `path.path` when it does not already have the Cutdown extension (§1.6), so `[x](guide/Intro.CUTDOWN)` keeps `path: "/guide/Intro.CUTDOWN"`. `raw` keeps the target as written. The `fragment` names an id, so it is converted to NFC as an id is (§2.1). `[x](guide/intro#setup)` → `raw: "guide/intro#setup"`, `path: { path: "/guide/intro.cutdown", query: [], fragment: "setup" }`.
 - **Wiki:** an empty target makes the link text the target. `path.path` is `/`, then the **plain text** of the link text, then `.cutdown`: `[Getting started]()` → `path: "/Getting started.cutdown"`. The plain text is what a reader sees — the `value` of every `Text` and `CodeInline`, the `formula` of every `MathInline`, `{{key}}` for a `Variable`, and the plain text of the children (or `alt`) of every other inline, in order; delimiters and attributes contribute nothing. The built path is normalized and checked like any other (§8.4, §8.5), so `/` separates folders and `.` and `..` segments are structure: `[Guides/../FAQ]()` → `/FAQ.cutdown`, and a title that is only `.` or `..` names no page (`[..]()` is invalid). `?` and `#` are title characters, so `query` is `[]` and `fragment` is `''`. `raw` is `''`. A link with empty plain text names nothing, so `[]()` has `path: null` and emits CDN-0032. For a query or a fragment, write the target.
 - **Id:** `target` is the text after `#`, an `ID_VALUE` (§2.1) — the same characters an `id` attribute admits, converted to NFC as every id value is. It names the segment carrying that id (`{#id}` or `id=`, §6.1.1) in the current document: `[x](#道具一式)`.
 - **Ref:** `target` is the text after `^`, one `ID_NAME` (§2.1). It names the `RefDefinition` with that `ref` (§4.14); the link is a **footnote** reference, and the definition's content is the footnote.
@@ -195,8 +179,6 @@ In `target`, escapes are resolved: `\)` gives `)`, `\\` gives `\`.
 
 **Unsupported form `[text][target]`.** Cutdown has one link form. Where the `]` that closes a link's text is followed directly by a second `[`, and that `[` closes on the same line at its first unbalanced `]` (escaped brackets not counted), the two bracket groups are emitted as one literal `Text`, exactly as written, and parsing continues after them. Warning CDN-0036 is emitted. The same holds for `![alt][target]`. A second `[` with no closer on the line leaves the first `[` unresolved, as any `[` with no target (§12.1.4.1).
 
-**Example 5-13** · [`cdn-0036-bracket-link-form`](../tests/diagnostics/cdn-0036-bracket-link-form.yaml)
-
 - Cutdown does not resolve links. Whether a target exists is the consumer's concern.
 - An `href` longer than 2048 Unicode scalar values is kept in full; warning CDN-0035 is emitted. A page path follows the same limit (§8.5).
 
@@ -204,6 +186,24 @@ In `target`, escapes are resolved: `\)` gives `)`, `\\` gives `\`.
 
 - An invalid page path (§8.5) keeps the `Link` with `raw` as written and `path: null`, and emits warning CDN-0032.
 - An id, ref, tag, or cite target that is empty or holds a character its kind does not admit keeps the `Link` with its kind and `target` as written, without the sigil, and emits warning CDN-0033: `[x](#)`, `[x](^a b)`, `[x](~a//b)`, `[x](~a/)`, `[x](~a/../b)`, `[x](@)`.
+
+**Example 5-5** · [`link-external`](../tests/005-inline-segments/link-external.yaml)
+
+**Example 5-6** · [`link-scheme-any-is-external`](../tests/005-inline-segments/link-scheme-any-is-external.yaml)
+
+**Example 5-7** · [`link-page`](../tests/005-inline-segments/link-page.yaml)
+
+**Example 5-8** · [`link-id`](../tests/005-inline-segments/link-id.yaml)
+
+**Example 5-9** · [`link-ref`](../tests/005-inline-segments/link-ref.yaml)
+
+**Example 5-10** · [`link-tag`](../tests/005-inline-segments/link-tag.yaml)
+
+**Example 5-11** · [`link-cite`](../tests/005-inline-segments/link-cite.yaml)
+
+**Example 5-12** · [`link-wiki-basic`](../tests/005-inline-segments/link-wiki-basic.yaml)
+
+**Example 5-13** · [`cdn-0036-bracket-link-form`](../tests/diagnostics/cdn-0036-bracket-link-form.yaml)
 
 **Edge cases:**
 
@@ -240,10 +240,6 @@ The price is fixed[](^1) until [the review](^review).
 
 ### 5.6 CodeInline
 
-**Syntax:** '\`\`code\`\`'
-
-**AST type:**
-
 ```typescript
 interface CodeInline {
   _type: "CodeInline"
@@ -251,6 +247,10 @@ interface CodeInline {
   attributes: Attribute[]
 }
 ```
+
+A span of literal text, such as code.
+
+**Syntax:** '\`\`code\`\`'
 
 - Double backtick only. Single backtick is always literal text.
 - Content is **literal** — no inline parsing. **One escape sequence is processed**: `` \` `` → literal `` ` `` (does not close the span). Every other backslash is literal, including `\\` (two literal backslashes) and any other `\X` (per §13 non-special rule). See §13.3.
@@ -276,10 +276,6 @@ interface CodeInline {
 
 ### 5.7 MathInline
 
-**Syntax:** `$$formula$$`
-
-**AST type:**
-
 ```typescript
 interface MathInline {
   _type: "MathInline"
@@ -287,6 +283,10 @@ interface MathInline {
   attributes: Attribute[]
 }
 ```
+
+A span of literal formula source.
+
+**Syntax:** `$$formula$$`
 
 - `$$` opener and closer. A single `$` is always literal text.
 - Content is **literal** — no inline parsing, and whitespace is kept exactly as written (§15.2). Passed as raw string to the consumer ([KATEX] or equivalent).
@@ -303,10 +303,6 @@ interface MathInline {
 
 ### 5.8 QuoteInline
 
-**Syntax:** `"" content ""` or `'' content ''`
-
-**AST type:**
-
 ```typescript
 interface QuoteInline {
   _type: "QuoteInline"
@@ -315,6 +311,10 @@ interface QuoteInline {
   attributes: Attribute[]
 }
 ```
+
+A span of quoted text; the consumer picks the quote marks.
+
+**Syntax:** `"" content ""` or `'' content ''`
 
 - `""` = double-quote style (`kind: "double"`). `''` = single-quote style (`kind: "single"`).
 - A single `"` or `'` is always literal text.
@@ -334,10 +334,6 @@ interface QuoteInline {
 
 ### 5.9 ImageInline
 
-**Syntax:** `![alt](src) {attrs}`
-
-**AST type:**
-
 ```typescript
 interface ImageInline {
   _type: "ImageInline"
@@ -347,6 +343,10 @@ interface ImageInline {
   attributes: Attribute[]
 }
 ```
+
+An image of the project, named by a path.
+
+**Syntax:** `![alt](src) {attrs}`
 
 - `alt` is **parsed by inline rules**, except that it holds no link and no image: inside `alt` a `[…](…)` or `![…](…)` is literal text, and brackets are counted as in link text (§5.5). Result is `Inline[]`. A consumer may restrict formatting in `alt` or strip it down to plain text. `alt` may be empty.
 - `src` is a `PathResourceLocator` (§8), running to the first unbalanced `)`: `![](/shots/run (2).png)` has the path `/shots/run (2).png`. An invalid path keeps the node with `raw` as written and `src: null`, and emits CDN-0032.
@@ -362,10 +362,6 @@ interface ImageInline {
 
 #### 5.9.1 EmbedImageInline
 
-**Syntax:** `![alt](https://…) {attrs}` — the `ImageInline` syntax with a source beginning with literal, case-sensitive `https://`.
-
-**AST type:**
-
 ```typescript
 interface EmbedImageInline {
   _type: "EmbedImageInline"
@@ -374,6 +370,10 @@ interface EmbedImageInline {
   attributes: Attribute[]
 }
 ```
+
+A remote image, named by an `https://` URL.
+
+**Syntax:** `![alt](https://…) {attrs}` — the `ImageInline` syntax with a source beginning with literal, case-sensitive `https://`.
 
 - `EmbedImageInline` is to `ImageInline` what `EmbedBlock` (§4.9) is to `FileBlock`: a remote resource named by URL rather than a path.
 - Only literal `https://` opens it. That is a recognition rule, not a safety guarantee: the host may still be hostile, track the reader, or be an internal address (§21.7).
@@ -387,12 +387,6 @@ interface EmbedImageInline {
 
 ### 5.10 Mark
 
-**Syntax:** `::name <content>::` or `::name::`
-
-A named inline container that wraps a range of content as a hook for consumer post-processing. Supports nesting.
-
-**AST type:**
-
 ```typescript
 interface Mark {
   _type: "Mark"
@@ -401,6 +395,10 @@ interface Mark {
   attributes: Attribute[]
 }
 ```
+
+A named inline container that wraps a range of content as a hook for consumer post-processing. Supports nesting.
+
+**Syntax:** `::name <content>::` or `::name::`
 
 **Opener.** `::` followed immediately by a name — a **maximal `ID_NAME`** (§2.1). The character after the name decides what happens:
 
@@ -431,11 +429,11 @@ MARK_CLOSE ::= "::"
 
 **Name lexing.** The name is a maximal `ID_NAME` and is lexed at the opener, before delimiter matching. `_`, `-` and `.` are `ID_CHAR` characters, so they are absorbed into the name; `*`, `^`, `$`, `` ` ``, whitespace and the line end are not, and terminate the name scan. This is a lexical property and is independent of the precedence table (§14):
 
+**Colon runs.** A run of three colons in inline position is the `::` closer plus a literal `:`. At block position `:::name` is still a `NamedBlock` (§4.13) — that classification happens first and never reaches the inline parser.
+
 **Example 5-34** · [`mark-name-underscore-run`](../tests/005-inline-segments/mark-name-underscore-run.yaml)
 
 **Example 5-35** · [`mark-name-stops-at-asterisk`](../tests/005-inline-segments/mark-name-stops-at-asterisk.yaml)
-
-**Colon runs.** A run of three colons in inline position is the `::` closer plus a literal `:`. At block position `:::name` is still a `NamedBlock` (§4.13) — that classification happens first and never reaches the inline parser.
 
 **Example 5-36** · [`mark-empty`](../tests/005-inline-segments/mark-empty.yaml)
 
@@ -463,10 +461,6 @@ MARK_CLOSE ::= "::"
 
 ### 5.11 Variable
 
-**Syntax:** `{{key}}`
-
-**AST type:**
-
 ```typescript
 interface Variable {
   _type: "Variable"
@@ -474,6 +468,10 @@ interface Variable {
   attributes: Attribute[]
 }
 ```
+
+A named value that the consumer substitutes.
+
+**Syntax:** `{{key}}`
 
 ```ebnf
 VARIABLE ::= "{{" ID_NAME "}}"
@@ -509,10 +507,6 @@ A variable can also stand inside a string property, where no `Variable` node can
 
 ### 5.12 Spoiler
 
-**Syntax:** `^^inline content^^`
-
-**AST type:**
-
 ```typescript
 interface Spoiler {
   _type: "Spoiler"
@@ -520,6 +514,10 @@ interface Spoiler {
   attributes: Attribute[]
 }
 ```
+
+A span marked as a spoiler; the consumer chooses how to hide it.
+
+**Syntax:** `^^inline content^^`
 
 - `^^` opener and closer. A single `^` is always literal text in inline context. (In a `(^ref)` link target and a `[^ref]:` definition, `^` is the reference sigil per §5.5 / §4.14 — those contexts are delimited and never reach the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
@@ -544,6 +542,14 @@ interface Spoiler {
 
 ### 5.13 LineBreak
 
+```typescript
+interface LineBreak {
+  _type: "LineBreak"
+}
+```
+
+A hard line break inside one inline context.
+
 **Syntax:** `\<EOL>`, backslash as the last character of a line (before `\n`). The construct is the **LineBreaker**; it produces the `LineBreak` node, as `PageBreaker` (§4.10) produces a page boundary.
 
 ```cutdown
@@ -556,14 +562,6 @@ That day.
 ```
 
 The first five lines end in a `LineBreak`; all six stay one `Paragraph`. (Emily Dickinson, “A word is dead”.)
-
-**AST type:**
-
-```typescript
-interface LineBreak {
-  _type: "LineBreak"
-}
-```
 
 A `LineBreak` asserts an author-intended line break **within** a paragraph — the surrounding text stays one block. It is not a paragraph boundary: a blank line ends the block and starts a new `Paragraph`, whereas a `LineBreak` breaks the line and keeps the block.
 

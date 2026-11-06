@@ -8,10 +8,6 @@ A Cutdown document is a tree rooted at a `Document` segment. Every file produces
 
 ### 3.1 Document
 
-The root node of every Cutdown file. Produced automatically — there is no explicit document syntax.
-
-**AST type:**
-
 ```typescript
 interface Document {
   _type: "Document"
@@ -19,13 +15,11 @@ interface Document {
 }
 ```
 
+The root node of every Cutdown file. Produced automatically — there is no explicit document syntax.
+
 ---
 
 ### 3.2 Page
-
-A logical division within a document. Every document has at least one Page.
-
-**AST type:**
 
 ```typescript
 interface Page {
@@ -35,6 +29,8 @@ interface Page {
   children: Block[]
 }
 ```
+
+A logical division within a document. Every document has at least one Page.
 
 `reflections` holds the Page's segment comments — every CommentBlock and orphan `##` line on the Page, at any depth — in source order (§7.3).
 

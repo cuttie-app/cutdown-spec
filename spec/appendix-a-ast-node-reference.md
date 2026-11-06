@@ -1,5 +1,7 @@
 ## A. AST Node (Segment) Reference
 
+Each node's interface opens the section that defines it. This appendix indexes those sections and defines what the nodes share: empty values, source locations, reflections, and attributes.
+
 **Empty values.** The AST uses `null` only to say that a node has no value of a kind. A string property with no content is `''`; an array property with no entries is `[]`; a number property is always a number. There are two exceptions:
 
 - `Page.meta` is `null` when the Page has no `Meta` block. An empty `Meta` block is not `null`: it is a `Meta` whose `raw` is `''`.
@@ -9,62 +11,62 @@ A property a node does not admit is omitted, not emptied — `Meta` has no `attr
 
 ### A.1 Root Segments
 
-| Segment    | Fields |
-|------------|--------|
-| `Document` | `_type: "Document", children: Page[]` |
-| `Page`     | `_type: "Page", meta: Meta\|null, reflections: SegmentReflection[], children: Block[]` |
+| Segment    | Defined in |
+|------------|------------|
+| `Document` | §3.1 |
+| `Page`     | §3.2 |
 
 ### A.2 Block Segments
 
 All block segments except `List`, `Table`, and `FileGroup` carry `reflections: LineReflection[]` (`[]` when no `##` comment is present); so do `ListItem`, `TaskItem`, `Row`, and `FileBlock`, which own the lines inside those three. See §7.2 for attachment rules. A captionable block's `caption` is `[]` when no caption line binds to it. `QuoteBlock`, `NamedBlock`, `SpoilerBlock`, `ListItem`, and `TaskItem` hold `Inline[]` when their body is exactly one paragraph and `Block[]` otherwise; one array never mixes the two (§4.7.1).
 
-| Segment         | Fields |
-|-----------------|--------|
-| `Paragraph`     | `_type: "Paragraph", children: Inline[], reflections, attributes` |
-| `Section`       | `_type: "Section", level: 1..9, heading: Inline[], children: Block[], reflections, attributes` |
-| `CodeBlock`     | `_type: "CodeBlock", language: string = "text", raw: string, caption: Inline[], reflections, attributes` |
-| `MathBlock`     | `_type: "MathBlock", raw: string, caption: Inline[], reflections, attributes` |
-| `QuoteBlock`    | `_type: "QuoteBlock", children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
-| `List`          | `_type: "List", kind: "bullet"\|"numbered"\|"checklist", start: number = 1, loose: bool, children: (ListItem\|TaskItem)[], attributes` |
-| `Table`         | `_type: "Table", rows: Row[], columns: Column[], caption: Inline[], attributes` |
-| `FileGroup`     | `_type: "FileGroup", children: FileBlock[], attributes` |
-| `EmbedBlock`    | `_type: "EmbedBlock", url: string, caption: Inline[], reflections, attributes` |
-| `InjectBlock`   | `_type: "InjectBlock", raw: string, src: PathResourceLocator\|null, children: Block[], reflections, attributes` — the parser emits `children: []` (§9) |
-| `NamedBlock`    | `_type: "NamedBlock", name: string, children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
-| `SpoilerBlock`  | `_type: "SpoilerBlock", children: Inline[]\|Block[], caption: Inline[], reflections, attributes` |
-| `RefDefinition` | `_type: "RefDefinition", ref: string, children: Inline[], reflections, attributes` |
+| Segment         | Defined in |
+|-----------------|------------|
+| `Paragraph`     | §4.1 |
+| `Section`       | §4.2 |
+| `CodeBlock`     | §4.4 |
+| `MathBlock`     | §4.5 |
+| `QuoteBlock`    | §4.6 |
+| `List`          | §4.7 |
+| `Table`         | §4.8 |
+| `EmbedBlock`    | §4.9 |
+| `FileGroup`     | §4.12 |
+| `NamedBlock`    | §4.13 |
+| `RefDefinition` | §4.14 |
+| `SpoilerBlock`  | §4.15 |
+| `InjectBlock`   | §4.17 |
 
 ### A.3 Inline Segments
 
-| Segment         | Fields |
-|-----------------|--------|
-| `Text`          | `_type: "Text", value: string` |
-| `Emphasis`      | `_type: "Emphasis", children: Inline[], attributes` |
-| `Strong`        | `_type: "Strong", children: Inline[], attributes` |
-| `Highlight`     | `_type: "Highlight", children: Inline[], attributes` |
-| `Spoiler`       | `_type: "Spoiler", children: Inline[], attributes` |
-| `Link`          | `_type: "Link", kind: "external"\|"page"\|"id"\|"ref"\|"tag"\|"cite", children: Inline[], href: string, raw: string, path: PathResourceLocator\|null, target: string, attributes` |
-| `CodeInline`    | `_type: "CodeInline", value: string, attributes` |
-| `MathInline`    | `_type: "MathInline", formula: string, attributes` |
-| `QuoteInline`   | `_type: "QuoteInline", kind: "double"\|"single", children: Inline[], attributes` |
-| `ImageInline`   | `_type: "ImageInline", alt: Inline[], raw: string, src: PathResourceLocator\|null, attributes` |
-| `EmbedImageInline` | `_type: "EmbedImageInline", alt: Inline[], url: string, attributes` |
-| `Mark`          | `_type: "Mark", name: string, children: Inline[], attributes` |
-| `LineBreak`     | `_type: "LineBreak"` |
-| `Variable`      | `_type: "Variable", key: string, attributes` |
+| Segment            | Defined in |
+|--------------------|------------|
+| `Text`             | §5.1 |
+| `Emphasis`         | §5.2 |
+| `Strong`           | §5.3 |
+| `Highlight`        | §5.4 |
+| `Link`             | §5.5 |
+| `CodeInline`       | §5.6 |
+| `MathInline`       | §5.7 |
+| `QuoteInline`      | §5.8 |
+| `ImageInline`      | §5.9 |
+| `EmbedImageInline` | §5.9.1 |
+| `Mark`             | §5.10 |
+| `Variable`         | §5.11 |
+| `Spoiler`          | §5.12 |
+| `LineBreak`        | §5.13 |
 
 ### A.4 Special Nodes
 
-| Segment         | Fields                                                                          |
-|-----------------|---------------------------------------------------------------------------------|
-| `Meta`          | `_type: "Meta", format: "yaml"\|"toml"\|"json" = "yaml", raw: string` |
-| `ListItem`      | `_type: "ListItem", children: Inline[]\|Block[], reflections, attributes` |
-| `TaskItem`      | `_type: "TaskItem", checked: bool, children: Inline[]\|Block[], reflections, attributes` |
-| `FileBlock`     | `_type: "FileBlock", raw: string, src: PathResourceLocator\|null, caption: Inline[], reflections, attributes` — only inside a `FileGroup` |
-| `Column`        | `_type: "Column", align: "start"\|"left"\|"right"\|"center"\|"comma"\|"decimal" = "start"` |
-| `Row`           | `_type: "Row"\|"Header", children: Cell[], reflections, attributes` — a header separator with no row above it inserts an empty `Header` row (§4.8) |
-| `Cell`          | `_type: "Cell", children: Inline[], row: number, column: number` |
-| `PathResourceLocator` | `path: string, query: QueryParam[], fragment: string` — a value, not a segment: no `_type` (§8) |
+| Segment               | Defined in |
+|-----------------------|------------|
+| `Meta`                | §4.3 — held in `Page.meta`, never in `children` |
+| `ListItem`            | §4.7.1 |
+| `TaskItem`            | §4.7.2 |
+| `Row`                 | §4.8 |
+| `Cell`                | §4.8 |
+| `Column`              | §4.8 |
+| `FileBlock`           | §4.11 — only inside a `FileGroup` |
+| `PathResourceLocator` | §8 — a value, not a segment: no `_type` |
 
 ### A.5 Location Type
 
@@ -89,13 +91,13 @@ interface Loc {
 
 ```typescript
 interface LineReflection {
-  loc: Loc          // source range of the ## payload (raw-file UTF-16 offsets, see Location Type)
-  text: string      // ## payload with one leading space stripped, trailing whitespace preserved
+  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, §A.5)
+  text: string   // payload after ##, one leading space stripped
 }
 
 interface SegmentReflection {
   loc: Loc          // the CommentBlock body, or the ## payload of an orphan line
-  text: string      // CommentBlock body lines joined with \n, no trailing \n; or the orphan payload
+  text: string      // CommentBlock: body lines joined with \n, no trailing \n; orphan line: the payload
   before: number[]  // child-index path to the block the comment stands before (§7.3)
 }
 ```

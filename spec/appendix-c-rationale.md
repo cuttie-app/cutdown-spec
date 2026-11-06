@@ -192,7 +192,7 @@ The set of *names* grows with each application; the set of *rules* does not. A d
 
 ### C.17 Media type and extension
 
-Cutdown has its own media type, `text/x-cutdown`, and its own extension, `.cutdown` (§1.7).
+Cutdown has its own media type, `text/x-cutdown`, and its own extension, `.cutdown` (§1.6).
 
 Cutdown is not a Markdown dialect: a Cutdown file read as Markdown turns comments into headings and page breaks into rules. A label of its own tells a receiver what it holds. The extension is matched without regard to ASCII case, as file types usually are.
 

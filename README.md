@@ -131,7 +131,7 @@ The spec ([`spec/`](spec/)) and conformance corpus ([`tests/`](tests/)) are the 
 
 ## File extension and media type
 
-Cutdown files use the extension `.cutdown` and the media type `text/x-cutdown`; readers also accept `text/cutdown`. See §1.7 of the [specification](spec/001-preliminaries.md).
+Cutdown files use the extension `.cutdown` and the media type `text/x-cutdown`; readers also accept `text/cutdown`. See §1.6 of the [specification](spec/001-preliminaries.md).
 
 ---
 

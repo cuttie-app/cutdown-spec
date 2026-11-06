@@ -29,7 +29,7 @@ foo ## trailing comment
 
 ```typescript
 interface LineReflection {
-  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, §A)
+  loc: Loc       // source range of the ## payload (raw-file UTF-16 offsets, §A.5)
   text: string   // payload after ##, one leading space stripped
 }
 ```

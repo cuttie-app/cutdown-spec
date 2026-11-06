@@ -3,7 +3,7 @@
 - **Status:** Draft
 - **Version:** 0.12.0
 - **Date:** 2026-11-06
-- **Inspired by:** CommonMark, Djot, Carve (§1.6), (§C.1)
+- **Inspired by:** CommonMark, Djot, Carve (§C.1, §D.2)
 - **Versioning policy:** [`policies/versioning-policy.md`](../policies/versioning-policy.md)
 - **Change publication policy:** [`policies/change-publication-policy.md`](../policies/change-publication-policy.md)
 - **Conformance policy:** [`policies/conformance-policy.md`](../policies/conformance-policy.md)
@@ -61,5 +61,6 @@ Cutdown prioritizes **unambiguous parsing**, **consistency**, and **implementabi
 - A. [AST Node (Segment) Reference](appendix-a-ast-node-reference.md)
 - B. [Special Character Reference](appendix-b-special-character-reference.md)
 - C. [Rationale](appendix-c-rationale.md) — informative: why each major decision was made, and what it costs
+- D. [References](appendix-d-references.md) — normative and informative
 
 ---
