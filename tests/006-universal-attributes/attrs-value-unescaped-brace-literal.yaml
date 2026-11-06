@@ -1,0 +1,12 @@
+id: attrs-value-unescaped-brace-literal
+section: "6.1.3"
+description: "An unescaped } inside a quote closes the group, which then violates the grammar: the slice is verbatim Text and the rest of the line parses normally"
+
+input: |
+  {t="a}b"}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{t="a}b"}'

@@ -1,0 +1,12 @@
+id: attrs-value-unescaped-quote-literal
+section: "6.1.3"
+description: "An unescaped \" inside an unquoted value violates the grammar: the group is verbatim Text"
+
+input: |
+  {k=a"b}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{k=a"b}'

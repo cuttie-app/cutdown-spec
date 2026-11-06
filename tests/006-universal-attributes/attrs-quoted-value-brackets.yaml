@@ -1,0 +1,15 @@
+id: attrs-quoted-value-brackets
+section: "6.1.1"
+description: "Brackets stand inside a quoted value, kept as written"
+
+input: |
+  Hello {data="[1,2]"}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Hello
+    attributes:
+      - key: data
+        value: "[1,2]"

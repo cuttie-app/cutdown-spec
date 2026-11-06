@@ -162,7 +162,7 @@ An attachment list, an embedded video, and an included chapter are structure, so
 
 **Example.** `/photos/a.png` → `FileGroup([FileBlock])`. `/chapters/intro.cutdown` → `InjectBlock(children: [])`.
 
-**Cost.** Every consumer that wants injection implements it, including roots, cycles, and bounds (§21.11). A prose line that starts with `/` or `https://` needs a backslash.
+**Cost.** Every consumer that wants injection implements it, including roots, cycles, and bounds (§21.10). A prose line that starts with `/` or `https://` needs a backslash.
 
 **Prior art.** CommonMark and GFM have inline images only (CommonMark §6.4[^COMMONMARK]). MultiMarkdown makes an image alone in a paragraph a figure (MultiMarkdown Images[^MULTIMARKDOWN]) and inserts `{{file}}` transclusions before parsing (MultiMarkdown File Transclusion[^MULTIMARKDOWN]), so its processor reads files. AsciiDoc's include directive and reStructuredText's `include` also read files during processing; Obsidian resolves `![[note]]` embeds in the application, as Cutdown's consumer does. Gemtext gives each link a line of its own.
 

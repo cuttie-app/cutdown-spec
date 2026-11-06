@@ -376,7 +376,7 @@ A remote image, named by an `https://` URL.
 **Syntax:** `![alt](https://…) {attrs}` — the `ImageInline` syntax with a source beginning with literal, case-sensitive `https://`.
 
 - `EmbedImageInline` is to `ImageInline` what `EmbedBlock` (§4.9) is to `FileBlock`: a remote resource named by URL rather than a path.
-- Only literal `https://` opens it. That is a recognition rule, not a safety guarantee: the host may still be hostile, track the reader, or be an internal address (§21.7).
+- Only literal `https://` opens it. That is a recognition rule, not a safety guarantee: the host may still be hostile, track the reader, or be an internal address (§21.6).
 - `url` runs to the first unbalanced `)`, as a path does (§8.1), and is kept as written. Cutdown does not decompose, validate, or fetch it, so it is never invalid. `{{key}}` interpolation tokens stay in it (§5.11.1). A `url` longer than 2048 Unicode scalar values is kept in full and emits CDN-0035.
 - `alt` and attributes follow `ImageInline`.
 - Every other scheme, `http://` included, is read as a path: `![](http://x.com/a.png)` is an `ImageInline` whose path is invalid, with `src: null` and CDN-0032.
@@ -488,7 +488,7 @@ VARIABLE ::= "{{" ID_NAME "}}"
 
 A variable can also stand inside a string property, where no `Variable` node can live. There the parser leaves `{{key}}` in the string exactly as written, and the consumer substitutes it. Such an occurrence is an **interpolation token**.
 
-- **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute string values, including strings inside a JSON value (§6.1.1).
+- **Interpolated properties:** `Link.href`; the `raw` of every path and the `path`, `query`, and `fragment` decomposed from it; the `path` of a wiki link (§5.5); `EmbedBlock.url`; `EmbedImageInline.url`; attribute values (§6.1.1).
 - **Never interpolated:** `CodeBlock`, `CodeInline`, `MathBlock`, `MathInline`, and `Meta` content, comment text, where `{{` is ordinary text in many languages; node names (`NamedBlock.name`, `Mark.name`, `CodeBlock.language`), which are structure.
 - A token matches `VARIABLE` (§5.11). Anything else between double braces is not a token and is never substituted.
 - A string property holds no line breaks: a target wrapped over several lines is folded first (§15.1), and tokens are read from the folded string. A key split over two lines is therefore whole again for the consumer: `[t](/a/{{ke` followed by `y}}/b)` has `raw: "/a/{{key}}/b"`.
@@ -499,9 +499,8 @@ A variable can also stand inside a string property, where no `Variable` node can
 /a/\\{{x}}    raw "/a/\\{{x}}"    →  consumer: "/a/\" + value of x  (literal backslash, then a token)
 ```
 
-- Inside a JSON attribute value the template is the decoded JSON string: `"\\{{x}}"` in JSON decodes to `\{{x}}`, an escaped token.
 - The parser emits no diagnostic for a token. Whether a key has a value is the consumer's concern.
-- A consumer checks the substituted value, not the token: scheme, attribute-key, and path checks run after substitution, and a substituted value is never parsed as Cutdown (§20.4 clause 1, §21.10).
+- A consumer checks the substituted value, not the token: scheme, attribute-key, and path checks run after substitution, and a substituted value is never parsed as Cutdown (§20.4 clause 1, §21.9).
 
 ---
 
@@ -521,7 +520,7 @@ A span marked as a spoiler; the consumer chooses how to hide it.
 
 - `^^` opener and closer. A single `^` is always literal text in inline context. (In a `(^ref)` link target and a `[^ref]:` definition, `^` is the reference sigil per §5.5 / §4.14 — those contexts are delimited and never reach the Spoiler parser.)
 - Cutdown emits the AST node `Spoiler`; consumers choose the rendering (click-to-reveal, blur, redaction, NSFW mask). Semantic variants are conveyed via attributes (e.g. `{.nsfw}`, `{.redacted}`).
-- Hidden is not redacted: the content is in the source, in the AST, and in any output that hides it by presentation (§21.8).
+- Hidden is not redacted: the content is in the source, in the AST, and in any output that hides it by presentation (§21.7).
 - Same rules as `Emphasis`: run of 3 (`^^^` in inline context = `^^` opener/closer + `^` literal), greedy close in source order, unclosed `^^` → `Text("^^")`, no same-type nesting.
 - Cross-nesting with `Emphasis`, `Strong`, `Highlight`, `QuoteInline`, and `Link` is allowed.
 - Leading/trailing whitespace inside delimiters is stripped. See §15 for full whitespace rules.

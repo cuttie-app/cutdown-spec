@@ -75,9 +75,11 @@ Opaque containers (whose content is captured verbatim) admit a single **narrow e
 
 ---
 
-### 13.4 Escapes in Paths and String Properties
+### 13.4 Escapes in Paths, Attribute Values, and String Properties
 
 A `PathResourceLocator` (§8) has its own escape table, defined once in §8.2: the brackets and `\?` `\#` `\&` `\=` resolve to the literal character, so a path can hold a `)` or a `?` without ending or splitting.
+
+An attribute value (§6.1.1) resolves `\"`, `\{`, and `\}` to the literal character, so a value can hold a quote or a brace without ending the value or the group.
 
 Every string property that carries interpolation tokens (§5.11.1) is a template: `\\` and `\{{` are left in place by the parser and resolved by the consumer, to `\` and a literal `{{`. They are the only escapes the parser does not consume.
 

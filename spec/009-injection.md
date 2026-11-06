@@ -48,6 +48,6 @@ How many blocks a folder yields is known only once it is resolved, so the shape 
 
 ### 9.6 Outside this specification
 
-An `InjectBlock` that a consumer cannot or does not resolve stays in the AST with `children: []`. Everything about resolution itself is the consumer's: locating the root, reading files, refusing paths, and reporting failures. Two duties are fixed: a consumer stops on a cycle and bounds the total expansion (§20.4 clause 2, §21.11); how it detects them, where it sets the bound, and how it reports reaching it are its own. Cutdown defines no diagnostic for any of these.
+An `InjectBlock` that a consumer cannot or does not resolve stays in the AST with `children: []`. Everything about resolution itself is the consumer's: locating the root, reading files, refusing paths, and reporting failures. Two duties are fixed: a consumer stops on a cycle and bounds the total expansion (§20.4 clause 2, §21.10); how it detects them, where it sets the bound, and how it reports reaching it are its own. Cutdown defines no diagnostic for any of these.
 
 ---

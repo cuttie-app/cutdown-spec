@@ -299,7 +299,7 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 ## Attributes
 
 ```
-{#id .class key=value key="spaced value" data={"a":[1,2]}}
+{#id .class key=value key="spaced value"}
 ```
 
 Attributes go **after** what they describe: at the end of its line, or on the next line with no blank line between. Spaces before the `{` are dropped.
@@ -307,7 +307,7 @@ Attributes go **after** what they describe: at the end of its line, or on the ne
 - `#id` or `id=x`: an id. Any characters except spaces, `#`, `)`, and `}`; `{#道具一式}` works.
 - `.name` or `class="a b"`: classes. Both forms add to one list.
 - `key=value`, `key="spaced value"`: a property. Quote a value that has spaces.
-- `key={…}` or `key=[…]`: a JSON value, on one line.
+- To put `"`, `{`, or `}` in a value, escape it: `title="say \"hi\" \{x\}"`. A `{{name}}` token needs no escape.
 
 A group holds up to 32 entries. A group that is not valid stays as typed: `{a **b**}` is exactly that text.
 

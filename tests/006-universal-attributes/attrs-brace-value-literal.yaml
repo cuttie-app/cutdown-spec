@@ -1,0 +1,12 @@
+id: attrs-brace-value-literal
+section: "6.1.3"
+description: "A value never begins with { unquoted: the group violates the grammar and the whole slice is one verbatim Text run"
+
+input: |
+  {data={"a":1}}
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: '{data={"a":1}}'

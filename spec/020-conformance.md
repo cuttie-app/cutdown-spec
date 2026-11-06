@@ -45,7 +45,7 @@ A conforming writer:
 
 Every consumer obligation is conditional: a consumer that never does a thing is not bound by the rule for it. A conforming consumer:
 
-1. **Interpolation.** If it substitutes interpolation tokens, MUST resolve templates as §5.11.1 defines, MUST apply clauses 7, 8, and 10 to the substituted value rather than to the token, and MUST NOT parse a substituted value as Cutdown.
+1. **Interpolation.** If it substitutes interpolation tokens, MUST resolve templates as §5.11.1 defines, MUST apply clauses 7, 8, and 9 to the substituted value rather than to the token, and MUST NOT parse a substituted value as Cutdown.
 2. **Injection.** If it fills an `InjectBlock`, MUST build `children` as §9 defines, MUST stop on a cycle — an `InjectBlock` that names a document it is already filling stays unresolved, with `children: []` — and MUST bound the total expansion. The bound and how reaching it is reported are its own (§9.6).
 3. **Streaming.** If it renders while source is still arriving, MUST NOT change the AST or diagnostics required for any input snapshot (§19.4).
 4. **Unknown properties.** MUST ignore an AST property it does not recognize, and MUST NOT fail on one.
@@ -53,11 +53,10 @@ Every consumer obligation is conditional: a consumer that never does a thing is 
 6. **Hidden content.** A renderer SHOULD omit `LineReflection` and `SegmentReflection` entries unless its user asks for them (§7.5). A tool that serves authors — a formatter, an IDE preview, a comment thread — MAY show them. A consumer that sends the AST or the source to a reader SHOULD first clear every `reflections` field, unless the author asked to keep them.
 7. **Link schemes.** If it renders to a medium where a link can run code — HTML, a WebView — MUST check every `Link.href` against a scheme allowlist before emitting it, and MUST render a link that fails the check as its text alone.
 8. **Attribute keys.** If it maps attributes onto a medium where they can run code or load resources, MUST map each key through an allowlist and drop keys not on it; it MUST NOT copy a key through unchanged. It SHOULD give `id` values a prefix of its own, so that they cannot collide with names in the host page.
-9. **JSON values.** If it merges a JSON attribute value into its own objects, MUST NOT let an object name — `__proto__`, `constructor`, `prototype` — change the structure of those objects.
-10. **Paths.** If it maps a `path` to storage, MUST treat it as `/`-separated segments under its root, MUST NOT decode or reinterpret any character as a separator, and MUST confirm that the resolved resource lies inside the root after the storage's own resolution, links and case folding included.
-11. **Meta.** If it parses a `Meta` body, MUST read `yaml` as YAML 1.2 [YAML] with the core schema and no custom tags, `json` as I-JSON [RFC7493], and `toml` as TOML 1.0.0 [TOML].
-12. **Fetching.** If it fetches an author-supplied URL from its own network, SHOULD refuse destinations that resolve to non-public addresses — loopback, link-local, private, unique-local — checked on the resolved address of every connection, redirects included. If it makes a reader's client fetch one, SHOULD let the reader or the host control that.
-13. **Displayed targets.** If it shows a link target, id, tag, or path to a reader, SHOULD show it in a way that exposes mixed scripts and confusable characters [UTS39].
+9. **Paths.** If it maps a `path` to storage, MUST treat it as `/`-separated segments under its root, MUST NOT decode or reinterpret any character as a separator, and MUST confirm that the resolved resource lies inside the root after the storage's own resolution, links and case folding included.
+10. **Meta.** If it parses a `Meta` body, MUST read `yaml` as YAML 1.2 [YAML] with the core schema and no custom tags, `json` as I-JSON [RFC7493], and `toml` as TOML 1.0.0 [TOML].
+11. **Fetching.** If it fetches an author-supplied URL from its own network, SHOULD refuse destinations that resolve to non-public addresses — loopback, link-local, private, unique-local — checked on the resolved address of every connection, redirects included. If it makes a reader's client fetch one, SHOULD let the reader or the host control that.
+12. **Displayed targets.** If it shows a link target, id, tag, or path to a reader, SHOULD show it in a way that exposes mixed scripts and confusable characters [UTS39].
 
 Clauses 4 and 5 exist because a minor release may add properties and node kinds ([versioning policy](../policies/versioning-policy.md)). A new node kind that holds text keeps it in `children`, so that an older consumer still shows it.
 
@@ -82,7 +81,6 @@ This table indexes every limit in the specification. Each rule is defined in the
 | Heading level | 9 | ten or more `=` give level 9; the rest is heading text | CDN-0012 | §4.2 |
 | Entries per attribute group | 32 | later entries are dropped | CDN-0041 | §6.1.1 |
 | Classes per attribute group | 32 | later classes are dropped | CDN-0034 | §6.1.1 |
-| JSON attribute value | 4096 characters, depth 8 | the group is literal text | none | §6.1.1 |
 | Query pairs per locator | 32 | later pairs are dropped | CDN-0042 | §8.3 |
 | Path, URL, or `href` length | 2048 characters | kept in full | CDN-0035 | §8.5 |
 | Ordered list number | 5 digits | not recognized: a longer run is text | none | §4.7 |

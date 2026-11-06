@@ -1,0 +1,18 @@
+id: attrs-value-escapes
+section: "6.1.1"
+description: "\\\", \\{ and \\} give the character in a quoted or unquoted value; other pairs are kept as written"
+
+input: 'Text {t="a \{b\} \"c\"" u=x\}y\"z p=C:\dir}'
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: t
+        value: 'a {b} "c"'
+      - key: u
+        value: 'x}y"z'
+      - key: p
+        value: 'C:\dir'

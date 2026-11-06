@@ -1,6 +1,6 @@
-id: attrs-json-scalar-stays-string
+id: attrs-value-scalar-stays-string
 section: "6.1.1"
-description: "Only objects and arrays are JSON; key=123 and key=true stay strings"
+description: "Every attribute value is a string: key=123 and key=true stay \"123\" and \"true\""
 
 input: |
   Hello {n=123 flag=true}

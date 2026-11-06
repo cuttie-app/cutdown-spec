@@ -19,18 +19,15 @@ Token types inside `{}`:
   **Example 6-1** · [`attrs-class-merge-mixed-forms`](../tests/006-universal-attributes/attrs-class-merge-mixed-forms.yaml)
 
 - `key=value` — custom attribute. Emits `{ key: "key", value: "value" }`. Unquoted value: no spaces. Quoted value: spaces allowed. First occurrence wins; duplicate keys are dropped and CDN-0022 is emitted.
-- `key={…}` and `key=[…]` — JSON value. When `=` is followed immediately by `{` or `[`, the value is a JSON object or array [RFC8259], and the entry holds the **parsed** value: `{data={"a":1,"b":[true,null]}}` → `{ key: "data", value: { a: 1, b: [true, null] } }`. Rules:
-  - Only objects and arrays are JSON. `key=123` and `key=true` stay strings (`"123"`, `"true"`).
-  - The JSON is strict [RFC8259] on one line, and it is **I-JSON** [RFC7493]; anything else degrades as described below. While scanning it, braces and brackets inside JSON strings do not count toward the closing `}` of the attribute group, and `\"` does not end a JSON string.
-  - I-JSON makes three things malformed that plain JSON leaves open: an object with a repeated name, a string escape that leaves a lone surrogate (`"\uD800"`), and an out-of-range number. A number is out of range when, rounded to the nearest IEEE 754 double (round half to even), it is not finite (`1e400`), or when it is written with no fraction and no exponent and lies outside ±(2⁵³−1) (`9007199254740993`). The AST holds the rounded double: `3.14159265358979323846` is kept as the nearest double, and `9007199254740993.0` passes because the author wrote a fraction. A large id belongs in a string: `"9007199254740993"`.
-  - Object names are data. `__proto__`, `constructor`, and `prototype` are ordinary names, and the AST holds them as keys like any other: `{cfg={"__proto__":1}}` → `{ key: "cfg", value: { "__proto__": 1 } }`.
-  - At most 4096 Unicode scalar values and a nesting depth of 8.
-  - `id` and `class` take no JSON value.
-  - JSON that is malformed, over a limit, or given to `id` or `class` violates the attribute grammar: the whole `{…}` slice becomes literal text (§6.1.3).
+- **Escapes in a value.** In a quoted or unquoted value, a `\` (backslash) pairs with the next character; in an unquoted value it pairs only with a character that is not whitespace. `\"`, `\{`, and `\}` give `"`, `{`, and `}`. `\\` is kept as written for the consumer, as in every template (§5.11.1). Every other pair is kept as written, so `path=C:\dir` holds `C:\dir`.
+  - An interpolation token, `{{key}}` or the escaped `\{{key}}`, is kept as written (§5.11.1). Its braces need no escape.
+  - Any other unescaped `{` or `}` in a value, and an unescaped `"` in an unquoted value, violates the grammar (§6.1.3). So `{data={"a":1}}` is literal text; `{data="\{\"a\":1\}"}` holds `{"a":1}`.
+  - An unquoted value never begins with `[`; quote it: `data="[1,2]"`.
+- **Closing brace.** A group ends at its first `}` that is neither escaped by a `\` nor part of an interpolation token. A `}` inside a quote ends it too: `{t="a}b"}` ends after `a`, and the group violates the grammar.
 - `key` (bare, with no `=` (equals sign)) — flag token. Emits `{ key: "key", value: "" }`. Signals a semantic hint with no associated value.
 - Token order inside `{}` is preserved in the emitted `Attribute[]`.
 - **At most 32 entries per group.** The `id` entry and the merged `class` entry count one each, however many tokens fed them. Entries after the 32nd are dropped and warning CDN-0041 is emitted, with the `loc` of the first dropped token. A token that only adds to an existing entry — another class, a repeated key that CDN-0022 drops — adds no entry.
-- Tokens are separated by whitespace. A group may cross a soft break (§15.1): the line end separates tokens as whitespace does, and no token crosses it. An id, class, key, quoted or unquoted value, or JSON value ends at the line end, so a token split over two lines becomes two tokens — `{.cl` followed by `ass}` holds the class `cl` and the flag `ass`, and `{key=` followed by `v}` holds `key=""` and the flag `v`. If the rest is not a token (`{key` followed by `=v}`), or a quoted value is still open at the line end, the group violates the grammar (§6.1.3).
+- Tokens are separated by whitespace. A group may cross a soft break (§15.1): the line end separates tokens as whitespace does, and no token crosses it. An id, class, key, or quoted or unquoted value ends at the line end, so a token split over two lines becomes two tokens — `{.cl` followed by `ass}` holds the class `cl` and the flag `ass`, and `{key=` followed by `v}` holds `key=""` and the flag `v`. If the rest is not a token (`{key` followed by `=v}`), or a quoted value is still open at the line end, the group violates the grammar (§6.1.3).
 
 Attributes are semantic hints for the consumer, not HTML attributes; see §C.10 for the rationale.
 
@@ -77,17 +74,19 @@ CLASS_TOKEN ::= "." CLASS_NAME
 CLASS_NAME  ::= (CHAR - (UNICODE_WHITESPACE | CONTROL | "{" | "}" | '"' | "=" | "#"))+
 ATTR_KEY    ::= (ID_CHAR - ".") ID_CHAR*
 FLAG        ::= ATTR_KEY
-KEY_VALUE   ::= ATTR_KEY "=" (QUOTED | JSON_VALUE | UNQUOTED)?
-UNQUOTED    ::= (CHAR - (WHITESPACE | CONTROL | "{" | "[" | "}" | '"')) (CHAR - (WHITESPACE | CONTROL | "}" | '"'))*
-QUOTED      ::= '"' (QUOTED_CHAR | QUOTED_PAIR)* '"'
-QUOTED_CHAR ::= CHAR - (CONTROL | '"' | "\")
+KEY_VALUE   ::= ATTR_KEY "=" (QUOTED | UNQUOTED)?
+UNQUOTED    ::= (VALUE_TOKEN | UNQUOTED_PAIR | (UNQUOTED_CHAR - "[")) (VALUE_TOKEN | UNQUOTED_PAIR | UNQUOTED_CHAR)*
+UNQUOTED_CHAR ::= CHAR - (WHITESPACE | CONTROL | "{" | "}" | '"')
+UNQUOTED_PAIR ::= "\" (CHAR - (WHITESPACE | CONTROL))
+QUOTED      ::= '"' (VALUE_TOKEN | QUOTED_PAIR | QUOTED_CHAR)* '"'
+QUOTED_CHAR ::= CHAR - (CONTROL | '"' | "\" | "{" | "}")
 QUOTED_PAIR ::= "\" (CHAR - CONTROL)
-JSON_VALUE  ::= object | array      /* [RFC8259] §4 and §5, on one line */
+VALUE_TOKEN ::= "\"? "{{" ID_NAME "}}"      /* tried before a pair: \{{key}} is a token */
 ```
 
 - A key is ASCII and never begins with `.`; a class name may hold any letters, and `.a.b` is the one class `a.b`.
 - An id token is recognized by its `#`; whether its value is an `ID_VALUE` (§2.1) is a separate test, and a value outside it is kept with CDN-0037.
-- In a quoted value a backslash pairs with the next character, so neither `\"` nor `\\` ends the value. `\"` gives `"`. `\\` is kept for the consumer, as in every template (§5.11.1). Every other pair is kept as written.
+- A backslash pairs with the next character, so neither `\"` nor `\\` ends a quoted value. A lone `\` before whitespace in an unquoted value is kept as written (`UNQUOTED_CHAR`).
 - `key=` with nothing after the `=` gives the value `""`.
 - A group that matches no `ATTR_GROUP` violates the grammar (§6.1.3).
 
@@ -99,7 +98,7 @@ A sequence of `{attr}` blocks at the end of an inline context is distributed **r
 
 An empty `{}` is valid syntax. It claims its slot and assigns nothing to that segment's attributes.
 
-`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` (left brace) has no matching `}` (right brace) before end of inline context, the slice from `{` to the end of its own line is emitted as one verbatim `Text` run (Class 2 degradation, §12.1.4.1; see §6.1.3).
+`{...}` is tokenized **atomically** — the interior is never parsed as inline markup. If the `{` (left brace) has no closing `}` (right brace, §6.1.1) before end of inline context, the slice from `{` to the end of its own line is emitted as one verbatim `Text` run (Class 2 degradation, §12.1.4.1; see §6.1.3).
 
 **Scope slots by context:**
 
@@ -211,7 +210,7 @@ Orphan behaviour depends on position:
 | After a double blank line (own block, no following content claims it) | `Text("{...}")` emitted verbatim | |
 | End of scope chain, all slots filled, excess `{}` at the front | dropped (no AST output), **CDN-0011** emitted | `{.x}{.a}{.b}` on a 2-slot context → `{.x}` dropped |
 
-`{` is always consumed as the start of an attribute scan, running to the matching `}`, which is searched for through the inline context. If the content violates the attribute grammar or the `}` never arrives, the **slice** from `{` — braces included, when present — to the `}` or to the end of the `{`'s own line, whichever comes first, is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §12.1.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
+`{` is always consumed as the start of an attribute scan, running to its closing `}` (§6.1.1), which is searched for through the inline context. If the content violates the attribute grammar or the `}` never arrives, the **slice** from `{` — braces included, when present — to the `}` or to the end of the `{`'s own line, whichever comes first, is emitted as one verbatim `Text` run and is never inline-parsed (Class 2 degradation, §12.1.4.1). This is the intentional literal-span idiom: `{a **b**}` is the literal text `{a **b**}`. Consequence: any future extension of the attribute grammar is a breaking change for text relying on this idiom.
 
 Writing `\{` makes a literal brace explicit:
 

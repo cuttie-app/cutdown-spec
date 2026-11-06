@@ -1,0 +1,16 @@
+id: attrs-value-token
+section: "6.1.1"
+description: "An interpolation token, escaped or not, stands in a value with unescaped braces and is kept as written"
+
+input: 'Text {title="Hi {{name}}" alt=\{{x}}}'
+
+ast:
+  - _type: Paragraph
+    children:
+      - _type: Text
+        value: Text
+    attributes:
+      - key: title
+        value: "Hi {{name}}"
+      - key: alt
+        value: '\{{x}}'

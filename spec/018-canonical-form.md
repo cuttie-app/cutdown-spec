@@ -27,7 +27,7 @@ The table is closed. Every point at which two distinct inputs produce the same A
 | 11 | Class tokens | one `.name` token per class, in order, no repeats — `{.a .b}` | `class="a b"`, mixed forms, repeated classes | §6.1.1 |
 | 12 | `CodeBlock` language word | omitted for `text` — ```` ``` ```` | `text` written out | §4.4 |
 | 13 | Id spelling | `{#x}` | `{id=x}`, `{id="x"}` | §6.1.1 |
-| 14 | Attribute value quoting | bare `key=v` where the bare form parses; otherwise `key="v"` | quoted where the bare form parses | §6.1.1 |
+| 14 | Attribute value quoting | bare `key=v` where the bare form parses; otherwise `key="v"`. A `"`, `{`, or `}` outside an interpolation token is written `\"`, `\{`, `\}` | quoted where the bare form parses | §6.1.1 |
 | 15 | Line terminator | LF | CRLF, lone CR | §10 |
 | 16 | Leading whitespace on a continuation line | exactly the base column | fewer columns | §15.1 |
 | 17 | Interior whitespace runs in inline text | one space | any run of spaces and tabs | §15.1 |
