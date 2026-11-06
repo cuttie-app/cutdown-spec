@@ -12,6 +12,27 @@ Markup is never an error. An unfinished `**` or `[` stays as plain text, exactly
 
 ---
 
+## Coming from Markdown
+
+These look familiar but mean something else. None is an error, and most give no warning.
+
+| You type | Markdown gives | Cutdown gives |
+|---|---|---|
+| `# Title` | Heading | Plain text. Headings are `= Title`. |
+| `__text__` | Strong | `Emphasis`. Strong is `**text**`. |
+| `*text*`, `_text_` | Emphasis | Plain text. Single symbols never mark up. |
+| `~~text~~` | Strikethrough | `Highlight`. |
+| `---` | Horizontal rule | A new page, at the top level. |
+| `* item`, `+ item` | List item | Plain text. Bullets are `- item`. |
+| `one` / `two` on two lines | `one two` | `onetwo`. Start the second line with a space. |
+| Four-space indent | Code block | Not code. Use a ```` ``` ```` fence. |
+| `<b>text</b>` | HTML | Plain text. |
+| `[text][id]` | Reference link | Plain text. Write `[text](^id)`. |
+| `[[Page name]]` | Wiki link (Obsidian, wikis) | Plain text. Write `[Page name]()`, or `[](Page name)` to let the app choose the wording. |
+| `[[Page name\|Custom wording]]` | Wiki link with its own wording | Plain text. Write `[Custom wording](Page name)`. |
+
+---
+
 ## Inline Elements
 
 | You type | You get |
@@ -274,32 +295,25 @@ A line starting with `[^id]:` defines what `[text](^id)` points to. If the same 
 
 ## Caption
 
-**Syntax**:
-
-```
-| Captionalb | col B |
-^ Table caption text
-```
-
-A line starting with (`^ `) immediately after a captionable block (no blank line) enriches that block with a `caption` field. No separate AST node is produced.
-
 ````
-| col A | col B |
-^ Table caption text                   →  Table { caption: [...] }
+| Name  | Score |
+^ Table caption text                   →  caption of the Table
 
 /image.png
-^ Figure caption text                  →  FileGroup(FileBlock { caption: [...] })
+^ Figure caption text                  →  caption of the FileBlock
 
 ```javascript
 code here
 ```
-^ Listing caption                      →  CodeBlock { caption: [...] }
+^ Listing caption                      →  caption of the CodeBlock
 
 > Quoted text here.
-^ Source attribution                   →  QuoteBlock { caption: [...] }
+^ Source attribution                   →  caption of the QuoteBlock
 ````
 
-Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`. No caption → `caption: []`.
+A `^ ` line directly under a block, with no blank line between, is that block's caption. It holds inline markup. A blank line in between, or a second `^ ` line, makes it an ordinary paragraph, with a warning. Write `\^ ` to start a paragraph with `^ `.
+
+Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`, `NamedBlock`, `SpoilerBlock`, `QuoteBlock`.
 
 ---
 
@@ -309,61 +323,54 @@ Captionable blocks: `Table`, `CodeBlock`, `MathBlock`, `FileBlock`, `EmbedBlock`
 {#id .class key=value key="spaced value" data={"a":[1,2]}}
 ```
 
-An id (`#x` or `id=x`) is any Unicode except whitespace, `#`, `)`, `}` and controls — `{#道具一式}` is valid; ids are converted to NFC; an id outside that set is kept, with a warning. `.x` and `class="x y"` merge into one `class` list (source order, repeats dropped; past 32, the rest are dropped with a warning). `key={…}` / `key=[…]` holds strict one-line I-JSON, parsed (≤4096 chars, depth ≤8; no repeated names, no lone surrogates, integers within ±(2⁵³−1)); invalid JSON → the whole `{…}` is literal text. At most 32 entries per group; the rest are dropped with a warning.
+Attributes go **after** what they describe: at the end of its line, or on the next line with no blank line between. Spaces before the `{` are dropped.
 
-Always **after** their target: on the same line, or on the next lines with no blank line between. Whitespace between the target and the consumed `{attr}` is stripped — `== Heading  {.x}` → heading text is `"Heading"`, not `"Heading  "`.
+- `#id` or `id=x`: an id. Any characters except spaces, `#`, `)`, and `}`; `{#道具一式}` works.
+- `.name` or `class="a b"`: classes. Both forms add to one list.
+- `key=value`, `key="spaced value"`: a property. Quote a value that has spaces.
+- `key={…}` or `key=[…]`: a JSON value, on one line.
 
-**Block opening lines (headings, named blocks):** last `{...}` on the line → claimed by the block. Earlier `{...}` attach to preceding inline elements. Empty `{}` as last token = no attrs on block.
+A group holds up to 32 entries. A group that is not valid stays as typed: `{a **b**}` is exactly that text.
 
-**Scope-chain (Rule B):** trailing `{...}` sequence at end of inline context distributed right-to-left through the node hierarchy. Last `{}` → outermost container; preceding `{}` → next inner level. Excess front `{}` are dropped with a warning.
+**On a heading or named-block line**, the last `{…}` belongs to the block; earlier ones belong to the text before them.
+
+**At the end of a list item or table row**, several groups climb outward: the last one goes to the outer element, the one before it to the inner. Only the last item reaches the `List`, and only the last row reaches the `Table`.
 
 ```
-- item {.a}{.b}   →  List({.b}, ListItem({.a}, Text("item")))
+- item {.a}{.b}   →  .a on the ListItem, .b on the List      ← last item
 
-| td | {.a}{.b}   →  Table({.b}, Row({.a}, ...))     ← last row only
+| td | {.a}{.b}   →  .a on the Row, .b on the Table          ← last row
 
-| td | {.a}       →  Table({.a}, Row(...))           ← mid-table: 1 slot (Row only)
+| td | {.a}       →  .a on the Row                           ← a row mid-table
 ```
-
-`{{` always matched before `{` (longest opener wins).
-
-**Literal-span idiom.** `{` opens an attribute scan to the matching `}` or end of line. Invalid attr grammar or no `}` → the entire slice (braces included) is one verbatim `Text` run, never inline-parsed: `{a **b**}` → `Text("{a **b**}")`. Note: extending the attribute grammar later is a breaking change for text using this idiom.
 
 ---
 
 ## Comments
 
-Cutdown has two comment constructs. Both are hidden by renderers by default.
+Comments are hidden by default.
 
-| Form | Result | Notes |
-|------|--------|-------|
-| `#` | literal text | Single `#` does nothing — written exactly as typed. |
-| `## … <EOL>` | `LineReflection` on block | Line comment. Recognized at line-start AND mid-line. Runs to EOL. Stored in `block.reflections[]`, not in inline stream. Literal inside ` `` `, `$$`, and quoted attribute values. |
-| `### … ###` | `SegmentReflection` on the Page | Block comment (CommentBlock), no segment. A line beginning with `###` opens it, the next such line closes it; the rest of both lines is dropped, so `### note` opens one. Opaque content (no parsing); `text` has no trailing newline. `before` is the child-index path of the block it stands before. |
+| You type | You get |
+|---|---|
+| `#` | Plain text. A single `#` does nothing. |
+| `## …` | **Line comment** (`LineReflection`) to the end of the line, at the start or in the middle of a line. |
+| `###` … `###` | **CommentBlock** (`SegmentReflection`), kept as typed. Anything after `###` on its own lines is dropped. |
 
 ```
 # literal hash, not a comment
-## line comment       → stored in reflections of nearest block
-foo bar ## tail       → Text("foo bar") + reflections entry on block
+## line comment
+foo bar ## tail       → the text is "foo bar"; "tail" is a comment
 
 ###
-  opaque block — any content captured raw
+  any content, kept as typed
 ###
 ```
 
-Literal `##` in normal text: `\##` or `#\#`. An unclosed `###` hides everything to the end of the document, with a warning. A `## comment` line after a blank line, after a CommentBlock, or at the start of a scope is an orphan → a `SegmentReflection` on the Page, like a CommentBlock.
-
-**Opaque to other delimiters.** `##` consumes to the line end, swallowing any `]`, `}`, `|`, or other closer in its path: `[text ## here](url)` alone → `Text("[text")`, reflections entry `"here](url)"`. A comment takes no attribute slot. Details: §7.2.
-
-**Standalone line comment.** `## comment` on its own line, directly after content, attaches to the owner of the line above (the last item, row, or file of a List, Table, or FileGroup) and does not split that run; it does end a Paragraph. After a blank line, or with no preceding block → empty `Paragraph { children: [], reflections: [...] }`. No blank line is needed after a comment line.
-
-**Line owner.** A trailing `## comment` goes to the node that owns its line: a `Row`, `ListItem`/`TaskItem`, or `FileBlock`. The full table of owners: §7.
+To write `##` as text: `\##`. A `##` hides the rest of its line, closers included: in `[text ## here](url)` the link never closes. An unclosed `###` hides everything to the end of the document, with a warning.
 
 ---
 
 ## Document Model
-
-Each Cutdown file produces a `Document` of `Page` nodes, always at least one, even if empty. Pages contain blocks and inline elements. PageBreakers `---` at top level and Meta fences `~~~` produce Page boundaries.
 
 ```
 Document
@@ -372,30 +379,23 @@ Document
     └── children: Block[]
 ```
 
-- Every document has ≥ 1 Page.
-- `---` → always closes the current Page (Ghost Page if empty) and opens a new one. Produces no node.
-- `Meta` block → fills the current Page's `meta` slot; if that slot is already set, closes the Page and opens a new one carrying it as `meta`. Content before a `Meta` never creates a Page.
-- Empty Page (`meta: null`, `children: []`) = Ghost Page (valid).
+A document is a list of pages, always at least one. A new page starts at each top-level `---`, and at a Meta block when the current page already has one; text before the first Meta block belongs to its page. Empty pages are valid.
 
 ---
 
 ## Input
 
-- Input is decoded Unicode text, from UTF-8 or the encoding its `charset` names (§1.7). Bytes are decoded before Cutdown receives input; every Unicode-scalar prefix is an ordinary valid Cutdown document (§19). Identifiers are compared under NFC; the source text is never rewritten (authors SHOULD store files in NFC).
-- `\r\n`, `\r`, `\n` all read as line terminators. Tabs read as a single space (except inside fences). The source is never rewritten — these are interpretive rules (§10), not transforms.
-- Leading and trailing blank lines (whitespace-only lines) are skipped by the block phase. A document of only blanks → empty AST.
-- Inside non-opaque containers (NamedBlock, SpoilerBlock, QuoteBlock, ListItem), leading and trailing blank lines of the body are also stripped before children are parsed. Opaque containers (CodeBlock, Meta, MathBlock, CommentBlock) preserve their body verbatim.
-- HTML entities (`&amp;` etc.) are **not** decoded — emitted as literal text.
-
-`ID_CHAR ::= [a-zA-Z0-9._-]`, `ID_NAME ::= ID_CHAR+` — used for all identifier tokens (block names, mark names, language tags, reference IDs, variable keys). ASCII-only, case-sensitive everywhere.
+- Files are UTF-8 unless they declare another encoding.
+- Any line ending works: `\r\n`, `\r`, or `\n`. A tab reads as one space, except inside fences.
+- Blank lines at the start and end of the document are ignored, and so are those of a named block, spoiler, quote, or list item. Code, math, Meta, and comment blocks keep theirs.
+- HTML entities are not decoded: `&amp;` is five characters of text.
+- Names (blocks, marks, languages, references, variables) use ASCII letters, digits, `.`, `_`, and `-`. Case matters.
 
 ---
 
 ## Escaping
 
-`\` before a special character emits that character literally. Before a non-special character, both `\` and the character are emitted.
-
-Special characters, and where each may be escaped: the register in §B.
+Put `\` before a symbol to type it as text: `\**` is two asterisks. At the start of a line, it stops a block from opening: `\- not a list`, `\= not a heading`, `\---` not a page break. Before a letter or other ordinary character, the `\` stays as typed. Every escapable symbol: §B.
 
 ---
 

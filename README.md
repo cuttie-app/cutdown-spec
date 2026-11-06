@@ -109,7 +109,7 @@ The syntax is closed. Application-specific vocabulary lives in named blocks, mar
 | [`spec/`](spec/) | Language specification §1–§21 and Appendices A–C |
 | [`tests/`](tests/) | Conformance corpus — golden YAML tests |
 | [`policies/`](policies/) | Governance and conformance policies |
-| [`SYNTAX.md`](SYNTAX.md) | Condensed syntax reference for tooling and AI agents |
+| [`SYNTAX.md`](SYNTAX.md) | Quick reference for authors: what to type and what you get |
 
 ---
 
