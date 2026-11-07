@@ -1,6 +1,6 @@
 id: table-opens-with-header-separator
 section: "4.8"
-description: "A table whose only line is a header separator gets one inserted empty Header row; with no content row to fix the column count, columns is empty"
+description: "A table whose only line is a header separator gets one inserted empty Header row; with no content row, the separator fixes the column count"
 
 input: |
   |:---|----|
@@ -20,8 +20,6 @@ ast:
             row: 0
             column: 1
             children: []
-
-
     columns:
       - _type: Column
         align: left

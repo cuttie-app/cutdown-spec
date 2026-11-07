@@ -1,0 +1,36 @@
+id: table-later-separator-wide-surplus
+section: "4.8"
+description: "A later header separator wider than the column count drops its surplus and emits CDN-0018, like the first one"
+
+input: |
+  | A |
+  |---|
+  | B |
+  |---|---|
+
+diagnostics:
+  - code: CDN-0018
+    level: warning
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Header
+        children:
+          - _type: Cell
+            row: 0
+            column: 0
+            children:
+              - _type: Text
+                value: A
+      - _type: Header
+        children:
+          - _type: Cell
+            row: 1
+            column: 0
+            children:
+              - _type: Text
+                value: B
+    columns:
+      - _type: Column
+        align: start

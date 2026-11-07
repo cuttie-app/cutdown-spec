@@ -1,6 +1,6 @@
 id: table-header-separator-wide-surplus
 section: "4.8"
-description: "A header separator never defines the column count; a separator wider than the count drops its surplus and emits CDN-0018"
+description: "A content row, not a header separator, defines the column count; a separator wider than the count drops its surplus and emits CDN-0018"
 
 input: |
   | A | B |

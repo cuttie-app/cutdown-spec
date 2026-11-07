@@ -399,7 +399,6 @@ A table opens with a line starting with `|` (pipe). Each line is one row of cell
 
 `Cell` and `Column` do not carry `attributes`. Colspan and rowspan are not supported.
 
----
 
 #### Header rows
 
@@ -457,13 +456,13 @@ A column with no corresponding position in the header separator, and every colum
 
 The closer also determines how deep a trailing `{attrs}` chain reaches — see *Attrs scope chain* below and §6.
 
-**Column count is fixed by the first content row that has at least one cell.** Not `max()` across rows. A header separator is never a content row, so it never defines the count, and neither does a row with no cells or an inserted empty `Header` row.
+**Column count is fixed by the first content row that has at least one cell.** Not `max()` across rows. A row with no cells or an inserted empty `Header` row never defines the count. A table with no such row takes its count from its first header separator.
 
 - A row with **fewer** cells — a later row, or an earlier row with no cells — is padded with empty `Cell` nodes to the column count. No diagnostic — nothing is lost, this is normalisation. Padded cells carry no `loc` (§A).
 - A later row with **more** cells has the surplus cells **dropped** and emits **CDN-0018**.
-- A header separator **wider** than the column count likewise drops its surplus and emits **CDN-0018** — losing alignment silently is the failure the diagnostic exists to prevent.
+- A header separator **wider** than the column count, first or later, likewise drops its surplus and emits **CDN-0018** — losing alignment silently is the failure the diagnostic exists to prevent.
 - A header separator **narrower** than the column count is not an error; the uncovered columns take `"start"` per *Column alignment* above.
-- A table whose only rows are header separators has `columns: []` and emits **no** diagnostic — with no content row, no column count was ever established for the separator to exceed. Each separator still inserts its empty `Header` row.
+- A table whose only rows are header separators has one column per cell of its first separator. A later, wider separator drops its surplus and emits **CDN-0018** as above. Each separator still inserts its empty `Header` row, padded to that count.
 
 **Example 4-16** · [`table-simple`](../tests/004-block-segments/table-simple.yaml)
 

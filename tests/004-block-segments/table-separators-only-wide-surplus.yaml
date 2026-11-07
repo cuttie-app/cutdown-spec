@@ -1,0 +1,30 @@
+id: table-separators-only-wide-surplus
+section: "4.8"
+description: "In a table of header separators only, the first fixes the column count; a later wider one drops its surplus and emits CDN-0018"
+
+input: |
+  |:---|
+  |----|---:|
+
+diagnostics:
+  - code: CDN-0018
+    level: warning
+
+ast:
+  - _type: Table
+    rows:
+      - _type: Header
+        children:
+          - _type: Cell
+            row: 0
+            column: 0
+            children: []
+      - _type: Header
+        children:
+          - _type: Cell
+            row: 1
+            column: 0
+            children: []
+    columns:
+      - _type: Column
+        align: left
